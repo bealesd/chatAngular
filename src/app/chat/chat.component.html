@@ -1,0 +1,20 @@
+<h2>My Chats</h2>
+
+<div class="messagesContainer">
+    <app-chat-detail *ngFor="let message of chatMessages" [recieveChat]="message"></app-chat-detail>
+</div>
+
+
+<form #chatForm="ngForm" (ngSubmit)="onClickSubmit(chatForm.value)">
+    <input required type="text" name="chatMessage" placeholder="message" ngModel>
+    <button type="submit" class="btn btn-success" [disabled]="!chatForm.form.valid">Post</button>
+</form>
+
+
+<div id="sendChatForm">
+    <textarea (keyup)="onMessageTyping($event)" class="{{content.length > 0 ? 'ng-valid' : 'ng-invalid'}}" ng-minlength="number" rows="1" style="height:2em;" id="chatMessage" maxlength="250" placeholder="type a message"></textarea>
+
+    <button class="btn btn-success {{content.length > 0 ? '' : 'btn-disable'}}" (click)="send($event)">
+        Post
+    </button>
+</div>

@@ -1,0 +1,47 @@
+
+.Esther {
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 2px solid purple;
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+
+    .Esther > .EstherMessage {
+        margin-top: 0px;
+        color: deeppink;
+        text-align: right;
+    }
+
+    .Esther > .dateTime {
+        text-align: right;
+    }
+
+.David {
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 2px solid blue;
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+
+    .David > .DavidMessage {
+        margin-top: 0px;
+        text-align: left;
+        color: blue;
+    }
+
+.dateTime {
+    padding-top: 1px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    font-size: 8px;
+    color: gray;
+}
+
+div > p {
+    word-wrap: break-word;
+    max-width: 280px;
+    padding: 0px;
+    margin: 0px;
+}

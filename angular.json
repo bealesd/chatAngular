@@ -119,6 +119,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "chatAngular"
+    }
+  },
+  "defaultProject": "chatAngular",
+  "cli": {
+    "analytics": false
+  }
 }
