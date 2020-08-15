@@ -8,18 +8,23 @@ import { MessagesComponent } from './messages/messages.component';
 import { ChatComponent } from './chat/chat.component';
 import { ChatDetailComponent } from './chat-detail/chat-detail.component';
 
+import { PickerModule } from '@ctrl/ngx-emoji-mart';
+
 @NgModule({
   declarations: [
-    AppComponent, 
+    AppComponent,
 
     MessagesComponent,
     ChatComponent,
     ChatDetailComponent,
+
+
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    PickerModule
   ],
   providers: [],
   bootstrap: [AppComponent]

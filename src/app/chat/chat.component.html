@@ -1,20 +1,23 @@
-<h2>My Chats</h2>
+<div id="usernameContainer">
+    <h4>
+        Chatting as
+        <select [ngModel]="who" (ngModelChange)="changePerson($event)" name="sel2">
+          <option [ngValue]="name" *ngFor="let name of names">{{name}}</option>
+        </select>
+    </h4>
+</div>
 
 <div class="messagesContainer">
     <app-chat-detail *ngFor="let message of chatMessages" [recieveChat]="message"></app-chat-detail>
 </div>
 
 
-<form #chatForm="ngForm" (ngSubmit)="onClickSubmit(chatForm.value)">
-    <input required type="text" name="chatMessage" placeholder="message" ngModel>
-    <button type="submit" class="btn btn-success" [disabled]="!chatForm.form.valid">Post</button>
-</form>
-
-
 <div id="sendChatForm">
-    <textarea (keyup)="onMessageTyping($event)" class="{{content.length > 0 ? 'ng-valid' : 'ng-invalid'}}" ng-minlength="number" rows="1" style="height:2em;" id="chatMessage" maxlength="250" placeholder="type a message"></textarea>
-
-    <button class="btn btn-success {{content.length > 0 ? '' : 'btn-disable'}}" (click)="send($event)">
-        Post
-    </button>
+    <input (keyup)="onMessageTyping($event)" class="{{content.trim().length > 0 ? 'valid' : 'invalid'}}" id="chatMessage" minlength="1" maxlength="35" placeholder="type a message" />
+    <button class='emoji' (click)="toggleEmojiPicker()">Pic</button>
+    <button class="btn btn-success {{content.length > 0 ? '' : 'btn-disable'}}" (click)="postMessage($event)">
+    Post
+  </button>
 </div>
+
+<emoji-mart class="emoji-mart" set="{{set}}" *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)" title="Pick your emoji…"></emoji-mart>
