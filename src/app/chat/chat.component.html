@@ -2,8 +2,8 @@
     <h4>
         Chatting as
         <select [ngModel]="who" (ngModelChange)="changePerson($event)" name="sel2">
-          <option [ngValue]="name" *ngFor="let name of names">{{name}}</option>
-        </select>
+      <option [ngValue]="name" *ngFor="let name of names">{{name}}</option>
+    </select>
     </h4>
 </div>
 
@@ -20,4 +20,7 @@
   </button>
 </div>
 
-<emoji-mart class="emoji-mart" set="{{set}}" *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)" title="Pick your emoji…"></emoji-mart>
+<div class="modal" *ngIf="showEmojiPicker">
+    <button (click)="toggleEmojiPicker()">close</button>
+    <emoji-mart class="emoji-mart" set="{{set}}" *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)" title="Pick your emoji…"></emoji-mart>
+</div>
