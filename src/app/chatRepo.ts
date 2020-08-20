@@ -1,98 +1,160 @@
 import { Injectable } from '@angular/core';
 
-import { Observable, of } from 'rxjs';
+import { Observable, of, from, forkJoin, zip } from 'rxjs';
+import { catchError, map, tap, retry, switchMap, toArray, filter, mergeMap } from 'rxjs/operators';
 
 import { MessageService } from './message.service';
 import { RecieveChat, SendChat } from './chatObject'
+import { GitHubMetaData } from './gitHubMetaData'
+
+import { CryptoService } from './auth/cryptoService';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, map, tap, retry } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatRepo {
-  private baseUrl = 'https://estherchatapinodeazure.azurewebsites.net/';
-
-  httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-  };
+  private baseMessagesUrl = 'https://api.github.com/repos/bealesd/tempStore/contents';
+  private baseRawMessagesUrl = 'https://raw.githubusercontent.com/bealesd/tempStore/master';
 
   constructor(
+    private cryptoService: CryptoService,
     private http: HttpClient,
     private messageService: MessageService) { }
 
-  private log(message: string) {
-    this.messageService.add(`ChatService: ${message}`);
+  private log = (message: string): void =>
+    this.messageService.add(`ChatRepo: ${message}`);
+
+  options = (): { headers: HttpHeaders } => {
+    return {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.cryptoService.getToken()}`
+      })
+    }
   }
 
-  private getMessagesUrl(messageCount: number): string {
-    return this.baseUrl + `GetMessages?recordCount=${messageCount}`;
-  }
-
-  private getMessageUrl(rowKey: string): string {
-    return this.baseUrl + `GetMessage?rowKey=${rowKey}`;
-  }
-
-  private getNewMessagesUrl(rowKey: string): string {
-    return this.baseUrl + `getMessagesAfterRowKey?rowKey=${rowKey}`;
-  }
-
-  private postMessageUrl(): string {
-    return this.baseUrl + `postMessage`;
-  }
-
-  private deleteMessageUrl(): string {
-    return this.baseUrl + `deleteMessage`;
-  }
+  getMessageListings = (): Observable<GitHubMetaData[]> =>
+    this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options());
 
   getLastTen(): Observable<RecieveChat[]> {
-    return this.http.get<RecieveChat[]>(this.getMessagesUrl(10))
+    const idShaLookup = {};
+    return this.getMessageListings()
       .pipe(
-        retry(10),
-        tap(x => x.length ?
-          this.log('fetched chats') :
-          this.log('no chat messages found')
-        ),
-        catchError(this.handleError<RecieveChat[]>('getLastTen', []))
-      );
+        map((messagesMetaData: GitHubMetaData[]) => {
+          messagesMetaData = this.getChatsFromEnd(this.sortByName(messagesMetaData), 10);
+          const chatUrls = [];
+          for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
+            const messageMetaData = messagesMetaData[i];
+            idShaLookup[this.idExtractor(messageMetaData.name)] = messageMetaData.sha;
+            chatUrls.push(this.http.get<RecieveChat>(messageMetaData.download_url));
+          }
+          return chatUrls;
+        }),
+        mergeMap((chatUrls) => {
+          return forkJoin(chatUrls);
+        })
+      ).pipe(
+        map((results: RecieveChat[]) => {
+          results.map((chat) => { chat.Sha = idShaLookup[chat.Id]; });
+          return results;
+        })
+      )
   }
 
-  getNewChatMessages(rowKey: string): Observable<RecieveChat[]> {
-    return this.http.get<RecieveChat[]>(this.getNewMessagesUrl(rowKey))
+  getNewChatMessages(lastId: number): Observable<any> {
+    return this.getMessageListings()
+      .pipe(
+        map((messagesMetaData: GitHubMetaData[]) => {
+          messagesMetaData = this.sortByName(messagesMetaData);
+          const chatUrls = [];
+          for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
+            const messageMetaData = messagesMetaData[i];
+            if (this.idExtractor(messageMetaData.name) > lastId)
+              chatUrls.push(this.http.get<RecieveChat>(messageMetaData.download_url));
+          }
+          return chatUrls;
+        }),
+        mergeMap((chatUrls) => {
+          return forkJoin(chatUrls);
+        })
+      )
+  }
+
+  checkForUpdatedMessage(id: number): Observable<RecieveChat> {
+    return this.http.get<RecieveChat>(`${this.baseRawMessagesUrl}/id_${id}.json`, this.options())
       .pipe(
         retry(10),
-        tap(x => x.length ?
+        tap(x => x === null || x === undefined ?
           this.log('fetched new chats') :
           this.log('no new chat messages found')
         ),
-        catchError(this.handleError<RecieveChat[]>('getNewChatMessages', []))
-      );
-  }
-
-  checkForUpdatedMessage(rowKey: string): Observable<RecieveChat> {
-    return this.http.get<RecieveChat>(this.getMessageUrl(rowKey))
-      .pipe(
-        retry(10),
-        tap(x => x === undefined || x === null ?
-          this.log('fetched updated chat') :
-          this.log('chat not found')
-        ),
-        catchError(this.handleError<RecieveChat>('checkForUpdatedMessage' ))
+        catchError(this.handleError<RecieveChat>('getNewChatMessages', null))
       );
   }
 
   postMessage(message: SendChat): Observable<RecieveChat> {
-    return this.http.post<RecieveChat>(this.postMessageUrl(), message, this.httpOptions)
+    const postUrl = this.baseMessagesUrl + `/id_${message.Id}.json`;
+
+    const newMessage: RecieveChat = {
+      Who: message.Who,
+      Content: message.Content,
+      Deleted: 'false',
+      Id: message.Id,
+      Datetime: new Date().getTime()
+    }
+
+    const rawCommitBody = JSON.stringify({
+      "message": `Api commit by ${message.Who} at ${new Date().toLocaleString()}`,
+      "content": btoa(JSON.stringify(newMessage))
+    })
+
+    return this.http.put<{content:GitHubMetaData}>(postUrl, rawCommitBody, this.options())
       .pipe(
-        catchError(this.handleError<RecieveChat>('posted message'))
+        map((result: {content:GitHubMetaData}) => {
+          let metadata = <GitHubMetaData>result['content'];
+          newMessage.Sha = metadata.sha;
+          return <RecieveChat>newMessage;
+        }),
+        catchError(this.handleError<RecieveChat>('posted message', null))
       );
   }
 
-  deleteMessage(rowKey: string): Observable<string> {
-    return this.http.delete<string>(this.deleteMessageUrl() + `?rowKey=${rowKey}`)
+  softDeleteMessage(message: RecieveChat): Observable<RecieveChat> {
+    const postUrl = this.baseMessagesUrl + `/id_${message.Id}.json`;
+
+    const newMessage = <SendChat>message;
+    newMessage.Deleted = 'true';
+
+    const rawCommitBody = JSON.stringify({
+      'message': `Api commit by ${newMessage.Who} at ${new Date().toLocaleString()}`,
+      'content': btoa(JSON.stringify(newMessage)),
+      'sha': message.Sha
+    })
+
+    return this.http.put(postUrl, rawCommitBody, this.options())
       .pipe(
-        catchError(this.handleError<string>('posted message'))
+        map((result: {content:GitHubMetaData}) => {
+          let metadata = result.content;
+          message.Sha = metadata.sha;
+          return <RecieveChat>message;
+        }),
+        catchError(this.handleError<RecieveChat>('posted message', null))
+      );
+  }
+
+  hardDeleteMessage(message: RecieveChat): Observable<any> {
+    const deletetUrl = this.baseMessagesUrl + `/id_${message['id']}.json`;
+    const commitBody = {
+      "message": `Api delete commit by ${message.Who} at ${new Date().toLocaleString()}`,
+      "sha": `${message.Sha}`
+    }
+
+    const rawCommitBody = JSON.stringify(commitBody)
+    return this.http.request('delete', deletetUrl, { body: rawCommitBody })
+      .pipe(
+        catchError(this.handleError<string>('deleted message'))
       );
   }
 
@@ -104,6 +166,20 @@ export class ChatRepo {
       this.log(`${operation} failed: ${error.message}`);
 
       return of(result as T);
-    };
+    }
   }
+
+  // helpers
+
+  idExtractor = (fileName: string): number =>
+    parseInt(fileName.match(/[0-9]{1,100000}/)[0]);
+
+  fileNameFilter = (chatMessagesMetaData: GitHubMetaData[]): GitHubMetaData[] =>
+    chatMessagesMetaData.filter(metdata => metdata['name'].match(/id_[0-9]{1,100000}\.json/));
+
+  sortByName = (chatMessagesMetaData: GitHubMetaData[]): GitHubMetaData[] =>
+    this.fileNameFilter(chatMessagesMetaData).sort((a, b) => this.idExtractor(a['name']) - this.idExtractor(b['name']));
+
+  getChatsFromEnd = (chatMessagesMetaData: GitHubMetaData[], fromEnd: number): GitHubMetaData[] =>
+    chatMessagesMetaData.slice(Math.max(chatMessagesMetaData.length - fromEnd, 0));
 }

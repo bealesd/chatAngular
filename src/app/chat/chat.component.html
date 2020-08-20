@@ -1,10 +1,5 @@
-<div id="usernameContainer">
-    <h4>
-        Chatting as
-        <select [ngModel]="who" (ngModelChange)="changePerson($event)" name="sel2">
-      <option [ngValue]="name" *ngFor="let name of names">{{name}}</option>
-    </select>
-    </h4>
+<div id="logout">
+    <button (click)="logout()">Logout</button>
 </div>
 
 <div class="messagesContainer">

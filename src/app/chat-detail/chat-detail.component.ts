@@ -36,6 +36,6 @@ export class ChatDetailComponent implements OnInit {
 
   deleteMessage(recieveChat: RecieveChat) {
     if (window.confirm('Delete message?'))
-      this.chatService.deleteChatMessage(recieveChat.RowKey);
+      this.chatService.deleteChatMessage(recieveChat.Id);
   }
 }

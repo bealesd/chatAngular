@@ -10,6 +10,11 @@ import { ChatDetailComponent } from './chat-detail/chat-detail.component';
 
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from './auth/tokenInterceptor';
+import { LoginComponent } from './login/login.component';
+import { AppRoutingModule } from './app-routing.module';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -17,6 +22,7 @@ import { PickerModule } from '@ctrl/ngx-emoji-mart';
     MessagesComponent,
     ChatComponent,
     ChatDetailComponent,
+    LoginComponent,
 
 
   ],
@@ -24,9 +30,16 @@ import { PickerModule } from '@ctrl/ngx-emoji-mart';
     BrowserModule,
     HttpClientModule,
     FormsModule,
-    PickerModule
+    PickerModule,
+    AppRoutingModule
   ],
-  providers: [],
+  providers: [
+    {
+    provide: HTTP_INTERCEPTORS,
+    useClass: TokenInterceptor,
+    multi: true
+  }
+],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

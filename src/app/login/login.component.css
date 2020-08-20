@@ -1,0 +1,32 @@
+button,
+input[type=submit] {
+    background-color: #4CAF50;
+    border: 1px solid green;
+    color: white;
+    padding: 2px 7px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+input[type=text],
+input[type=password] {
+    display: inline;
+    resize: none;
+    width: 215px;
+    margin-left: 5px;
+    font-size: 16px;
+    border: 1px solid green;
+    padding: 2px
+}
+
+button {
+    display: inline;
+}
+
+label {
+    font-size: 30px;
+    color: var(--main-header-font-color);
+}

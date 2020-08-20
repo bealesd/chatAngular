@@ -1,11 +1,15 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, AfterViewChecked } from '@angular/core';
+import { Router } from '@angular/router';
+
+import { interval } from 'rxjs';
 
 import { RecieveChat, SendChat } from '../chatObject';
 
-import { ChatService } from '../chat.service';
-import { MessageService } from '../message.service';
+import { ChatService } from './../chat.service';
+import { MessageService } from './../message.service';
 
-import { interval } from 'rxjs';
+import { CryptoService } from '../auth/cryptoService';
+import { LoginHelper } from '../login/loginHelper'
 
 @Component({
   selector: 'app-chat',
@@ -18,18 +22,30 @@ export class ChatComponent implements OnInit {
   content: string;
   rows: number;
   who: string;
-  names: string[];
   messageContainer: string;
 
-
+  showEmojiPicker = false;
+  sets = [
+    'native',
+    'google',
+    'twitter',
+    'facebook',
+    'emojione',
+    'apple',
+    'messenger'
+  ]
+  set = 'twitter';
 
   constructor(
     private chatService: ChatService,
     private messageService: MessageService,
+    private cryptoService: CryptoService,
+    private router: Router,
+    private loginHelper: LoginHelper
   ) {
     this.content = '';
     this.rows = 1;
-    this.names = ['Esther', 'David'];
+    // this.names = ['Esther', 'David'];
     this.messageContainer = '.messagesContainer';
 
     this.chatService.chatMessages.subscribe(val => {
@@ -38,52 +54,33 @@ export class ChatComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if(!this.loginHelper.checkPersonSelected()){
+      this.loginHelper.setPerson();
+    }
     this.chatService.getChatMessages();
-    interval(10000).subscribe(x => this.chatService.getNewChatMessages());
-    interval(100000).subscribe(x => this.chatService.checkForUpdatedMessages());
+    interval(this.secsToMilliSecs(20)).subscribe(x => this.chatService.getNewChatMessages());
+    interval(this.minsToMilliSecs(5)).subscribe(x => this.chatService.checkForUpdatedMessages());
 
-    this.setPerson();
+    // this.setPerson();
   }
 
-  // ngAfterViewChecked  (): void{ this.scrollToBottom(); }
   ngDoCheck() {
     const messageContainer = document.querySelector(this.messageContainer);
     if (messageContainer && messageContainer.children.length > 0)
       this.scrollToBottom();
   }
 
-  setPerson() {
-    let chatPerson = window.localStorage.getItem('chatPerson');
-    if (chatPerson === null || chatPerson === undefined || !this.names.includes(chatPerson))
-      chatPerson = 'Esther';
+  secsToMilliSecs = (seconds) => { return seconds * 1000 };
 
-    this.changePerson(chatPerson);
-  }
+  minsToMilliSecs = (minutes) => { return this.secsToMilliSecs(minutes * 60) };
 
-  updatePerson(chatPerson) {
-    if (!this.names.includes(chatPerson))
-      return;
-    else
-      window.localStorage.setItem('chatPerson', chatPerson);
-  }
-
-  changePerson(event) {
-    this.who = event;
-    this.updatePerson(this.who);
-
-    document.body.className = '';
-    if (this.who === 'David') {
-      document.body.classList.add('dark');
-    }
-    else {
-      document.body.classList.add('light');
-    }
-  }
+  hoursToMilliSecs = (hours) => { return this.minsToMilliSecs(hours * 60) };
 
   postMessage(event) {
     event.srcElement.parentElement.querySelector('input').value = "";
 
-    let newMessage = new SendChat(this.who, this.content);
+    const newMessage = <SendChat>{ Who: this.who, Content: this.content }
+
     this.chatService.sendChatMessage(newMessage).subscribe((chatMessage) => {
       this.chatMessages.push(chatMessage);
     });
@@ -103,19 +100,6 @@ export class ChatComponent implements OnInit {
     }
   }
 
-  showEmojiPicker = false;
-  sets = [
-    'native',
-    'google',
-    'twitter',
-    'facebook',
-    'emojione',
-    'apple',
-    'messenger'
-  ]
-  set = 'twitter';
-  message = '';
-
   toggleEmojiPicker() {
     this.showEmojiPicker = !this.showEmojiPicker;
   }
@@ -126,5 +110,12 @@ export class ChatComponent implements OnInit {
     chatMessage.value = chatMessage.value + emoji;
     this.content = chatMessage.value;
     this.showEmojiPicker = false;
+  }
+
+  logout(){
+    this.cryptoService.logout();
+
+    this.messageService.add('success');
+    this.router.navigate(['login']);
   }
 }

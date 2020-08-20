@@ -1,18 +1,16 @@
 export class RecieveChat{
-    public Id : string;
+    public Id : number;
     public Who : string;
     public Datetime : number;
     public Content : string;
-    public RowKey : string;
     public Deleted : string;
+    public Sha? : string;
 }
 
 export class SendChat{
-    constructor(
-      public Username: string,
-      public Message: string,
-    ) {
-      this.Username = Username;
-      this.Message = Message;
-    }
+  public Id : number;
+  public Who : string;
+  public Datetime : number;
+  public Content : string;
+  public Deleted : string;
 }
