@@ -21,7 +21,6 @@ export class ChatComponent implements OnInit {
   chatForm: SendChat;
   content: string;
   rows: number;
-  who: string;
   messageContainer: string;
   getNewChatMessagesInterval: Subscription;
   checkForUpdatedMessagesInterval: Subscription;
@@ -48,7 +47,6 @@ export class ChatComponent implements OnInit {
   ) {
     this.content = '';
     this.rows = 1;
-    // this.names = ['Esther', 'David'];
     this.messageContainer = '.messagesContainer';
 
     this.chatService.chatMessages.subscribe(val => {
@@ -64,8 +62,6 @@ export class ChatComponent implements OnInit {
 
     this.getNewChatMessagesInterval = interval(this.secsToMilliSecs(20)).subscribe(x => this.chatService.getNewChatMessages());
     this.checkForUpdatedMessagesInterval = interval(this.minsToMilliSecs(5)).subscribe(x => this.chatService.checkForUpdatedMessages());
-
-    // this.setPerson();
   }
 
   ngDoCheck() {
@@ -83,7 +79,7 @@ export class ChatComponent implements OnInit {
   postMessage(event) {
     event.srcElement.parentElement.querySelector('input').value = "";
 
-    const newMessage = <SendChat>{ Who: this.who, Content: this.content }
+    const newMessage = <SendChat>{ Who: this.loginHelper.who, Content: this.content }
 
     this.chatService.sendChatMessage(newMessage).subscribe((chatMessage) => {
       this.chatMessages.push(chatMessage);
