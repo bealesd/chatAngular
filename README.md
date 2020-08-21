@@ -3,16 +3,9 @@
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.5.
 
 # TODO
-1. Add better chat messages
-2. better error handling on rests calls
-3. Logout on auth error
-4. hard delete message option
-5. undo soft delete option
-6. messages since you've left the tab, or highlight messages that are new
-7. stop fetching messages on logout, and clear all messages fetched
-8. on logout still show the last selected username
-9. on login still show the last selected username
-10. have a look at the crypto js compile warnings
+1. messages since you've left the tab, or highlight messages that are new
+2. have a look at the crypto js compile warnings
+3. Encrypt all message as github will be public
 
 ## Development server
 

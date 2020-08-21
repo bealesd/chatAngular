@@ -14,15 +14,14 @@ export class LoginHelper {
   }
   changePerson(person) {
     this.who = person;
-    this.updatePerson(this.who);
+    this.updatePerson(person);
 
     document.body.className = '';
-    if (this.who === 'David') {
+    if (this.who === 'David')
       document.body.classList.add('dark');
-    }
-    else {
+    else
       document.body.classList.add('light');
-    }
+
   }
 
   updatePerson(chatPerson) {

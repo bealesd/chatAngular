@@ -2,7 +2,6 @@
     background-color: white;
 }
 
-
 h4 {
     color: gray;
     margin: 10px;
@@ -10,4 +9,77 @@ h4 {
 
 input {
     color: gray;
+}
+
+.modal {
+    --width: 300px;
+    display: grid;
+    visibility: hidden;
+    position: absolute;
+    z-index: 9999;
+    top: 10px;
+    width: var(--width);
+    height: 100px;
+    left: 50%;
+    margin-left: calc(-0.5 * var(--width));
+    background-color: lightgray;
+    box-shadow: green 5px 5px;
+}
+
+.modal[data-type="three"] {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-auto-rows: auto;
+}
+
+.modal[data-type="three"]>[data-type="content"] {
+    grid-column-start: 1;
+    grid-column-end: 4;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    padding-left: 10px;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.modal[data-type="three"]>button {
+    height: 30px;
+    width: 70px;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    border-radius: 5px;
+    margin: auto;
+    cursor: pointer;
+}
+
+.modal[data-type="three"]>button.btn-normal {
+    background-color: #4CAF50;
+    border: 1px solid green;
+}
+
+.modal[data-type="three"]>button.btn-danger {
+    background-color: #a94442;
+    border: 1px solid red;
+}
+
+.modal[data-type="three"]>[data-type="button1"] {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+}
+
+.modal[data-type="three"]>[data-type="button2"] {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+}
+
+.modal[data-type="three"]>[data-type="button3"] {
+    grid-column-start: 3;
+    grid-column-end: 4;
+    grid-row-start: 2;
+    grid-row-end: 3;
 }

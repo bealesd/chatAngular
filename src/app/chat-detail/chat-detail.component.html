@@ -2,10 +2,11 @@
 
     <div class="dateTime">{{date | date:'medium'}}</div>
 
-    <div *ngIf="!deleted" class="deleteMessage" (click)="deleteMessage(recieveChat)">&#10006;</div>
+    <div *ngIf="!deleted" class="deleteMessage" (click)="deleteMessage(recieveChat)">&#10005;</div>
+    <div *ngIf="deleted" class="undoDeleteMessage" (click)="undoDeleteMessage(recieveChat)">&#8630;</div>
+
 
     <div *ngIf="!deleted" class="{{recieveChat.Who}}Message">{{recieveChat.Content}}</div>
     <div *ngIf="deleted" class="{{recieveChat.Who}}Message deleted">{{recieveChat.Content}}</div>
-
 
 </div>

@@ -30,8 +30,9 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.loginHelper.setPerson();
+    this.who = this.loginHelper.who;
 
-    this.tryLogin();
+    this.tryLogin('Auto');
   }
 
   login() {
@@ -41,23 +42,28 @@ export class LoginComponent implements OnInit {
 
     this.cryptoService.login(citherKey, loginTime);
 
-    this.tryLogin();
+    this.tryLogin('');
   }
 
   password() {
     this.show = !this.show;
   }
 
-  tryLogin() {
-    this.chatService.login().subscribe((result) => {
-      this.messageService.add('success');
-      this.router.navigate(['chat']);
+  tryLogin(type: string) {
+    this.chatService.login(type).subscribe((result) => {
+      if (result === undefined) {
+        this.messageService.add('Login failure.');
+      }
+      else {
+        this.messageService.add('Login complete.');
+        this.router.navigate(['chat']);
+      }
     }, error => {
-      this.messageService.add('Wrong Password');
+      this.messageService.add('Login failure.');
     });
   }
 
-  changePerson(person){
+  changePerson(person) {
     this.loginHelper.changePerson(person);
     this.who = person;
   }

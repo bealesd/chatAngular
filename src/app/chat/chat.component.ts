@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewChecked } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { interval } from 'rxjs';
+import { interval, Subscription } from 'rxjs';
 
 import { RecieveChat, SendChat } from '../chatObject';
 
@@ -23,6 +23,8 @@ export class ChatComponent implements OnInit {
   rows: number;
   who: string;
   messageContainer: string;
+  getNewChatMessagesInterval: Subscription;
+  checkForUpdatedMessagesInterval: Subscription;
 
   showEmojiPicker = false;
   sets = [
@@ -35,6 +37,7 @@ export class ChatComponent implements OnInit {
     'messenger'
   ]
   set = 'twitter';
+
 
   constructor(
     private chatService: ChatService,
@@ -54,12 +57,13 @@ export class ChatComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if(!this.loginHelper.checkPersonSelected()){
+    if (!this.loginHelper.checkPersonSelected()) {
       this.loginHelper.setPerson();
     }
-    this.chatService.getChatMessages();
-    interval(this.secsToMilliSecs(20)).subscribe(x => this.chatService.getNewChatMessages());
-    interval(this.minsToMilliSecs(5)).subscribe(x => this.chatService.checkForUpdatedMessages());
+    this.chatService.getChatMessages()
+
+    this.getNewChatMessagesInterval = interval(this.secsToMilliSecs(20)).subscribe(x => this.chatService.getNewChatMessages());
+    this.checkForUpdatedMessagesInterval = interval(this.minsToMilliSecs(5)).subscribe(x => this.chatService.checkForUpdatedMessages());
 
     // this.setPerson();
   }
@@ -112,10 +116,15 @@ export class ChatComponent implements OnInit {
     this.showEmojiPicker = false;
   }
 
-  logout(){
-    this.cryptoService.logout();
+  logout() {
+    if (confirm('Do you want to logout?')) {
+      this.cryptoService.logout();
 
-    this.messageService.add('success');
-    this.router.navigate(['login']);
+      this.getNewChatMessagesInterval.unsubscribe();
+      this.checkForUpdatedMessagesInterval.unsubscribe();
+
+      this.messageService.add('Logged out.');
+      this.router.navigate(['login']);
+    }
   }
 }

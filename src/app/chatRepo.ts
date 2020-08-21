@@ -24,7 +24,7 @@ export class ChatRepo {
     private messageService: MessageService) { }
 
   private log = (message: string): void =>
-    this.messageService.add(`ChatRepo: ${message}`);
+    this.messageService.add(`${message}`);
 
   options = (): { headers: HttpHeaders } => {
     return {
@@ -35,8 +35,17 @@ export class ChatRepo {
     }
   }
 
-  getMessageListings = (): Observable<GitHubMetaData[]> =>
-    this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options());
+  getMessageListings = (): Observable<GitHubMetaData[]> => {
+    return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options()).pipe(
+      catchError(this.handleError<GitHubMetaData[]>('Could not get chat messages metdata.', []))
+    )
+  }
+
+  attemptLogin = (): Observable<GitHubMetaData[]> => {
+    return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options()).pipe(
+      catchError(this.handleError<GitHubMetaData[]>('Could not get chat messages metdata.', undefined))
+    )
+  }
 
   getLastTen(): Observable<RecieveChat[]> {
     const idShaLookup = {};
@@ -48,13 +57,14 @@ export class ChatRepo {
           for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
             const messageMetaData = messagesMetaData[i];
             idShaLookup[this.idExtractor(messageMetaData.name)] = messageMetaData.sha;
-            chatUrls.push(this.http.get<RecieveChat>(messageMetaData.download_url));
+            chatUrls.push(this.http.get<RecieveChat>(this.removeUrlParams(messageMetaData.download_url)));
           }
           return chatUrls;
         }),
         mergeMap((chatUrls) => {
           return forkJoin(chatUrls);
-        })
+        }),
+        catchError(this.handleError<RecieveChat[]>('Could not get last 10 chat messgaes.', []))
       ).pipe(
         map((results: RecieveChat[]) => {
           results.map((chat) => { chat.Sha = idShaLookup[chat.Id]; });
@@ -63,7 +73,10 @@ export class ChatRepo {
       )
   }
 
-  getNewChatMessages(lastId: number): Observable<any> {
+  getNewChatMessages(lastId: number): Observable<RecieveChat[]> {
+    if (lastId === null)
+      return this.getLastTen();
+
     return this.getMessageListings()
       .pipe(
         map((messagesMetaData: GitHubMetaData[]) => {
@@ -72,12 +85,17 @@ export class ChatRepo {
           for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
             const messageMetaData = messagesMetaData[i];
             if (this.idExtractor(messageMetaData.name) > lastId)
-              chatUrls.push(this.http.get<RecieveChat>(messageMetaData.download_url));
+              chatUrls.push(this.http.get<RecieveChat>(this.removeUrlParams(messageMetaData.download_url)));
           }
           return chatUrls;
         }),
         mergeMap((chatUrls) => {
           return forkJoin(chatUrls);
+        }),
+        catchError(this.handleError<RecieveChat[]>('Could not get new chat messgaes.', []))
+      ).pipe(
+        map((results: RecieveChat[]) => {
+          return results;
         })
       )
   }
@@ -90,7 +108,7 @@ export class ChatRepo {
           this.log('fetched new chats') :
           this.log('no new chat messages found')
         ),
-        catchError(this.handleError<RecieveChat>('getNewChatMessages', null))
+        catchError(this.handleError<RecieveChat>('Could not get updated message.', null))
       );
   }
 
@@ -110,22 +128,22 @@ export class ChatRepo {
       "content": btoa(JSON.stringify(newMessage))
     })
 
-    return this.http.put<{content:GitHubMetaData}>(postUrl, rawCommitBody, this.options())
+    return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.options())
       .pipe(
-        map((result: {content:GitHubMetaData}) => {
+        map((result: { content: GitHubMetaData }) => {
           let metadata = <GitHubMetaData>result['content'];
           newMessage.Sha = metadata.sha;
           return <RecieveChat>newMessage;
         }),
-        catchError(this.handleError<RecieveChat>('posted message', null))
+        catchError(this.handleError<RecieveChat>('Could not post message.', null))
       );
   }
 
-  softDeleteMessage(message: RecieveChat): Observable<RecieveChat> {
+  softDeleteMessage(message: RecieveChat, deleteFlag: boolean): Observable<RecieveChat> {
     const postUrl = this.baseMessagesUrl + `/id_${message.Id}.json`;
 
     const newMessage = <SendChat>message;
-    newMessage.Deleted = 'true';
+    newMessage.Deleted = deleteFlag ? 'true': 'false';
 
     const rawCommitBody = JSON.stringify({
       'message': `Api commit by ${newMessage.Who} at ${new Date().toLocaleString()}`,
@@ -135,36 +153,32 @@ export class ChatRepo {
 
     return this.http.put(postUrl, rawCommitBody, this.options())
       .pipe(
-        map((result: {content:GitHubMetaData}) => {
+        map((result: { content: GitHubMetaData }) => {
           let metadata = result.content;
           message.Sha = metadata.sha;
           return <RecieveChat>message;
         }),
-        catchError(this.handleError<RecieveChat>('posted message', null))
+        catchError(this.handleError<RecieveChat>('Could not update delete flag.', null))
       );
   }
 
   hardDeleteMessage(message: RecieveChat): Observable<any> {
-    const deletetUrl = this.baseMessagesUrl + `/id_${message['id']}.json`;
+    const deletetUrl = this.baseMessagesUrl + `/id_${message.Id}.json`;
     const commitBody = {
       "message": `Api delete commit by ${message.Who} at ${new Date().toLocaleString()}`,
       "sha": `${message.Sha}`
     }
+    const rawCommitBody = JSON.stringify(commitBody);
 
-    const rawCommitBody = JSON.stringify(commitBody)
-    return this.http.request('delete', deletetUrl, { body: rawCommitBody })
+    return this.http.request('delete', deletetUrl, { body: rawCommitBody, headers: this.options().headers } )
       .pipe(
-        catchError(this.handleError<string>('deleted message'))
+        catchError(this.handleError<string>('Could not delete message.'))
       );
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
-
-      console.error(error);
-
-      this.log(`${operation} failed: ${error.message}`);
-
+      this.log(`Failed REST request. ${operation} ${error.message}.`);
       return of(result as T);
     }
   }
@@ -182,4 +196,9 @@ export class ChatRepo {
 
   getChatsFromEnd = (chatMessagesMetaData: GitHubMetaData[], fromEnd: number): GitHubMetaData[] =>
     chatMessagesMetaData.slice(Math.max(chatMessagesMetaData.length - fromEnd, 0));
+
+  removeUrlParams = (rawUrl: string) =>
+    new URL(rawUrl).origin + new URL(rawUrl).pathname;
 }
+
+
