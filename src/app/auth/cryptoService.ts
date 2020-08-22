@@ -46,4 +46,16 @@ export class CryptoService {
     const hash = CryptoJS.SHA3(window.btoa(pw)).toString()
     return CryptoJS.AES.decrypt(this.esther, hash).toString(CryptoJS.enc.Utf8);
   }
+
+  encryptMessage(plainText: string) {
+    const pw = this.getLoginKey();
+    const hash = CryptoJS.SHA3(window.btoa(pw)).toString()
+    return CryptoJS.AES.encrypt(plainText, hash).toString(CryptoJS.enc.Utf8);
+  }
+
+  decryptMessage(citherText: string) {
+    const pw = this.getLoginKey();
+    const hash = CryptoJS.SHA3(window.btoa(pw)).toString()
+    return CryptoJS.AES.decrypt(citherText, hash).toString(CryptoJS.enc.Utf8);
+  }
 }

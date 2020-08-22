@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewChecked } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { interval, Subscription } from 'rxjs';
+import { interval, Subscription, VirtualTimeScheduler } from 'rxjs';
 
 import { RecieveChat, SendChat } from '../chatObject';
 
@@ -24,6 +24,7 @@ export class ChatComponent implements OnInit {
   messageContainer: string;
   getNewChatMessagesInterval: Subscription;
   checkForUpdatedMessagesInterval: Subscription;
+  newChatMessagesCount: number;
 
   showEmojiPicker = false;
   sets = [
@@ -48,13 +49,20 @@ export class ChatComponent implements OnInit {
     this.content = '';
     this.rows = 1;
     this.messageContainer = '.messagesContainer';
+    this.chatMessages = [];
 
-    this.chatService.chatMessages.subscribe(val => {
-      this.chatMessages = val;
+    this.chatService.chatMessages.subscribe(chatMessages => {
+      this.chatMessages = chatMessages;
+    })
+
+    this.chatService.newChatMessagesCount.subscribe(newChatMessagesCount => {
+      this.newChatMessagesCount = newChatMessagesCount;
     })
   }
 
   ngOnInit(): void {
+    this.newChatMessagesCount = 0;
+
     if (!this.loginHelper.checkPersonSelected()) {
       this.loginHelper.setPerson();
     }
@@ -62,6 +70,8 @@ export class ChatComponent implements OnInit {
 
     this.getNewChatMessagesInterval = interval(this.secsToMilliSecs(20)).subscribe(x => this.chatService.getNewChatMessages());
     this.checkForUpdatedMessagesInterval = interval(this.minsToMilliSecs(5)).subscribe(x => this.chatService.checkForUpdatedMessages());
+
+    this.registerTabSwitch();
   }
 
   ngDoCheck() {
@@ -70,11 +80,11 @@ export class ChatComponent implements OnInit {
       this.scrollToBottom();
   }
 
-  secsToMilliSecs = (seconds) => { return seconds * 1000 };
-
-  minsToMilliSecs = (minutes) => { return this.secsToMilliSecs(minutes * 60) };
-
-  hoursToMilliSecs = (hours) => { return this.minsToMilliSecs(hours * 60) };
+  registerTabSwitch() {
+    window.addEventListener('blur', () => {
+      this.chatService.newChatMessagesCount.next(0);
+     })
+  }
 
   postMessage(event) {
     event.srcElement.parentElement.querySelector('input').value = "";
@@ -83,6 +93,7 @@ export class ChatComponent implements OnInit {
 
     this.chatService.sendChatMessage(newMessage).subscribe((chatMessage) => {
       this.chatMessages.push(chatMessage);
+      this.messageService.add(` • Posted chat message id ${chatMessage.Id}.`);
     });
 
     this.content = "";
@@ -123,4 +134,12 @@ export class ChatComponent implements OnInit {
       this.router.navigate(['login']);
     }
   }
+
+  //helpers
+
+  secsToMilliSecs = (seconds) => { return seconds * 1000 };
+
+  minsToMilliSecs = (minutes) => { return this.secsToMilliSecs(minutes * 60) };
+
+  hoursToMilliSecs = (hours) => { return this.minsToMilliSecs(hours * 60) };
 }

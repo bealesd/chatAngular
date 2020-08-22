@@ -15,6 +15,10 @@
   </button>
 </div>
 
+<div class="messageCount">
+    New Messages: {{newChatMessagesCount}}
+</div>
+
 <div class="modal" *ngIf="showEmojiPicker">
     <button (click)="toggleEmojiPicker()">close</button>
     <emoji-mart class="emoji-mart" set="{{set}}" *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)" title="Pick your emoji…"></emoji-mart>

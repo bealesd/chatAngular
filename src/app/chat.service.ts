@@ -15,6 +15,7 @@ import { ChatRepo } from './chatRepo'
 })
 export class ChatService {
   public chatMessages = new BehaviorSubject<RecieveChat[]>([]);
+  public newChatMessagesCount = new BehaviorSubject<number>(0);
 
   constructor(private messageService: MessageService, private chatRepo: ChatRepo) {
   }
@@ -40,9 +41,20 @@ export class ChatService {
 
     this.chatRepo.getNewChatMessages(id)
       .subscribe((chatMessages: RecieveChat[]) => {
-        if (chatMessages !== null || chatMessages !== undefined || chatMessages.length > 0)
+        if (chatMessages === null || chatMessages === undefined || chatMessages.length === 0) {
+          this.messageService.add(` • No new messages.`);
+          return;
+        }
+
+        else {
+          let currentMessagesCount = this.newChatMessagesCount.getValue();
+          let newMessageCount = chatMessages.length;
+          this.newChatMessagesCount.next(currentMessagesCount + newMessageCount);
+          this.messageService.add(` • ${newMessageCount} new message${newMessageCount > 1 ? 's' : ''}.`);
+
           currentChatMessages.push(...chatMessages);
-        this.chatMessages.next(currentChatMessages);
+          this.chatMessages.next(currentChatMessages);
+        }
       });
   }
 
@@ -84,28 +96,39 @@ export class ChatService {
   }
 
   softDeleteChatMessage(id: number, deleteFlag: boolean): void {
-    this.messageService.add(`Marking chat message as ${deleteFlag ? 'deleted' : 'not deleted'}.`);
+    this.messageService.add(`Marking chat message id ${id} as ${deleteFlag ? 'deleted' : 'not deleted'}.`);
 
     const currentChatMessages = this.chatMessages.getValue();
     const currentChatMessage = currentChatMessages.find(chat => chat.Id === id);
 
     this.chatRepo.softDeleteMessage(currentChatMessage, deleteFlag).subscribe((chatMessage: RecieveChat) => {
-      if (chatMessage !== undefined || chatMessage !== null)
+      if (chatMessage !== undefined && chatMessage !== null) {
         Object.assign(currentChatMessage, chatMessage);
+        this.messageService.add(` • Message id ${id} marked: ${deleteFlag ? 'deleted' : 'not deleted'}.`);
+      }
+      else {
+        this.messageService.add(` • Message id ${id} delete flag could not be updated.`);
+      }
+
       this.chatMessages.next(currentChatMessages);
     });
   }
 
 
   hardDeleteChatMessage(id: number): void {
-    this.messageService.add('Marking chat message as deleted.');
+    this.messageService.add(`Deleting message id ${id}.`);
 
     let currentChatMessages = this.chatMessages.getValue();
     const currentChatMessage = currentChatMessages.find(chat => chat.Id === id);
 
     this.chatRepo.hardDeleteMessage(currentChatMessage).subscribe((chatMessage: RecieveChat) => {
-      if (chatMessage !== undefined || chatMessage !== null)
+      if (chatMessage !== undefined && chatMessage !== null) {
+        this.messageService.add(` • Message id ${id} deleted.`);
         currentChatMessages = currentChatMessages.filter((chat) => chat.Id !== id);
+      }
+      else {
+        this.messageService.add(` • Message id ${id} could not be deleted.`);
+      }
 
       this.chatMessages.next(currentChatMessages);
     });

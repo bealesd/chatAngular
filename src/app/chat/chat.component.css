@@ -19,6 +19,20 @@
     display: none;
 }
 
+.messageCount {
+    display: inline-block;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 50px;
+    border: 1px solid pink;
+    border-radius: 5px;
+    width: 200px;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: gray;
+}
+
 .valid {
     border-left: 5px solid #42A948;
 }

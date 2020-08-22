@@ -3,9 +3,8 @@
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.5.
 
 # TODO
-1. messages since you've left the tab, or highlight messages that are new
 2. have a look at the crypto js compile warnings
-3. Encrypt all message as github will be public
+3. Encrypt all message as github will be public. Cast all REST to <any>, then pipe for casting.
 
 ## Development server
 

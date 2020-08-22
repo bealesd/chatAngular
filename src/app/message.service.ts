@@ -7,7 +7,8 @@ export class MessageService {
   messages: string[] = [];
 
   add(message: string) {
-    this.messages.unshift(`${new Date().toLocaleString()} - ${message}`);
+     this.messages.push(`${new Date().toLocaleString()} - ${message}`);
+    // this.messages.unshift(`${new Date().toLocaleString()} - ${message}`);
   }
 
   clear() {

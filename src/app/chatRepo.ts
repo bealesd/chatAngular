@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
-import { Observable, of, from, forkJoin, zip } from 'rxjs';
-import { catchError, map, tap, retry, switchMap, toArray, filter, mergeMap } from 'rxjs/operators';
+import { Observable, of, forkJoin, } from 'rxjs';
+import { catchError, map, tap, retry, mergeMap, defaultIfEmpty } from 'rxjs/operators';
 
 import { MessageService } from './message.service';
 import { RecieveChat, SendChat } from './chatObject'
@@ -43,7 +43,7 @@ export class ChatRepo {
 
   attemptLogin = (): Observable<GitHubMetaData[]> => {
     return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options()).pipe(
-      catchError(this.handleError<GitHubMetaData[]>('Could not get chat messages metdata.', undefined))
+      catchError(this.handleError<GitHubMetaData[]>('Could not get chat messages metdata for login.', undefined))
     )
   }
 
@@ -90,9 +90,11 @@ export class ChatRepo {
           return chatUrls;
         }),
         mergeMap((chatUrls) => {
-          return forkJoin(chatUrls);
+          return forkJoin(chatUrls).pipe(
+            defaultIfEmpty(null),
+          );
         }),
-        catchError(this.handleError<RecieveChat[]>('Could not get new chat messgaes.', []))
+        catchError(this.handleError<RecieveChat[]>('Could not get new chat messages.', []))
       ).pipe(
         map((results: RecieveChat[]) => {
           return results;
@@ -104,11 +106,8 @@ export class ChatRepo {
     return this.http.get<RecieveChat>(`${this.baseRawMessagesUrl}/id_${id}.json`, this.options())
       .pipe(
         retry(10),
-        tap(x => x === null || x === undefined ?
-          this.log('fetched new chats') :
-          this.log('no new chat messages found')
-        ),
-        catchError(this.handleError<RecieveChat>('Could not get updated message.', null))
+        tap(x => x === null || x === undefined ? this.log(`Message id ${x.Id} updated.`) : null),
+        catchError(this.handleError<RecieveChat>(`Could not check for updated message, id ${id}.`, null))
       );
   }
 
@@ -143,7 +142,7 @@ export class ChatRepo {
     const postUrl = this.baseMessagesUrl + `/id_${message.Id}.json`;
 
     const newMessage = <SendChat>message;
-    newMessage.Deleted = deleteFlag ? 'true': 'false';
+    newMessage.Deleted = deleteFlag ? 'true' : 'false';
 
     const rawCommitBody = JSON.stringify({
       'message': `Api commit by ${newMessage.Who} at ${new Date().toLocaleString()}`,
@@ -158,7 +157,7 @@ export class ChatRepo {
           message.Sha = metadata.sha;
           return <RecieveChat>message;
         }),
-        catchError(this.handleError<RecieveChat>('Could not update delete flag.', null))
+        catchError(this.handleError<RecieveChat>(`Could not update delete flag, message id ${message.Id}.`, null))
       );
   }
 
@@ -170,9 +169,9 @@ export class ChatRepo {
     }
     const rawCommitBody = JSON.stringify(commitBody);
 
-    return this.http.request('delete', deletetUrl, { body: rawCommitBody, headers: this.options().headers } )
+    return this.http.request('delete', deletetUrl, { body: rawCommitBody, headers: this.options().headers })
       .pipe(
-        catchError(this.handleError<string>('Could not delete message.'))
+        catchError(this.handleError<string>(`Could not delete message id ${message.Id}.`))
       );
   }
 
