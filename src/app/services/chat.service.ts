@@ -1,13 +1,14 @@
-import { GitHubMetaData } from './gitHubMetaData';
+import { GitHubMetaData } from '../gitHubMetaData';
 import { Injectable } from '@angular/core';
 
 import { Observable, BehaviorSubject } from 'rxjs';
 
-import { MessageService } from './message.service';
+import { MessageService } from '../services/message.service';
 
-import { RecieveChat, SendChat } from './chatObject'
+import { RecieveChat } from '../models/recieve-chat.model';
+import { SendChat } from '../models/send-chat.model';
 
-import { ChatRepo } from './chatRepo'
+import { ChatRepo } from './chat.repo'
 
 
 @Injectable({
@@ -86,6 +87,15 @@ export class ChatService {
   }
 
   sendChatMessage(chatMessage: SendChat): Observable<RecieveChat> {
+    if (chatMessage.Content === "" || chatMessage.Content === null || chatMessage.Content === undefined) {
+      this.messageService.add(`Please enter a message before posting.`);
+      return;
+    }
+    else if (chatMessage.Who === "" || chatMessage.Who === null || chatMessage.Who === undefined) {
+      this.messageService.add(`Unknown message sender.`);
+      return;
+    }
+
     this.messageService.add('Posting chat message.');
 
     const currentChatMessages = this.chatMessages.getValue();

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { ChatService } from './../chat.service';
-import { MessageService } from './../message.service';
+import { ChatService } from '../services/chat.service';
+import { MessageService } from '../services/message.service';
 
-import { CryptoService } from '../auth/cryptoService';
+import { CryptoService } from '../services/crypto.service';
 import { LoginHelper } from './loginHelper';
 
 @Component({

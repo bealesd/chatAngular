@@ -1,20 +1,21 @@
 import { Component, OnInit, AfterViewChecked } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { interval, Subscription, VirtualTimeScheduler } from 'rxjs';
+import { interval, Subscription } from 'rxjs';
 
-import { RecieveChat, SendChat } from '../chatObject';
+import { RecieveChat } from '../models/recieve-chat.model';
+import { SendChat } from '../models/send-chat.model';
 
-import { ChatService } from './../chat.service';
-import { MessageService } from './../message.service';
+import { ChatService } from '../services/chat.service';
+import { MessageService } from '../services/message.service';
 
-import { CryptoService } from '../auth/cryptoService';
+import { CryptoService } from '../services/crypto.service';
 import { LoginHelper } from '../login/loginHelper'
 
 @Component({
   selector: 'app-chat',
-  templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.css']
+  templateUrl: './chat-main.component.html',
+  styleUrls: ['./chat-main.component.css']
 })
 export class ChatComponent implements OnInit {
   chatMessages: RecieveChat[];
@@ -83,11 +84,16 @@ export class ChatComponent implements OnInit {
   registerTabSwitch() {
     window.addEventListener('blur', () => {
       this.chatService.newChatMessagesCount.next(0);
-     })
+    })
   }
 
   postMessage(event) {
     event.srcElement.parentElement.querySelector('input').value = "";
+
+    if (this.content === "" || this.content === null || this.content === undefined) {
+      this.messageService.add(`Please enter a message before posting.`);
+      return;
+    }
 
     const newMessage = <SendChat>{ Who: this.loginHelper.who, Content: this.content }
 

@@ -1,4 +1,4 @@
-import { EventService } from './eventService';
+import { EventService } from './event.service';
 
 export class DialogBoxService {
   eventService: EventService;

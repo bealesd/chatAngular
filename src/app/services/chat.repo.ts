@@ -3,11 +3,12 @@ import { Injectable } from '@angular/core';
 import { Observable, of, forkJoin, } from 'rxjs';
 import { catchError, map, tap, retry, mergeMap, defaultIfEmpty } from 'rxjs/operators';
 
-import { MessageService } from './message.service';
-import { RecieveChat, SendChat } from './chatObject'
-import { GitHubMetaData } from './gitHubMetaData'
+import { MessageService } from '../services/message.service';
+import { RecieveChat } from '../models/recieve-chat.model';
+import { SendChat } from '../models/send-chat.model';
+import { GitHubMetaData } from '../gitHubMetaData'
 
-import { CryptoService } from './auth/cryptoService';
+import { CryptoService } from './crypto.service';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
@@ -15,8 +16,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   providedIn: 'root'
 })
 export class ChatRepo {
-  private baseMessagesUrl = 'https://api.github.com/repos/bealesd/tempStore/contents';
-  private baseRawMessagesUrl = 'https://raw.githubusercontent.com/bealesd/tempStore/master';
+  private baseMessagesUrl = 'https://api.github.com/repos/bealesd/chatStore/contents';
+  private baseRawMessagesUrl = 'https://raw.githubusercontent.com/bealesd/chatStore/master';
 
   constructor(
     private cryptoService: CryptoService,

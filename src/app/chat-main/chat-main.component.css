@@ -42,8 +42,8 @@
 }
 
 .btn-disable {
-    cursor: not-allowed;
-    pointer-events: none;
+    cursor: no-drop !important;
+    /* pointer-events: none; */
     background-color: #a94442;
     border: 1px solid green;
     color: white;
@@ -51,7 +51,6 @@
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    cursor: pointer;
 }
 
 input {
