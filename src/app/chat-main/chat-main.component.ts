@@ -1,5 +1,4 @@
-import { Component, OnInit, AfterViewChecked } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 
 import { interval, Subscription } from 'rxjs';
 
@@ -9,7 +8,6 @@ import { SendChat } from '../models/send-chat.model';
 import { ChatService } from '../services/chat.service';
 import { MessageService } from '../services/message.service';
 
-import { CryptoService } from '../services/crypto.service';
 import { LoginHelper } from '../login/loginHelper'
 
 @Component({
@@ -43,8 +41,6 @@ export class ChatComponent implements OnInit {
   constructor(
     private chatService: ChatService,
     private messageService: MessageService,
-    private cryptoService: CryptoService,
-    private router: Router,
     private loginHelper: LoginHelper
   ) {
     this.content = '';
@@ -54,7 +50,7 @@ export class ChatComponent implements OnInit {
 
     this.chatService.chatMessages.subscribe(chatMessages => {
       this.chatMessages = chatMessages;
-    })
+    });
 
     this.chatService.newChatMessagesCount.subscribe(newChatMessagesCount => {
       this.newChatMessagesCount = newChatMessagesCount;
@@ -127,18 +123,6 @@ export class ChatComponent implements OnInit {
     chatMessage.value = chatMessage.value + emoji;
     this.content = chatMessage.value;
     this.showEmojiPicker = false;
-  }
-
-  logout() {
-    if (confirm('Do you want to logout?')) {
-      this.cryptoService.logout();
-
-      this.getNewChatMessagesInterval.unsubscribe();
-      this.checkForUpdatedMessagesInterval.unsubscribe();
-
-      this.messageService.add('Logged out.');
-      this.router.navigate(['login']);
-    }
   }
 
   //helpers

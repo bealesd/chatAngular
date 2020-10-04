@@ -30,3 +30,7 @@ label {
     font-size: 30px;
     color: var(--main-header-font-color);
 }
+
+#usernameContainer h4{
+     padding-top: 5px;
+}

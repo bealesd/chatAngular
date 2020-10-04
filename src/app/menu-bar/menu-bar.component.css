@@ -1,0 +1,9 @@
+.disabled-menu-item div{
+    color:red!important;
+    background-color: red;
+}
+
+.disabled-menu-item:hover{
+    cursor: none!important;
+    background-color: none!important;
+}
