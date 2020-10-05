@@ -103,87 +103,14 @@ export class CalendarRepo {
       )
   }
 
-  checkForUpdatedMessage(id: number): Observable<RecieveChat> {
-    return this.http.get<RecieveChat>(`${this.baseRawMessagesUrl}/id_${id}.json`, this.options())
-      .pipe(
-        retry(10),
-        tap(x => x === null || x === undefined ? this.log(`Message id ${x.Id} updated.`) : null),
-        catchError(this.handleError<RecieveChat>(`Could not check for updated message, id ${id}.`, null))
-      );
-  }
-
-  postMessage(message: SendChat): Observable<RecieveChat> {
-    const postUrl = this.baseMessagesUrl + `/id_${message.Id}.json`;
-
-    const newMessage: RecieveChat = {
-      Who: message.Who,
-      Content: message.Content,
-      Deleted: 'false',
-      Id: message.Id,
-      Datetime: new Date().getTime()
-    }
-
-    const rawCommitBody = JSON.stringify({
-      "message": `Api commit by ${message.Who} at ${new Date().toLocaleString()}`,
-      "content": btoa(JSON.stringify(newMessage))
-    })
-
-    return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.options())
-      .pipe(
-        map((result: { content: GitHubMetaData }) => {
-          let metadata = <GitHubMetaData>result['content'];
-          newMessage.Sha = metadata.sha;
-          return <RecieveChat>newMessage;
-        }),
-        catchError(this.handleError<RecieveChat>('Could not post message.', null))
-      );
-  }
-
-  softDeleteMessage(message: RecieveChat, deleteFlag: boolean): Observable<RecieveChat> {
-    const postUrl = this.baseMessagesUrl + `/id_${message.Id}.json`;
-
-    const newMessage = <SendChat>message;
-    newMessage.Deleted = deleteFlag ? 'true' : 'false';
-
-    const rawCommitBody = JSON.stringify({
-      'message': `Api commit by ${newMessage.Who} at ${new Date().toLocaleString()}`,
-      'content': btoa(JSON.stringify(newMessage)),
-      'sha': message.Sha
-    })
-
-    return this.http.put(postUrl, rawCommitBody, this.options())
-      .pipe(
-        map((result: { content: GitHubMetaData }) => {
-          let metadata = result.content;
-          message.Sha = metadata.sha;
-          return <RecieveChat>message;
-        }),
-        catchError(this.handleError<RecieveChat>(`Could not update delete flag, message id ${message.Id}.`, null))
-      );
-  }
-
-  hardDeleteMessage(message: RecieveChat): Observable<any> {
-    const deletetUrl = this.baseMessagesUrl + `/id_${message.Id}.json`;
-    const commitBody = {
-      "message": `Api delete commit by ${message.Who} at ${new Date().toLocaleString()}`,
-      "sha": `${message.Sha}`
-    }
-    const rawCommitBody = JSON.stringify(commitBody);
-
-    return this.http.request('delete', deletetUrl, { body: rawCommitBody, headers: this.options().headers })
-      .pipe(
-        catchError(this.handleError<string>(`Could not delete message id ${message.Id}.`))
-      );
-  }
-
-  private handleError<T>(operation = 'operation', result?: T) {
+  // helpers
+  // todo - if auth error, go to login page?
+   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       this.log(`Failed REST request. ${operation} ${error.message}.`);
       return of(result as T);
     }
   }
-
-  // helpers
 
   idExtractor = (fileName: string): number =>
     parseInt(fileName.match(/[0-9]{1,100000}/)[0]);
@@ -196,6 +123,8 @@ export class CalendarRepo {
 
   getChatsFromEnd = (chatMessagesMetaData: GitHubMetaData[], fromEnd: number): GitHubMetaData[] =>
     chatMessagesMetaData.slice(Math.max(chatMessagesMetaData.length - fromEnd, 0));
+
+// name will be id_yyyy_mm_dd.json
 
   removeUrlParams = (rawUrl: string) =>
     new URL(rawUrl).origin + new URL(rawUrl).pathname;
