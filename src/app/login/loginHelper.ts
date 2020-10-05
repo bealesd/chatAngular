@@ -12,6 +12,7 @@ export class LoginHelper {
   ) {
     this.names = ['Esther', 'David'];
   }
+  
   changePerson(person) {
     this.who = person;
     this.updatePerson(person);
@@ -21,7 +22,6 @@ export class LoginHelper {
       document.body.classList.add('dark');
     else
       document.body.classList.add('light');
-
   }
 
   updatePerson(chatPerson) {

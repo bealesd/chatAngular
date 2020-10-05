@@ -17,6 +17,7 @@ import { ChatRepo } from './chat.repo'
 export class ChatService {
   public chatMessages = new BehaviorSubject<RecieveChat[]>([]);
   public newChatMessagesCount = new BehaviorSubject<number>(0);
+  public loggedIn = new BehaviorSubject<boolean>(false);
 
   constructor(private messageService: MessageService, private chatRepo: ChatRepo) {
   }
@@ -62,6 +63,25 @@ export class ChatService {
   login(type: string): Observable<GitHubMetaData[]> {
     this.messageService.add(`${type} Login attempt.`);
     return this.chatRepo.attemptLogin();
+  }
+
+  // TODO - move to login service
+  tryLogin(type: string) {
+    this.messageService.add(`${type} Login attempt.`);
+
+    this.chatRepo.attemptLogin().subscribe((result) => {
+      if (result === undefined) {
+        this.messageService.add('Login failure.');
+        this.loggedIn.next(false);
+      }
+      else {
+        this.messageService.add('Login complete.');
+        this.loggedIn.next(true);
+      }
+    }, error => {
+      this.messageService.add('Login failure.');
+      this.loggedIn.next(false);
+    });
   }
 
   checkForUpdatedMessages(): void {
