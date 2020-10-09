@@ -1,7 +1,7 @@
 import { GitHubMetaData } from '../gitHubMetaData';
 import { Injectable } from '@angular/core';
 
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, ObjectUnsubscribedError, Subscription } from 'rxjs';
 
 import { MessageService } from '../services/message.service';
 
@@ -9,21 +9,66 @@ import { RecieveChat } from '../models/recieve-chat.model';
 import { SendChat } from '../models/send-chat.model';
 
 import { ChatRepo } from './chat.repo'
-
+import { CalendarRepo } from './calendar.repo'
+import * as uuid from 'uuid';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
   public chatMessages = new BehaviorSubject<RecieveChat[]>([]);
+  public calendarRecords = new BehaviorSubject<any>({});
   public newChatMessagesCount = new BehaviorSubject<number>(0);
   public loggedIn = new BehaviorSubject<boolean>(false);
 
-  constructor(private messageService: MessageService, private chatRepo: ChatRepo) {
+  constructor(private messageService: MessageService, private chatRepo: ChatRepo, private calendarRepo: CalendarRepo) {
+  }
+
+  postRecord(year, month, record): void {
+    const calendarRecords = this.calendarRecords.getValue();
+    if (!calendarRecords.hasOwnProperty(`${year}-${month}`)) {
+      calendarRecords[`${year}-${month}`] = [];
+    }
+    const calendarRecordsForMonth = calendarRecords[`${year}-${month}`];
+    calendarRecordsForMonth.push(record);
+
+    this.calendarRepo.postCalendarRecords(year, month, calendarRecordsForMonth).subscribe(
+      {
+        next: (calendarRecord: any[]) => {
+          console.log(calendarRecord);
+
+        },
+        error: (data: any) => {
+          console.log(data)
+        }
+      }
+    );
   }
 
   getChatMessages(): void {
     this.messageService.add('Fetching last 10 messages.');
+
+    this.calendarRepo.getCalendarRecordsForMonth(2020, 10).subscribe(
+      {
+        next: (calendarRecord: any[]) => {
+          console.log(calendarRecord);
+          '{}'
+          this.calendarRecords.next(calendarRecord);
+
+          this.postRecord(2020, 6, {
+            'message': 'work',
+            'day': '14',
+            'hour': '7',
+            'minute': '30',
+            'id': uuid.v4()
+          })
+
+        },
+        error: (data: any) => {
+          console.log(data)
+        }
+      }
+    );
 
     this.chatRepo.getLastTen()
       .subscribe((chatMessages: RecieveChat[]) => {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Observable, of, forkJoin, } from 'rxjs';
+import { Observable, of, forkJoin, BehaviorSubject, Subscriber, interval } from 'rxjs';
 import { catchError, map, tap, retry, mergeMap, defaultIfEmpty } from 'rxjs/operators';
 
 import { MessageService } from './message.service';
@@ -36,76 +36,54 @@ export class CalendarRepo {
     }
   }
 
-  getMessageListings = (): Observable<GitHubMetaData[]> => {
+  getCalendarListings = (): Observable<GitHubMetaData[]> => {
     return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options()).pipe(
-      catchError(this.handleError<GitHubMetaData[]>('Could not get chat messages metdata.', []))
+      catchError(this.handleError<GitHubMetaData[]>('Could not get calendar messages metdata.', []))
     )
   }
 
   attemptLogin = (): Observable<GitHubMetaData[]> => {
     return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options()).pipe(
-      catchError(this.handleError<GitHubMetaData[]>('Could not get chat messages metdata for login.', undefined))
+      catchError(this.handleError<GitHubMetaData[]>('Could not get calendar messages metdata for login.', undefined))
     )
   }
 
-  getLastTen(): Observable<RecieveChat[]> {
-    const idShaLookup = {};
-    return this.getMessageListings()
-      .pipe(
-        map((messagesMetaData: GitHubMetaData[]) => {
-          messagesMetaData = this.getChatsFromEnd(this.sortByName(messagesMetaData), 10);
-          const chatUrls = [];
-          for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
-            const messageMetaData = messagesMetaData[i];
-            idShaLookup[this.idExtractor(messageMetaData.name)] = messageMetaData.sha;
-            chatUrls.push(this.http.get<RecieveChat>(this.removeUrlParams(messageMetaData.download_url)));
-          }
-          return chatUrls;
-        }),
-        mergeMap((chatUrls) => {
-          return forkJoin(chatUrls);
-        }),
-        catchError(this.handleError<RecieveChat[]>('Could not get last 10 chat messgaes.', []))
-      ).pipe(
-        map((results: RecieveChat[]) => {
-          results.map((chat) => { chat.Sha = idShaLookup[chat.Id]; });
-          return results;
-        })
-      )
+  getCalendarRecordsForMonth(year: number, month: number): Observable<any> {
+    const getUrl = `${this.baseRawMessagesUrl}/${year}-${month}.json`;
+    //"https://raw.githubusercontent.com/bealesd/chatStore/master/id_1.json
+    return this.http.get<[]>(this.removeUrlParams(getUrl));
+    // return this.getCalendarListings().pipe(
+    //   map((calendarListing: GitHubMetaData[]) => {
+    //     const calenderUrls = [];
+    //     calendarListing.forEach((calendarListing: GitHubMetaData) => {
+    //       const listingArray = calendarListing.name.split('_');
+    //       const listingYear = parseInt(listingArray[1]);
+    //       const listingMonth = parseInt(listingArray[2]);
+    //       if (listingYear === year && listingMonth === month) {
+    //         calenderUrls.push(this.http.get<any>(this.removeUrlParams(calendarListing.download_url)));
+    //       }
+    //     })
+    //     return calenderUrls
+    //   }), mergeMap((calenderUrls) => {
+    //     return forkJoin(calenderUrls);
+    //   })
+    // )
   }
 
-  getNewChatMessages(lastId: number): Observable<RecieveChat[]> {
-    if (lastId === null)
-      return this.getLastTen();
+  postCalendarRecords(year, month, calendarRecords: any): Observable<any> {
+    const postUrl = `${this.baseMessagesUrl}/${calendarRecords.year}-${calendarRecords.month}.json`;
 
-    return this.getMessageListings()
-      .pipe(
-        map((messagesMetaData: GitHubMetaData[]) => {
-          messagesMetaData = this.sortByName(messagesMetaData);
-          const calenderUrls = [];
-          for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
-            const messageMetaData = messagesMetaData[i];
-            if (this.idExtractor(messageMetaData.name) > lastId)
-              calenderUrls.push(this.http.get<RecieveChat>(this.removeUrlParams(messageMetaData.download_url)));
-          }
-          return calenderUrls;
-        }),
-        mergeMap((chatUrls) => {
-          return forkJoin(chatUrls).pipe(
-            defaultIfEmpty(null),
-          );
-        }),
-        catchError(this.handleError<RecieveChat[]>('Could not get new chat messages.', []))
-      ).pipe(
-        map((results: RecieveChat[]) => {
-          return results;
-        })
-      )
+    const rawCommitBody = JSON.stringify({
+      "message": `Api commit by calendar record wesbite at ${new Date().toLocaleString()}`,
+      "content": btoa(JSON.stringify(calendarRecords.records))
+    });
+
+    return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.options());
   }
 
   // helpers
   // todo - if auth error, go to login page?
-   private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       this.log(`Failed REST request. ${operation} ${error.message}.`);
       return of(result as T);
@@ -115,16 +93,21 @@ export class CalendarRepo {
   idExtractor = (fileName: string): number =>
     parseInt(fileName.match(/[0-9]{1,100000}/)[0]);
 
-  fileNameFilter = (chatMessagesMetaData: GitHubMetaData[]): GitHubMetaData[] =>
-    chatMessagesMetaData.filter(metdata => metdata['name'].match(/id_[0-9]{1,100000}\.json/));
+  fileNameFilter(chatMessagesMetaData: GitHubMetaData[]): GitHubMetaData[] {
+    return chatMessagesMetaData.filter((metdata: GitHubMetaData) => {
+      metdata.name.match(/id_[0-9]{1,100000}\.json/)
+    });
+
+    // return chatMessagesMetaData.filter(metdata => metdata['name'].match(/id_[0-9]{1,100000}\.json/));
+  }
 
   sortByName = (chatMessagesMetaData: GitHubMetaData[]): GitHubMetaData[] =>
-    this.fileNameFilter(chatMessagesMetaData).sort((a, b) => this.idExtractor(a['name']) - this.idExtractor(b['name']));
+    this.fileNameFilter(chatMessagesMetaData).sort((a: GitHubMetaData, b: GitHubMetaData) => this.idExtractor(a.name) - this.idExtractor(b.name));
 
   getChatsFromEnd = (chatMessagesMetaData: GitHubMetaData[], fromEnd: number): GitHubMetaData[] =>
     chatMessagesMetaData.slice(Math.max(chatMessagesMetaData.length - fromEnd, 0));
 
-// name will be id_yyyy_mm_dd.json
+  // name will be id_yyyy_mm_dd.json
 
   removeUrlParams = (rawUrl: string) =>
     new URL(rawUrl).origin + new URL(rawUrl).pathname;
