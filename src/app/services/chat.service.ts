@@ -1,4 +1,5 @@
-import { GitHubMetaData } from '../gitHubMetaData';
+import { GitHubMetaData } from './../gitHubMetaData';
+
 import { Injectable } from '@angular/core';
 
 import { Observable, BehaviorSubject, ObjectUnsubscribedError, Subscription } from 'rxjs';
@@ -17,25 +18,49 @@ import * as uuid from 'uuid';
 })
 export class ChatService {
   public chatMessages = new BehaviorSubject<RecieveChat[]>([]);
+
+  // {'2020-6': {'sha': 'sha', 'records': []}}
   public calendarRecords = new BehaviorSubject<any>({});
+
   public newChatMessagesCount = new BehaviorSubject<number>(0);
   public loggedIn = new BehaviorSubject<boolean>(false);
 
   constructor(private messageService: MessageService, private chatRepo: ChatRepo, private calendarRepo: CalendarRepo) {
   }
 
-  postRecord(year, month, record): void {
+  postCalendarRecord(year, month, record): void {
     const calendarRecords = this.calendarRecords.getValue();
-    if (!calendarRecords.hasOwnProperty(`${year}-${month}`)) {
-      calendarRecords[`${year}-${month}`] = [];
-    }
-    const calendarRecordsForMonth = calendarRecords[`${year}-${month}`];
-    calendarRecordsForMonth.push(record);
+    let isUpdate = false;
 
-    this.calendarRepo.postCalendarRecords(year, month, calendarRecordsForMonth).subscribe(
+    if (!calendarRecords.hasOwnProperty(`${year}-${month}`)) {
+      calendarRecords[`${year}-${month}`] = { 'records': [], 'sha': '' };
+    }
+    else {
+      isUpdate = calendarRecords[`${year}-${month}`].records.find(r => r.id === record.id) !== undefined;
+    }
+
+    if (isUpdate) {
+      calendarRecords[`${year}-${month}`].records.forEach((r) => {
+        if (r.id === record.id) {
+          r.message = record.message;
+          r.month = record.month;
+          r.day = record.day;
+          r.hour = record.hour;
+          r.minute = record.minute;
+        }
+      })
+    }
+
+    const calendarRecordsForMonth = calendarRecords[`${year}-${month}`];
+    calendarRecordsForMonth.records.push(record);
+
+    this.calendarRepo.postCalendarRecords(year, month, calendarRecordsForMonth.records, calendarRecordsForMonth.sha).subscribe(
       {
-        next: (calendarRecord: any[]) => {
-          console.log(calendarRecord);
+        next: (calendarRecordsResult: any[]) => {
+          const sha = (<any>calendarRecordsResult).content.sha;
+          calendarRecordsForMonth.sha = sha;
+
+          console.log(calendarRecords);
 
         },
         error: (data: any) => {
@@ -45,22 +70,29 @@ export class ChatService {
     );
   }
 
+
   getChatMessages(): void {
     this.messageService.add('Fetching last 10 messages.');
-
-    this.calendarRepo.getCalendarRecordsForMonth(2020, 10).subscribe(
+    const year = 2020;
+    const month = 6;
+    this.calendarRepo.getCalendarRecordsForMonth(year, month).subscribe(
       {
-        next: (calendarRecord: any[]) => {
+        next: (calendarRecord: any) => {
           console.log(calendarRecord);
-          '{}'
-          this.calendarRecords.next(calendarRecord);
 
-          this.postRecord(2020, 6, {
-            'message': 'work',
-            'day': '14',
-            'hour': '7',
-            'minute': '30',
-            'id': uuid.v4()
+          const calendarRecords = this.calendarRecords.getValue();
+          calendarRecords[`${year}-${month}`] = {
+            'sha': calendarRecord.sha,
+            'records': JSON.parse(atob(calendarRecord.content))
+          }
+          this.calendarRecords.next(calendarRecords);
+
+          this.postCalendarRecord(2020, 6, {
+            'message': 'fun',
+            'day': '19',
+            'hour': '9',
+            'minute': '10',
+            'id': "ce229616-c50b-4902-ac92-1bbaad8ef8ce"
           })
 
         },

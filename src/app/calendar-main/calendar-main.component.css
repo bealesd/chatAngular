@@ -1,0 +1,9 @@
+.weekdayName-names-contianer {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.weekdayName-names-contianer div {
+    grid-row: 1;
+    grid-column: auto;
+}

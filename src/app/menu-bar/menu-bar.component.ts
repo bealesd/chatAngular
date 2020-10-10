@@ -62,9 +62,14 @@ It is serverless, thanks to GitHub API.`
 
     document.querySelector('#chat-click').addEventListener('click', () => {
       this.closeMenu();
-      
       this.router.navigate(['chat']);
     });
+
+    document.querySelector('#calendar-click').addEventListener('click', () => {
+      this.closeMenu();
+      this.router.navigate(['calendar']);
+    });
+
     // this.router.routeReuseStrategy.shouldReuseRoute = () => { return false; }
     // this.router.onSameUrlNavigation = 'reload';
   }

@@ -49,33 +49,17 @@ export class CalendarRepo {
   }
 
   getCalendarRecordsForMonth(year: number, month: number): Observable<any> {
-    const getUrl = `${this.baseRawMessagesUrl}/${year}-${month}.json`;
-    //"https://raw.githubusercontent.com/bealesd/chatStore/master/id_1.json
+    const getUrl = `${this.baseMessagesUrl}/${year}-${month}.json`;
     return this.http.get<[]>(this.removeUrlParams(getUrl));
-    // return this.getCalendarListings().pipe(
-    //   map((calendarListing: GitHubMetaData[]) => {
-    //     const calenderUrls = [];
-    //     calendarListing.forEach((calendarListing: GitHubMetaData) => {
-    //       const listingArray = calendarListing.name.split('_');
-    //       const listingYear = parseInt(listingArray[1]);
-    //       const listingMonth = parseInt(listingArray[2]);
-    //       if (listingYear === year && listingMonth === month) {
-    //         calenderUrls.push(this.http.get<any>(this.removeUrlParams(calendarListing.download_url)));
-    //       }
-    //     })
-    //     return calenderUrls
-    //   }), mergeMap((calenderUrls) => {
-    //     return forkJoin(calenderUrls);
-    //   })
-    // )
   }
 
-  postCalendarRecords(year, month, calendarRecords: any): Observable<any> {
-    const postUrl = `${this.baseMessagesUrl}/${calendarRecords.year}-${calendarRecords.month}.json`;
+  postCalendarRecords(year, month, calendarRecords: any, sha): Observable<any> {
+    const postUrl = `${this.baseMessagesUrl}/${year}-${month}.json`;
 
     const rawCommitBody = JSON.stringify({
       "message": `Api commit by calendar record wesbite at ${new Date().toLocaleString()}`,
-      "content": btoa(JSON.stringify(calendarRecords.records))
+      "content": btoa(JSON.stringify(calendarRecords)),
+      'sha': sha
     });
 
     return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.options());

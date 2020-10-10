@@ -18,6 +18,7 @@ import { DialogBoxComponent } from './dialog-box/dialog-box.component';
 import { MenuBarComponent } from './menu-bar/menu-bar.component';
 
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { CalendarMainComponent } from './calendar-main/calendar-main.component';
 
 
 
@@ -31,7 +32,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     ChatDetailComponent,
     LoginComponent,
     DialogBoxComponent,
-    MenuBarComponent
+    MenuBarComponent,
+    CalendarMainComponent
   ],
   imports: [
     BrowserModule,

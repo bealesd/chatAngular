@@ -1,0 +1,11 @@
+<div class="weekdayName-names-contianer">
+    <div *ngFor="let weekdayName of weekdayNames;">
+        {{weekdayName}}
+    </div>
+</div>
+
+<div class="date-box-contianer">
+    <div *ngFor="let dayData of dayDataForMonth;">
+        <div data-col="{{dayData.row}}" data-row="{{dayData.row}}">{{dayData.name}}</div>
+    </div>
+</div>
