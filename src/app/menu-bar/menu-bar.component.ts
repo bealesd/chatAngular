@@ -93,7 +93,8 @@ It is serverless, thanks to GitHub API.`
   logout() {
     if (confirm('Do you want to logout?')) {
       this.cryptoService.logout();
-
+      this.chatService.loggedIn.next(false);
+      
       this.messageService.add('Logged out.');
 
       this.router.routeReuseStrategy.shouldReuseRoute = () => false;

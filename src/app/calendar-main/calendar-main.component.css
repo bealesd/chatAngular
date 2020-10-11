@@ -6,4 +6,61 @@
 .weekdayName-names-contianer div {
     grid-row: 1;
     grid-column: auto;
+    font-weight: 600;
+}
+
+.date-box-contianer {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    
+}
+
+.date-box{
+    background-color: lightgrey;
+    height: 100px;
+    border: solid 1px black;
+}
+
+button {
+    background-color: #4CAF5050;
+    border: 1px solid green;
+    color: white;
+    padding: 2px 7px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.changePageContainer{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: grid;
+    grid-column-gap: 10px;
+    grid-template-columns: 2;
+    grid-template-rows: 1;
+}
+
+.changePageContainer button:first-of-type{
+    margin-left: 10px;
+}
+
+.changePageContainer button:last-of-type {
+    margin-right: 10px;
+}
+
+.modal {
+    --width: 300px;
+    display: grid;
+    position: absolute;
+    z-index: 9999;
+    top: 10px;
+    width: var(--width);
+    /* height: 100px; */
+    left: 50%;
+    margin-left: calc(-0.5 * var(--width));
+    background-color: lightgray;
+    box-shadow: green 5px 5px;
 }

@@ -1,3 +1,8 @@
+<div class="changePageContainer">
+    <button [style.gridColumn]="1"><span>&#60;</span></button>
+    <button [style.gridColumn]="2"><span>&#62;</span></button>
+</div>
+
 <div class="weekdayName-names-contianer">
     <div *ngFor="let weekdayName of weekdayNames;">
         {{weekdayName}}
@@ -5,7 +10,43 @@
 </div>
 
 <div class="date-box-contianer">
-    <div *ngFor="let dayData of dayDataForMonth;">
-        <div data-col="{{dayData.row}}" data-row="{{dayData.row}}">{{dayData.name}}</div>
+    <div *ngFor="let dayData of dayDataForMonth;" [attr.data-col]="dayData.gridCol" [attr.data-row]="dayData.gridRow"
+        [style.gridColumn]="dayData.gridCol" [style.gridRow]="dayData.gridRow" class="date-box">
+        <div (click)="addEvent($event, dayData)">{{dayData.dayInMonthArrayIndex + 1}}. {{dayData.name}}</div>
     </div>
+</div>
+
+<div id="test" *ngIf="addingEvent" class="modal">
+    <h3>{{getDayNameForMonth(profileForm.value.day)}} - {{profileForm.value.day}}</h3>
+
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+        <label>
+            What:
+          <input type="text" formControlName="what" required>
+        </label>
+      
+        <div formGroupName="time">
+          <h4>Time</h4>      
+          <label>
+            Hour:
+            <input type="number" formControlName="hour">
+          </label>
+          <label>
+            Minute:
+            <input type="number" formControlName="minute">
+          </label>
+        
+        </div>
+      
+        <button type="submit" [disabled]="!profileForm.valid">Submit</button>
+      </form>
+      
+      <p>
+        Form Value: {{ profileForm.value | json }}
+      </p>
+      
+      <p>
+        Form Status: {{ profileForm.status }}
+      </p>
+
 </div>

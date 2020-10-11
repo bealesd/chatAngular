@@ -36,13 +36,14 @@ export class ChatService {
       calendarRecords[`${year}-${month}`] = { 'records': [], 'sha': '' };
     }
     else {
-      isUpdate = calendarRecords[`${year}-${month}`].records.find(r => r.id === record.id) !== undefined;
+      const foundRecord = calendarRecords[`${year}-${month}`].records.find(r => r.id === record.id);
+      isUpdate = foundRecord !== undefined && (foundRecord.hasOwnProperty('records') || foundRecord.records.length !== 0);
     }
 
     if (isUpdate) {
       calendarRecords[`${year}-${month}`].records.forEach((r) => {
         if (r.id === record.id) {
-          r.message = record.message;
+          r.what = record.what;
           r.month = record.month;
           r.day = record.day;
           r.hour = record.hour;
@@ -61,6 +62,7 @@ export class ChatService {
           calendarRecordsForMonth.sha = sha;
 
           console.log(calendarRecords);
+          this.calendarRecords.next(calendarRecords);
 
         },
         error: (data: any) => {
@@ -69,38 +71,47 @@ export class ChatService {
       }
     );
   }
-
-
-  getChatMessages(): void {
-    this.messageService.add('Fetching last 10 messages.');
-    const year = 2020;
-    const month = 6;
+  getCalendarRecords(year, month): void {
+    const calendarRecords = this.calendarRecords.getValue()
     this.calendarRepo.getCalendarRecordsForMonth(year, month).subscribe(
       {
         next: (calendarRecord: any) => {
           console.log(calendarRecord);
-
-          const calendarRecords = this.calendarRecords.getValue();
           calendarRecords[`${year}-${month}`] = {
             'sha': calendarRecord.sha,
             'records': JSON.parse(atob(calendarRecord.content))
           }
           this.calendarRecords.next(calendarRecords);
 
-          this.postCalendarRecord(2020, 6, {
-            'message': 'fun',
-            'day': '19',
-            'hour': '9',
-            'minute': '10',
-            'id': "ce229616-c50b-4902-ac92-1bbaad8ef8ce"
-          })
+          // this.postCalendarRecord(2020, 6, {
+          //   'message': 'fun',
+          //   'day': '19',
+          //   'hour': '9',
+          //   'minute': '10',
+          //   'id': "ce229616-c50b-4902-ac92-1bbaad8ef8ce"
+          // })
 
         },
-        error: (data: any) => {
-          console.log(data)
+        error: (err: any) => {
+          if (err.status === 404) {
+            console.log('No records.');
+          }
+          else {
+            console.error(err);
+          }
+
+          calendarRecords[`${year}-${month}`] = { 'records': [], 'sha': '' };
+          this.calendarRecords.next(calendarRecords);
         }
       }
     );
+
+  }
+
+  getChatMessages(): void {
+    this.messageService.add('Fetching last 10 messages.');
+    const year = 2020;
+    const month = 6;
 
     this.chatRepo.getLastTen()
       .subscribe((chatMessages: RecieveChat[]) => {
