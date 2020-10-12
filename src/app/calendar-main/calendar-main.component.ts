@@ -39,6 +39,7 @@ export class CalendarMainComponent implements OnInit {
     "Friday": 5,
     "Saturday": 6
   };
+  maxGridRow: number;
 
   get weekdayNames(): string[] {
     return Object.keys(this.daysEnum);
@@ -127,6 +128,8 @@ export class CalendarMainComponent implements OnInit {
 
       dayData.push({ 'gridRow': gridRow, 'gridCol': gridCol, 'name': dayName, 'dayInMonthArrayIndex': index });
     });
+
+    this.maxGridRow = gridRow;
     return dayData;
   }
 

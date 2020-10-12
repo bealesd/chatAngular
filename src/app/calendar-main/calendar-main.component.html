@@ -1,6 +1,6 @@
 <div class="changePageContainer">
-  <button [style.gridColumn]="1"><span>&#60;</span></button>
-  <button [style.gridColumn]="2"><span>&#62;</span></button>
+  <button class="greenButton" [style.gridColumn]="1"><span>&#60;</span></button>
+  <button class="greenButton" [style.gridColumn]="2"><span>&#62;</span></button>
 </div>
 
 <div class="weekdayName-names-contianer">
@@ -11,7 +11,9 @@
 
 <div class="date-box-contianer">
   <div *ngFor="let dayData of dayDataForMonth;" [attr.data-col]="dayData.gridCol" [attr.data-row]="dayData.gridRow"
-    [style.gridColumn]="dayData.gridCol" [style.gridRow]="dayData.gridRow" class="date-box">
+    [style.gridColumn]="dayData.gridCol" [style.gridRow]="dayData.gridRow" class="date-box"
+    [attr.data-max-row]="maxGridRow === dayData.gridRow ? 1 : 0">
+
     <div class="day" (click)="addEvent($event, dayData)">{{dayData.dayInMonthArrayIndex + 1}}</div>
 
     <div class="table" *ngFor="let record of getRecordsByDay(dayData.dayInMonthArrayIndex + 1);">
@@ -19,6 +21,7 @@
         {{padToTwo(record.hour)}}:{{padToTwo(record.minute)}} - {{record.what}}
       </div>
     </div>
+
   </div>
 </div>
 
@@ -43,9 +46,9 @@
     </label>
     <input class="minute" type="number" formControlName="minute">
 
-    <button class="submit" type="submit" [disabled]="!profileForm.valid">Submit</button>
+    <button class="submit greenButton" type="submit" [disabled]="!profileForm.valid">Submit</button>
 
-    <button (click)="closeAddEventForm()" class="close-button">Close</button>
+    <button (click)="closeAddEventForm()" class="close-button redButton">Close</button>
   </form>
 
   <!-- <p>
