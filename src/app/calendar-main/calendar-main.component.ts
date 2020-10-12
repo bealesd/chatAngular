@@ -13,13 +13,10 @@ import * as uuid from 'uuid';
 export class CalendarMainComponent implements OnInit {
   addingEvent: boolean = false;
 
-  //"message":"work","day":"14","hour":"7","minute":"30","id"
   profileForm = this.fb.group({
     what: ['', Validators.required],
-    time: this.fb.group({
-      hour: [],
-      minute: []
-    }),
+    hour: ['', [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-3])$")]],
+    minute: ['', [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])$")]],
     month: [],
     year: [],
     day: [],
@@ -31,6 +28,7 @@ export class CalendarMainComponent implements OnInit {
   month: number;
   today: number;
   monthName: string;
+  records: [] = [];
 
   daysEnum = {
     "Sunday": 0,
@@ -41,7 +39,6 @@ export class CalendarMainComponent implements OnInit {
     "Friday": 5,
     "Saturday": 6
   };
-  calendarRecords: any;
 
   get weekdayNames(): string[] {
     return Object.keys(this.daysEnum);
@@ -95,9 +92,13 @@ export class CalendarMainComponent implements OnInit {
     this.monthName = this.monthNames[this.month];
 
     this.chatService.calendarRecords.subscribe(calendarRecords => {
-      this.calendarRecords = calendarRecords;
-      console.log(this.calendarRecords);
-      //TODO, draw events and enable updting of events
+      console.log(calendarRecords);
+      if (calendarRecords.hasOwnProperty(`${this.year}-${this.month}`)) {
+        this.records = calendarRecords[`${this.year}-${this.month}`].records;
+      }
+      else {
+        this.records = [];
+      }
     });
 
     this.chatService.getCalendarRecords(this.year, this.month);
@@ -106,8 +107,14 @@ export class CalendarMainComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  getRecordsByDay(day) {
+    const records = this.records.filter(r => r['day'] === day);
+    records.sort(this.compareByTime);
+    return records;
+  }
+
   get dayDataForMonth() {
-    let dayData = [];
+    const dayData = [];
 
     let gridRow = 1;
     this.daysInMonthArray.forEach((dayNumber, index) => {
@@ -128,10 +135,8 @@ export class CalendarMainComponent implements OnInit {
 
     this.profileForm.patchValue({
       what: '',
-      time: {
-        hour: 7,
-        minute: 30
-      },
+      hour: '',
+      minute: '',
       day: this.daysInMonthArray[dayData.dayInMonthArrayIndex],
       month: this.month,
       year: this.year,
@@ -144,20 +149,19 @@ export class CalendarMainComponent implements OnInit {
     const record = {
       'what': this.profileForm.value.what,
       'day': this.profileForm.value.day,
-      'hour': this.profileForm.value.time.hour,
-      'minute': this.profileForm.value.time.minute,
+      'hour': this.profileForm.value.hour,
+      'minute': this.profileForm.value.minute,
       'id': this.profileForm.value.id
     }
-    this.chatService.postCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, record)
+    this.chatService.postCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, record);
+    this.closeAddEventForm();
   }
 
   updateProfile() {
     this.profileForm.patchValue({
       what: 'going swimming',
-      time: {
-        hour: 7,
-        minute: 30
-      },
+      hour: 7,
+      minute: 30,
       month: this.month,
       year: this.year
     });
@@ -168,4 +172,21 @@ export class CalendarMainComponent implements OnInit {
     return this.getDayName(date.getDay());
   }
 
+  closeAddEventForm() {
+    this.addingEvent = false;
+  }
+
+  private padToTwo(value: number): string {
+    return value <= 99 ? `0${value}`.slice(-2) : `${value}`;
+  }
+
+  private compareByTime(a, b) {
+    let is_hour_a_before_b = a.hour < b.hour ? true : (a.hour === b.hour ? null : false);
+    let is_minute_a_before_b = a.minute < b.minute ? true : (a.minute === b.minute ? null : false);
+
+    let is_a_before_b = is_hour_a_before_b || (is_hour_a_before_b === null && is_minute_a_before_b);
+    let is_a_same_as_b = is_hour_a_before_b === null && is_minute_a_before_b === null;
+
+    return is_a_before_b ? -1 : (is_a_same_as_b ? 1 : 0);
+  }
 }
