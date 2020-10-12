@@ -12,7 +12,7 @@
 <div class="date-box-contianer">
   <div *ngFor="let dayData of dayDataForMonth;" [attr.data-col]="dayData.gridCol" [attr.data-row]="dayData.gridRow"
     [style.gridColumn]="dayData.gridCol" [style.gridRow]="dayData.gridRow" class="date-box">
-    <div (click)="addEvent($event, dayData)">{{dayData.dayInMonthArrayIndex + 1}}. {{dayData.name}}</div>
+    <div class="day" (click)="addEvent($event, dayData)">{{dayData.dayInMonthArrayIndex + 1}}</div>
 
     <div class="table" *ngFor="let record of getRecordsByDay(dayData.dayInMonthArrayIndex + 1);">
       <div>
@@ -26,22 +26,22 @@
 
   <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
 
-    <h3 class="heading">{{getDayNameForMonth(profileForm.value.day)}} - {{profileForm.value.day}}</h3>
+    <h3 class="heading">{{getDayNameForMonth(profileForm.value.day)}} - Day {{profileForm.value.day}}</h3>
 
     <label class="what">
       What
-      <input type="text" formControlName="what" maxlength="25">
     </label>
+    <input class="what" type="text" formControlName="what" maxlength="25">
 
     <label class="hour">
-      Hr
-      <input type="number" formControlName="hour">
+      HH
     </label>
+    <input class="hour" type="number" formControlName="hour">
 
     <label class="minute">
-      Min
-      <input type="number" formControlName="minute">
+      MM
     </label>
+    <input class="minute" type="number" formControlName="minute">
 
     <button class="submit" type="submit" [disabled]="!profileForm.valid">Submit</button>
 
@@ -55,7 +55,5 @@
   <!-- <p>
     Form Status: {{ profileForm.status }}
   </p> -->
-
-  
 
 </div>
