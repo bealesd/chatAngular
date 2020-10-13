@@ -28,20 +28,41 @@ export class ChatService {
   constructor(private messageService: MessageService, private chatRepo: ChatRepo, private calendarRepo: CalendarRepo) {
   }
 
+  deleteCalendarRecord(year, month, id): void {
+    const calendarRecords = this.calendarRecords.getValue();
+
+    let calendarRecordsForMonth = calendarRecords[`${year}-${month}`]
+    calendarRecordsForMonth.records = calendarRecordsForMonth.records.filter(r => r.id !== id);
+
+    this.calendarRepo.postCalendarRecords(year, month, calendarRecordsForMonth.records, calendarRecordsForMonth.sha).subscribe(
+      {
+        next: (calendarRecordsResult: any[]) => {
+          const sha = (<any>calendarRecordsResult).content.sha;
+          calendarRecordsForMonth.sha = sha;
+
+          console.log(calendarRecords);
+          this.calendarRecords.next(calendarRecords);
+
+        },
+        error: (data: any) => {
+          console.log(data)
+        }
+      }
+    );
+  }
+
   postCalendarRecord(year, month, record): void {
     const calendarRecords = this.calendarRecords.getValue();
-    let isUpdate = false;
 
-    if (!calendarRecords.hasOwnProperty(`${year}-${month}`)) {
-      calendarRecords[`${year}-${month}`] = { 'records': [], 'sha': '' };
-    }
-    else {
-      const foundRecord = calendarRecords[`${year}-${month}`].records.find(r => r.id === record.id);
-      isUpdate = foundRecord !== undefined && (foundRecord.hasOwnProperty('records') || foundRecord.records.length !== 0);
-    }
+    let calendarRecordsForMonth;
+    if (calendarRecords.hasOwnProperty(`${year}-${month}`))
+      calendarRecordsForMonth = calendarRecords[`${year}-${month}`]
+    else
+      calendarRecordsForMonth = { 'records': [], 'sha': '' };
 
+    const isUpdate = calendarRecordsForMonth.records.find(r => r.id === record.id) !== undefined;
     if (isUpdate) {
-      calendarRecords[`${year}-${month}`].records.forEach((r) => {
+      calendarRecordsForMonth.records.forEach((r) => {
         if (r.id === record.id) {
           r.what = record.what;
           r.month = record.month;
@@ -49,11 +70,10 @@ export class ChatService {
           r.hour = record.hour;
           r.minute = record.minute;
         }
-      })
+      });
     }
-
-    const calendarRecordsForMonth = calendarRecords[`${year}-${month}`];
-    calendarRecordsForMonth.records.push(record);
+    else
+      calendarRecordsForMonth.records.push(record);
 
     this.calendarRepo.postCalendarRecords(year, month, calendarRecordsForMonth.records, calendarRecordsForMonth.sha).subscribe(
       {

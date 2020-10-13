@@ -11,7 +11,8 @@ import * as uuid from 'uuid';
   styleUrls: ['./calendar-main.component.css']
 })
 export class CalendarMainComponent implements OnInit {
-  addingEvent: boolean = false;
+  addingOrUpdatingEvent: boolean = false;
+  updatingEvent: boolean = false;
 
   profileForm = this.fb.group({
     what: ['', Validators.required],
@@ -133,8 +134,8 @@ export class CalendarMainComponent implements OnInit {
     return dayData;
   }
 
-  addEvent(evt, dayData) {
-    this.addingEvent = true;
+  openAddEventForm(evt, dayData) {
+    this.addingOrUpdatingEvent = true;
 
     this.profileForm.patchValue({
       what: '',
@@ -145,10 +146,24 @@ export class CalendarMainComponent implements OnInit {
       year: this.year,
       id: uuid()
     });
-
   }
 
-  onSubmit() {
+  openUpdateEventForm(evt, record){
+    this.addingOrUpdatingEvent = true;
+    this.updatingEvent = true
+
+    this.profileForm.patchValue({
+      what: record.what,
+      hour: record.hour,
+      minute: record.minute,
+      day: record.day,
+      month: this.month,
+      year: this.year,
+      id: record.id
+    });
+  }
+
+  addOrUpdateEvent() {
     const record = {
       'what': this.profileForm.value.what,
       'day': this.profileForm.value.day,
@@ -157,6 +172,11 @@ export class CalendarMainComponent implements OnInit {
       'id': this.profileForm.value.id
     }
     this.chatService.postCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, record);
+    this.closeAddEventForm();
+  }
+
+  deleteEvent(){
+    this.chatService.deleteCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, this.profileForm.value.id);
     this.closeAddEventForm();
   }
 
@@ -176,7 +196,8 @@ export class CalendarMainComponent implements OnInit {
   }
 
   closeAddEventForm() {
-    this.addingEvent = false;
+    this.addingOrUpdatingEvent = false;
+    this.updatingEvent = false;
   }
 
   private padToTwo(value: number): string {

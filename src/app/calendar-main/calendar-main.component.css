@@ -20,7 +20,7 @@
     background-color: black;
 }
 
-[data-col="1"].date-box {
+[data-col="1"].date-box, [data-max-row="1"][data-col="1"].date-box {
     border-left: 2px solid rgb(255, 53, 94);
     border-top: 2px solid rgb(255, 53, 94);
     border-bottom: 2px solid white;
@@ -155,7 +155,7 @@
 form {
     display: grid;
     grid-template-columns: repeat(12, calc(var(--width)/12));
-    grid-template-rows: repeat(10, 30px) 10px;
+    grid-template-rows: repeat(13, 30px) 10px;
 }
 
 .heading {
@@ -200,6 +200,11 @@ input.minute {
 
 .close-button {
     grid-row: 10 / 11;
+    grid-column: 2 / 12;
+}
+
+.delete-button{
+    grid-row: 12 / 13;
     grid-column: 2 / 12;
 }
 
