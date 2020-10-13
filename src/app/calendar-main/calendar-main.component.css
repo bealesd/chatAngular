@@ -18,54 +18,76 @@
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: repeat(5, 1fr);
     background-color: black;
-     /* border: 2px blue solid; */
 }
 
 [data-col="1"].date-box {
     border-left: 2px solid rgb(255, 53, 94);
     border-top: 2px solid rgb(255, 53, 94);
+    border-bottom: 2px solid white;
 }
 
 [data-col="2"].date-box {
     border-left: 2px solid rgb(255, 96, 55);
     border-top: 2px solid rgb(255, 96, 55);
+    border-bottom: 2px solid white;
 }
 
 [data-col="3"].date-box {
     border-left: 2px solid rgb(255, 204, 51);
     border-top: 2px solid rgb(255, 204, 51);
+    border-bottom: 2px solid white;
 }
 
 [data-col="4"].date-box {
     border-left: 2px  solid rgb(102, 255, 102);
     border-top: 2px  solid rgb(102, 255, 102);
+    border-bottom: 2px solid white;
 }
 
 [data-col="5"].date-box {
-    border-left: 2px solid  rgb(80, 191, 230);
-    border-top: 2px solid  rgb(80, 191, 230);
+    border-left: 2px solid rgb(80, 191, 230);
+    border-top: 2px solid rgb(80, 191, 230);
+    border-bottom: 2px solid white;
 }
 
 [data-col="6"].date-box {
-    border-left: 2px solid  rgb(255, 0, 204);
-    border-top: 2px solid  rgb(255, 0, 204);
+    border-left: 2px solid rgb(255, 0, 204);
+    border-top: 2px solid rgb(255, 0, 204);
+    border-bottom: 2px solid white;
 }
 
 [data-col="7"].date-box {
-    border-left: 2px solid  rgb(255, 53, 94);
-    border-right: 2px solid  rgb(255, 96, 55);
-    border-top: 2px solid  rgb(255, 96, 55);
+    border-left: 2px solid rgb(255, 96, 55);
+    border-right: 2px solid rgb(255, 96, 55);
+    border-top: 2px solid rgb(255, 96, 55);
+    border-bottom: 2px solid white;
 }
 
-[data-max-row="1"].date-box {
-    border-bottom: 2px solid  rgb(255, 96, 55);
+[data-max-row="1"][data-col="1"].date-box {
+    border-bottom: 2px solid rgb(255, 53, 94);
+}
+[data-max-row="1"][data-col="2"].date-box {
+    border-bottom: 2px solid rgb(255, 96, 55);
+}
+[data-max-row="1"][data-col="3"].date-box {
+    border-bottom: 2px solid rgb(255, 204, 51);
+}
+[data-max-row="1"][data-col="4"].date-box {
+    border-bottom: 2px solid rgb(102, 255, 102);
+}
+[data-max-row="1"][data-col="5"].date-box {
+    border-bottom: 2px solid rgb(80, 191, 230);
+}
+[data-max-row="1"][data-col="6"].date-box {
+    border-bottom: 2px solid rgb(255, 0, 204);
+}
+[data-max-row="1"][data-col="7"].date-box {
+    border-bottom: 2px solid rgb(255, 96, 55);
 }
 
 .date-box {
     background-color: white;
     height: 100px;
-    /* border: solid 1px black; */
-    /* rgba(248, 248, 248, 1); */
 }
 
 .changePageContainer {
