@@ -11,13 +11,13 @@ import * as uuid from 'uuid';
   styleUrls: ['./calendar-main.component.css']
 })
 export class CalendarMainComponent implements OnInit {
-  addingOrUpdatingEvent: boolean = false;
+  addingEvent: boolean = false;
   updatingEvent: boolean = false;
 
   profileForm = this.fb.group({
     what: ['', Validators.required],
-    hour: ['', [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-3])$")]],
-    minute: ['', [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])$")]],
+    hour: ['0', [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-3])$")]],
+    minute: ['0', [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])$")]],
     month: [],
     year: [],
     day: [],
@@ -41,6 +41,8 @@ export class CalendarMainComponent implements OnInit {
     "Saturday": 6
   };
   maxGridRow: number;
+  currentRecord: { what: any; hour: any; minute: any; day: any; month: number; year: number; id: any; };
+  undoEnabled: boolean = false;
 
   get weekdayNames(): string[] {
     return Object.keys(this.daysEnum);
@@ -104,6 +106,10 @@ export class CalendarMainComponent implements OnInit {
     });
 
     this.chatService.getCalendarRecords(this.year, this.month);
+
+    this.profileForm.valueChanges.subscribe(() => {
+      this.undoEnabled = this.checkEnableUndo();
+    });
   }
 
   ngOnInit(): void {
@@ -135,12 +141,13 @@ export class CalendarMainComponent implements OnInit {
   }
 
   openAddEventForm(evt, dayData) {
-    this.addingOrUpdatingEvent = true;
+    this.undoEnabled = false;
+    this.addingEvent = true;
 
     this.profileForm.patchValue({
       what: '',
-      hour: '',
-      minute: '',
+      hour: '0',
+      minute: '0',
       day: this.daysInMonthArray[dayData.dayInMonthArrayIndex],
       month: this.month,
       year: this.year,
@@ -148,11 +155,11 @@ export class CalendarMainComponent implements OnInit {
     });
   }
 
-  openUpdateEventForm(evt, record){
-    this.addingOrUpdatingEvent = true;
+  openUpdateEventForm(evt, record) {
+    this.undoEnabled = false;
     this.updatingEvent = true
 
-    this.profileForm.patchValue({
+    this.currentRecord = {
       what: record.what,
       hour: record.hour,
       minute: record.minute,
@@ -160,7 +167,23 @@ export class CalendarMainComponent implements OnInit {
       month: this.month,
       year: this.year,
       id: record.id
-    });
+    };
+
+    this.profileForm.patchValue(this.currentRecord);
+  }
+
+  checkEnableUndo() {
+    return this.updatingEvent
+      && (this.profileForm.value.hour !== this.currentRecord.hour
+        || this.profileForm.value.minute !== this.currentRecord.minute
+        || this.profileForm.value.what !== this.currentRecord.what);
+  }
+
+  undoChanges() {
+    if (window.confirm('Are you sure you want to undo changes?')) {
+      this.profileForm.patchValue(this.currentRecord);
+      this.undoEnabled = false;
+    }
   }
 
   addOrUpdateEvent() {
@@ -172,12 +195,14 @@ export class CalendarMainComponent implements OnInit {
       'id': this.profileForm.value.id
     }
     this.chatService.postCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, record);
-    this.closeAddEventForm();
+    this.closeAddOrUpdateEventForm();
   }
 
-  deleteEvent(){
-    this.chatService.deleteCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, this.profileForm.value.id);
-    this.closeAddEventForm();
+  deleteEvent() {
+    if (window.confirm(`Are you sure you want to delete this record?`)) {
+      this.chatService.deleteCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, this.profileForm.value.id);
+      this.closeAddOrUpdateEventForm();
+    }
   }
 
   updateProfile() {
@@ -195,8 +220,26 @@ export class CalendarMainComponent implements OnInit {
     return this.getDayName(date.getDay());
   }
 
-  closeAddEventForm() {
-    this.addingOrUpdatingEvent = false;
+  closeAddOrUpdateEventForm() {
+    this.addingEvent = false;
+    this.updatingEvent = false;
+    this.undoEnabled = false;
+  }
+
+  closeClickAddEventForm() {
+    if (!this.profileForm.valid) {
+      this.addingEvent = false;
+      return;
+    }
+    else {
+      if (window.confirm('Are you sure you want to discard changes?')) {
+        this.addingEvent = false;
+        return;
+      }
+    }
+  }
+
+  closeClickUpdateEventForm() {
     this.updatingEvent = false;
   }
 

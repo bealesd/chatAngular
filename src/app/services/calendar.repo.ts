@@ -50,7 +50,7 @@ export class CalendarRepo {
 
   getCalendarRecordsForMonth(year: number, month: number): Observable<any> {
     const getUrl = `${this.baseMessagesUrl}/${year}-${month}.json`;
-    return this.http.get<[]>(this.removeUrlParams(getUrl));
+    return this.http.get<[]>(this.removeUrlParams(getUrl), this.options());
   }
 
   postCalendarRecords(year, month, calendarRecords: any, sha): Observable<any> {

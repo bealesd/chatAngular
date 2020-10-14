@@ -29,40 +29,38 @@
 
 </div>
 
-<div id="test" *ngIf="addingOrUpdatingEvent" class="modal">
+<div id="test" *ngIf="addingEvent || updatingEvent" class="modal">
 
   <form [formGroup]="profileForm" (ngSubmit)="addOrUpdateEvent()">
 
     <h3 class="heading">{{getDayNameForMonth(profileForm.value.day)}} - Day {{profileForm.value.day}}</h3>
+
+    <button class="undo redButton" *ngIf="undoEnabled" (click)="undoChanges()">Undo</button>
 
     <label class="what">
       What
     </label>
     <input class="what" type="text" formControlName="what" maxlength="25">
 
-    <label class="hour">
-      HH
-    </label>
-    <input class="hour" type="number" formControlName="hour">
+    <div class='time'>Time hh:mm</div>
 
-    <label class="minute">
-      MM
-    </label>
-    <input class="minute" type="number" formControlName="minute">
+    <input class="hour" type="number" formControlName="hour" max="23" min="0">
 
-    <button class="submit greenButton" type="submit" [disabled]="!profileForm.valid">Submit</button>
+    <input class="minute" type="number" formControlName="minute" step=15 max="59" min="0">
 
-    <button (click)="closeAddEventForm()" class="close-button redButton">Close</button>
 
-    <button (click)="deleteEvent()" class="delete-button redButton" [disabled]="!updatingEvent">Delete</button>
+    <button class="submit greenButton" type="submit"
+      [disabled]="!profileForm.valid">{{addingEvent ? 'Submit': 'Update'}}</button>
+
+    <button (click)="addingEvent ? closeClickAddEventForm() : closeClickUpdateEventForm()"
+      class="close-button greenButton">{{addingEvent ? 'Cancel': 'Cancel'}}</button>
+
+    <button (click)="deleteEvent()" class="delete-button redButton {{!updatingEvent ? 'invalidRedButton' : '' }}"
+      [disabled]="!updatingEvent">Delete</button>
+
+    <div class="formStatus">
+      Form Status: {{ profileForm.status }}
+    </div>
   </form>
-
-  <!-- <p>
-    Form Value: {{ profileForm.value | json }}
-  </p> -->
-
-  <!-- <p>
-    Form Status: {{ profileForm.status }}
-  </p> -->
 
 </div>
