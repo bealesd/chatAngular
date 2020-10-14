@@ -31,14 +31,24 @@ export class CalendarMainComponent implements OnInit {
   monthName: string;
   records: [] = [];
 
+  // daysEnum = {
+  //   "Sunday": 0,
+  //   "Monday": 1,
+  //   "Tuesday": 2,
+  //   "Wednesday": 3,
+  //   "Thursday": 4,
+  //   "Friday": 5,
+  //   "Saturday": 6
+  // }; 
+
   daysEnum = {
-    "Sunday": 0,
-    "Monday": 1,
-    "Tuesday": 2,
-    "Wednesday": 3,
-    "Thursday": 4,
-    "Friday": 5,
-    "Saturday": 6
+    'Sun': 0,
+    'Mon': 1,
+    'Tue': 2,
+    'Wed': 3,
+    'Thu': 4,
+    'Fri': 5,
+    'Sat': 6
   };
   maxGridRow: number;
   currentRecord: { what: any; hour: any; minute: any; day: any; month: number; year: number; id: any; };
@@ -187,15 +197,19 @@ export class CalendarMainComponent implements OnInit {
   }
 
   addOrUpdateEvent() {
-    const record = {
-      'what': this.profileForm.value.what,
-      'day': this.profileForm.value.day,
-      'hour': this.profileForm.value.hour,
-      'minute': this.profileForm.value.minute,
-      'id': this.profileForm.value.id
+    if (!this.undoEnabled)
+      alert('No changes!');
+    else {
+      const record = {
+        'what': this.profileForm.value.what,
+        'day': this.profileForm.value.day,
+        'hour': this.profileForm.value.hour,
+        'minute': this.profileForm.value.minute,
+        'id': this.profileForm.value.id
+      }
+      this.chatService.postCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, record);
+      this.closeAddOrUpdateEventForm();
     }
-    this.chatService.postCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, record);
-    this.closeAddOrUpdateEventForm();
   }
 
   deleteEvent() {
@@ -203,16 +217,6 @@ export class CalendarMainComponent implements OnInit {
       this.chatService.deleteCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, this.profileForm.value.id);
       this.closeAddOrUpdateEventForm();
     }
-  }
-
-  updateProfile() {
-    this.profileForm.patchValue({
-      what: 'going swimming',
-      hour: 7,
-      minute: 30,
-      month: this.month,
-      year: this.year
-    });
   }
 
   getDayNameForMonth(day) {
@@ -227,20 +231,17 @@ export class CalendarMainComponent implements OnInit {
   }
 
   closeClickAddEventForm() {
-    if (!this.profileForm.valid) {
+    if (!this.profileForm.valid)
       this.addingEvent = false;
-      return;
-    }
-    else {
-      if (window.confirm('Are you sure you want to discard changes?')) {
-        this.addingEvent = false;
-        return;
-      }
-    }
+    else if (window.confirm('Are you sure you want to discard changes?'))
+      this.addingEvent = false;
   }
 
   closeClickUpdateEventForm() {
-    this.updatingEvent = false;
+    if (!this.undoEnabled)
+      this.updatingEvent = false;
+    else if (window.confirm('Are you sure you want to discard changes?'))
+      this.updatingEvent = false;
   }
 
   private padToTwo(value: number): string {
@@ -248,11 +249,11 @@ export class CalendarMainComponent implements OnInit {
   }
 
   private compareByTime(a, b) {
-    let is_hour_a_before_b = a.hour < b.hour ? true : (a.hour === b.hour ? null : false);
-    let is_minute_a_before_b = a.minute < b.minute ? true : (a.minute === b.minute ? null : false);
+    const is_hour_a_before_b = a.hour < b.hour ? true : (a.hour === b.hour ? null : false);
+    const is_minute_a_before_b = a.minute < b.minute ? true : (a.minute === b.minute ? null : false);
 
-    let is_a_before_b = is_hour_a_before_b || (is_hour_a_before_b === null && is_minute_a_before_b);
-    let is_a_same_as_b = is_hour_a_before_b === null && is_minute_a_before_b === null;
+    const is_a_before_b = is_hour_a_before_b || (is_hour_a_before_b === null && is_minute_a_before_b);
+    const is_a_same_as_b = is_hour_a_before_b === null && is_minute_a_before_b === null;
 
     return is_a_before_b ? -1 : (is_a_same_as_b ? 1 : 0);
   }

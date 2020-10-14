@@ -9,6 +9,7 @@
     grid-row: 1;
     grid-column: auto;
     font-weight: 600;
+    text-align: center;
 }
 
 .date-box-contianer {
@@ -94,21 +95,34 @@
     padding-top: 10px;
     padding-bottom: 10px;
     display: grid;
-    grid-column-gap: 10px;
-    grid-template-columns: 2;
+    grid-template-columns: repeat(12, 1fr);
     grid-template-rows: 1;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .changePageContainer button{
     font-size: 30px;
 }
 
+.changePageContainer div{
+    grid-row: 1;
+    grid-column: 3 / 11;
+    font-size: 30px;
+    font-weight: bolder;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
 .changePageContainer button:first-of-type {
-    margin-left: 10px;
+    grid-row: 1;
+    grid-column: 1 / 2;
 }
 
 .changePageContainer button:last-of-type {
-    margin-right: 10px;
+    grid-row: 1;
+    grid-column: 12 / 13;
 }
 
 .modal {
@@ -134,33 +148,45 @@ button {
     cursor: pointer;
 }
 
-.greenButton {
-    background-color: #4CAF50;
-    border: 1px solid green;
+.green-button {
+    background-color: #1fb123;
+    border: 1px solid darkgreen;
 }
 
-.greenButton:hover {
-    background-color: #1fb123;
+.green-button:hover {
+    background-color: darkgreen;
+    border: 1px solid #1fb123;
 }
 
 form.ng-invalid button.submit {
     background-color: #4CAF5050!important;
 }
 
-.redButton {
-    background-color: #af4c4c;
-    border: 1px solid red;
+.red-button {
+    background-color: #cc2929;
+    border: 1px solid darkred;
 }
 
-.redButton:hover {
-    background-color: #af1a1a;
+.red-button:hover {
+    background-color: darkred;
+    border: 1px solid #cc2929;
 }
 
 .invalidRedButton{
     background-color: #af4c4c50!important;
 }
 
+.form-invalid{
+    color: #af1a1a;
+    font-style: italic;
+    font-weight: 600;
+}
 
+.form-valid{
+    color: #1fb123;
+    font-style: italic;
+    font-weight: 600;
+}
 
 form {
     display: grid;

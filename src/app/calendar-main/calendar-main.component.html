@@ -1,6 +1,7 @@
 <div class="changePageContainer">
-  <button class="greenButton" [style.gridColumn]="1"><span>&#60;</span></button>
-  <button class="greenButton" [style.gridColumn]="2"><span>&#62;</span></button>
+  <button class="green-button"><span>&#60;</span></button>
+  <div>{{monthName}} - {{year}}</div>
+  <button class="green-button"><span>&#62;</span></button>
 </div>
 
 <div class="weekdayName-names-contianer">
@@ -35,7 +36,7 @@
 
     <h3 class="heading">{{getDayNameForMonth(profileForm.value.day)}} - Day {{profileForm.value.day}}</h3>
 
-    <button class="undo redButton" *ngIf="undoEnabled" (click)="undoChanges()">Undo</button>
+    <button class="undo red-button" *ngIf="undoEnabled" (click)="undoChanges()" type="button">Undo</button>
 
     <label class="what">
       What
@@ -49,16 +50,16 @@
     <input class="minute" type="number" formControlName="minute" step=15 max="59" min="0">
 
 
-    <button class="submit greenButton" type="submit"
+    <button class="submit green-button" type="submit"
       [disabled]="!profileForm.valid">{{addingEvent ? 'Submit': 'Update'}}</button>
 
     <button (click)="addingEvent ? closeClickAddEventForm() : closeClickUpdateEventForm()"
-      class="close-button greenButton">{{addingEvent ? 'Cancel': 'Cancel'}}</button>
+      class="close-button green-button" type="button">{{addingEvent ? 'Cancel': 'Cancel'}}</button>
 
-    <button (click)="deleteEvent()" class="delete-button redButton {{!updatingEvent ? 'invalidRedButton' : '' }}"
-      [disabled]="!updatingEvent">Delete</button>
+    <button (click)="deleteEvent()" class="delete-button red-button {{!updatingEvent ? 'invalidRedButton' : '' }}"
+      [disabled]="!updatingEvent" type="button">Delete</button>
 
-    <div class="formStatus">
+    <div class="formStatus {{profileForm.status === 'INVALID' ? 'form-invalid' : 'form-valid'}}">
       Form Status: {{ profileForm.status }}
     </div>
   </form>
