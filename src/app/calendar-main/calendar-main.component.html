@@ -1,7 +1,7 @@
 <div class="changePageContainer">
-  <button class="green-button"><span>&#60;</span></button>
-  <div>{{monthName}} - {{year}}</div>
-  <button class="green-button"><span>&#62;</span></button>
+  <button class="green-button" (click)="changeMonth(false)"><span>&#60;</span></button>
+  <div>{{monthNames[month]}} - {{year}}</div>
+  <button class="green-button" (click)="changeMonth(true)"><span>&#62;</span></button>
 </div>
 
 <div class="weekdayName-names-contianer">
@@ -32,7 +32,7 @@
 
 <div id="test" *ngIf="addingEvent || updatingEvent" class="modal">
 
-  <form [formGroup]="profileForm" (ngSubmit)="addOrUpdateEvent()">
+  <form [formGroup]="profileForm" (ngSubmit)="addingEvent ? addEventClick() : updateEventClick()">
 
     <h3 class="heading">{{getDayNameForMonth(profileForm.value.day)}} - Day {{profileForm.value.day}}</h3>
 

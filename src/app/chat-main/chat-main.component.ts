@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { interval, Subscription } from 'rxjs';
 
@@ -15,7 +15,9 @@ import { LoginHelper } from '../login/loginHelper'
   templateUrl: './chat-main.component.html',
   styleUrls: ['./chat-main.component.css']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
+  subscriptions: any[];
+
   chatMessages: RecieveChat[];
   chatForm: SendChat;
   content: string;
@@ -47,17 +49,17 @@ export class ChatComponent implements OnInit {
     this.rows = 1;
     this.messageContainer = '.messagesContainer';
     this.chatMessages = [];
-
-    this.chatService.chatMessages.subscribe(chatMessages => {
-      this.chatMessages = chatMessages;
-    });
-
-    this.chatService.newChatMessagesCount.subscribe(newChatMessagesCount => {
-      this.newChatMessagesCount = newChatMessagesCount;
-    })
   }
 
   ngOnInit(): void {
+    this.subscriptions.push(this.chatService.chatMessages.asObservable().subscribe(chatMessages => {
+      this.chatMessages = chatMessages;
+    }));
+
+    this.subscriptions.push(this.chatService.newChatMessagesCount.asObservable().subscribe(newChatMessagesCount => {
+      this.newChatMessagesCount = newChatMessagesCount;
+    }));
+
     this.newChatMessagesCount = 0;
 
     if (!this.loginHelper.checkPersonSelected()) {
@@ -65,10 +67,14 @@ export class ChatComponent implements OnInit {
     }
     this.chatService.getChatMessages()
 
-    this.getNewChatMessagesInterval = interval(this.secsToMilliSecs(20)).subscribe(x => this.chatService.getNewChatMessages());
-    this.checkForUpdatedMessagesInterval = interval(this.minsToMilliSecs(5)).subscribe(x => this.chatService.checkForUpdatedMessages());
+    this.subscriptions.push(interval(this.secsToMilliSecs(20)).subscribe(x => this.chatService.getNewChatMessages()));
+    this.subscriptions.push(interval(this.minsToMilliSecs(5)).subscribe(x => this.chatService.checkForUpdatedMessages()));
 
     this.registerTabSwitch();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   ngDoCheck() {

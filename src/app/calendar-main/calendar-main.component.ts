@@ -1,16 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { LoginHelper } from '../login/loginHelper';
 import { ChatService } from '../services/chat.service';
 import { MessageService } from '../services/message.service';
 import * as uuid from 'uuid';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-calendar-main',
   templateUrl: './calendar-main.component.html',
   styleUrls: ['./calendar-main.component.css']
 })
-export class CalendarMainComponent implements OnInit {
+export class CalendarMainComponent implements OnInit, OnDestroy {
+  subscriptions: Subscription[];
+
   addingEvent: boolean = false;
   updatingEvent: boolean = false;
 
@@ -30,16 +33,6 @@ export class CalendarMainComponent implements OnInit {
   today: number;
   monthName: string;
   records: [] = [];
-
-  // daysEnum = {
-  //   "Sunday": 0,
-  //   "Monday": 1,
-  //   "Tuesday": 2,
-  //   "Wednesday": 3,
-  //   "Thursday": 4,
-  //   "Friday": 5,
-  //   "Saturday": 6
-  // }; 
 
   daysEnum = {
     'Sun': 0,
@@ -89,48 +82,6 @@ export class CalendarMainComponent implements OnInit {
     return days;
   }
 
-  getDayName(dayNumber) {
-    return Object.keys(this.daysEnum)[dayNumber];
-  }
-
-  constructor(
-    private chatService: ChatService,
-    private messageService: MessageService,
-    private loginHelper: LoginHelper,
-    private fb: FormBuilder
-  ) {
-    let date = new Date();
-    this.year = date.getFullYear();
-    this.month = date.getMonth();
-    this.today = date.getDate()
-    this.monthName = this.monthNames[this.month];
-
-    this.chatService.calendarRecords.subscribe(calendarRecords => {
-      console.log(calendarRecords);
-      if (calendarRecords.hasOwnProperty(`${this.year}-${this.month}`)) {
-        this.records = calendarRecords[`${this.year}-${this.month}`].records;
-      }
-      else {
-        this.records = [];
-      }
-    });
-
-    this.chatService.getCalendarRecords(this.year, this.month);
-
-    this.profileForm.valueChanges.subscribe(() => {
-      this.undoEnabled = this.checkEnableUndo();
-    });
-  }
-
-  ngOnInit(): void {
-  }
-
-  getRecordsByDay(day) {
-    const records = this.records.filter(r => r['day'] === day);
-    records.sort(this.compareByTime);
-    return records;
-  }
-
   get dayDataForMonth() {
     const dayData = [];
 
@@ -148,6 +99,89 @@ export class CalendarMainComponent implements OnInit {
 
     this.maxGridRow = gridRow;
     return dayData;
+  }
+
+  constructor(
+    private chatService: ChatService,
+    private messageService: MessageService,
+    private loginHelper: LoginHelper,
+    private fb: FormBuilder
+  ) {
+    let date = new Date();
+    this.year = date.getFullYear();
+    this.month = date.getMonth();
+    this.today = date.getDate()
+  }
+
+  ngOnInit() {
+    let a  =this.chatService.calendarRecords.asObservable();
+    
+    let b = a.subscribe(calendarRecords => {
+      console.log(calendarRecords);
+      if (calendarRecords.hasOwnProperty(`${this.year}-${this.month}`)) 
+        this.records = calendarRecords[`${this.year}-${this.month}`].records;
+      else 
+        this.records = [];
+    });
+
+    this.subscriptions.push(b);
+
+    this.chatService.getCalendarRecords(this.year, this.month);
+
+    this.subscriptions.push(this.profileForm.valueChanges.subscribe(() => {
+      this.undoEnabled = this.checkEnableUndo();
+    }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  getDayName(dayNumber) {
+    return Object.keys(this.daysEnum)[dayNumber];
+  }
+
+  getRecordsByDay(day) {
+    const records = this.records.filter(r => r['day'] === day);
+    records.sort(this.compareByTime);
+    return records;
+  }
+
+  getDayNameForMonth(day) {
+    const date = new Date(this.year, this.month, day);
+    return this.getDayName(date.getDay());
+  }
+
+  changeMonth(isNextMonth: boolean) {
+    let zeroIndexedMonth = this.month;
+    let oneIndexedMonth = this.month + 1;
+
+    let year = this.year;
+
+    let tempDate = new Date(`${year} ${oneIndexedMonth}`);
+
+    if (isNextMonth) tempDate.setMonth(zeroIndexedMonth + 1);
+    else tempDate.setMonth(zeroIndexedMonth - 1);
+
+    this.year = tempDate.getFullYear();
+    this.month = tempDate.getMonth();
+
+    this.chatService.calendarRecords.next({});
+    this.chatService.getCalendarRecords(this.year, this.month);
+  }
+
+  checkEnableUndo() {
+    return this.updatingEvent
+      && (this.profileForm.value.hour !== this.currentRecord.hour
+        || this.profileForm.value.minute !== this.currentRecord.minute
+        || this.profileForm.value.what !== this.currentRecord.what);
+  }
+
+  undoChanges() {
+    if (window.confirm('Are you sure you want to undo changes?')) {
+      this.profileForm.patchValue(this.currentRecord);
+      this.undoEnabled = false;
+    }
   }
 
   openAddEventForm(evt, dayData) {
@@ -182,34 +216,25 @@ export class CalendarMainComponent implements OnInit {
     this.profileForm.patchValue(this.currentRecord);
   }
 
-  checkEnableUndo() {
-    return this.updatingEvent
-      && (this.profileForm.value.hour !== this.currentRecord.hour
-        || this.profileForm.value.minute !== this.currentRecord.minute
-        || this.profileForm.value.what !== this.currentRecord.what);
+  addEventClick() {
+    this.postEvent();
   }
 
-  undoChanges() {
-    if (window.confirm('Are you sure you want to undo changes?')) {
-      this.profileForm.patchValue(this.currentRecord);
-      this.undoEnabled = false;
-    }
+  updateEventClick() {
+    if (!this.undoEnabled) alert('No changes!');
+    else this.postEvent();
   }
 
-  addOrUpdateEvent() {
-    if (!this.undoEnabled)
-      alert('No changes!');
-    else {
-      const record = {
-        'what': this.profileForm.value.what,
-        'day': this.profileForm.value.day,
-        'hour': this.profileForm.value.hour,
-        'minute': this.profileForm.value.minute,
-        'id': this.profileForm.value.id
-      }
-      this.chatService.postCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, record);
-      this.closeAddOrUpdateEventForm();
+  postEvent() {
+    const record = {
+      'what': this.profileForm.value.what,
+      'day': this.profileForm.value.day,
+      'hour': this.profileForm.value.hour,
+      'minute': this.profileForm.value.minute,
+      'id': this.profileForm.value.id
     }
+    this.chatService.postCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, record);
+    this.closeAddOrUpdateEventForm();
   }
 
   deleteEvent() {
@@ -217,11 +242,6 @@ export class CalendarMainComponent implements OnInit {
       this.chatService.deleteCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, this.profileForm.value.id);
       this.closeAddOrUpdateEventForm();
     }
-  }
-
-  getDayNameForMonth(day) {
-    const date = new Date(this.year, this.month, day);
-    return this.getDayName(date.getDay());
   }
 
   closeAddOrUpdateEventForm() {
