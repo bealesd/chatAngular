@@ -1,6 +1,6 @@
 <div class="changePageContainer">
   <button class="green-button" (click)="changeMonth(false)"><span>&#60;</span></button>
-  <div>{{monthNames[month]}} - {{year}}</div>
+  <div>{{monthNames[zeroIndexedMonth]}} - {{year}}</div>
   <button class="green-button" (click)="changeMonth(true)"><span>&#62;</span></button>
 </div>
 

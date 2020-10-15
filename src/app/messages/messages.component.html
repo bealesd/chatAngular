@@ -1,6 +1,6 @@
 <div class="infoHeader">Messages</div>
 <button class="clear" (click)="messageService.clear()">clear</button>
 
-<div *ngIf="messageService.messages.length">
+<div class="messages-container" *ngIf="messageService.messages.length">
     <div class="info" *ngFor='let message of messageService.messages'>{{message}} </div>
 </div>

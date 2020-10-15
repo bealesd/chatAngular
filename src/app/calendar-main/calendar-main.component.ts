@@ -12,15 +12,15 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./calendar-main.component.css']
 })
 export class CalendarMainComponent implements OnInit, OnDestroy {
-  subscriptions: Subscription[];
+  subscriptions: Subscription[] = [];
 
   addingEvent: boolean = false;
   updatingEvent: boolean = false;
 
   profileForm = this.fb.group({
     what: ['', Validators.required],
-    hour: ['0', [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-3])$")]],
-    minute: ['0', [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])$")]],
+    hour: [0, [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-3])$")]],
+    minute: [0, [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])$")]],
     month: [],
     year: [],
     day: [],
@@ -29,7 +29,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
 
   year: number;
   // 0 indexed
-  month: number;
+  zeroIndexedMonth: number;
   today: number;
   monthName: string;
   records: [] = [];
@@ -44,7 +44,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     'Sat': 6
   };
   maxGridRow: number;
-  currentRecord: { what: any; hour: any; minute: any; day: any; month: number; year: number; id: any; };
+  currentRecord: { what: string; hour: number; minute: number; day: number; month: number; year: number; id: string; };
   undoEnabled: boolean = false;
 
   get weekdayNames(): string[] {
@@ -72,7 +72,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
 
   get daysInMonth() {
     // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
-    return new Date(this.year, this.month + 1, 0).getDate();
+    return new Date(this.year, this.zeroIndexedMonth + 1, 0).getDate();
   }
 
   get daysInMonthArray() {
@@ -87,7 +87,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
 
     let gridRow = 1;
     this.daysInMonthArray.forEach((dayNumber, index) => {
-      const day = new Date(this.year, this.month, dayNumber).getDay();
+      const day = new Date(this.year, this.zeroIndexedMonth, dayNumber).getDay();
       if (index !== 0 && day === 0) gridRow++;
 
       const col = (day % 7);
@@ -109,32 +109,33 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   ) {
     let date = new Date();
     this.year = date.getFullYear();
-    this.month = date.getMonth();
+    this.zeroIndexedMonth = date.getMonth();
     this.today = date.getDate()
   }
 
   ngOnInit() {
-    let a  =this.chatService.calendarRecords.asObservable();
-    
-    let b = a.subscribe(calendarRecords => {
+    this.chatService.calendarRecords.subscribe(calendarRecords => {
       console.log(calendarRecords);
-      if (calendarRecords.hasOwnProperty(`${this.year}-${this.month}`)) 
-        this.records = calendarRecords[`${this.year}-${this.month}`].records;
-      else 
+      if (calendarRecords.hasOwnProperty(`${this.year}-${this.zeroIndexedMonth}`))
+        this.records = calendarRecords[`${this.year}-${this.zeroIndexedMonth}`].records;
+      else
         this.records = [];
     });
 
-    this.subscriptions.push(b);
+    this.chatService.getCalendarRecords(this.year, this.zeroIndexedMonth);
 
-    this.chatService.getCalendarRecords(this.year, this.month);
-
-    this.subscriptions.push(this.profileForm.valueChanges.subscribe(() => {
-      this.undoEnabled = this.checkEnableUndo();
-    }));
+    this.subscriptions.push(
+      this.profileForm.valueChanges.subscribe(() => {
+        this.undoEnabled = this.checkEnableUndo();
+      })
+    );
   }
 
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    
+    this.chatService.calendarRecords.observers.forEach(element => { element.complete(); });
+    this.chatService.calendarRecords.next({});
   }
 
   getDayName(dayNumber) {
@@ -148,13 +149,13 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   }
 
   getDayNameForMonth(day) {
-    const date = new Date(this.year, this.month, day);
+    const date = new Date(this.year, this.zeroIndexedMonth, day);
     return this.getDayName(date.getDay());
   }
 
   changeMonth(isNextMonth: boolean) {
-    let zeroIndexedMonth = this.month;
-    let oneIndexedMonth = this.month + 1;
+    let zeroIndexedMonth = this.zeroIndexedMonth;
+    let oneIndexedMonth = this.zeroIndexedMonth + 1;
 
     let year = this.year;
 
@@ -164,10 +165,10 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     else tempDate.setMonth(zeroIndexedMonth - 1);
 
     this.year = tempDate.getFullYear();
-    this.month = tempDate.getMonth();
+    this.zeroIndexedMonth = tempDate.getMonth();
 
     this.chatService.calendarRecords.next({});
-    this.chatService.getCalendarRecords(this.year, this.month);
+    this.chatService.getCalendarRecords(this.year, this.zeroIndexedMonth);
   }
 
   checkEnableUndo() {
@@ -190,10 +191,10 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
 
     this.profileForm.patchValue({
       what: '',
-      hour: '0',
-      minute: '0',
+      hour: 0,
+      minute: 0,
       day: this.daysInMonthArray[dayData.dayInMonthArrayIndex],
-      month: this.month,
+      month: this.zeroIndexedMonth,
       year: this.year,
       id: uuid()
     });
@@ -208,7 +209,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
       hour: record.hour,
       minute: record.minute,
       day: record.day,
-      month: this.month,
+      month: this.zeroIndexedMonth,
       year: this.year,
       id: record.id
     };

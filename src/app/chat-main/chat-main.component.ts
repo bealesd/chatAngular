@@ -16,7 +16,7 @@ import { LoginHelper } from '../login/loginHelper'
   styleUrls: ['./chat-main.component.css']
 })
 export class ChatComponent implements OnInit, OnDestroy {
-  subscriptions: any[];
+  subscriptions: Subscription[] = [];
 
   chatMessages: RecieveChat[];
   chatForm: SendChat;
@@ -52,13 +52,13 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscriptions.push(this.chatService.chatMessages.asObservable().subscribe(chatMessages => {
+    this.chatService.chatMessages.subscribe(chatMessages => {
       this.chatMessages = chatMessages;
-    }));
+    })
 
-    this.subscriptions.push(this.chatService.newChatMessagesCount.asObservable().subscribe(newChatMessagesCount => {
+    this.chatService.newChatMessagesCount.subscribe(newChatMessagesCount => {
       this.newChatMessagesCount = newChatMessagesCount;
-    }));
+    });
 
     this.newChatMessagesCount = 0;
 
@@ -74,6 +74,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.chatService.chatMessages.observers.forEach(element => { element.complete(); });
+    this.chatService.newChatMessagesCount.observers.forEach(element => { element.complete(); });
+
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 

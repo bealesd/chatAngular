@@ -102,36 +102,24 @@ export class ChatService {
             'records': JSON.parse(atob(calendarRecord.content))
           }
           this.calendarRecords.next(calendarRecords);
-
-          // this.postCalendarRecord(2020, 6, {
-          //   'message': 'fun',
-          //   'day': '19',
-          //   'hour': '9',
-          //   'minute': '10',
-          //   'id': "ce229616-c50b-4902-ac92-1bbaad8ef8ce"
-          // })
-
         },
         error: (err: any) => {
-          if (err.status === 404) {
+          if (err.status === 404) 
             console.log('No records.');
-          }
-          else {
+          else if(err.status === 401)
+            alert('Authentication error. You may need to login.');
+          else 
             console.error(err);
-          }
-
+          
           calendarRecords[`${year}-${month}`] = { 'records': [], 'sha': '' };
           this.calendarRecords.next(calendarRecords);
         }
       }
     );
-
   }
 
   getChatMessages(): void {
     this.messageService.add('Fetching last 10 messages.');
-    const year = 2020;
-    const month = 6;
 
     this.chatRepo.getLastTen()
       .subscribe((chatMessages: RecieveChat[]) => {
