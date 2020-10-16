@@ -43,7 +43,21 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     'Fri': 5,
     'Sat': 6
   };
-  maxGridRow: number;
+
+  daysLongEnum = {
+    'Sunday': 0,
+    'Monday': 1,
+    'Tuesday': 2,
+    'Wednesday': 3,
+    'Thursday': 4,
+    'Friday': 5,
+    'Saturday': 6
+  };
+
+  lastGridRow: number;
+  penultimateGridRow: number;
+  lastCol: number;
+
   currentRecord: { what: string; hour: number; minute: number; day: number; month: number; year: number; id: string; };
   undoEnabled: boolean = false;
 
@@ -93,11 +107,14 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
       const col = (day % 7);
       const gridCol = col + 1;
       const dayName = this.weekdayNames[col];
+      this.lastCol = gridCol;
 
       dayData.push({ 'gridRow': gridRow, 'gridCol': gridCol, 'name': dayName, 'dayInMonthArrayIndex': index });
     });
 
-    this.maxGridRow = gridRow;
+    this.lastGridRow = gridRow;
+    this.penultimateGridRow = gridRow-1;
+
     return dayData;
   }
 
@@ -114,6 +131,10 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    if (!this.loginHelper.checkPersonSelected()) {
+      this.loginHelper.setPerson();
+    }
+
     this.chatService.calendarRecords.subscribe(calendarRecords => {
       console.log(calendarRecords);
       if (calendarRecords.hasOwnProperty(`${this.year}-${this.zeroIndexedMonth}`))
@@ -133,13 +154,17 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
-    
+
     this.chatService.calendarRecords.observers.forEach(element => { element.complete(); });
     this.chatService.calendarRecords.next({});
   }
 
   getDayName(dayNumber) {
     return Object.keys(this.daysEnum)[dayNumber];
+  }
+
+  getDayNameLong(dayNumber) {
+    return Object.keys(this.daysLongEnum)[dayNumber];
   }
 
   getRecordsByDay(day) {
@@ -151,6 +176,11 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   getDayNameForMonth(day) {
     const date = new Date(this.year, this.zeroIndexedMonth, day);
     return this.getDayName(date.getDay());
+  }
+
+  getDayNameLongForMonth(day) {
+    const date = new Date(this.year, this.zeroIndexedMonth, day);
+    return this.getDayNameLong(date.getDay());
   }
 
   changeMonth(isNextMonth: boolean) {

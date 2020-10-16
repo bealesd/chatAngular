@@ -81,7 +81,6 @@ export class CalendarRepo {
     return chatMessagesMetaData.filter((metdata: GitHubMetaData) => {
       metdata.name.match(/id_[0-9]{1,100000}\.json/)
     });
-
     // return chatMessagesMetaData.filter(metdata => metdata['name'].match(/id_[0-9]{1,100000}\.json/));
   }
 
@@ -91,10 +90,6 @@ export class CalendarRepo {
   getChatsFromEnd = (chatMessagesMetaData: GitHubMetaData[], fromEnd: number): GitHubMetaData[] =>
     chatMessagesMetaData.slice(Math.max(chatMessagesMetaData.length - fromEnd, 0));
 
-  // name will be id_yyyy_mm_dd.json
-
   removeUrlParams = (rawUrl: string) =>
     new URL(rawUrl).origin + new URL(rawUrl).pathname;
 }
-
-

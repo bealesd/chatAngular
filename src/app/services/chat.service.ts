@@ -2,7 +2,7 @@ import { GitHubMetaData } from './../gitHubMetaData';
 
 import { Injectable } from '@angular/core';
 
-import { Observable, BehaviorSubject, ObjectUnsubscribedError, Subscription } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 import { MessageService } from '../services/message.service';
 
@@ -11,7 +11,6 @@ import { SendChat } from '../models/send-chat.model';
 
 import { ChatRepo } from './chat.repo'
 import { CalendarRepo } from './calendar.repo'
-import * as uuid from 'uuid';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +18,6 @@ import * as uuid from 'uuid';
 export class ChatService {
   public chatMessages = new BehaviorSubject<RecieveChat[]>([]);
 
-  // {'2020-6': {'sha': 'sha', 'records': []}}
   public calendarRecords = new BehaviorSubject<any>({});
 
   public newChatMessagesCount = new BehaviorSubject<number>(0);
@@ -75,23 +73,26 @@ export class ChatService {
     else
       calendarRecordsForMonth.records.push(record);
 
+    this.messageService.add(`Posting calendar record for ${year}-${month+1}.`);
     this.calendarRepo.postCalendarRecords(year, month, calendarRecordsForMonth.records, calendarRecordsForMonth.sha).subscribe(
       {
         next: (calendarRecordsResult: any[]) => {
           const sha = (<any>calendarRecordsResult).content.sha;
           calendarRecordsForMonth.sha = sha;
 
-          console.log(calendarRecords);
+          this.messageService.add(`Posted calendar record for ${year}-${month+1}.`);
           this.calendarRecords.next(calendarRecords);
 
         },
         error: (data: any) => {
+          this.messageService.add(`Could not post calendar record for ${year}-${month+1}. Record: ${JSON.stringify(record)}.`);
           console.log(data)
         }
       }
     );
   }
   getCalendarRecords(year, month): void {
+    this.messageService.add(`Getting calendar record for ${year}-${month+1}.`);
     const calendarRecords = this.calendarRecords.getValue()
     this.calendarRepo.getCalendarRecordsForMonth(year, month).subscribe(
       {
@@ -102,15 +103,21 @@ export class ChatService {
             'records': JSON.parse(atob(calendarRecord.content))
           }
           this.calendarRecords.next(calendarRecords);
+          this.messageService.add(`Got ${(<any>Object.values(calendarRecords)[0]).records.length} calendar records.`);
         },
         error: (err: any) => {
-          if (err.status === 404) 
-            console.log('No records.');
-          else if(err.status === 401)
+          if (err.status === 404)
+          this.messageService.add(`No calendar records.`);
+          else if(err.status === 401){
+            this.messageService.add(`Could not get calendar records. Authentication error, 401.`);
             alert('Authentication error. You may need to login.');
-          else 
+          }
+          else {
+            this.messageService.add(`Could not get calendar records.`);
             console.error(err);
-          
+          }
+
+
           calendarRecords[`${year}-${month}`] = { 'records': [], 'sha': '' };
           this.calendarRecords.next(calendarRecords);
         }

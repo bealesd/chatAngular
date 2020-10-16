@@ -12,16 +12,17 @@ export class LoginHelper {
   ) {
     this.names = ['Esther', 'David'];
   }
-  
+
   changePerson(person) {
     this.who = person;
     this.updatePerson(person);
 
     document.body.className = '';
-    if (this.who === 'David')
-      document.body.classList.add('dark');
-    else
-      document.body.classList.add('light');
+    document.body.classList.add('dark');
+    // if (this.who === 'David')
+    //   document.body.classList.add('dark');
+    // else
+    //   document.body.classList.add('light');
   }
 
   updatePerson(chatPerson) {

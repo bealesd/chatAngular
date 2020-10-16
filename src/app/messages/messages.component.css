@@ -35,6 +35,17 @@ button:hover {
     background-color: #3e8e41;
 }
 
-.messages-container{
+.messages-container {
     padding-bottom: 5px;
+    /* overflow: hidden; */
+}
+
+.messages-container {
+    overflow: scroll;
+}
+
+.messages-container::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+    /* make scrollbar transparent */
 }
