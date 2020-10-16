@@ -30,7 +30,8 @@ export class MenuBarComponent implements OnInit {
   async ngAfterViewInit(): Promise<void> {
     await this.loadMenu();
 
-    // TODO unclick menu on option clicked
+    this.disableMenuItem('save-click');
+    this.disableMenuItem('undo-click');
 
     document.querySelector('#about-click').addEventListener('click', () => {
       this.closeMenu();
@@ -101,5 +102,15 @@ It is serverless, thanks to GitHub API.`
       this.router.onSameUrlNavigation = 'reload';
       this.router.navigate(['login']);
     }
+  }
+
+  disableMenuItem(id){
+    document.querySelector(`#${id}`).classList.add('disabled');
+    (<any>document.querySelector(`#${id}`)).style.color = 'lightgrey';
+  }
+
+  enableMenuItem(id){
+    document.querySelector(`#${id}`).classList.remove('disabled');
+    (<any>document.querySelector(`#${id}`)).style.color = '';
   }
 }
