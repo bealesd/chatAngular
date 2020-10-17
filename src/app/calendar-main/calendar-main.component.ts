@@ -142,7 +142,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
         this.undoEnabled = this.checkEnableUndo();
 
         if (this.undoEnabled)
-          this.menuService.enableMenuItem('undo-click', () => { this.undoChanges(); });
+          this.menuService.enableMenuItem('undo-click', () => { this.undoChanges(); this.menuService.hideMenu(); });
         else
           this.menuService.disableMenuItem('undo-click');
       })

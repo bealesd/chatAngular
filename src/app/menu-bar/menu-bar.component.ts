@@ -33,8 +33,6 @@ export class MenuBarComponent implements OnInit {
     this.menuService.disableMenuItem('undo-click');
   }
 
-  // TODO - move to gridmenu codebase
-
   async loadMenu(): Promise<void> {
     await window['GridMenu'].load();
   }
