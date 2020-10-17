@@ -27,12 +27,11 @@
     --record-border-pink: var(--record-border-type) var(--record-border-thickness) var(--record-border-pink-color);
     --record-border-violet-color: rgb(150, 78, 202);
     --record-border-violet: var(--record-border-type) var(--record-border-thickness) var(--record-border-violet-color);
-    --form-width: 300px;
     --form-height: 400px;
+    --form-width: 300px;
     --form-font-size: 20px;
     --form-heading-color: black;
 }
-
 
 /*small size wrapper*/
 
@@ -49,6 +48,8 @@
         --record-text-color: white;
         --record-border-thickness: 1px;
         --form-font-size: 16px;
+        --form-height: 250px;
+        --form-width: 200px;
     }
 }
 
