@@ -37,9 +37,7 @@ export class ChatRepo {
   }
 
   getMessageListings = (): Observable<GitHubMetaData[]> => {
-    return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options()).pipe(
-      catchError(this.handleError<GitHubMetaData[]>('Could not get chat messages metdata.', []))
-    )
+    return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options());
   }
 
   attemptLogin = (): Observable<GitHubMetaData[]> => {
@@ -64,9 +62,8 @@ export class ChatRepo {
         }),
         mergeMap((chatUrls) => {
           return forkJoin(chatUrls);
-        }),
-        catchError(this.handleError<RecieveChat[]>('Could not get last 10 chat messgaes.', []))
-      ).pipe(
+        }))
+      .pipe(
         map((results: RecieveChat[]) => {
           results.map((chat) => { chat.Sha = idShaLookup[chat.Id]; });
           return results;
@@ -94,8 +91,7 @@ export class ChatRepo {
           return forkJoin(chatUrls).pipe(
             defaultIfEmpty(null),
           );
-        }),
-        catchError(this.handleError<RecieveChat[]>('Could not get new chat messages.', []))
+        })
       ).pipe(
         map((results: RecieveChat[]) => {
           return results;

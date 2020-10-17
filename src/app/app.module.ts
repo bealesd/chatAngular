@@ -20,9 +20,6 @@ import { MenuBarComponent } from './menu-bar/menu-bar.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { CalendarMainComponent } from './calendar-main/calendar-main.component';
 
-
-
-
 @NgModule({
   declarations: [
     AppComponent,

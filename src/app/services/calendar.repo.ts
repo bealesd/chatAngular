@@ -1,23 +1,17 @@
 import { Injectable } from '@angular/core';
-
-import { Observable, of, forkJoin, BehaviorSubject, Subscriber, interval } from 'rxjs';
-import { catchError, map, tap, retry, mergeMap, defaultIfEmpty } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { catchError} from 'rxjs/operators';
 
 import { MessageService } from './message.service';
-import { RecieveChat } from '../models/recieve-chat.model';
-import { SendChat } from '../models/send-chat.model';
 import { GitHubMetaData } from '../gitHubMetaData'
-
 import { CryptoService } from './crypto.service';
-
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CalendarRepo {
   private baseMessagesUrl = 'https://api.github.com/repos/bealesd/calendarStore/contents';
-  private baseRawMessagesUrl = 'https://raw.githubusercontent.com/bealesd/calendarStore/master';
 
   constructor(
     private cryptoService: CryptoService,
@@ -66,29 +60,12 @@ export class CalendarRepo {
   }
 
   // helpers
-  // todo - if auth error, go to login page?
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       this.log(`Failed REST request. ${operation} ${error.message}.`);
       return of(result as T);
     }
   }
-
-  idExtractor = (fileName: string): number =>
-    parseInt(fileName.match(/[0-9]{1,100000}/)[0]);
-
-  fileNameFilter(chatMessagesMetaData: GitHubMetaData[]): GitHubMetaData[] {
-    return chatMessagesMetaData.filter((metdata: GitHubMetaData) => {
-      metdata.name.match(/id_[0-9]{1,100000}\.json/)
-    });
-    // return chatMessagesMetaData.filter(metdata => metdata['name'].match(/id_[0-9]{1,100000}\.json/));
-  }
-
-  sortByName = (chatMessagesMetaData: GitHubMetaData[]): GitHubMetaData[] =>
-    this.fileNameFilter(chatMessagesMetaData).sort((a: GitHubMetaData, b: GitHubMetaData) => this.idExtractor(a.name) - this.idExtractor(b.name));
-
-  getChatsFromEnd = (chatMessagesMetaData: GitHubMetaData[], fromEnd: number): GitHubMetaData[] =>
-    chatMessagesMetaData.slice(Math.max(chatMessagesMetaData.length - fromEnd, 0));
 
   removeUrlParams = (rawUrl: string) =>
     new URL(rawUrl).origin + new URL(rawUrl).pathname;

@@ -1,16 +1,11 @@
-import { GitHubMetaData } from './../gitHubMetaData';
-
 import { Injectable } from '@angular/core';
-
 import { Observable, BehaviorSubject } from 'rxjs';
 
+import { GitHubMetaData } from './../gitHubMetaData';
 import { MessageService } from '../services/message.service';
-
 import { RecieveChat } from '../models/recieve-chat.model';
 import { SendChat } from '../models/send-chat.model';
-
 import { ChatRepo } from './chat.repo'
-import { CalendarRepo } from './calendar.repo'
 
 @Injectable({
   providedIn: 'root'
@@ -18,120 +13,36 @@ import { CalendarRepo } from './calendar.repo'
 export class ChatService {
   public chatMessages = new BehaviorSubject<RecieveChat[]>([]);
 
-  public calendarRecords = new BehaviorSubject<any>({});
-
   public newChatMessagesCount = new BehaviorSubject<number>(0);
   public loggedIn = new BehaviorSubject<boolean>(false);
 
-  constructor(private messageService: MessageService, private chatRepo: ChatRepo, private calendarRepo: CalendarRepo) {
-  }
-
-  deleteCalendarRecord(year, month, id): void {
-    const calendarRecords = this.calendarRecords.getValue();
-
-    let calendarRecordsForMonth = calendarRecords[`${year}-${month}`]
-    calendarRecordsForMonth.records = calendarRecordsForMonth.records.filter(r => r.id !== id);
-
-    this.calendarRepo.postCalendarRecords(year, month, calendarRecordsForMonth.records, calendarRecordsForMonth.sha).subscribe(
-      {
-        next: (calendarRecordsResult: any[]) => {
-          const sha = (<any>calendarRecordsResult).content.sha;
-          calendarRecordsForMonth.sha = sha;
-
-          console.log(calendarRecords);
-          this.calendarRecords.next(calendarRecords);
-
-        },
-        error: (data: any) => {
-          console.log(data)
-        }
-      }
-    );
-  }
-
-  postCalendarRecord(year, month, record): void {
-    const calendarRecords = this.calendarRecords.getValue();
-
-    let calendarRecordsForMonth;
-    if (calendarRecords.hasOwnProperty(`${year}-${month}`))
-      calendarRecordsForMonth = calendarRecords[`${year}-${month}`]
-    else
-      calendarRecordsForMonth = { 'records': [], 'sha': '' };
-
-    const isUpdate = calendarRecordsForMonth.records.find(r => r.id === record.id) !== undefined;
-    if (isUpdate) {
-      calendarRecordsForMonth.records.forEach((r) => {
-        if (r.id === record.id) {
-          r.what = record.what;
-          r.month = record.month;
-          r.day = record.day;
-          r.hour = record.hour;
-          r.minute = record.minute;
-        }
-      });
-    }
-    else
-      calendarRecordsForMonth.records.push(record);
-
-    this.messageService.add(`Posting calendar record for ${year}-${month+1}.`);
-    this.calendarRepo.postCalendarRecords(year, month, calendarRecordsForMonth.records, calendarRecordsForMonth.sha).subscribe(
-      {
-        next: (calendarRecordsResult: any[]) => {
-          const sha = (<any>calendarRecordsResult).content.sha;
-          calendarRecordsForMonth.sha = sha;
-
-          this.messageService.add(`Posted calendar record for ${year}-${month+1}.`);
-          this.calendarRecords.next(calendarRecords);
-
-        },
-        error: (data: any) => {
-          this.messageService.add(`Could not post calendar record for ${year}-${month+1}. Record: ${JSON.stringify(record)}.`);
-          console.log(data)
-        }
-      }
-    );
-  }
-  getCalendarRecords(year, month): void {
-    this.messageService.add(`Getting calendar record for ${year}-${month+1}.`);
-    const calendarRecords = this.calendarRecords.getValue()
-    this.calendarRepo.getCalendarRecordsForMonth(year, month).subscribe(
-      {
-        next: (calendarRecord: any) => {
-          console.log(calendarRecord);
-          calendarRecords[`${year}-${month}`] = {
-            'sha': calendarRecord.sha,
-            'records': JSON.parse(atob(calendarRecord.content))
-          }
-          this.calendarRecords.next(calendarRecords);
-          this.messageService.add(`Got ${(<any>Object.values(calendarRecords)[0]).records.length} calendar records.`);
-        },
-        error: (err: any) => {
-          if (err.status === 404)
-          this.messageService.add(`No calendar records.`);
-          else if(err.status === 401){
-            this.messageService.add(`Could not get calendar records. Authentication error, 401.`);
-            alert('Authentication error. You may need to login.');
-          }
-          else {
-            this.messageService.add(`Could not get calendar records.`);
-            console.error(err);
-          }
-
-
-          calendarRecords[`${year}-${month}`] = { 'records': [], 'sha': '' };
-          this.calendarRecords.next(calendarRecords);
-        }
-      }
-    );
+  constructor(private messageService: MessageService, private chatRepo: ChatRepo) {
   }
 
   getChatMessages(): void {
-    this.messageService.add('Fetching last 10 messages.');
+    this.messageService.add('Getting last 10 chat messages.');
 
-    this.chatRepo.getLastTen()
-      .subscribe((chatMessages: RecieveChat[]) => {
-        this.chatMessages.next(chatMessages);
-      });
+    this.chatRepo.getLastTen().subscribe(
+      {
+        next: (chatMessages: RecieveChat[]) => {
+          this.chatMessages.next(chatMessages);
+
+          this.messageService.add(`Got last 10 chat messages.`);
+        },
+        error: (err: any) => {
+          if (err.status === 404)
+            this.messageService.add(`No chat messages.`);
+          else if (err.status === 401) {
+            this.messageService.add(`Could not get chat messages. Authentication error, 401.`);
+            alert('Authentication error. You may need to login.');
+          }
+          else {
+            this.messageService.add(`Could not get chat messages.`);
+            console.error(err);
+          }
+        }
+      }
+    );
   }
 
   getNewChatMessages(): void {
@@ -145,22 +56,37 @@ export class ChatService {
       id = currentChatMessages[currentChatMessages.length - 1].Id;
 
     this.chatRepo.getNewChatMessages(id)
-      .subscribe((chatMessages: RecieveChat[]) => {
-        if (chatMessages === null || chatMessages === undefined || chatMessages.length === 0) {
-          this.messageService.add(` • No new messages.`);
-          return;
-        }
+      .subscribe(
+        {
+          next: (chatMessages: RecieveChat[]) => {
+            if (chatMessages === null || chatMessages === undefined || chatMessages.length === 0) {
+              this.messageService.add(` • No new messages.`);
+              return;
+            }
+            else {
+              let currentMessagesCount = this.newChatMessagesCount.getValue();
+              let newMessageCount = chatMessages.length;
+              this.newChatMessagesCount.next(currentMessagesCount + newMessageCount);
+              this.messageService.add(` • ${newMessageCount} new message${newMessageCount > 1 ? 's' : ''}.`);
 
-        else {
-          let currentMessagesCount = this.newChatMessagesCount.getValue();
-          let newMessageCount = chatMessages.length;
-          this.newChatMessagesCount.next(currentMessagesCount + newMessageCount);
-          this.messageService.add(` • ${newMessageCount} new message${newMessageCount > 1 ? 's' : ''}.`);
-
-          currentChatMessages.push(...chatMessages);
-          this.chatMessages.next(currentChatMessages);
+              currentChatMessages.push(...chatMessages);
+              this.chatMessages.next(currentChatMessages);
+            }
+          },
+          error: (err: any) => {
+            if (err.status === 404)
+              this.messageService.add(`No new chat messages.`);
+            else if (err.status === 401) {
+              this.messageService.add(`Could not get new chat messages. Authentication error, 401.`);
+              alert('Authentication error. You may need to login.');
+            }
+            else {
+              this.messageService.add(`Could not get new chat messages.`);
+              console.error(err);
+            }
+          }
         }
-      });
+      );
   }
 
   login(type: string): Observable<GitHubMetaData[]> {

@@ -1,10 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { LoginHelper } from '../login/loginHelper';
-import { ChatService } from '../services/chat.service';
-import { MessageService } from '../services/message.service';
-import * as uuid from 'uuid';
 import { Subscription } from 'rxjs';
+import * as uuid from 'uuid';
+
+import { LoginHelper } from '../login/loginHelper';
+import { CalendarService } from './../services/calendar.service';
+import { MessageService } from '../services/message.service';
+import { MenuService } from '../services/menu.service';
 
 @Component({
   selector: 'app-calendar-main',
@@ -13,10 +15,13 @@ import { Subscription } from 'rxjs';
 })
 export class CalendarMainComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-
   addingEvent: boolean = false;
   updatingEvent: boolean = false;
-
+  currentRecord: { what: string; hour: number; minute: number; day: number; month: number; year: number; id: string; };
+  undoEnabled: boolean = false;
+  lastGridRow: number;
+  penultimateGridRow: number;
+  lastCol: number;
   profileForm = this.fb.group({
     what: ['', Validators.required],
     hour: [0, [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-3])$")]],
@@ -26,14 +31,11 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     day: [],
     id: []
   })
-
   year: number;
-  // 0 indexed
   zeroIndexedMonth: number;
   today: number;
   monthName: string;
   records: [] = [];
-
   daysEnum = {
     'Sun': 0,
     'Mon': 1,
@@ -43,7 +45,6 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     'Fri': 5,
     'Sat': 6
   };
-
   daysLongEnum = {
     'Sunday': 0,
     'Monday': 1,
@@ -53,18 +54,9 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     'Friday': 5,
     'Saturday': 6
   };
-
-  lastGridRow: number;
-  penultimateGridRow: number;
-  lastCol: number;
-
-  currentRecord: { what: string; hour: number; minute: number; day: number; month: number; year: number; id: string; };
-  undoEnabled: boolean = false;
-
   get weekdayNames(): string[] {
     return Object.keys(this.daysEnum);
   }
-
   monthsEnum = {
     "January": 0,
     "February": 1,
@@ -83,19 +75,16 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   get monthNames(): string[] {
     return Object.keys(this.monthsEnum);
   }
-
   get daysInMonth() {
     // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
     return new Date(this.year, this.zeroIndexedMonth + 1, 0).getDate();
   }
-
   get daysInMonthArray() {
     // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
     const days: number[] = [];
     for (let i = 1; i <= (this.daysInMonth); i++) days.push(i);
     return days;
   }
-
   get dayDataForMonth() {
     const dayData = [];
 
@@ -113,16 +102,17 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     });
 
     this.lastGridRow = gridRow;
-    this.penultimateGridRow = gridRow-1;
+    this.penultimateGridRow = gridRow - 1;
 
     return dayData;
   }
 
   constructor(
-    private chatService: ChatService,
+    private calendarService: CalendarService,
     private messageService: MessageService,
     private loginHelper: LoginHelper,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private menuService: MenuService
   ) {
     let date = new Date();
     this.year = date.getFullYear();
@@ -131,11 +121,13 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.menuService.disableMenuItem('undo-click');
+
     if (!this.loginHelper.checkPersonSelected()) {
       this.loginHelper.setPerson();
     }
 
-    this.chatService.calendarRecords.subscribe(calendarRecords => {
+    this.calendarService.calendarRecords.subscribe(calendarRecords => {
       console.log(calendarRecords);
       if (calendarRecords.hasOwnProperty(`${this.year}-${this.zeroIndexedMonth}`))
         this.records = calendarRecords[`${this.year}-${this.zeroIndexedMonth}`].records;
@@ -143,11 +135,16 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
         this.records = [];
     });
 
-    this.chatService.getCalendarRecords(this.year, this.zeroIndexedMonth);
+    this.calendarService.getCalendarRecords(this.year, this.zeroIndexedMonth);
 
     this.subscriptions.push(
       this.profileForm.valueChanges.subscribe(() => {
         this.undoEnabled = this.checkEnableUndo();
+
+        if (this.undoEnabled)
+          this.menuService.enableMenuItem('undo-click', () => { this.undoChanges(); });
+        else
+          this.menuService.disableMenuItem('undo-click');
       })
     );
   }
@@ -155,8 +152,10 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
 
-    this.chatService.calendarRecords.observers.forEach(element => { element.complete(); });
-    this.chatService.calendarRecords.next({});
+    this.calendarService.calendarRecords.observers.forEach(element => { element.complete(); });
+    this.calendarService.calendarRecords.next({});
+
+    this.menuService.disableMenuItem('undo-click');
   }
 
   getDayName(dayNumber) {
@@ -197,8 +196,10 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     this.year = tempDate.getFullYear();
     this.zeroIndexedMonth = tempDate.getMonth();
 
-    this.chatService.calendarRecords.next({});
-    this.chatService.getCalendarRecords(this.year, this.zeroIndexedMonth);
+    this.calendarService.calendarRecords.next({});
+    this.calendarService.getCalendarRecords(this.year, this.zeroIndexedMonth);
+
+    this.closeAddOrUpdateEventForm();
   }
 
   checkEnableUndo() {
@@ -264,18 +265,19 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
       'minute': this.profileForm.value.minute,
       'id': this.profileForm.value.id
     }
-    this.chatService.postCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, record);
+    this.calendarService.postCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, record);
     this.closeAddOrUpdateEventForm();
   }
 
   deleteEvent() {
     if (window.confirm(`Are you sure you want to delete this record?`)) {
-      this.chatService.deleteCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, this.profileForm.value.id);
+      this.calendarService.deleteCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, this.profileForm.value.id);
       this.closeAddOrUpdateEventForm();
     }
   }
 
   closeAddOrUpdateEventForm() {
+    this.menuService.disableMenuItem('undo-click');
     this.addingEvent = false;
     this.updatingEvent = false;
     this.undoEnabled = false;
@@ -289,6 +291,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   }
 
   closeClickUpdateEventForm() {
+    this.menuService.disableMenuItem('undo-click');
     if (!this.undoEnabled)
       this.updatingEvent = false;
     else if (window.confirm('Are you sure you want to discard changes?'))
