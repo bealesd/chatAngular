@@ -19,6 +19,8 @@ import { MenuBarComponent } from './menu-bar/menu-bar.component';
 
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { CalendarMainComponent } from './calendar-main/calendar-main.component';
+import { AppsComponent } from './apps/apps.component';
+import { TodoComponent } from './todo/todo.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,9 @@ import { CalendarMainComponent } from './calendar-main/calendar-main.component';
     LoginComponent,
     DialogBoxComponent,
     MenuBarComponent,
-    CalendarMainComponent
+    CalendarMainComponent,
+    AppsComponent,
+    TodoComponent
   ],
   imports: [
     BrowserModule,

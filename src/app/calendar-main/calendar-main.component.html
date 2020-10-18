@@ -11,10 +11,7 @@
 </div>
 
 <div class="date-box-contianer">
-    <!-- year
-    zeroIndexedMonth
-    today  -->
-
+    
     <div *ngFor="let dayData of dayDataForMonth; let i = index"
         class="date-box {{today.year === year && today.month === zeroIndexedMonth && today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}"
         [attr.data-col]="dayData.gridCol" 

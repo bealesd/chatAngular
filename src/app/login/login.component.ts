@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { ChatService } from '../services/chat.service';
 
@@ -20,12 +21,15 @@ export class LoginComponent implements OnInit {
     private cryptoService: CryptoService,
     private chatService: ChatService,
     private loginHelper: LoginHelper,
+    private router: Router,
   ) {
     this.show = false;
     this.names = this.loginHelper.names;
 
     this.chatService.loggedIn.subscribe(loggedIn => {
       this.loggedIn = loggedIn;
+      if(loggedIn === true)
+        this.router.navigate(['/apps']);
     });
   }
 

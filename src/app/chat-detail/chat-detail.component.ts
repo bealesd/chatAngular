@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ɵConsole } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 import { RecieveChat } from '../models/recieve-chat.model';
 import { ChatService } from '../services/chat.service';

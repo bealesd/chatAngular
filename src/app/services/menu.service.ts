@@ -78,6 +78,12 @@ It is serverless, thanks to GitHub API.`
         else this.logout();
       });
 
+      this.registerMenuEvent('home-click',
+      () => {
+        this.hideMenu();
+        this.router.navigate(['apps']);
+      });
+
     this.registerMenuEvent('chat-click',
       () => {
         this.hideMenu();

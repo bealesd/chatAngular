@@ -1,0 +1,41 @@
+:host{
+    --icon-height: 200px;
+    --app-container-margin-y: 100px;
+}
+
+@media screen and (max-width: 800px) {
+    :host {
+        --icon-height: 100px;
+        --app-container-margin-y: 50px;
+   }
+}
+
+.app-container {  
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(4, calc(var(--icon-height)/2));
+    color: white;
+}
+
+.app-container:nth-child(){
+    overflow: hidden;
+}
+
+img{
+    height: var(--icon-height)
+}
+
+.calendar{
+    grid-column:  2/ 4;
+    grid-row: 2/4;
+}
+
+.chat{
+    grid-column:  6 / 8;
+    grid-row: 2/4;
+}
+
+.todo{
+    grid-column:  10/ 12;
+    grid-row: 2/4;
+}
