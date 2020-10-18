@@ -33,7 +33,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   })
   year: number;
   zeroIndexedMonth: number;
-  today: number;
+  today: {};
   monthName: string;
   records: [] = [];
   daysEnum = {
@@ -98,7 +98,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
       const dayName = this.weekdayNames[col];
       this.lastCol = gridCol;
 
-      dayData.push({ 'gridRow': gridRow, 'gridCol': gridCol, 'name': dayName, 'dayInMonthArrayIndex': index });
+      dayData.push({ 'gridRow': gridRow, 'gridCol': gridCol, 'name': dayName, 'dayInMonthArrayIndex': dayNumber });
     });
 
     this.lastGridRow = gridRow;
@@ -117,7 +117,8 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     let date = new Date();
     this.year = date.getFullYear();
     this.zeroIndexedMonth = date.getMonth();
-    this.today = date.getDate()
+
+    this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'day': date.getDate() };
   }
 
   ngOnInit() {
@@ -145,6 +146,21 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
           this.menuService.enableMenuItem('undo-click', () => { this.undoChanges(); this.menuService.hideMenu(); });
         else
           this.menuService.disableMenuItem('undo-click');
+
+        if (this.profileForm.valid && this.addingEvent)
+          this.menuService.enableMenuItem('save-click', () => { this.addEventClick(); this.menuService.hideMenu(); });
+        else if (this.profileForm.valid && this.updatingEvent)
+          this.menuService.enableMenuItem('save-click', () => { this.updateEventClick(); this.menuService.hideMenu(); });
+        else
+          this.menuService.disableMenuItem('save-click');
+
+        if (this.addingEvent)
+          this.menuService.enableMenuItem('cancel-click', () => { this.closeClickAddEventForm(); this.menuService.hideMenu(); });
+        else if (this.updatingEvent)
+          this.menuService.enableMenuItem('cancel-click', () => { this.closeClickUpdateEventForm(); this.menuService.hideMenu(); });
+
+        if (this.updatingEvent)
+          this.menuService.enableMenuItem('delete-click', () => { this.deleteEvent(); this.menuService.hideMenu(); });
       })
     );
   }
@@ -155,7 +171,11 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     this.calendarService.calendarRecords.observers.forEach(element => { element.complete(); });
     this.calendarService.calendarRecords.next({});
 
+    this.menuService.disableMenuItem('cancel-click');
+    this.menuService.disableMenuItem('delete-click');
     this.menuService.disableMenuItem('undo-click');
+
+    this.menuService.disableMenuItem('save-click');
   }
 
   getDayName(dayNumber) {
@@ -277,7 +297,12 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   }
 
   closeAddOrUpdateEventForm() {
+    this.menuService.disableMenuItem('cancel-click');
+    this.menuService.disableMenuItem('delete-click');
+    this.menuService.disableMenuItem('save-click');
+
     this.menuService.disableMenuItem('undo-click');
+
     this.addingEvent = false;
     this.updatingEvent = false;
     this.undoEnabled = false;
@@ -285,17 +310,16 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
 
   closeClickAddEventForm() {
     if (!this.profileForm.valid)
-      this.addingEvent = false;
+      this.closeAddOrUpdateEventForm();
     else if (window.confirm('Are you sure you want to discard changes?'))
-      this.addingEvent = false;
+      this.closeAddOrUpdateEventForm();
   }
 
   closeClickUpdateEventForm() {
-    this.menuService.disableMenuItem('undo-click');
     if (!this.undoEnabled)
-      this.updatingEvent = false;
+      this.closeAddOrUpdateEventForm();
     else if (window.confirm('Are you sure you want to discard changes?'))
-      this.updatingEvent = false;
+      this.closeAddOrUpdateEventForm();
   }
 
   private padToTwo(value: number): string {

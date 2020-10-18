@@ -29,8 +29,17 @@ export class MenuBarComponent implements OnInit {
 
     this.menuService.setupMenuEvents();
 
+    this.menuService.disableMenuItem('cancel-click');
+    this.menuService.disableMenuItem('delete-click');
     this.menuService.disableMenuItem('save-click');
+
     this.menuService.disableMenuItem('undo-click');
+
+    this.menuService.disableMenuItem('day-click');
+    this.menuService.disableMenuItem('week-click');
+    this.menuService.disableMenuItem('month-click');
+
+    (<any>document.querySelector('#save-click')).style.borderBottom = '2px dotted grey';
   }
 
   async loadMenu(): Promise<void> {
