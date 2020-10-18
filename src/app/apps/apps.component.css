@@ -22,7 +22,7 @@
 }
 
 img{
-    height: var(--icon-height)
+    height: var(--icon-height);
 }
 
 .calendar{
