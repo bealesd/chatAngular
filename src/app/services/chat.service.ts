@@ -2,10 +2,13 @@ import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 
 import { GitHubMetaData } from './../gitHubMetaData';
+
 import { MessageService } from '../services/message.service';
+import { ChatRepo } from '../services/chat.repo';
+
 import { RecieveChat } from '../models/recieve-chat.model';
 import { SendChat } from '../models/send-chat.model';
-import { ChatRepo } from './chat.repo'
+
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +17,6 @@ export class ChatService {
   public chatMessages = new BehaviorSubject<RecieveChat[]>([]);
 
   public newChatMessagesCount = new BehaviorSubject<number>(0);
-  public loggedIn = new BehaviorSubject<boolean>(false);
 
   constructor(private messageService: MessageService, private chatRepo: ChatRepo) {
   }
@@ -41,8 +43,7 @@ export class ChatService {
             console.error(err);
           }
         }
-      }
-    );
+      });
   }
 
   getNewChatMessages(): void {
@@ -85,8 +86,7 @@ export class ChatService {
               console.error(err);
             }
           }
-        }
-      );
+        });
   }
 
   checkForUpdatedMessages(): void {
@@ -191,19 +191,19 @@ export class ChatService {
 
     this.chatRepo.hardDeleteMessage(currentChatMessage).subscribe({
       next: (chatMessage: RecieveChat) => {
-      if (chatMessage !== undefined && chatMessage !== null) {
-        this.messageService.add(` • Message id ${id} deleted.`);
-        currentChatMessages = currentChatMessages.filter((chat) => chat.Id !== id);
-      }
-      else {
-        this.messageService.add(` • Message id ${id} could not be deleted.`);
-      }
+        if (chatMessage !== undefined && chatMessage !== null) {
+          this.messageService.add(` • Message id ${id} deleted.`);
+          currentChatMessages = currentChatMessages.filter((chat) => chat.Id !== id);
+        }
+        else {
+          this.messageService.add(` • Message id ${id} could not be deleted.`);
+        }
 
-      this.chatMessages.next(currentChatMessages);
-    },
-    error: (data: any) => {
-      this.messageService.add(`Could not delete message id ${id}.`);
-    }
-  });
+        this.chatMessages.next(currentChatMessages);
+      },
+      error: (data: any) => {
+        this.messageService.add(`Could not delete message id ${id}.`);
+      }
+    });
   }
 }

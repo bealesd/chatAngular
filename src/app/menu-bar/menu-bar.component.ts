@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { ChatService } from '../services/chat.service';
+import { LoginService } from '../services/login.service';
 import { MenuService } from '../services/menu.service';
 
 @Component({
@@ -12,11 +12,11 @@ export class MenuBarComponent implements OnInit {
   loggedIn: boolean;
 
   constructor(
-    private chatService: ChatService,
+    private loginService: LoginService,
     private menuService: MenuService
   ) {
 
-    this.chatService.loggedIn.subscribe(loggedIn => {
+    this.loginService.loggedIn.subscribe(loggedIn => {
       this.loggedIn = loggedIn;
     });
   }

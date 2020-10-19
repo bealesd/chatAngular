@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { MessageService } from './message.service';
 import { GitHubMetaData } from '../gitHubMetaData'
 import { CryptoService } from './crypto.service';
 
@@ -14,11 +13,7 @@ export class CalendarRepo {
 
   constructor(
     private cryptoService: CryptoService,
-    private http: HttpClient,
-    private messageService: MessageService) { }
-
-  private log = (message: string): void =>
-    this.messageService.add(`${message}`);
+    private http: HttpClient) { }
 
   options = (): { headers: HttpHeaders } => {
     return {

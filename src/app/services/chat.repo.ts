@@ -1,31 +1,24 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Observable, forkJoin, } from 'rxjs';
-import { map, tap, retry, mergeMap, defaultIfEmpty } from 'rxjs/operators';
+import { map, retry, mergeMap, defaultIfEmpty } from 'rxjs/operators';
 
-import { MessageService } from '../services/message.service';
 import { RecieveChat } from '../models/recieve-chat.model';
 import { SendChat } from '../models/send-chat.model';
 import { GitHubMetaData } from '../gitHubMetaData'
 
 import { CryptoService } from './crypto.service';
 
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-
 @Injectable({
   providedIn: 'root'
 })
 export class ChatRepo {
   private baseMessagesUrl = 'https://api.github.com/repos/bealesd/chatStore/contents';
-  private baseRawMessagesUrl = 'https://raw.githubusercontent.com/bealesd/chatStore/master';
 
   constructor(
     private cryptoService: CryptoService,
-    private http: HttpClient,
-    private messageService: MessageService) { }
-
-  private log = (message: string): void =>
-    this.messageService.add(`${message}`);
+    private http: HttpClient) { }
 
   options = (): { headers: HttpHeaders } => {
     return {
@@ -50,7 +43,7 @@ export class ChatRepo {
           for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
             const messageMetaData = messagesMetaData[i];
             idShaLookup[this.idExtractor(messageMetaData.name)] = messageMetaData.sha;
-            chatUrls.push(this.http.get<any>(this.removeUrlParams(messageMetaData.download_url)));
+            chatUrls.push(this.http.get<any>(this.removeUrlParams(messageMetaData['git_url']),  this.options()));
           }
           return chatUrls;
         }),
@@ -59,10 +52,27 @@ export class ChatRepo {
         }))
       .pipe(
         map((results: any[]) => {
-          results.map((chat) => { chat = atob(chat); chat.Sha = idShaLookup[chat.Id]; chat.Content = atob(chat.Content); });
-          return results as RecieveChat[];
+          return this.parseGitHubResults(results);
         })
       )
+  }
+
+  parseGitHubResult(gitHubResult: any): RecieveChat {
+    const chatObject = JSON.parse(atob(atob(gitHubResult.content)));
+    const recieveChat = new RecieveChat();
+    recieveChat.Sha = gitHubResult.sha;
+    recieveChat.Content = chatObject.Content;
+    recieveChat.Deleted = chatObject.Deleted;
+    recieveChat.Who = chatObject.Who;
+    recieveChat.Datetime = chatObject.Datetime;
+    recieveChat.Id = chatObject.Id;
+    return recieveChat;
+  }
+
+  parseGitHubResults(results: any[]): RecieveChat[] {
+    const recievedChats = [];
+    results.forEach((result) => { recievedChats.push(this.parseGitHubResult(result)); });
+    return recievedChats;
   }
 
   getNewChatMessages(lastId: number): Observable<RecieveChat[]> {
@@ -77,7 +87,7 @@ export class ChatRepo {
           for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
             const messageMetaData = messagesMetaData[i];
             if (this.idExtractor(messageMetaData.name) > lastId)
-              chatUrls.push(this.http.get<any>(this.removeUrlParams(messageMetaData.download_url)));
+              chatUrls.push(this.http.get<any>(this.removeUrlParams(messageMetaData['git_url'])),  this.options());
           }
           return chatUrls;
         }),
@@ -87,21 +97,19 @@ export class ChatRepo {
           );
         })
       ).pipe(
-        map((results: any[]) => {
-          results.map((chat) => { atob(chat); });
-          return results as RecieveChat[];
+        map((gitHubResults: any[]) => {
+          return this.parseGitHubResults(gitHubResults);
         })
       )
   }
 
   checkForUpdatedMessage(id: number): Observable<RecieveChat> {
-    return this.http.get<any>(`${this.baseRawMessagesUrl}/id_${id}.json`, this.options())
+    return this.http.get<any>(`${this.baseMessagesUrl}/id_${id}.json`, this.options())
       .pipe(
         retry(10)
       ).pipe(
-        map((chat: any) => {
-          chat = atob(chat);
-          return chat as RecieveChat;
+        map((gitHubResult: any) => {
+          return this.parseGitHubResult(gitHubResult);
         })
       )
   }
