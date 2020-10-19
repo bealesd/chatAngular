@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 import { CryptoService } from '../services/crypto.service';
 import { MessageService } from '../services/message.service';
-import { ChatService } from '../services/chat.service';
+import { LoginService } from './login.service';
 
 @Injectable({
   providedIn: 'root',
@@ -16,9 +16,9 @@ export class MenuService {
     private cryptoService: CryptoService,
     private router: Router,
     private messageService: MessageService,
-    private chatService: ChatService
+    private loginService: LoginService
   ) {
-    this.chatService.loggedIn.subscribe(loggedIn => {
+    this.loginService.loggedIn.subscribe(loggedIn => {
       this.loggedIn = loggedIn;
     });
   }
@@ -26,7 +26,7 @@ export class MenuService {
   logout() {
     if (confirm('Do you want to logout?')) {
       this.cryptoService.logout();
-      this.chatService.loggedIn.next(false);
+      this.loginService.loggedIn.next(false);
 
       this.messageService.add('Logged out.');
 

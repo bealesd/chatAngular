@@ -102,10 +102,15 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     const newMessage = <SendChat>{ Who: this.loginHelper.who, Content: this.content }
 
-    this.chatService.sendChatMessage(newMessage).subscribe((chatMessage) => {
+    this.chatService.sendChatMessage(newMessage).subscribe({
+      next: (chatMessage) => {
       this.chatMessages.push(chatMessage);
       this.messageService.add(` • Posted chat message id ${chatMessage.Id}.`);
-    });
+    },
+    error: (data: any) => {
+      this.messageService.add(`Could not post message.`);
+    }
+  });
 
     this.content = "";
     event.srcElement.parentElement.querySelector('input').focus();

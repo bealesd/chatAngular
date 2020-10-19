@@ -12,7 +12,7 @@
 
 .app-container {  
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: repeat(13, 1fr);
     grid-template-rows: repeat(4, calc(var(--icon-height)/2));
     color: white;
 }

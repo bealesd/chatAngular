@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 import { GitHubMetaData } from './../gitHubMetaData';
 import { MessageService } from '../services/message.service';
@@ -87,10 +87,9 @@ export class CalendarService {
     this.calendarRepo.getCalendarRecordsForMonth(year, month).subscribe(
       {
         next: (calendarRecord: any) => {
-          console.log(calendarRecord);
           calendarRecords[`${year}-${month}`] = {
             'sha': calendarRecord.sha,
-            'records': JSON.parse(atob(calendarRecord.content))
+            'records': JSON.parse(atob(atob(calendarRecord.content)))
           }
           this.calendarRecords.next(calendarRecords);
           this.messageService.add(`Got ${(<any>Object.values(calendarRecords)[0]).records.length} calendar records.`);
@@ -115,27 +114,4 @@ export class CalendarService {
     );
   }
 
-// TODO - move to login service
-  login(type: string): Observable<GitHubMetaData[]> {
-    this.messageService.add(`${type} Login attempt.`);
-    return this.calendarRepo.attemptLogin();
-  }
-
-  tryLogin(type: string) {
-    this.messageService.add(`${type} Login attempt.`);
-
-    this.calendarRepo.attemptLogin().subscribe((result) => {
-      if (result === undefined) {
-        this.messageService.add('Login failure.');
-        this.loggedIn.next(false);
-      }
-      else {
-        this.messageService.add('Login complete.');
-        this.loggedIn.next(true);
-      }
-    }, error => {
-      this.messageService.add('Login failure.');
-      this.loggedIn.next(false);
-    });
-  }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { ChatService } from '../services/chat.service';
+import { LoginService } from '../services/login.service';
 
 import { CryptoService } from '../services/crypto.service';
 import { LoginHelper } from './loginHelper';
@@ -20,13 +21,14 @@ export class LoginComponent implements OnInit {
   constructor(
     private cryptoService: CryptoService,
     private chatService: ChatService,
+    private loginService: LoginService,
     private loginHelper: LoginHelper,
     private router: Router,
   ) {
     this.show = false;
     this.names = this.loginHelper.names;
 
-    this.chatService.loggedIn.subscribe(loggedIn => {
+    this.loginService.loggedIn.subscribe(loggedIn => {
       this.loggedIn = loggedIn;
       if(loggedIn === true)
         this.router.navigate(['/apps']);
@@ -44,7 +46,7 @@ export class LoginComponent implements OnInit {
 
     this.cryptoService.login(citherKey, loginTime);
 
-    this.chatService.tryLogin('');
+    this.loginService.tryLogin('');
   }
 
   password() {

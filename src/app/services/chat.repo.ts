@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
-import { Observable, of, forkJoin, } from 'rxjs';
-import { catchError, map, tap, retry, mergeMap, defaultIfEmpty } from 'rxjs/operators';
+import { Observable, forkJoin, } from 'rxjs';
+import { map, tap, retry, mergeMap, defaultIfEmpty } from 'rxjs/operators';
 
 import { MessageService } from '../services/message.service';
 import { RecieveChat } from '../models/recieve-chat.model';
@@ -38,12 +38,6 @@ export class ChatRepo {
 
   getMessageListings = (): Observable<GitHubMetaData[]> => {
     return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options());
-  }
-
-  attemptLogin = (): Observable<GitHubMetaData[]> => {
-    return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options()).pipe(
-      catchError(this.handleError<GitHubMetaData[]>('Could not get chat messages metdata for login.', undefined))
-    )
   }
 
   getLastTen(): Observable<RecieveChat[]> {
@@ -103,8 +97,7 @@ export class ChatRepo {
     return this.http.get<RecieveChat>(`${this.baseRawMessagesUrl}/id_${id}.json`, this.options())
       .pipe(
         retry(10),
-        tap(x => x === null || x === undefined ? this.log(`Message id ${x.Id} updated.`) : null),
-        catchError(this.handleError<RecieveChat>(`Could not check for updated message, id ${id}.`, null))
+        tap(x => x === null || x === undefined ? this.log(`Message id ${x.Id} updated.`) : null)
       );
   }
 
@@ -130,8 +123,7 @@ export class ChatRepo {
           let metadata = <GitHubMetaData>result['content'];
           newMessage.Sha = metadata.sha;
           return <RecieveChat>newMessage;
-        }),
-        catchError(this.handleError<RecieveChat>('Could not post message.', null))
+        })
       );
   }
 
@@ -153,8 +145,7 @@ export class ChatRepo {
           let metadata = result.content;
           message.Sha = metadata.sha;
           return <RecieveChat>message;
-        }),
-        catchError(this.handleError<RecieveChat>(`Could not update delete flag, message id ${message.Id}.`, null))
+        })
       );
   }
 
@@ -167,16 +158,6 @@ export class ChatRepo {
     const rawCommitBody = JSON.stringify(commitBody);
 
     return this.http.request('delete', deletetUrl, { body: rawCommitBody, headers: this.options().headers })
-      .pipe(
-        catchError(this.handleError<string>(`Could not delete message id ${message.Id}.`))
-      );
-  }
-
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      this.log(`Failed REST request. ${operation} ${error.message}.`);
-      return of(result as T);
-    }
   }
 
   // helpers

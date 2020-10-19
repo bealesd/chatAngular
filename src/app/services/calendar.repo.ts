@@ -52,7 +52,7 @@ export class CalendarRepo {
 
     const rawCommitBody = JSON.stringify({
       "message": `Api commit by calendar record wesbite at ${new Date().toLocaleString()}`,
-      "content": btoa(JSON.stringify(calendarRecords)),
+      "content": btoa(btoa(JSON.stringify(calendarRecords))),
       'sha': sha
     });
 
