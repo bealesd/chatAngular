@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError} from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 import { MessageService } from './message.service';
 import { GitHubMetaData } from '../gitHubMetaData'
@@ -31,15 +30,7 @@ export class CalendarRepo {
   }
 
   getCalendarListings = (): Observable<GitHubMetaData[]> => {
-    return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options()).pipe(
-      catchError(this.handleError<GitHubMetaData[]>('Could not get calendar messages metdata.', []))
-    )
-  }
-
-  attemptLogin = (): Observable<GitHubMetaData[]> => {
-    return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options()).pipe(
-      catchError(this.handleError<GitHubMetaData[]>('Could not get calendar messages metdata for login.', undefined))
-    )
+    return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options());
   }
 
   getCalendarRecordsForMonth(year: number, month: number): Observable<any> {
@@ -60,13 +51,6 @@ export class CalendarRepo {
   }
 
   // helpers
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      this.log(`Failed REST request. ${operation} ${error.message}.`);
-      return of(result as T);
-    }
-  }
-
   removeUrlParams = (rawUrl: string) =>
     new URL(rawUrl).origin + new URL(rawUrl).pathname;
 }

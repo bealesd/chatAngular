@@ -50,7 +50,7 @@ export class ChatRepo {
           for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
             const messageMetaData = messagesMetaData[i];
             idShaLookup[this.idExtractor(messageMetaData.name)] = messageMetaData.sha;
-            chatUrls.push(this.http.get<RecieveChat>(this.removeUrlParams(messageMetaData.download_url)));
+            chatUrls.push(this.http.get<any>(this.removeUrlParams(messageMetaData.download_url)));
           }
           return chatUrls;
         }),
@@ -58,9 +58,9 @@ export class ChatRepo {
           return forkJoin(chatUrls);
         }))
       .pipe(
-        map((results: RecieveChat[]) => {
-          results.map((chat) => { chat.Sha = idShaLookup[chat.Id]; });
-          return results;
+        map((results: any[]) => {
+          results.map((chat) => { chat = atob(chat); chat.Sha = idShaLookup[chat.Id]; chat.Content = atob(chat.Content); });
+          return results as RecieveChat[];
         })
       )
   }
@@ -77,7 +77,7 @@ export class ChatRepo {
           for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
             const messageMetaData = messagesMetaData[i];
             if (this.idExtractor(messageMetaData.name) > lastId)
-              chatUrls.push(this.http.get<RecieveChat>(this.removeUrlParams(messageMetaData.download_url)));
+              chatUrls.push(this.http.get<any>(this.removeUrlParams(messageMetaData.download_url)));
           }
           return chatUrls;
         }),
@@ -87,18 +87,23 @@ export class ChatRepo {
           );
         })
       ).pipe(
-        map((results: RecieveChat[]) => {
-          return results;
+        map((results: any[]) => {
+          results.map((chat) => { atob(chat); });
+          return results as RecieveChat[];
         })
       )
   }
 
   checkForUpdatedMessage(id: number): Observable<RecieveChat> {
-    return this.http.get<RecieveChat>(`${this.baseRawMessagesUrl}/id_${id}.json`, this.options())
+    return this.http.get<any>(`${this.baseRawMessagesUrl}/id_${id}.json`, this.options())
       .pipe(
-        retry(10),
-        tap(x => x === null || x === undefined ? this.log(`Message id ${x.Id} updated.`) : null)
-      );
+        retry(10)
+      ).pipe(
+        map((chat: any) => {
+          chat = atob(chat);
+          return chat as RecieveChat;
+        })
+      )
   }
 
   postMessage(message: SendChat): Observable<RecieveChat> {
@@ -114,7 +119,7 @@ export class ChatRepo {
 
     const rawCommitBody = JSON.stringify({
       "message": `Api commit by ${message.Who} at ${new Date().toLocaleString()}`,
-      "content": btoa(JSON.stringify(newMessage))
+      "content": btoa(btoa(JSON.stringify(newMessage)))
     })
 
     return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.options())
@@ -135,7 +140,7 @@ export class ChatRepo {
 
     const rawCommitBody = JSON.stringify({
       'message': `Api commit by ${newMessage.Who} at ${new Date().toLocaleString()}`,
-      'content': btoa(JSON.stringify(newMessage)),
+      'content': btoa(btoa(JSON.stringify(newMessage))),
       'sha': message.Sha
     })
 
@@ -161,7 +166,6 @@ export class ChatRepo {
   }
 
   // helpers
-
   idExtractor = (fileName: string): number =>
     parseInt(fileName.match(/[0-9]{1,100000}/)[0]);
 

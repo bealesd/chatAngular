@@ -10,7 +10,6 @@ import { CalendarRepo } from './calendar.repo'
 })
 export class CalendarService {
   public calendarRecords = new BehaviorSubject<any>({});
-  public loggedIn = new BehaviorSubject<boolean>(false);
 
   constructor(private messageService: MessageService, private calendarRepo: CalendarRepo) {
   }
@@ -105,7 +104,6 @@ export class CalendarService {
             this.messageService.add(`Could not get calendar records.`);
             console.error(err);
           }
-
 
           calendarRecords[`${year}-${month}`] = { 'records': [], 'sha': '' };
           this.calendarRecords.next(calendarRecords);
