@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { ChatService } from '../services/chat.service';
 import { LoginService } from '../services/login.service';
-
 import { CryptoService } from '../services/crypto.service';
-import { LoginHelper } from './loginHelper';
+import { LoginHelper } from '../helpers/login-helper';
 
 @Component({
   selector: 'app-login',
@@ -20,13 +18,14 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private cryptoService: CryptoService,
-    private chatService: ChatService,
     private loginService: LoginService,
     private loginHelper: LoginHelper,
     private router: Router,
   ) {
     this.show = false;
     this.names = this.loginHelper.names;
+
+    this.cryptoService.logout();
 
     this.loginService.loggedIn.subscribe(loggedIn => {
       this.loggedIn = loggedIn;
@@ -42,11 +41,9 @@ export class LoginComponent implements OnInit {
 
   login() {
     const citherKey = (<HTMLInputElement>document.querySelector('#login')).value;
-    const loginTime = new Date().toString();
+    this.cryptoService.encryptCredentials(citherKey);
 
-    this.cryptoService.login(citherKey, loginTime);
-
-    this.loginService.tryLogin('');
+    this.loginService.login();
   }
 
   password() {

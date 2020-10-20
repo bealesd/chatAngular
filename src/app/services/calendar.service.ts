@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { GitHubMetaData } from './../gitHubMetaData';
 import { MessageService } from '../services/message.service';
 import { CalendarRepo } from './calendar.repo'
+import { RestHelper } from '../helpers/rest-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -11,10 +12,11 @@ import { CalendarRepo } from './calendar.repo'
 export class CalendarService {
   public calendarRecords = new BehaviorSubject<any>({});
 
-  constructor(private messageService: MessageService, private calendarRepo: CalendarRepo) {
+  constructor(private messageService: MessageService, private calendarRepo: CalendarRepo, private restHelper: RestHelper) {
   }
 
   deleteCalendarRecord(year, month, id): void {
+    this.messageService.add(`Deleting calendar record for ${year}-${month + 1}, ${id}.`);
     const calendarRecords = this.calendarRecords.getValue();
 
     let calendarRecordsForMonth = calendarRecords[`${year}-${month}`]
@@ -23,15 +25,15 @@ export class CalendarService {
     this.calendarRepo.postCalendarRecords(year, month, calendarRecordsForMonth.records, calendarRecordsForMonth.sha).subscribe(
       {
         next: (calendarRecordsResult: any[]) => {
+          this.messageService.add(` • Deleted calendar record for ${year}-${month + 1}, ${id}.`);
           const sha = (<any>calendarRecordsResult).content.sha;
           calendarRecordsForMonth.sha = sha;
 
-          console.log(calendarRecords);
           this.calendarRecords.next(calendarRecords);
 
         },
-        error: (data: any) => {
-          console.log(data)
+        error: (err: any) => {
+          this.restHelper.errorMessageHandler(err, `deleting calendar record for ${year}-${month + 1}, ${id}.`);
         }
       }
     );
@@ -68,13 +70,12 @@ export class CalendarService {
           const sha = (<any>calendarRecordsResult).content.sha;
           calendarRecordsForMonth.sha = sha;
 
-          this.messageService.add(`Posted calendar record for ${year}-${month + 1}.`);
+          this.messageService.add(` • Posted calendar record for ${year}-${month + 1}.`);
           this.calendarRecords.next(calendarRecords);
 
         },
-        error: (data: any) => {
-          this.messageService.add(`Could not post calendar record for ${year}-${month + 1}. Record: ${JSON.stringify(record)}.`);
-          console.log(data)
+        error: (err: any) => {
+          this.restHelper.errorMessageHandler(err, `posting calendar records for ${year}-${month + 1}. Record: ${JSON.stringify(record)}.`);
         }
       }
     );
@@ -91,19 +92,10 @@ export class CalendarService {
             'records': JSON.parse(atob(atob(calendarRecord.content)))
           }
           this.calendarRecords.next(calendarRecords);
-          this.messageService.add(`Got ${(<any>Object.values(calendarRecords)[0]).records.length} calendar records.`);
+          this.messageService.add(` • Got ${(<any>Object.values(calendarRecords)[0]).records.length} calendar records.`);
         },
         error: (err: any) => {
-          if (err.status === 404)
-            this.messageService.add(`No calendar records.`);
-          else if (err.status === 401) {
-            this.messageService.add(`Could not get calendar records. Authentication error, 401.`);
-            alert('Authentication error. You may need to login.');
-          }
-          else {
-            this.messageService.add(`Could not get calendar records.`);
-            console.error(err);
-          }
+          this.restHelper.errorMessageHandler(err, 'getting calendar records');
 
           calendarRecords[`${year}-${month}`] = { 'records': [], 'sha': '' };
           this.calendarRecords.next(calendarRecords);

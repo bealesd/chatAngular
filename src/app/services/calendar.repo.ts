@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { GitHubMetaData } from '../gitHubMetaData'
 import { CryptoService } from './crypto.service';
+import { RestHelper } from '../helpers/rest-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,9 @@ export class CalendarRepo {
 
   constructor(
     private cryptoService: CryptoService,
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private restHelper: RestHelper) {
+  }
 
   options = (): { headers: HttpHeaders } => {
     return {
@@ -30,7 +33,7 @@ export class CalendarRepo {
 
   getCalendarRecordsForMonth(year: number, month: number): Observable<any> {
     const getUrl = `${this.baseMessagesUrl}/${year}-${month}.json`;
-    return this.http.get<[]>(this.removeUrlParams(getUrl), this.options());
+    return this.http.get<[]>(this.restHelper.removeUrlParams(getUrl), this.options());
   }
 
   postCalendarRecords(year, month, calendarRecords: any, sha): Observable<any> {
@@ -44,8 +47,4 @@ export class CalendarRepo {
 
     return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.options());
   }
-
-  // helpers
-  removeUrlParams = (rawUrl: string) =>
-    new URL(rawUrl).origin + new URL(rawUrl).pathname;
 }

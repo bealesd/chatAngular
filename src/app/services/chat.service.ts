@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 import { GitHubMetaData } from './../gitHubMetaData';
 
@@ -8,6 +8,8 @@ import { ChatRepo } from '../services/chat.repo';
 
 import { RecieveChat } from '../models/recieve-chat.model';
 import { SendChat } from '../models/send-chat.model';
+
+import { RestHelper } from '../helpers/rest-helper';
 
 
 @Injectable({
@@ -18,7 +20,7 @@ export class ChatService {
 
   public newChatMessagesCount = new BehaviorSubject<number>(0);
 
-  constructor(private messageService: MessageService, private chatRepo: ChatRepo) {
+  constructor(private messageService: MessageService, private chatRepo: ChatRepo, private restHelper: RestHelper) {
   }
 
   getChatMessages(): void {
@@ -29,19 +31,10 @@ export class ChatService {
         next: (chatMessages: RecieveChat[]) => {
           this.chatMessages.next(chatMessages);
 
-          this.messageService.add(`Got last 10 chat messages.`);
+          this.messageService.add(` • Got last 10 chat messages.`);
         },
         error: (err: any) => {
-          if (err.status === 404)
-            this.messageService.add(`No chat messages.`);
-          else if (err.status === 401) {
-            this.messageService.add(`Could not get chat messages. Authentication error, 401.`);
-            alert('Authentication error. You may need to login.');
-          }
-          else {
-            this.messageService.add(`Could not get chat messages.`);
-            console.error(err);
-          }
+          this.restHelper.errorMessageHandler(err, 'getting last 10 chat records');
         }
       });
   }
@@ -75,16 +68,7 @@ export class ChatService {
             }
           },
           error: (err: any) => {
-            if (err.status === 404)
-              this.messageService.add(`No new chat messages.`);
-            else if (err.status === 401) {
-              this.messageService.add(`Could not get new chat messages. Authentication error, 401.`);
-              alert('Authentication error. You may need to login.');
-            }
-            else {
-              this.messageService.add(`Could not get new chat messages.`);
-              console.error(err);
-            }
+            this.restHelper.errorMessageHandler(err, 'getting new chat records');
           }
         });
   }
@@ -109,37 +93,19 @@ export class ChatService {
                   this.chatMessages.next(currentChatMessages);
                 },
                 error: (err: any) => {
-                  if (err.status === 404)
-                    this.messageService.add(`No updated chat messages.`);
-                  else if (err.status === 401) {
-                    this.messageService.add(`Could not get updated chat messages. Authentication error, 401.`);
-                    alert('Authentication error. You may need to login.');
-                  }
-                  else {
-                    this.messageService.add(`Could not get updated chat messages.`);
-                    console.error(err);
-                  }
+                  this.restHelper.errorMessageHandler(err, ' • getting updated chat records');
                 }
               });
           }
         }
       },
       error: (err: any) => {
-        if (err.status === 404)
-          this.messageService.add(`Could not find message listing.`);
-        else if (err.status === 401) {
-          this.messageService.add(`Could not get message listin. Authentication error, 401.`);
-          alert('Authentication error. You may need to login.');
-        }
-        else {
-          this.messageService.add(`Could not get message listing.`);
-          console.error(err);
-        }
+        this.restHelper.errorMessageHandler(err, 'getting chat message listing');
       }
     });
   }
 
-  sendChatMessage(chatMessage: SendChat): Observable<RecieveChat> {
+  sendChatMessage(chatMessage: SendChat): void {
     if (chatMessage.Content === "" || chatMessage.Content === null || chatMessage.Content === undefined) {
       this.messageService.add(`Please enter a message before posting.`);
       return;
@@ -155,7 +121,17 @@ export class ChatService {
     const newId = Math.max(...currentChatMessages.map(msg => msg.Id)) + 1;
     chatMessage.Id = newId;
 
-    return this.chatRepo.postMessage(chatMessage);
+    this.chatRepo.postMessage(chatMessage).subscribe({
+      next: (chatMessage) => {
+        let oldChatMessages = this.chatMessages.getValue();
+        oldChatMessages.push(chatMessage);
+        this.chatMessages.next(oldChatMessages);
+        this.messageService.add(` • Posted chat message id ${chatMessage.Id}.`);
+      },
+      error: (err: any) => {
+        this.restHelper.errorMessageHandler(err, 'posting message');
+      }
+    });
   }
 
   softDeleteChatMessage(id: number, deleteFlag: boolean): void {
@@ -176,8 +152,8 @@ export class ChatService {
 
         this.chatMessages.next(currentChatMessages);
       },
-      error: (data: any) => {
-        this.messageService.add(`Could not update delete flag, message id ${id}.`);
+      error: (err: any) => {
+        this.restHelper.errorMessageHandler(err, 'updating delete flag for chat message id ${id}');
       }
     });
   }
@@ -201,7 +177,8 @@ export class ChatService {
 
         this.chatMessages.next(currentChatMessages);
       },
-      error: (data: any) => {
+      error: (err: any) => {
+        this.restHelper.errorMessageHandler(err, 'updating delete flag for chat message id ${id}');
         this.messageService.add(`Could not delete message id ${id}.`);
       }
     });

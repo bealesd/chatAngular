@@ -7,8 +7,10 @@ import * as CryptoJS from 'crypto-js';
 export class CryptoService {
 
   esther = 'U2FsdGVkX1+2bosGgs1TSgRwcXaR/YfcrbVtj1PE7vsTepC8G+G9ZHGLwEHzSg4tnCypPluriQaJWHq3icR9cQ==';
-  loginTime = 'lt';
-  encrytedCitherKey = 'eck';
+  encrytedCitherKeyPropertyName = 'eck';
+
+  loginTime: string = '';
+  encrytedCitherKey: string = '';
 
   constructor() { }
 
@@ -17,27 +19,18 @@ export class CryptoService {
     return CryptoJS.AES.encrypt(token, hash).toString();
   }
 
-  login(citherKey: string, loginTime: string) {
-    sessionStorage.setItem(this.loginTime, loginTime);
-    const encrytedCitherKey = CryptoJS.AES.encrypt(window.btoa(citherKey), loginTime).toString();
-    sessionStorage.setItem(this.encrytedCitherKey, encrytedCitherKey);
+  encryptCredentials(citherKey: string) {
+    this.loginTime = new Date().toString();
+    this.encrytedCitherKey = CryptoJS.AES.encrypt(window.btoa(citherKey), this.loginTime).toString();
   }
 
   logout() {
-    sessionStorage.removeItem(this.loginTime);
-    sessionStorage.removeItem(this.encrytedCitherKey);
+    this.loginTime = '';
+    this.encrytedCitherKey = '';
   }
 
   getLoginKey(): string {
-    let loginTime = sessionStorage.getItem(this.loginTime);
-    if (loginTime === undefined || loginTime === null)
-      loginTime = '';
-
-    let encrytedCitherKey = sessionStorage.getItem(this.encrytedCitherKey);
-    if (encrytedCitherKey === undefined || encrytedCitherKey === null)
-      encrytedCitherKey = '';
-
-    const b64Key = CryptoJS.AES.decrypt(encrytedCitherKey, loginTime).toString(CryptoJS.enc.Utf8);
+    const b64Key = CryptoJS.AES.decrypt(this.encrytedCitherKey, this.loginTime).toString(CryptoJS.enc.Utf8);
     return window.atob(b64Key);
   }
 

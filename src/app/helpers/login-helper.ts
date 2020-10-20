@@ -41,9 +41,8 @@ export class LoginHelper {
   }
 
   checkPersonSelected(): boolean {
-    if (document.body.className === '' || !this.names.includes(document.body.className)) {
+    if (document.body.className === '' || !this.names.includes(document.body.className)) 
       return false;
-    }
     return true;
   }
 }

@@ -9,6 +9,7 @@ import { SendChat } from '../models/send-chat.model';
 import { GitHubMetaData } from '../gitHubMetaData'
 
 import { CryptoService } from './crypto.service';
+import { RestHelper } from '../helpers/rest-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,9 @@ export class ChatRepo {
 
   constructor(
     private cryptoService: CryptoService,
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private restHelper: RestHelper) {
+  }
 
   options = (): { headers: HttpHeaders } => {
     return {
@@ -43,7 +46,7 @@ export class ChatRepo {
           for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
             const messageMetaData = messagesMetaData[i];
             idShaLookup[this.idExtractor(messageMetaData.name)] = messageMetaData.sha;
-            chatUrls.push(this.http.get<any>(this.removeUrlParams(messageMetaData['git_url']),  this.options()));
+            chatUrls.push(this.http.get<any>(this.restHelper.removeUrlParams(messageMetaData['git_url']), this.options()));
           }
           return chatUrls;
         }),
@@ -87,7 +90,7 @@ export class ChatRepo {
           for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
             const messageMetaData = messagesMetaData[i];
             if (this.idExtractor(messageMetaData.name) > lastId)
-              chatUrls.push(this.http.get<any>(this.removeUrlParams(messageMetaData['git_url'])),  this.options());
+              chatUrls.push(this.http.get<any>(this.restHelper.removeUrlParams(messageMetaData['git_url'])), this.options());
           }
           return chatUrls;
         }),
@@ -185,9 +188,4 @@ export class ChatRepo {
 
   getChatsFromEnd = (chatMessagesMetaData: GitHubMetaData[], fromEnd: number): GitHubMetaData[] =>
     chatMessagesMetaData.slice(Math.max(chatMessagesMetaData.length - fromEnd, 0));
-
-  removeUrlParams = (rawUrl: string) =>
-    new URL(rawUrl).origin + new URL(rawUrl).pathname;
 }
-
-

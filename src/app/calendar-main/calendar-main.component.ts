@@ -3,7 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import * as uuid from 'uuid';
 
-import { LoginHelper } from '../login/loginHelper';
+import { LoginHelper } from '../helpers/login-helper';
 import { CalendarService } from './../services/calendar.service';
 import { MessageService } from '../services/message.service';
 import { MenuService } from '../services/menu.service';
@@ -109,7 +109,6 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
 
   constructor(
     private calendarService: CalendarService,
-    private messageService: MessageService,
     private loginHelper: LoginHelper,
     private fb: FormBuilder,
     private menuService: MenuService
@@ -124,12 +123,9 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.menuService.disableMenuItem('undo-click');
 
-    if (!this.loginHelper.checkPersonSelected()) {
-      this.loginHelper.setPerson();
-    }
+    if (!this.loginHelper.checkPersonSelected()) this.loginHelper.setPerson();
 
     this.calendarService.calendarRecords.subscribe(calendarRecords => {
-      console.log(calendarRecords);
       if (calendarRecords.hasOwnProperty(`${this.year}-${this.zeroIndexedMonth}`))
         this.records = calendarRecords[`${this.year}-${this.zeroIndexedMonth}`].records;
       else

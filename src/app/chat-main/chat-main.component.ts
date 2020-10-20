@@ -8,7 +8,7 @@ import { SendChat } from '../models/send-chat.model';
 import { ChatService } from '../services/chat.service';
 import { MessageService } from '../services/message.service';
 
-import { LoginHelper } from '../login/loginHelper'
+import { LoginHelper } from '../helpers/login-helper'
 
 @Component({
   selector: 'app-chat',
@@ -102,15 +102,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     const newMessage = <SendChat>{ Who: this.loginHelper.who, Content: this.content }
 
-    this.chatService.sendChatMessage(newMessage).subscribe({
-      next: (chatMessage) => {
-      this.chatMessages.push(chatMessage);
-      this.messageService.add(` • Posted chat message id ${chatMessage.Id}.`);
-    },
-    error: (data: any) => {
-      this.messageService.add(`Could not post message.`);
-    }
-  });
+    this.chatService.sendChatMessage(newMessage);
 
     this.content = "";
     event.srcElement.parentElement.querySelector('input').focus();

@@ -2,7 +2,7 @@
 
 .infoHeader {
     display: inline;
-    color: green;
+    color: lightskyblue;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: lighter;
     font-size: 16px;
@@ -12,8 +12,26 @@ body {
     margin: 2em;
 }
 
+.debug {
+    color: lightgreen;
+    font-size: 12px;
+    white-space: pre;
+}
+
 .info {
-    color: green;
+    color: lightskyblue;
+    font-size: 12px;
+    white-space: pre;
+}
+
+.warning {
+    color: lightsalmon;
+    font-size: 12px;
+    white-space: pre;
+}
+
+.error {
+    color: orangered;
     font-size: 12px;
     white-space: pre;
 }

@@ -4,6 +4,18 @@
     padding-bottom: 5px;
 }
 
+.grid-container {
+    display: grid;
+    grid-template-rows: 1;
+    grid-template-columns: 3;
+    padding-top: 10px;
+}
+
+.middle-column {
+    grid-row: 1;
+    grid-column: 2;
+}
+
 .messagesContainer {
     display: inline-block;
     font-size: 14px;
@@ -31,7 +43,8 @@
     text-align: center;
     padding-top: 5px;
     padding-bottom: 5px;
-    color: gray;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .valid {
