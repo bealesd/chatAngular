@@ -21,6 +21,9 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { CalendarMainComponent } from './calendar-main/calendar-main.component';
 import { AppsComponent } from './apps/apps.component';
 import { TodoComponent } from './todo/todo.component';
+import { CalendarMonthComponent } from './calendar-month/calendar-month.component';
+import { CalendarWeekComponent } from './calendar-week/calendar-week.component';
+import { CalendarFormComponent } from './calendar-form/calendar-form.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +37,10 @@ import { TodoComponent } from './todo/todo.component';
     MenuBarComponent,
     CalendarMainComponent,
     AppsComponent,
-    TodoComponent
+    TodoComponent,
+    CalendarMonthComponent,
+    CalendarWeekComponent,
+    CalendarFormComponent
   ],
   imports: [
     BrowserModule,

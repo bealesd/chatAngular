@@ -1,9 +1,8 @@
 <div class="infoHeader">Messages</div>
 <button class="clear" (click)="messageService.clear()">clear</button>
 
-<!-- *ngIf="messageService.messages.length" -->
 <div class="messages-container" >
-    <div class="info" *ngFor='let infoMessage of messageService.messages.info'>{{infoMessage}} </div>
-    <div class="warning" *ngFor='let warningMessage of messageService.messages.warning'>{{warningMessage}} </div>
-    <div class="error" *ngFor='let errorMessage of messageService.messages.error'>{{errorMessage}} </div>
+    <div  *ngFor='let message of messageService.messages'>
+        <div class="{{message.type}}">{{message.message}} </div>
+    </div>
 </div>

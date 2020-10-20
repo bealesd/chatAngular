@@ -4,8 +4,7 @@ import { Subscription } from 'rxjs';
 import * as uuid from 'uuid';
 
 import { LoginHelper } from '../helpers/login-helper';
-import { CalendarService } from './../services/calendar.service';
-import { MessageService } from '../services/message.service';
+import { CalendarRepo } from './../services/calendar.repo';
 import { MenuService } from '../services/menu.service';
 
 @Component({
@@ -108,7 +107,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    private calendarService: CalendarService,
+    private calendarRepo: CalendarRepo,
     private loginHelper: LoginHelper,
     private fb: FormBuilder,
     private menuService: MenuService
@@ -125,14 +124,14 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
 
     if (!this.loginHelper.checkPersonSelected()) this.loginHelper.setPerson();
 
-    this.calendarService.calendarRecords.subscribe(calendarRecords => {
+    this.calendarRepo.calendarRecords.subscribe(calendarRecords => {
       if (calendarRecords.hasOwnProperty(`${this.year}-${this.zeroIndexedMonth}`))
         this.records = calendarRecords[`${this.year}-${this.zeroIndexedMonth}`].records;
       else
         this.records = [];
     });
 
-    this.calendarService.getCalendarRecords(this.year, this.zeroIndexedMonth);
+    this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
 
     this.subscriptions.push(
       this.profileForm.valueChanges.subscribe(() => {
@@ -164,8 +163,8 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
 
-    this.calendarService.calendarRecords.observers.forEach(element => { element.complete(); });
-    this.calendarService.calendarRecords.next({});
+    this.calendarRepo.calendarRecords.observers.forEach(element => { element.complete(); });
+    this.calendarRepo.calendarRecords.next({});
 
     this.menuService.disableMenuItem('cancel-click');
     this.menuService.disableMenuItem('delete-click');
@@ -212,8 +211,8 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     this.year = tempDate.getFullYear();
     this.zeroIndexedMonth = tempDate.getMonth();
 
-    this.calendarService.calendarRecords.next({});
-    this.calendarService.getCalendarRecords(this.year, this.zeroIndexedMonth);
+    this.calendarRepo.calendarRecords.next({});
+    this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
 
     this.closeAddOrUpdateEventForm();
   }
@@ -281,13 +280,13 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
       'minute': this.profileForm.value.minute,
       'id': this.profileForm.value.id
     }
-    this.calendarService.postCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, record);
+    this.calendarRepo.postCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, record);
     this.closeAddOrUpdateEventForm();
   }
 
   deleteEvent() {
     if (window.confirm(`Are you sure you want to delete this record?`)) {
-      this.calendarService.deleteCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, this.profileForm.value.id);
+      this.calendarRepo.deleteCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, this.profileForm.value.id);
       this.closeAddOrUpdateEventForm();
     }
   }

@@ -30,10 +30,10 @@ export class LoginService {
 
     this.http.get<GitHubMetaData[]>(this.githubApiUrl, this.options()).subscribe({
       next: (result) => {
-        this.messageService.add('Login complete.');
+        this.messageService.add(' • Login complete.', 'info');
         this.loggedIn.next(true);
       }, error: (err: any) => {
-        this.messageService.add('Login failure.');
+        this.messageService.add(' • Login failure.', 'error');
         this.loggedIn.next(false);
       }
     });

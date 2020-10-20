@@ -119,121 +119,120 @@
     /* background-image: linear-gradient(40deg, grey, white); */
 }
 
-.date-box {
-    /* background-color: black; */
+.date-box-contianer > .date-box {
     background-color: rgba(0, 0, 0, 0.5);
     min-height: var(--record-minimum-height);
 }
 
-.day {
+.date-box-contianer > .date-box > .day {
     font-size: var(--weekday-name-and-number-font-size);
     color: var(--weekday-name-and-number-text-color);
 }
 
-.record {
+.date-box-contianer > .date-box > .table >.record {
     color: var(--record-text-and-heading-color);
     font-size: var(--record-font-size);
     font-family: var(--record-font-family);
     letter-spacing: var(--record-letter-spacing);
 }
 
-[data-col="1"].date-box,
+.date-box-contianer > [data-col="1"].date-box,
 [data-max-row="1"][data-col="1"].date-box {
     border-left: var(--record-border-red);
     border-top: var(--record-border-red);
 }
 
-[data-col="2"].date-box {
+.date-box-contianer > [data-col="2"].date-box {
     border-left: var(--record-border-orange);
     border-top: var(--record-border-orange);
 }
 
-[data-col="3"].date-box {
+.date-box-contianer > [data-col="3"].date-box {
     border-left: var(--record-border-yellow);
     border-top: var(--record-border-yellow);
 }
 
-[data-col="4"].date-box {
+.date-box-contianer > [data-col="4"].date-box {
     border-left: var(--record-border-green);
     border-top: var(--record-border-green);
 }
 
-[data-col="5"].date-box {
+.date-box-contianer > [data-col="5"].date-box {
     border-left: var(--record-border-light-blue);
     border-top: var(--record-border-light-blue);
 }
 
-[data-col="6"].date-box {
+.date-box-contianer > [data-col="6"].date-box {
     border-left: var(--record-border-pink);
     border-top: var(--record-border-pink);
 }
 
-[data-col="7"].date-box {
+.date-box-contianer > [data-col="7"].date-box {
     border-left: var(--record-border-violet);
     border-right: var(--record-border-violet);
     border-top: var(--record-border-violet);
 }
 
-[data-empty-below="1"][data-col="1"].date-box,
-[data-max-row="1"][data-col="1"].date-box {
+.date-box-contianer > [data-empty-below="1"][data-col="1"].date-box,
+.date-box-contianer > [data-max-row="1"][data-col="1"].date-box {
     border-bottom: var(--record-border-red);
 }
 
-[data-empty-below="1"][data-col="2"].date-box,
-[data-max-row="1"][data-col="2"].date-box {
+.date-box-contianer > [data-empty-below="1"][data-col="2"].date-box,
+.date-box-contianer > [data-max-row="1"][data-col="2"].date-box {
     border-bottom: var(--record-border-orange);
 }
 
-[data-empty-below="1"][data-col="3"].date-box,
-[data-max-row="1"][data-col="3"].date-box {
+.date-box-contianer > [data-empty-below="1"][data-col="3"].date-box,
+.date-box-contianer > [data-max-row="1"][data-col="3"].date-box {
     border-bottom: var(--record-border-yellow);
 }
 
-[data-empty-below="1"][data-col="4"].date-box,
-[data-max-row="1"][data-col="4"].date-box {
+.date-box-contianer > [data-empty-below="1"][data-col="4"].date-box,
+.date-box-contianer > [data-max-row="1"][data-col="4"].date-box {
     border-bottom: var(--record-border-green);
 }
 
-[data-empty-below="1"][data-col="5"].date-box,
-[data-max-row="1"][data-col="5"].date-box {
+.date-box-contianer > [data-empty-below="1"][data-col="5"].date-box,
+.date-box-contianer > [data-max-row="1"][data-col="5"].date-box {
     border-bottom: var(--record-border-light-blue);
 }
 
-[data-empty-below="1"][data-col="6"].date-box,
-[data-max-row="1"][data-col="6"].date-box {
+.date-box-contianer > [data-empty-below="1"][data-col="6"].date-box,
+.date-box-contianer > [data-max-row="1"][data-col="6"].date-box {
     border-bottom: var(--record-border-pink);
 }
 
-[data-empty-below="1"][data-col="7"].date-box,
-[data-max-row="1"][data-col="7"].date-box {
+.date-box-contianer > [data-empty-below="1"][data-col="7"].date-box,
+.date-box-contianer > [data-max-row="1"][data-col="7"].date-box {
     border-bottom: var(--record-border-violet);
 }
 
-[last-item="1"][data-col="1"].date-box {
+.date-box-contianer > [last-item="1"][data-col="1"].date-box {
     border-right: var(--record-border-red);
 }
 
-[last-item="1"][data-col="2"].date-box {
+.date-box-contianer > [last-item="1"][data-col="2"].date-box {
     border-right: var(--record-border-orange);
 }
 
-[last-item="1"][data-col="3"].date-box {
+.date-box-contianer > [last-item="1"][data-col="3"].date-box {
     border-right: var(--record-border-yellow);
 }
 
-[last-item="1"][data-col="4"].date-box {
+.date-box-contianer > [last-item="1"][data-col="4"].date-box {
     border-right: var(--record-border-green);
 }
 
-[last-item="1"][data-col="5"].date-box {
+.date-box-contianer > [last-item="1"][data-col="5"].date-box {
     border-right: var(--record-border-light-blue);
 }
 
-[last-item="1"][data-col="6"].date-box {
+.date-box-contianer > [last-item="1"][data-col="6"].date-box {
     border-right: var(--record-border-pink);
 }
 
-[last-item="1"][data-col="7"].date-box {
+.date-box-contianer > [last-item="1"][data-col="7"].date-box {
     border-right: var(--record-border-violet);
 }
 

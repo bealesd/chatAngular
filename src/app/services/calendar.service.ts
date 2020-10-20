@@ -14,94 +14,73 @@ export class CalendarService {
 
   constructor(private messageService: MessageService, private calendarRepo: CalendarRepo, private restHelper: RestHelper) {
   }
+  // TODO - going to be used to manage all calendar data, and will be used by calendar month and calendar week components.
 
-  deleteCalendarRecord(year, month, id): void {
-    this.messageService.add(`Deleting calendar record for ${year}-${month + 1}, ${id}.`);
-    const calendarRecords = this.calendarRecords.getValue();
+  daysEnum = {
+    'Sun': 0,
+    'Mon': 1,
+    'Tue': 2,
+    'Wed': 3,
+    'Thu': 4,
+    'Fri': 5,
+    'Sat': 6
+  };
 
-    let calendarRecordsForMonth = calendarRecords[`${year}-${month}`]
-    calendarRecordsForMonth.records = calendarRecordsForMonth.records.filter(r => r.id !== id);
+  daysLongEnum = {
+    'Sunday': 0,
+    'Monday': 1,
+    'Tuesday': 2,
+    'Wednesday': 3,
+    'Thursday': 4,
+    'Friday': 5,
+    'Saturday': 6
+  };
 
-    this.calendarRepo.postCalendarRecords(year, month, calendarRecordsForMonth.records, calendarRecordsForMonth.sha).subscribe(
-      {
-        next: (calendarRecordsResult: any[]) => {
-          this.messageService.add(` • Deleted calendar record for ${year}-${month + 1}, ${id}.`);
-          const sha = (<any>calendarRecordsResult).content.sha;
-          calendarRecordsForMonth.sha = sha;
-
-          this.calendarRecords.next(calendarRecords);
-
-        },
-        error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, `deleting calendar record for ${year}-${month + 1}, ${id}.`);
-        }
-      }
-    );
+  get weekdayNames(): string[] {
+    return Object.keys(this.daysEnum);
   }
 
-  postCalendarRecord(year, month, record): void {
-    const calendarRecords = this.calendarRecords.getValue();
-
-    let calendarRecordsForMonth;
-    if (calendarRecords.hasOwnProperty(`${year}-${month}`))
-      calendarRecordsForMonth = calendarRecords[`${year}-${month}`]
-    else
-      calendarRecordsForMonth = { 'records': [], 'sha': '' };
-
-    const isUpdate = calendarRecordsForMonth.records.find(r => r.id === record.id) !== undefined;
-    if (isUpdate) {
-      calendarRecordsForMonth.records.forEach((r) => {
-        if (r.id === record.id) {
-          r.what = record.what;
-          r.month = record.month;
-          r.day = record.day;
-          r.hour = record.hour;
-          r.minute = record.minute;
-        }
-      });
-    }
-    else
-      calendarRecordsForMonth.records.push(record);
-
-    this.messageService.add(`Posting calendar record for ${year}-${month + 1}.`);
-    this.calendarRepo.postCalendarRecords(year, month, calendarRecordsForMonth.records, calendarRecordsForMonth.sha).subscribe(
-      {
-        next: (calendarRecordsResult: any[]) => {
-          const sha = (<any>calendarRecordsResult).content.sha;
-          calendarRecordsForMonth.sha = sha;
-
-          this.messageService.add(` • Posted calendar record for ${year}-${month + 1}.`);
-          this.calendarRecords.next(calendarRecords);
-
-        },
-        error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, `posting calendar records for ${year}-${month + 1}. Record: ${JSON.stringify(record)}.`);
-        }
-      }
-    );
+  monthsEnum = {
+    "January": 0,
+    "February": 1,
+    "March": 2,
+    "April": 3,
+    "May": 4,
+    "June": 5,
+    "July": 6,
+    "August": 7,
+    "September": 8,
+    "October": 9,
+    "November": 10,
+    "December": 11
   }
 
-  getCalendarRecords(year, month): void {
-    this.messageService.add(`Getting calendar record for ${year}-${month + 1}.`);
-    const calendarRecords = this.calendarRecords.getValue()
-    this.calendarRepo.getCalendarRecordsForMonth(year, month).subscribe(
-      {
-        next: (calendarRecord: any) => {
-          calendarRecords[`${year}-${month}`] = {
-            'sha': calendarRecord.sha,
-            'records': JSON.parse(atob(atob(calendarRecord.content)))
-          }
-          this.calendarRecords.next(calendarRecords);
-          this.messageService.add(` • Got ${(<any>Object.values(calendarRecords)[0]).records.length} calendar records.`);
-        },
-        error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, 'getting calendar records');
-
-          calendarRecords[`${year}-${month}`] = { 'records': [], 'sha': '' };
-          this.calendarRecords.next(calendarRecords);
-        }
-      }
-    );
+  get monthNames(): string[] {
+    return Object.keys(this.monthsEnum);
   }
+
+  get daysInMonth() {
+    // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
+    return new Date(this.year, this.zeroIndexedMonth + 1, 0).getDate();
+  }
+
+  get daysInMonthArray() {
+    // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
+    const days: number[] = [];
+    for (let i = 1; i <= (this.daysInMonth); i++) days.push(i);
+    return days;
+  }
+
+  year: number;
+
+  zeroIndexedMonth: number;
+
+  today: {};
+
+  monthName: string;
+
+  records: [] = [];
+
+  
 
 }

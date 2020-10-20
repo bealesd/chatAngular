@@ -1,3 +1,11 @@
+<!-- 
+<app-calendar-month>
+</app-calendar-month> 
+
+<app-calendar-form>
+</app-calendar-form> 
+-->
+
 <div class="changePageContainer">
     <button class="green-button" (click)="changeMonth(false)"><span>&#60;</span></button>
     <div>{{monthNames[zeroIndexedMonth]}} - {{year}}</div>
@@ -31,12 +39,11 @@
             </div>
 
         </div>
-
     </div>
-
 </div>
 
-<div id="test" *ngIf="addingEvent || updatingEvent" class="formContainer">
+
+<div *ngIf="addingEvent || updatingEvent" class="formContainer">
 
     <form [formGroup]="profileForm" (ngSubmit)="addingEvent ? addEventClick() : updateEventClick()">
 

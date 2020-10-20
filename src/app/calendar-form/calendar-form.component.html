@@ -1,0 +1,31 @@
+<!-- <div id="test" *ngIf="addingEvent || updatingEvent" class="formContainer">
+
+    <form [formGroup]="profileForm" (ngSubmit)="addingEvent ? addEventClick() : updateEventClick()">
+
+        <h3 class="form-heading">{{getDayNameLongForMonth(profileForm.value.day)}} - Day {{profileForm.value.day}}</h3>
+
+        <button class="undo red-button" *ngIf="undoEnabled" (click)="undoChanges()" type="button">Undo</button>
+
+        <label class="what">
+      What
+    </label>
+        <input class="what" type="text" formControlName="what" maxlength="25" autofocus>
+
+        <div class='time'>Time hh:mm</div>
+
+        <input class="hour" type="number" formControlName="hour" max="23" min="0">
+
+        <input class="minute" type="number" formControlName="minute" step=15 max="59" min="0">
+
+        <button class="submit green-button" type="submit" [disabled]="!profileForm.valid">{{addingEvent ? 'Submit': 'Update'}}</button>
+
+        <button (click)="addingEvent ? closeClickAddEventForm() : closeClickUpdateEventForm()" class="close-button green-button" type="button">{{addingEvent ? 'Cancel': 'Cancel'}}</button>
+
+        <button (click)="deleteEvent()" class="delete-button red-button {{!updatingEvent ? 'invalidRedButton' : '' }}" [disabled]="!updatingEvent" type="button">Delete</button>
+
+        <div class="formStatus {{profileForm.status === 'INVALID' ? 'form-invalid' : 'form-valid'}}">
+            Form Status: {{ profileForm.status }}
+        </div>
+    </form>
+
+</div> -->
