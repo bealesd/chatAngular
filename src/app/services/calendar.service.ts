@@ -16,7 +16,24 @@ export class CalendarService {
   public openAddEventForm = new BehaviorSubject<any>({});
 
   constructor(private messageService: MessageService, private calendarRepo: CalendarRepo, private restHelper: RestHelper) {
+    let date = new Date();
+    this.year = date.getFullYear();
+    this.zeroIndexedMonth = date.getMonth();
+    // week start on sunday as 0 indexed, when using getDay
+    // number of weeks in month - 
+    this.week =
+
+      this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'day': date.getDate() };
+
   }
+
+  get weeksInMonth() {
+    const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
+    const daysIntoWeek = firstOfMonth.getDay();
+    //Math.ceil(daysIntoWeek + this.today.day/ 7)
+    return Math.ceil((daysIntoWeek + this.daysInMonth) / 7);
+  }
+
   // TODO - going to be used to manage all calendar data, and will be used by calendar month and calendar week components.
 
   daysEnum = {
@@ -84,6 +101,57 @@ export class CalendarService {
 
   records: [] = [];
 
-  
+  getDayName(dayNumber) {
+    return Object.keys(this.daysEnum)[dayNumber];
+  }
+
+  getRecordsByDay(day) {
+    const records = this.records.filter(r => r['day'] === day);
+    records.sort(this.compareByTime);
+    return records;
+  }
+
+  getDayNameLongForMonth(day) {
+    const date = new Date(this.year, this.zeroIndexedMonth, day);
+    return this.getDayNameLong(date.getDay());
+  }
+
+  getDayNameLong(dayNumber) {
+    return Object.keys(this.daysLongEnum)[dayNumber];
+  }
+
+  changeMonth(isNextMonth: boolean) {
+    let zeroIndexedMonth = this.zeroIndexedMonth;
+    let oneIndexedMonth = this.zeroIndexedMonth + 1;
+
+    let year = this.year;
+
+    let tempDate = new Date(`${year} ${oneIndexedMonth}`);
+
+    if (isNextMonth) tempDate.setMonth(zeroIndexedMonth + 1);
+    else tempDate.setMonth(zeroIndexedMonth - 1);
+
+    this.year = tempDate.getFullYear();
+    this.zeroIndexedMonth = tempDate.getMonth();
+
+    this.calendarRepo.calendarRecords.next({});
+    this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
+
+    this.closeAddOrUpdateEventForm.next(true);
+  }
+
+  private compareByTime(a, b) {
+    const is_hour_a_before_b = a.hour < b.hour ? true : (a.hour === b.hour ? null : false);
+    const is_minute_a_before_b = a.minute < b.minute ? true : (a.minute === b.minute ? null : false);
+
+    const is_a_before_b = is_hour_a_before_b || (is_hour_a_before_b === null && is_minute_a_before_b);
+    const is_a_same_as_b = is_hour_a_before_b === null && is_minute_a_before_b === null;
+
+    return is_a_before_b ? -1 : (is_a_same_as_b ? 1 : 0);
+  }
+
+  private padToTwo(value: number): string {
+    return value <= 99 ? `0${value}`.slice(-2) : `${value}`;
+  }
 
 }

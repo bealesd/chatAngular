@@ -1,3 +1,22 @@
+:host {
+    --form-height: 400px;
+    --form-width: 300px;
+    --form-font-size: 20px;
+    --form-heading-color: black;
+    --form-undo-button-col-start: 11;
+}
+
+/*small size wrapper*/
+
+@media screen and (max-width: 800px) {
+     :host {
+        --form-font-size: 16px;
+        --form-height: 250px;
+        --form-width: 200px;
+        --form-undo-button-col-start: 10;
+    }
+}
+
 
 .formContainer {
     --width: var(--form-width);

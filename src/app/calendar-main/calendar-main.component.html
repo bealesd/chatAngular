@@ -1,10 +1,10 @@
 
 <div class="changePageContainer">
-    <button class="green-button" (click)="changeMonth(false)"><span>&#60;</span></button>
+    <button class="green-button" (click)="calendarService.changeMonth(false)"><span>&#60;</span></button>
     <div>{{calendarService.monthNames[calendarService.zeroIndexedMonth]}} - {{calendarService.year}}</div>
-    <button class="green-button" (click)="changeMonth(true)"><span>&#62;</span></button>
+    <button class="green-button" (click)="calendarService.changeMonth(true)"><span>&#62;</span></button>
 </div>
-
+<!-- 
 <div class="weekdayName-names-contianer">
     <div *ngFor="let weekdayName of calendarService.weekdayNames;">
         {{weekdayName}}
@@ -25,14 +25,15 @@
 
         <div class="day" (click)="openAddEventForm(dayData)">{{dayData.dayInMonthArrayIndex}}</div>
 
-        <div class="table" *ngFor="let record of getRecordsByDay(dayData.dayInMonthArrayIndex);">
+        <div class="table" *ngFor="let record of calendarService.getRecordsByDay(dayData.dayInMonthArrayIndex);">
 
             <div class="record" (click)="openUpdateEventForm(record)">
-                {{padToTwo(record.hour)}}:{{padToTwo(record.minute)}} - {{record.what}}
+                {{calendarService.padToTwo(record.hour)}}:{{calendarService.padToTwo(record.minute)}} - {{record.what}}
             </div>
 
         </div>
     </div>
-</div>
-
+</div> -->
+<app-calendar-month></app-calendar-month>
+<app-calendar-week></app-calendar-week>
 <app-calendar-form></app-calendar-form>
