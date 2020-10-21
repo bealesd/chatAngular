@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-import { GitHubMetaData } from './../gitHubMetaData';
 import { MessageService } from '../services/message.service';
 import { CalendarRepo } from './calendar.repo'
 import { RestHelper } from '../helpers/rest-helper';
@@ -11,6 +10,10 @@ import { RestHelper } from '../helpers/rest-helper';
 })
 export class CalendarService {
   public calendarRecords = new BehaviorSubject<any>({});
+
+  public closeAddOrUpdateEventForm = new BehaviorSubject<boolean>(true);
+  public openUpdateEventForm = new BehaviorSubject<any>({});
+  public openAddEventForm = new BehaviorSubject<any>({});
 
   constructor(private messageService: MessageService, private calendarRepo: CalendarRepo, private restHelper: RestHelper) {
   }

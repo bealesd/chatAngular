@@ -1,11 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import * as uuid from 'uuid';
 
 import { LoginHelper } from '../helpers/login-helper';
 import { CalendarRepo } from './../services/calendar.repo';
 import { MenuService } from '../services/menu.service';
+import { CalendarService } from '../services/calendar.service';
 
 @Component({
   selector: 'app-calendar-main',
@@ -14,87 +13,29 @@ import { MenuService } from '../services/menu.service';
 })
 export class CalendarMainComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  addingEvent: boolean = false;
-  updatingEvent: boolean = false;
-  currentRecord: { what: string; hour: number; minute: number; day: number; month: number; year: number; id: string; };
-  undoEnabled: boolean = false;
   lastGridRow: number;
   penultimateGridRow: number;
   lastCol: number;
-  profileForm = this.fb.group({
-    what: ['', Validators.required],
-    hour: [0, [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-3])$")]],
-    minute: [0, [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])$")]],
-    month: [],
-    year: [],
-    day: [],
-    id: []
-  })
-  year: number;
-  zeroIndexedMonth: number;
-  today: {};
-  monthName: string;
-  records: [] = [];
-  daysEnum = {
-    'Sun': 0,
-    'Mon': 1,
-    'Tue': 2,
-    'Wed': 3,
-    'Thu': 4,
-    'Fri': 5,
-    'Sat': 6
-  };
-  daysLongEnum = {
-    'Sunday': 0,
-    'Monday': 1,
-    'Tuesday': 2,
-    'Wednesday': 3,
-    'Thursday': 4,
-    'Friday': 5,
-    'Saturday': 6
-  };
-  get weekdayNames(): string[] {
-    return Object.keys(this.daysEnum);
-  }
-  monthsEnum = {
-    "January": 0,
-    "February": 1,
-    "March": 2,
-    "April": 3,
-    "May": 4,
-    "June": 5,
-    "July": 6,
-    "August": 7,
-    "September": 8,
-    "October": 9,
-    "November": 10,
-    "December": 11
+
+  openUpdateEventForm(record) {
+    this.calendarService.openUpdateEventForm.next({ 'record': record, 'open': true });
   }
 
-  get monthNames(): string[] {
-    return Object.keys(this.monthsEnum);
+  openAddEventForm(dayData) {
+    this.calendarService.openAddEventForm.next({ 'dayData': dayData, 'open': true });
   }
-  get daysInMonth() {
-    // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
-    return new Date(this.year, this.zeroIndexedMonth + 1, 0).getDate();
-  }
-  get daysInMonthArray() {
-    // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
-    const days: number[] = [];
-    for (let i = 1; i <= (this.daysInMonth); i++) days.push(i);
-    return days;
-  }
+
   get dayDataForMonth() {
     const dayData = [];
 
     let gridRow = 1;
-    this.daysInMonthArray.forEach((dayNumber, index) => {
-      const day = new Date(this.year, this.zeroIndexedMonth, dayNumber).getDay();
+    this.calendarService.daysInMonthArray.forEach((dayNumber, index) => {
+      const day = new Date(this.calendarService.year, this.calendarService.zeroIndexedMonth, dayNumber).getDay();
       if (index !== 0 && day === 0) gridRow++;
 
       const col = (day % 7);
       const gridCol = col + 1;
-      const dayName = this.weekdayNames[col];
+      const dayName = this.calendarService.weekdayNames[col];
       this.lastCol = gridCol;
 
       dayData.push({ 'gridRow': gridRow, 'gridCol': gridCol, 'name': dayName, 'dayInMonthArrayIndex': dayNumber });
@@ -109,14 +50,14 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   constructor(
     private calendarRepo: CalendarRepo,
     private loginHelper: LoginHelper,
-    private fb: FormBuilder,
-    private menuService: MenuService
+    private menuService: MenuService,
+    public calendarService: CalendarService
   ) {
     let date = new Date();
-    this.year = date.getFullYear();
-    this.zeroIndexedMonth = date.getMonth();
+    this.calendarService.year = date.getFullYear();
+    this.calendarService.zeroIndexedMonth = date.getMonth();
 
-    this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'day': date.getDate() };
+    this.calendarService.today = { 'year': this.calendarService.year, 'month': this.calendarService.zeroIndexedMonth, 'day': date.getDate() };
   }
 
   ngOnInit() {
@@ -125,39 +66,14 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     if (!this.loginHelper.checkPersonSelected()) this.loginHelper.setPerson();
 
     this.calendarRepo.calendarRecords.subscribe(calendarRecords => {
-      if (calendarRecords.hasOwnProperty(`${this.year}-${this.zeroIndexedMonth}`))
-        this.records = calendarRecords[`${this.year}-${this.zeroIndexedMonth}`].records;
+      if (calendarRecords.hasOwnProperty(`${this.calendarService.year}-${this.calendarService.zeroIndexedMonth}`))
+        this.calendarService.records = calendarRecords[`${this.calendarService.year}-${this.calendarService.zeroIndexedMonth}`].records;
       else
-        this.records = [];
+        this.calendarService.records = [];
     });
 
-    this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
+    this.calendarRepo.getCalendarRecords(this.calendarService.year, this.calendarService.zeroIndexedMonth);
 
-    this.subscriptions.push(
-      this.profileForm.valueChanges.subscribe(() => {
-        this.undoEnabled = this.checkEnableUndo();
-
-        if (this.undoEnabled)
-          this.menuService.enableMenuItem('undo-click', () => { this.undoChanges(); this.menuService.hideMenu(); });
-        else
-          this.menuService.disableMenuItem('undo-click');
-
-        if (this.profileForm.valid && this.addingEvent)
-          this.menuService.enableMenuItem('save-click', () => { this.addEventClick(); this.menuService.hideMenu(); });
-        else if (this.profileForm.valid && this.updatingEvent)
-          this.menuService.enableMenuItem('save-click', () => { this.updateEventClick(); this.menuService.hideMenu(); });
-        else
-          this.menuService.disableMenuItem('save-click');
-
-        if (this.addingEvent)
-          this.menuService.enableMenuItem('cancel-click', () => { this.closeClickAddEventForm(); this.menuService.hideMenu(); });
-        else if (this.updatingEvent)
-          this.menuService.enableMenuItem('cancel-click', () => { this.closeClickUpdateEventForm(); this.menuService.hideMenu(); });
-
-        if (this.updatingEvent)
-          this.menuService.enableMenuItem('delete-click', () => { this.deleteEvent(); this.menuService.hideMenu(); });
-      })
-    );
   }
 
   ngOnDestroy() {
@@ -166,155 +82,38 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     this.calendarRepo.calendarRecords.observers.forEach(element => { element.complete(); });
     this.calendarRepo.calendarRecords.next({});
 
-    this.menuService.disableMenuItem('cancel-click');
-    this.menuService.disableMenuItem('delete-click');
-    this.menuService.disableMenuItem('undo-click');
-
-    this.menuService.disableMenuItem('save-click');
+    this.calendarService.openUpdateEventForm.next({ 'record': {}, 'open': false });
+    this.calendarService.openAddEventForm.next({ 'dayData': {}, 'open': false });
   }
 
   getDayName(dayNumber) {
-    return Object.keys(this.daysEnum)[dayNumber];
-  }
-
-  getDayNameLong(dayNumber) {
-    return Object.keys(this.daysLongEnum)[dayNumber];
+    return Object.keys(this.calendarService.daysEnum)[dayNumber];
   }
 
   getRecordsByDay(day) {
-    const records = this.records.filter(r => r['day'] === day);
+    const records = this.calendarService.records.filter(r => r['day'] === day);
     records.sort(this.compareByTime);
     return records;
   }
 
-  getDayNameForMonth(day) {
-    const date = new Date(this.year, this.zeroIndexedMonth, day);
-    return this.getDayName(date.getDay());
-  }
-
-  getDayNameLongForMonth(day) {
-    const date = new Date(this.year, this.zeroIndexedMonth, day);
-    return this.getDayNameLong(date.getDay());
-  }
-
   changeMonth(isNextMonth: boolean) {
-    let zeroIndexedMonth = this.zeroIndexedMonth;
-    let oneIndexedMonth = this.zeroIndexedMonth + 1;
+    let zeroIndexedMonth = this.calendarService.zeroIndexedMonth;
+    let oneIndexedMonth = this.calendarService.zeroIndexedMonth + 1;
 
-    let year = this.year;
+    let year = this.calendarService.year;
 
     let tempDate = new Date(`${year} ${oneIndexedMonth}`);
 
     if (isNextMonth) tempDate.setMonth(zeroIndexedMonth + 1);
     else tempDate.setMonth(zeroIndexedMonth - 1);
 
-    this.year = tempDate.getFullYear();
-    this.zeroIndexedMonth = tempDate.getMonth();
+    this.calendarService.year = tempDate.getFullYear();
+    this.calendarService.zeroIndexedMonth = tempDate.getMonth();
 
     this.calendarRepo.calendarRecords.next({});
-    this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
+    this.calendarRepo.getCalendarRecords(this.calendarService.year, this.calendarService.zeroIndexedMonth);
 
-    this.closeAddOrUpdateEventForm();
-  }
-
-  checkEnableUndo() {
-    return this.updatingEvent
-      && (this.profileForm.value.hour !== this.currentRecord.hour
-        || this.profileForm.value.minute !== this.currentRecord.minute
-        || this.profileForm.value.what !== this.currentRecord.what);
-  }
-
-  undoChanges() {
-    if (window.confirm('Are you sure you want to undo changes?')) {
-      this.profileForm.patchValue(this.currentRecord);
-      this.undoEnabled = false;
-    }
-  }
-
-  openAddEventForm(evt, dayData) {
-    this.undoEnabled = false;
-    this.addingEvent = true;
-
-    this.profileForm.patchValue({
-      what: '',
-      hour: 0,
-      minute: 0,
-      day: this.daysInMonthArray[dayData.dayInMonthArrayIndex],
-      month: this.zeroIndexedMonth,
-      year: this.year,
-      id: uuid()
-    });
-  }
-
-  openUpdateEventForm(evt, record) {
-    this.undoEnabled = false;
-    this.updatingEvent = true
-
-    this.currentRecord = {
-      what: record.what,
-      hour: record.hour,
-      minute: record.minute,
-      day: record.day,
-      month: this.zeroIndexedMonth,
-      year: this.year,
-      id: record.id
-    };
-
-    this.profileForm.patchValue(this.currentRecord);
-  }
-
-  addEventClick() {
-    this.postEvent();
-  }
-
-  updateEventClick() {
-    if (!this.undoEnabled) alert('No changes!');
-    else this.postEvent();
-  }
-
-  postEvent() {
-    const record = {
-      'what': this.profileForm.value.what,
-      'day': this.profileForm.value.day,
-      'hour': this.profileForm.value.hour,
-      'minute': this.profileForm.value.minute,
-      'id': this.profileForm.value.id
-    }
-    this.calendarRepo.postCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, record);
-    this.closeAddOrUpdateEventForm();
-  }
-
-  deleteEvent() {
-    if (window.confirm(`Are you sure you want to delete this record?`)) {
-      this.calendarRepo.deleteCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, this.profileForm.value.id);
-      this.closeAddOrUpdateEventForm();
-    }
-  }
-
-  closeAddOrUpdateEventForm() {
-    this.menuService.disableMenuItem('cancel-click');
-    this.menuService.disableMenuItem('delete-click');
-    this.menuService.disableMenuItem('save-click');
-
-    this.menuService.disableMenuItem('undo-click');
-
-    this.addingEvent = false;
-    this.updatingEvent = false;
-    this.undoEnabled = false;
-  }
-
-  closeClickAddEventForm() {
-    if (!this.profileForm.valid)
-      this.closeAddOrUpdateEventForm();
-    else if (window.confirm('Are you sure you want to discard changes?'))
-      this.closeAddOrUpdateEventForm();
-  }
-
-  closeClickUpdateEventForm() {
-    if (!this.undoEnabled)
-      this.closeAddOrUpdateEventForm();
-    else if (window.confirm('Are you sure you want to discard changes?'))
-      this.closeAddOrUpdateEventForm();
+    this.calendarService.closeAddOrUpdateEventForm.next(true);
   }
 
   private padToTwo(value: number): string {

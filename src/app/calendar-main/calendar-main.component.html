@@ -1,19 +1,12 @@
-<!-- 
-<app-calendar-month>
-</app-calendar-month> 
-
-<app-calendar-form>
-</app-calendar-form> 
--->
 
 <div class="changePageContainer">
     <button class="green-button" (click)="changeMonth(false)"><span>&#60;</span></button>
-    <div>{{monthNames[zeroIndexedMonth]}} - {{year}}</div>
+    <div>{{calendarService.monthNames[calendarService.zeroIndexedMonth]}} - {{calendarService.year}}</div>
     <button class="green-button" (click)="changeMonth(true)"><span>&#62;</span></button>
 </div>
 
 <div class="weekdayName-names-contianer">
-    <div *ngFor="let weekdayName of weekdayNames;">
+    <div *ngFor="let weekdayName of calendarService.weekdayNames;">
         {{weekdayName}}
     </div>
 </div>
@@ -21,7 +14,7 @@
 <div class="date-box-contianer">
     
     <div *ngFor="let dayData of dayDataForMonth; let i = index"
-        class="date-box {{today.year === year && today.month === zeroIndexedMonth && today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}"
+        class="date-box {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.zeroIndexedMonth && calendarService.today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}"
         [attr.data-col]="dayData.gridCol" 
         [attr.data-row]="dayData.gridRow" 
         [style.gridColumn]="dayData.gridCol" 
@@ -30,11 +23,11 @@
         [attr.data-empty-below]="penultimateGridRow === dayData.gridRow && dayData.gridCol > lastCol ? 1 : 0" 
         [attr.last-item]="i === dayDataForMonth.length - 1 ? 1 : 0">
 
-        <div class="day" (click)="openAddEventForm($event, dayData)">{{dayData.dayInMonthArrayIndex}}</div>
+        <div class="day" (click)="openAddEventForm(dayData)">{{dayData.dayInMonthArrayIndex}}</div>
 
         <div class="table" *ngFor="let record of getRecordsByDay(dayData.dayInMonthArrayIndex);">
 
-            <div class="record" (click)="openUpdateEventForm($event, record)">
+            <div class="record" (click)="openUpdateEventForm(record)">
                 {{padToTwo(record.hour)}}:{{padToTwo(record.minute)}} - {{record.what}}
             </div>
 
@@ -42,35 +35,4 @@
     </div>
 </div>
 
-
-<div *ngIf="addingEvent || updatingEvent" class="formContainer">
-
-    <form [formGroup]="profileForm" (ngSubmit)="addingEvent ? addEventClick() : updateEventClick()">
-
-        <h3 class="form-heading">{{getDayNameLongForMonth(profileForm.value.day)}} - Day {{profileForm.value.day}}</h3>
-
-        <button class="undo red-button" *ngIf="undoEnabled" (click)="undoChanges()" type="button">Undo</button>
-
-        <label class="what">
-      What
-    </label>
-        <input class="what" type="text" formControlName="what" maxlength="25" autofocus>
-
-        <div class='time'>Time hh:mm</div>
-
-        <input class="hour" type="number" formControlName="hour" max="23" min="0">
-
-        <input class="minute" type="number" formControlName="minute" step=15 max="59" min="0">
-
-        <button class="submit green-button" type="submit" [disabled]="!profileForm.valid">{{addingEvent ? 'Submit': 'Update'}}</button>
-
-        <button (click)="addingEvent ? closeClickAddEventForm() : closeClickUpdateEventForm()" class="close-button green-button" type="button">{{addingEvent ? 'Cancel': 'Cancel'}}</button>
-
-        <button (click)="deleteEvent()" class="delete-button red-button {{!updatingEvent ? 'invalidRedButton' : '' }}" [disabled]="!updatingEvent" type="button">Delete</button>
-
-        <div class="formStatus {{profileForm.status === 'INVALID' ? 'form-invalid' : 'form-valid'}}">
-            Form Status: {{ profileForm.status }}
-        </div>
-    </form>
-
-</div>
+<app-calendar-form></app-calendar-form>
