@@ -8,13 +8,7 @@
     
     <div *ngFor="let dayData of dayDataForWeek; let i = index"
         class="date-box {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.zeroIndexedMonth && calendarService.today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}"
-        [attr.data-col]="dayData.gridCol" 
-        [attr.data-row]="dayData.gridRow" 
-        [style.gridColumn]="dayData.gridCol" 
-        [style.gridRow]="dayData.gridRow" 
-        [attr.data-max-row]="lastGridRow === dayData.gridRow ? 1 : 0"
-        [attr.data-empty-below]="penultimateGridRow === dayData.gridRow && dayData.gridCol > lastCol ? 1 : 0" 
-        [attr.last-item]="i === dayDataForMonth.length - 1 ? 1 : 0">
+        [attr.data-col]="dayData.gridCol" >
 
         <div class="day" (click)="openAddEventForm(dayData)">{{dayData.dayInMonthArrayIndex}}</div>
 

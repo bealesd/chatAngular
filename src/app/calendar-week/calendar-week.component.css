@@ -5,7 +5,7 @@
     --weekday-name-and-number-text-color: hotpink;
     --record-font-size: 14px;
     /* --record-text-and-heading-color: white; */
-    --record-minimum-height: 150px;
+    --record-minimum-height: 800px;
     --record-font-family: inherit;
     --record-border-type: solid;
     --record-border-thickness: 2px;
@@ -35,6 +35,7 @@
         --record-font-size: 10px;
         --record-text-color: white;
         --record-border-thickness: 1px;
+        --record-minimum-height: 400px;
     }
 }
 
@@ -84,104 +85,54 @@
     letter-spacing: var(--record-letter-spacing);
 }
 
-.date-box-contianer > [data-col="1"].date-box,
-[data-max-row="1"][data-col="1"].date-box {
+.date-box-contianer > [data-col="1"].date-box {
     border-left: var(--record-border-red);
     border-top: var(--record-border-red);
+    border-bottom: var(--record-border-red);
+    grid-column: 1;
 }
 
 .date-box-contianer > [data-col="2"].date-box {
     border-left: var(--record-border-orange);
     border-top: var(--record-border-orange);
+    border-bottom: var(--record-border-orange);
+    grid-column: 2;
 }
 
 .date-box-contianer > [data-col="3"].date-box {
     border-left: var(--record-border-yellow);
     border-top: var(--record-border-yellow);
+    border-bottom: var(--record-border-yellow);
+    grid-column: 3;
 }
 
 .date-box-contianer > [data-col="4"].date-box {
     border-left: var(--record-border-green);
     border-top: var(--record-border-green);
+    border-bottom: var(--record-border-green);
+    grid-column: 4;
 }
 
 .date-box-contianer > [data-col="5"].date-box {
     border-left: var(--record-border-light-blue);
     border-top: var(--record-border-light-blue);
+    border-bottom: var(--record-border-light-blue);
+    grid-column: 5;
 }
 
 .date-box-contianer > [data-col="6"].date-box {
     border-left: var(--record-border-pink);
     border-top: var(--record-border-pink);
+    border-bottom: var(--record-border-pink);
+    grid-column: 6;
 }
 
 .date-box-contianer > [data-col="7"].date-box {
     border-left: var(--record-border-violet);
-    border-right: var(--record-border-violet);
     border-top: var(--record-border-violet);
-}
-
-.date-box-contianer > [data-empty-below="1"][data-col="1"].date-box,
-.date-box-contianer > [data-max-row="1"][data-col="1"].date-box {
-    border-bottom: var(--record-border-red);
-}
-
-.date-box-contianer > [data-empty-below="1"][data-col="2"].date-box,
-.date-box-contianer > [data-max-row="1"][data-col="2"].date-box {
-    border-bottom: var(--record-border-orange);
-}
-
-.date-box-contianer > [data-empty-below="1"][data-col="3"].date-box,
-.date-box-contianer > [data-max-row="1"][data-col="3"].date-box {
-    border-bottom: var(--record-border-yellow);
-}
-
-.date-box-contianer > [data-empty-below="1"][data-col="4"].date-box,
-.date-box-contianer > [data-max-row="1"][data-col="4"].date-box {
-    border-bottom: var(--record-border-green);
-}
-
-.date-box-contianer > [data-empty-below="1"][data-col="5"].date-box,
-.date-box-contianer > [data-max-row="1"][data-col="5"].date-box {
-    border-bottom: var(--record-border-light-blue);
-}
-
-.date-box-contianer > [data-empty-below="1"][data-col="6"].date-box,
-.date-box-contianer > [data-max-row="1"][data-col="6"].date-box {
-    border-bottom: var(--record-border-pink);
-}
-
-.date-box-contianer > [data-empty-below="1"][data-col="7"].date-box,
-.date-box-contianer > [data-max-row="1"][data-col="7"].date-box {
     border-bottom: var(--record-border-violet);
-}
-
-.date-box-contianer > [last-item="1"][data-col="1"].date-box {
-    border-right: var(--record-border-red);
-}
-
-.date-box-contianer > [last-item="1"][data-col="2"].date-box {
-    border-right: var(--record-border-orange);
-}
-
-.date-box-contianer > [last-item="1"][data-col="3"].date-box {
-    border-right: var(--record-border-yellow);
-}
-
-.date-box-contianer > [last-item="1"][data-col="4"].date-box {
-    border-right: var(--record-border-green);
-}
-
-.date-box-contianer > [last-item="1"][data-col="5"].date-box {
-    border-right: var(--record-border-light-blue);
-}
-
-.date-box-contianer > [last-item="1"][data-col="6"].date-box {
-    border-right: var(--record-border-pink);
-}
-
-.date-box-contianer > [last-item="1"][data-col="7"].date-box {
     border-right: var(--record-border-violet);
+    grid-column: 7;
 }
 
 button {

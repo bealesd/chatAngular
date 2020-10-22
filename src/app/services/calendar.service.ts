@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-import { MessageService } from '../services/message.service';
 import { CalendarRepo } from './calendar.repo'
-import { RestHelper } from '../helpers/rest-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -14,24 +12,67 @@ export class CalendarService {
   public closeAddOrUpdateEventForm = new BehaviorSubject<boolean>(true);
   public openUpdateEventForm = new BehaviorSubject<any>({});
   public openAddEventForm = new BehaviorSubject<any>({});
+  week: number;
 
-  constructor(private messageService: MessageService, private calendarRepo: CalendarRepo, private restHelper: RestHelper) {
+  constructor(private calendarRepo: CalendarRepo) {
     let date = new Date();
     this.year = date.getFullYear();
     this.zeroIndexedMonth = date.getMonth();
-    // week start on sunday as 0 indexed, when using getDay
-    // number of weeks in month - 
-    this.week =
 
-      this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'day': date.getDate() };
+    const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
+    this.week = Math.ceil((firstOfMonth.getDay() + date.getDate()) / 7);
 
+    this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'day': date.getDate() };
+
+  }
+
+  changeWeek(incrementWeekOrMonth, changedMonth) {
+    if (changedMonth) {
+      this.week = 1;
+    }
+    if (!changedMonth) {
+      const maxWeek = this.weeksInMonth;
+      if (incrementWeekOrMonth) {
+        this.week += 1;
+        if (this.week > maxWeek) {
+          this.changeMonth(true);
+        }
+        else if (this.week < 1) {
+          this.changeMonth(false);
+        }
+      }
+      else {
+        this.week -= 1;
+      }
+    }
   }
 
   get weeksInMonth() {
     const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
     const daysIntoWeek = firstOfMonth.getDay();
-    //Math.ceil(daysIntoWeek + this.today.day/ 7)
     return Math.ceil((daysIntoWeek + this.daysInMonth) / 7);
+  }
+
+  get calendarDaysInWeek() {
+    let startDay;
+    let endDay;
+    let days = [];
+
+    const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
+    const daysIntoWeek = firstOfMonth.getDay();
+
+    if (this.week === 1) {
+      startDay = 0;
+      endDay = (7-daysIntoWeek);
+      days = this.daysInMonthArray.slice(startDay, endDay);
+    }
+    else {
+      startDay = ((this.week-1)*7 + (7-daysIntoWeek))-7;
+      endDay = ((this.week-1)*7 + (7-daysIntoWeek));
+      days = this.daysInMonthArray.slice(startDay, endDay);
+    }
+    
+    return days;
   }
 
   // TODO - going to be used to manage all calendar data, and will be used by calendar month and calendar week components.
@@ -128,8 +169,14 @@ export class CalendarService {
 
     let tempDate = new Date(`${year} ${oneIndexedMonth}`);
 
-    if (isNextMonth) tempDate.setMonth(zeroIndexedMonth + 1);
-    else tempDate.setMonth(zeroIndexedMonth - 1);
+    if (isNextMonth) {
+      tempDate.setMonth(zeroIndexedMonth + 1);
+      this.changeWeek(true, true);
+    }
+    else {
+      tempDate.setMonth(zeroIndexedMonth - 1);
+      this.changeWeek(false, true);
+    }
 
     this.year = tempDate.getFullYear();
     this.zeroIndexedMonth = tempDate.getMonth();
@@ -138,6 +185,7 @@ export class CalendarService {
     this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
 
     this.closeAddOrUpdateEventForm.next(true);
+
   }
 
   private compareByTime(a, b) {

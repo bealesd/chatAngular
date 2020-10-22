@@ -34,6 +34,6 @@
         </div>
     </div>
 </div> -->
-<app-calendar-month></app-calendar-month>
-<app-calendar-week></app-calendar-week>
+<app-calendar-month *ngIf= "monthOrWeek === 'month'"></app-calendar-month>
+<app-calendar-week *ngIf= "monthOrWeek === 'week'"></app-calendar-week>
 <app-calendar-form></app-calendar-form>

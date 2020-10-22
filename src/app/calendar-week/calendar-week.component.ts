@@ -18,27 +18,18 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
   lastCol: number;
 
   get dayDataForWeek() {
-    return 1;
-  }
-
-  get dayDataForMonth() {
     const dayData = [];
 
-    let gridRow = 1;
-    this.calendarService.daysInMonthArray.forEach((dayNumber, index) => {
+    this.calendarService.calendarDaysInWeek.forEach((dayNumber, index) => {
       const day = new Date(this.calendarService.year, this.calendarService.zeroIndexedMonth, dayNumber).getDay();
-      if (index !== 0 && day === 0) gridRow++;
 
       const col = (day % 7);
       const gridCol = col + 1;
       const dayName = this.calendarService.weekdayNames[col];
       this.lastCol = gridCol;
 
-      dayData.push({ 'gridRow': gridRow, 'gridCol': gridCol, 'name': dayName, 'dayInMonthArrayIndex': dayNumber });
+      dayData.push({ 'gridCol': gridCol, 'name': dayName, 'dayInMonthArrayIndex': dayNumber });
     });
-
-    this.lastGridRow = gridRow;
-    this.penultimateGridRow = gridRow - 1;
 
     return dayData;
   }
