@@ -18,9 +18,9 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
   lastCol: number;
 
   get dayDataForWeek() {
-    const dayData = [];
-
-    this.calendarService.calendarDaysInWeek.forEach((dayNumber, index) => {
+    const dayData = {'empty': [], 'valid': []};
+    // blank all data data for drawing, work out what days are not drawn
+    this.calendarService.calendarDaysInWeek.valid.forEach((dayNumber, index) => {
       const day = new Date(this.calendarService.year, this.calendarService.zeroIndexedMonth, dayNumber).getDay();
 
       const col = (day % 7);
@@ -28,7 +28,19 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
       const dayName = this.calendarService.weekdayNames[col];
       this.lastCol = gridCol;
 
-      dayData.push({ 'gridCol': gridCol, 'name': dayName, 'dayInMonthArrayIndex': dayNumber });
+      dayData.valid.push({ 'gridCol': gridCol, 'name': dayName, 'dayInMonthArrayIndex': dayNumber });
+    });
+
+    this.calendarService.calendarDaysInWeek.empty.forEach((dayInfo, index) => {
+      const date = dayInfo.date;
+      const day = date.getDay();
+      const calendarDay = date.getDate();
+
+      const gridCol = dayInfo.col;
+      const dayName = this.calendarService.weekdayNames[day];
+      this.lastCol = gridCol;
+
+      dayData.empty.push({ 'gridCol': gridCol, 'name': dayName, 'dayInMonthArrayIndex': calendarDay });
     });
 
     return dayData;

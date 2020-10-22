@@ -26,25 +26,23 @@ export class CalendarService {
 
   }
 
-  changeWeek(incrementWeekOrMonth, changedMonth) {
-    if (changedMonth) {
-      this.week = 1;
-    }
-    if (!changedMonth) {
-      const maxWeek = this.weeksInMonth;
-      if (incrementWeekOrMonth) {
-        this.week += 1;
-        if (this.week > maxWeek) {
-          this.changeMonth(true);
-        }
-        else if (this.week < 1) {
-          this.changeMonth(false);
-        }
-      }
-      else {
-        this.week -= 1;
+  changeWeek(incrementWeekOrMonth) {
+    //need to change month and year possibly
+    let maxWeek = this.weeksInMonth;
+    if (incrementWeekOrMonth) {
+      this.week += 1;
+      if (this.week > maxWeek) {
+        this.changeMonth(true);
       }
     }
+    else {
+      this.week -= 1;
+      if (this.week < 1) {
+        this.changeMonth(false);
+        this.week = this.weeksInMonth;
+      }
+    }
+
   }
 
   get weeksInMonth() {
@@ -56,23 +54,41 @@ export class CalendarService {
   get calendarDaysInWeek() {
     let startDay;
     let endDay;
-    let days = [];
+    let validDays = [];
+    let emptyDays = [];
 
     const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
     const daysIntoWeek = firstOfMonth.getDay();
 
     if (this.week === 1) {
       startDay = 0;
-      endDay = (7-daysIntoWeek);
-      days = this.daysInMonthArray.slice(startDay, endDay);
+      endDay = (7 - daysIntoWeek);
+
+      validDays = this.daysInMonthArray.slice(startDay, endDay);
+      let col = 1;
+      for (let i = (7 - validDays.length)-1; i >= 0 ; i--) {
+        // rename i to days-before-current-month
+        const date = new Date(this.year, this.zeroIndexedMonth, -i);
+        emptyDays.push({'date': date, 'col': col++});
+      }
     }
     else {
-      startDay = ((this.week-1)*7 + (7-daysIntoWeek))-7;
-      endDay = ((this.week-1)*7 + (7-daysIntoWeek));
-      days = this.daysInMonthArray.slice(startDay, endDay);
+      startDay = ((this.week - 1) * 7 + (7 - daysIntoWeek)) - 7;
+      endDay = ((this.week - 1) * 7 + (7 - daysIntoWeek));
+
+      validDays = this.daysInMonthArray.slice(startDay, endDay);
+      let col = 7;
+      for (let i = (7 - validDays.length)-1; i >= 0 ; i--) {
+        const date = new Date(this.year, this.zeroIndexedMonth, (this.daysInMonthArray.length-1);
+        emptyDays.push({'date': date, 'col': col--});
+      }
+      // emptyDays = (new Array(7-validDays.length)).fill(0)
+
+      // let emptyDaysEndDay = (startDay + 7) > (this.daysInMonthArray.length - 1) ? (this.daysInMonthArray.length - 1):(startDay + 7)
+      // emptyDays = this.daysInMonthArray.slice(endDay, emptyDaysEndDay);
     }
-    
-    return days;
+
+    return { 'valid': validDays, 'empty': emptyDays };
   }
 
   // TODO - going to be used to manage all calendar data, and will be used by calendar month and calendar week components.
@@ -171,11 +187,11 @@ export class CalendarService {
 
     if (isNextMonth) {
       tempDate.setMonth(zeroIndexedMonth + 1);
-      this.changeWeek(true, true);
+      this.week = 1;
     }
     else {
       tempDate.setMonth(zeroIndexedMonth - 1);
-      this.changeWeek(false, true);
+      this.week = 1;
     }
 
     this.year = tempDate.getFullYear();

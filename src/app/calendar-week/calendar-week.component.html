@@ -5,10 +5,26 @@
 </div>
 
 <div class="date-box-contianer">
-    
-    <div *ngFor="let dayData of dayDataForWeek; let i = index"
+    <!-- draw all day data, including empty, do in dayDataForWeek -->
+    <div *ngFor="let dayData of dayDataForWeek.valid; let i = index"
         class="date-box {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.zeroIndexedMonth && calendarService.today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}"
-        [attr.data-col]="dayData.gridCol" >
+        [attr.data-col]="dayData.gridCol">
+
+        <div class="day" (click)="openAddEventForm(dayData)">{{dayData.dayInMonthArrayIndex}}</div>
+
+        <div class="table" *ngFor="let record of calendarService.getRecordsByDay(dayData.dayInMonthArrayIndex);">
+
+            <div class="record" (click)="openUpdateEventForm(record)">
+                {{calendarService.padToTwo(record.hour)}}:{{calendarService.padToTwo(record.minute)}} - {{record.what}}
+            </div>
+
+        </div>
+    </div>
+
+    <!-- draw all day data, including empty, do in dayDataForWeek -->
+    <div *ngFor="let dayData of dayDataForWeek.empty; let i = index"
+        class="date-box {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.zeroIndexedMonth && calendarService.today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}"
+        [attr.data-col]="dayData.gridCol">
 
         <div class="day" (click)="openAddEventForm(dayData)">{{dayData.dayInMonthArrayIndex}}</div>
 

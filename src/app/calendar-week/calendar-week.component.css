@@ -90,41 +90,42 @@
     border-top: var(--record-border-red);
     border-bottom: var(--record-border-red);
     grid-column: 1;
+    grid-row: 1;
 }
 
 .date-box-contianer > [data-col="2"].date-box {
     border-left: var(--record-border-orange);
     border-top: var(--record-border-orange);
     border-bottom: var(--record-border-orange);
-    grid-column: 2;
+    grid-row: 1;
 }
 
 .date-box-contianer > [data-col="3"].date-box {
     border-left: var(--record-border-yellow);
     border-top: var(--record-border-yellow);
     border-bottom: var(--record-border-yellow);
-    grid-column: 3;
+    grid-row: 1;
 }
 
 .date-box-contianer > [data-col="4"].date-box {
     border-left: var(--record-border-green);
     border-top: var(--record-border-green);
     border-bottom: var(--record-border-green);
-    grid-column: 4;
+    grid-row: 1;
 }
 
 .date-box-contianer > [data-col="5"].date-box {
     border-left: var(--record-border-light-blue);
     border-top: var(--record-border-light-blue);
     border-bottom: var(--record-border-light-blue);
-    grid-column: 5;
+    grid-row: 1;
 }
 
 .date-box-contianer > [data-col="6"].date-box {
     border-left: var(--record-border-pink);
     border-top: var(--record-border-pink);
     border-bottom: var(--record-border-pink);
-    grid-column: 6;
+    grid-row: 1;
 }
 
 .date-box-contianer > [data-col="7"].date-box {
@@ -132,7 +133,7 @@
     border-top: var(--record-border-violet);
     border-bottom: var(--record-border-violet);
     border-right: var(--record-border-violet);
-    grid-column: 7;
+    grid-row: 1;
 }
 
 button {

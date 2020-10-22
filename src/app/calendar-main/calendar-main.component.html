@@ -1,39 +1,10 @@
 
 <div class="changePageContainer">
-    <button class="green-button" (click)="calendarService.changeMonth(false)"><span>&#60;</span></button>
+    <button class="green-button" (click)="monthOrWeek === 'month' ? calendarService.changeMonth(false) : calendarService.changeWeek(false)"><span>&#60;</span></button>
     <div>{{calendarService.monthNames[calendarService.zeroIndexedMonth]}} - {{calendarService.year}}</div>
-    <button class="green-button" (click)="calendarService.changeMonth(true)"><span>&#62;</span></button>
-</div>
-<!-- 
-<div class="weekdayName-names-contianer">
-    <div *ngFor="let weekdayName of calendarService.weekdayNames;">
-        {{weekdayName}}
-    </div>
+    <button class="green-button" (click)="monthOrWeek === 'month' ? calendarService.changeMonth(true) : calendarService.changeWeek(true)"><span>&#62;</span></button>
 </div>
 
-<div class="date-box-contianer">
-    
-    <div *ngFor="let dayData of dayDataForMonth; let i = index"
-        class="date-box {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.zeroIndexedMonth && calendarService.today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}"
-        [attr.data-col]="dayData.gridCol" 
-        [attr.data-row]="dayData.gridRow" 
-        [style.gridColumn]="dayData.gridCol" 
-        [style.gridRow]="dayData.gridRow" 
-        [attr.data-max-row]="lastGridRow === dayData.gridRow ? 1 : 0"
-        [attr.data-empty-below]="penultimateGridRow === dayData.gridRow && dayData.gridCol > lastCol ? 1 : 0" 
-        [attr.last-item]="i === dayDataForMonth.length - 1 ? 1 : 0">
-
-        <div class="day" (click)="openAddEventForm(dayData)">{{dayData.dayInMonthArrayIndex}}</div>
-
-        <div class="table" *ngFor="let record of calendarService.getRecordsByDay(dayData.dayInMonthArrayIndex);">
-
-            <div class="record" (click)="openUpdateEventForm(record)">
-                {{calendarService.padToTwo(record.hour)}}:{{calendarService.padToTwo(record.minute)}} - {{record.what}}
-            </div>
-
-        </div>
-    </div>
-</div> -->
 <app-calendar-month *ngIf= "monthOrWeek === 'month'"></app-calendar-month>
 <app-calendar-week *ngIf= "monthOrWeek === 'week'"></app-calendar-week>
 <app-calendar-form></app-calendar-form>
