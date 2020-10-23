@@ -1,37 +1,38 @@
 <div class="weekdayName-names-contianer">
-    <div *ngFor="let weekdayName of calendarService.weekdayNames;">
+    <div class="time-heading">Time</div>
+    <div *ngFor="let weekdayName of calendarService.weekdayNames; let i = index" [attr.data-col]="i+2">
         {{weekdayName}}
     </div>
 </div>
 
 <div class="date-box-contianer">
-    <div *ngFor="let dayData of dayDataForWeek.valid; let i = index"
-        class="date-box {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.zeroIndexedMonth && calendarService.today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}"
+    <div *ngFor="let dayData of dayDataForWeek.valid; let i = index" class="date-box {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.zeroIndexedMonth && calendarService.today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}"
         [attr.data-col]="dayData.gridCol">
-
         <div class="day" (click)="openAddEventForm(dayData)">{{dayData.dayInMonthArrayIndex}}</div>
 
-        <div class="table" *ngFor="let record of calendarService.getRecordsByDay(dayData.dayInMonthArrayIndex);">
+        <div class="table">
 
-            <div class="record" (click)="openUpdateEventForm(record)">
-                {{calendarService.padToTwo(record.hour)}}:{{calendarService.padToTwo(record.minute)}} - {{record.what}}
+            <div class="record-container" *ngFor="let result of getCalendardRecordHourGroupsByDay(dayData.dayInMonthArrayIndex);" [style.gridRow]="hourToGridRow(result.hour)">
+                <div class="record" (click)="openUpdateEventForm(record)" *ngFor="let record of result.records;">
+                    {{record.what}}
+                </div>
             </div>
 
         </div>
+
     </div>
 
-    <div *ngFor="let dayData of dayDataForWeek.empty; let i = index"
-        class="date-box {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.zeroIndexedMonth && calendarService.today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}"
-        [attr.data-col]="dayData.gridCol">
 
-        <div class="day" (click)="openAddEventForm(dayData)">{{dayData.dayInMonthArrayIndex}}</div>
+    <div *ngFor="let dayData of dayDataForWeek.empty; let i = index" class="date-box empty" [attr.data-col]="dayData.gridCol">
+        <div class="day">{{dayData.dayInMonthArrayIndex}}</div>
+    </div>
 
-        <div class="table" *ngFor="let record of calendarService.getRecordsByDay(dayData.dayInMonthArrayIndex);">
-
-            <div class="record" (click)="openUpdateEventForm(record)">
-                {{calendarService.padToTwo(record.hour)}}:{{calendarService.padToTwo(record.minute)}} - {{record.what}}
+    <div class="date-box">
+        <div class="table">
+            <div class="time-div" *ngFor="let time of hoursOfDay;">
+                {{calendarService.padToTwo(time)}}
             </div>
-
         </div>
     </div>
+
 </div>

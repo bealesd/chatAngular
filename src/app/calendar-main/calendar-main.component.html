@@ -1,10 +1,9 @@
-
 <div class="changePageContainer">
-    <button class="green-button" (click)="monthOrWeek === 'month' ? calendarService.changeMonth(false) : calendarService.changeWeek(false)"><span>&#60;</span></button>
+    <button class="green-button" (click)="monthOrWeek === 'month' ? calendarService.changeMonth('previous') : calendarService.changeWeek('previous')"><span>&#60;</span></button>
     <div>{{calendarService.monthNames[calendarService.zeroIndexedMonth]}} - {{calendarService.year}}</div>
-    <button class="green-button" (click)="monthOrWeek === 'month' ? calendarService.changeMonth(true) : calendarService.changeWeek(true)"><span>&#62;</span></button>
+    <button class="green-button" (click)="monthOrWeek === 'month' ? calendarService.changeMonth('next') : calendarService.changeWeek('next')"><span>&#62;</span></button>
 </div>
 
-<app-calendar-month *ngIf= "monthOrWeek === 'month'"></app-calendar-month>
-<app-calendar-week *ngIf= "monthOrWeek === 'week'"></app-calendar-week>
+<app-calendar-month *ngIf="monthOrWeek === 'month'"></app-calendar-month>
+<app-calendar-week *ngIf="monthOrWeek === 'week'"></app-calendar-week>
 <app-calendar-form></app-calendar-form>

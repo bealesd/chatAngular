@@ -15,36 +15,59 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   lastGridRow: number;
   penultimateGridRow: number;
-  lastCol: number;
 
   get dayDataForWeek() {
-    const dayData = {'empty': [], 'valid': []};
-    // blank all data data for drawing, work out what days are not drawn
-    this.calendarService.calendarDaysInWeek.valid.forEach((dayNumber, index) => {
+    const dayData = { 'empty': [], 'valid': [] };
+    this.calendarService.calendarDaysInWeek.valid.forEach((dayNumber) => {
       const day = new Date(this.calendarService.year, this.calendarService.zeroIndexedMonth, dayNumber).getDay();
 
       const col = (day % 7);
-      const gridCol = col + 1;
       const dayName = this.calendarService.weekdayNames[col];
-      this.lastCol = gridCol;
 
-      dayData.valid.push({ 'gridCol': gridCol, 'name': dayName, 'dayInMonthArrayIndex': dayNumber });
+      dayData.valid.push({ 'gridCol': col + 1, 'name': dayName, 'dayInMonthArrayIndex': dayNumber });
     });
 
-    this.calendarService.calendarDaysInWeek.empty.forEach((dayInfo, index) => {
-      const date = dayInfo.date;
-      const day = date.getDay();
-      const calendarDay = date.getDate();
-
-      const gridCol = dayInfo.col;
-      const dayName = this.calendarService.weekdayNames[day];
-      this.lastCol = gridCol;
-
-      dayData.empty.push({ 'gridCol': gridCol, 'name': dayName, 'dayInMonthArrayIndex': calendarDay });
+    this.calendarService.calendarDaysInWeek.empty.forEach((dayInfo) => {
+      dayData.empty.push({ 'gridCol': dayInfo.col, 'name': dayInfo.name, 'dayInMonthArrayIndex': dayInfo.dayInMonthArrayIndex });
     });
 
     return dayData;
   }
+
+  get hoursOfDay() {
+    const hours = [];
+    for (let i = 0; i < 24; i++) {
+      hours.push(i)
+    }
+    return hours;
+  }
+
+  hourToGridRow(hour) { return parseInt(hour.split(':')[0]) + 1; }
+
+  getCalendardRecordHourGroupsByDay(calendarDay) {
+    const records = this.calendarService.getRecordsByDay(calendarDay);
+
+    records.forEach((record: any) => record.hour = this.calendarService.padToTwo(record.hour));
+
+    let grouped = this.groupBy(records, 'hour');
+
+    let b = [];
+    for (let i = 0; i < Object.keys(grouped).length; i++) {
+      const hour = Object.keys(grouped)[i];
+      b.push({
+        'hour': hour,
+        'records': grouped[hour]
+      });
+    }
+    return b;
+  }
+
+  groupBy(xs, key) {
+    return xs.reduce(function (rv, x) {
+      (rv[x[key]] = rv[x[key]] || []).push(x);
+      return rv;
+    }, {});
+  };
 
   constructor(
     private calendarRepo: CalendarRepo,

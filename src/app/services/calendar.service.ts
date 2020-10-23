@@ -12,85 +12,30 @@ export class CalendarService {
   public closeAddOrUpdateEventForm = new BehaviorSubject<boolean>(true);
   public openUpdateEventForm = new BehaviorSubject<any>({});
   public openAddEventForm = new BehaviorSubject<any>({});
+
+  get monthNames(): string[] {
+    return Object.keys(this.monthsEnum);
+  }
+
+  get daysInMonth() {
+    // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
+    return new Date(this.year, this.zeroIndexedMonth + 1, 0).getDate();
+  }
+
+  get daysInMonthArray() {
+    // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
+    const days: number[] = [];
+    for (let i = 1; i <= (this.daysInMonth); i++) days.push(i);
+    return days;
+  }
+
+  year: number;
+  zeroIndexedMonth: number;
   week: number;
+  today: {};
+  monthName: string;
 
-  constructor(private calendarRepo: CalendarRepo) {
-    let date = new Date();
-    this.year = date.getFullYear();
-    this.zeroIndexedMonth = date.getMonth();
-
-    const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
-    this.week = Math.ceil((firstOfMonth.getDay() + date.getDate()) / 7);
-
-    this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'day': date.getDate() };
-
-  }
-
-  changeWeek(incrementWeekOrMonth) {
-    let maxWeek = this.weeksInMonth;
-    if (incrementWeekOrMonth)
-      if (++this.week > maxWeek) this.changeMonth(true);
-
-    if (!incrementWeekOrMonth)
-      if (--this.week < 1) this.changeMonth(false);
-  }
-
-  get weeksInMonth() {
-    const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
-    const daysIntoWeek = firstOfMonth.getDay();
-    return Math.ceil((daysIntoWeek + this.daysInMonth) / 7);
-  }
-
-  get calendarDaysInWeek() {
-    // get days in week that are in current month, and in next or previous month
-    // if week is one we need to check if any days in previous month
-    // if week is last week we need to check if any days in next month
-    let startDay;
-    let endDay;
-    let validDays = [];
-    let emptyDays = [];
-
-    const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
-    const daysIntoFirstWeek = firstOfMonth.getDay();
-    let maxWeek = this.weeksInMonth;
-
-    if (this.week === 1) {
-      startDay = 0;
-      endDay = (7 - daysIntoFirstWeek);
-      let totalDaysInPreviousMonth = 7 - validDays.length;
-      validDays = this.daysInMonthArray.slice(startDay, endDay);
-
-      let col = 1;
-      for (let daysIntoPreviousMonth = totalDaysInPreviousMonth - 1; daysIntoPreviousMonth >= 0; daysIntoPreviousMonth--) {
-        const date = new Date(this.year, this.zeroIndexedMonth, -daysIntoPreviousMonth);
-        emptyDays.push({ 'date': date, 'col': col++ });
-      }
-    }
-    else {
-      // |1,2,3|,4,5,6,7-,8,9,10| startOFWeek, ad
-      const unajustedStartDay = (this.week - 1) * 7;
-      startDay = unajustedStartDay - daysIntoFirstWeek;
-      endDay = unajustedStartDay + (7 - daysIntoFirstWeek);
-
-      validDays = this.daysInMonthArray.slice(startDay, endDay);
-
-      if (this.week === maxWeek) {
-        let totalDaysInNextMonth = 7 - validDays.length;
-        let lastDayOfMonth = this.daysInMonthArray.slice(-1)[0];
-
-        // TODO daysIntoNextMonth can not start at one, unless added to the last col value of last week of month
-        // col is wrong - validDays.length + daysIntoNextMonth
-        for (let daysIntoNextMonth = 1; daysIntoNextMonth <= totalDaysInNextMonth; daysIntoNextMonth++) {
-          const date = new Date(this.year, this.zeroIndexedMonth, lastDayOfMonth + daysIntoNextMonth);
-          emptyDays.push({ 'date': date, 'col': validDays.length + daysIntoNextMonth });
-        }
-      }
-    }
-    return { 'valid': validDays, 'empty': emptyDays };
-  }
-
-  // TODO - going to be used to manage all calendar data, and will be used by calendar month and calendar week components.
-
+  records: [] = [];
   daysEnum = {
     'Sun': 0,
     'Mon': 1,
@@ -130,31 +75,64 @@ export class CalendarService {
     "December": 11
   }
 
-  get monthNames(): string[] {
-    return Object.keys(this.monthsEnum);
+  constructor(private calendarRepo: CalendarRepo) {
+    let date = new Date();
+    this.year = date.getFullYear();
+    this.zeroIndexedMonth = date.getMonth();
+
+    const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
+    this.week = Math.ceil((firstOfMonth.getDay() + date.getDate()) / 7);
+
+    this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'day': date.getDate() };
+
   }
 
-  get daysInMonth() {
-    // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
-    return new Date(this.year, this.zeroIndexedMonth + 1, 0).getDate();
+  get weeksInMonth() {
+    const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
+    const daysIntoWeek = firstOfMonth.getDay();
+    return Math.ceil((daysIntoWeek + this.daysInMonth) / 7);
   }
 
-  get daysInMonthArray() {
-    // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
-    const days: number[] = [];
-    for (let i = 1; i <= (this.daysInMonth); i++) days.push(i);
-    return days;
+  get calendarDaysInWeek() {
+    let startDay;
+    let endDay;
+    let validDays = [];
+    let emptyDays = [];
+
+    const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
+    const daysIntoFirstWeek = firstOfMonth.getDay();
+    let maxWeek = this.weeksInMonth;
+
+    if (this.week === 1) {
+      startDay = 0;
+      endDay = (7 - daysIntoFirstWeek);
+      validDays = this.daysInMonthArray.slice(startDay, endDay);
+
+      let totalDaysInPreviousMonth = 7 - validDays.length;
+      let col = 1;
+      for (let daysIntoPreviousMonth = totalDaysInPreviousMonth - 1; daysIntoPreviousMonth >= 0; daysIntoPreviousMonth--) {
+        const date = new Date(this.year, this.zeroIndexedMonth, -daysIntoPreviousMonth);
+        emptyDays.push({'col': col++, 'name': this.weekdayNames[date.getDay()], 'dayInMonthArrayIndex': date.getDate() });
+      }
+    }
+    else {
+      const unajustedStartDay = (this.week - 1) * 7;
+      startDay = unajustedStartDay - daysIntoFirstWeek;
+      endDay = unajustedStartDay + (7 - daysIntoFirstWeek);
+      validDays = this.daysInMonthArray.slice(startDay, endDay);
+
+      if (this.week === maxWeek) {
+        let totalDaysInNextMonth = 7 - validDays.length;
+        let lastDayOfMonth = this.daysInMonthArray.slice(-1)[0];
+
+        for (let daysIntoNextMonth = 1; daysIntoNextMonth <= totalDaysInNextMonth; daysIntoNextMonth++) {
+          const date = new Date(this.year, this.zeroIndexedMonth, lastDayOfMonth + daysIntoNextMonth);
+          emptyDays.push({'col': validDays.length + daysIntoNextMonth, 'name': this.weekdayNames[date.getDay()], 'dayInMonthArrayIndex': date.getDate() });
+        }
+      }
+    }
+    return { 'valid': validDays, 'empty': emptyDays };
   }
-
-  year: number;
-
-  zeroIndexedMonth: number;
-
-  today: {};
-
-  monthName: string;
-
-  records: [] = [];
 
   getDayName(dayNumber) {
     return Object.keys(this.daysEnum)[dayNumber];
@@ -175,31 +153,37 @@ export class CalendarService {
     return Object.keys(this.daysLongEnum)[dayNumber];
   }
 
-  changeMonth(isNextMonth: boolean) {
+  changeWeek(nextOrPrevious) {
+    let maxWeek = this.weeksInMonth;
+    if (nextOrPrevious === 'next')
+      if (++this.week > maxWeek) this.changeMonth('next');
+    if (nextOrPrevious === 'previous')
+      if (--this.week < 1) this.changeMonth('previous');
+  }
+
+  changeMonth(nextOrPrevious) {
     let zeroIndexedMonth = this.zeroIndexedMonth;
     let oneIndexedMonth = this.zeroIndexedMonth + 1;
 
-    let year = this.year;
+    let tempDate = new Date(`${this.year} ${oneIndexedMonth}`);
 
-    let tempDate = new Date(`${year} ${oneIndexedMonth}`);
-
-    if (isNextMonth) {
+    if (nextOrPrevious === 'next') {
       tempDate.setMonth(zeroIndexedMonth + 1);
+      this.year = tempDate.getFullYear();
+      this.zeroIndexedMonth = tempDate.getMonth();
       this.week = 1;
     }
-    else {
+    else if (nextOrPrevious === 'previous') {
       tempDate.setMonth(zeroIndexedMonth - 1);
+      this.year = tempDate.getFullYear();
+      this.zeroIndexedMonth = tempDate.getMonth();
       this.week = this.weeksInMonth;
     }
-
-    this.year = tempDate.getFullYear();
-    this.zeroIndexedMonth = tempDate.getMonth();
 
     this.calendarRepo.calendarRecords.next({});
     this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
 
     this.closeAddOrUpdateEventForm.next(true);
-
   }
 
   private compareByTime(a, b) {
@@ -212,7 +196,7 @@ export class CalendarService {
     return is_a_before_b ? -1 : (is_a_same_as_b ? 1 : 0);
   }
 
-  private padToTwo(value: number): string {
+  public padToTwo(value: number): string {
     return value <= 99 ? `0${value}`.slice(-2) : `${value}`;
   }
 
