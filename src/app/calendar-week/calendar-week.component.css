@@ -3,9 +3,9 @@
     --weekday-name-font-weight: 600;
     --weekday-name-and-number-font-size: 18px;
     --weekday-name-and-number-text-color: hotpink;
+    --weekday-name-font-family: inherit;
     --day-grid-template-columns: 50px repeat(7, 1fr);
     --record-font-size: 14px;
-    /* --record-text-and-heading-color: white; */
     --record-minimum-height: 800px;
     --record-font-family: inherit;
     --record-text-color: white;
@@ -25,53 +25,67 @@
     --record-border-pink: var(--record-border-type) var(--record-border-thickness) var(--record-border-pink-color);
     --record-border-violet-color: rgb(150, 78, 202);
     --record-border-violet: var(--record-border-type) var(--record-border-thickness) var(--record-border-violet-color);
+    --record-max-width: 250px;
 }
 
+@media screen and (max-width: 1300px) and (min-width: 1100px) {
+    :host {
+       --record-max-width: 150px;
+   }
+}
+
+/*medium size wrapper*/
+
+@media screen and (max-width: 1100px) and (min-width: 800px) {
+    :host {
+       --record-max-width: 100px;
+   }
+}
 
 /*small size wrapper*/
 
 @media screen and (max-width: 800px) {
      :host {
         --weekday-name-and-number-font-size: 13px;
+        --weekday-name-font-weight: 300;
+        --weekday-name-font-family: 'Arial Narrow';
         --record-minimum-height: 100px;
         --record-font-family: 'Arial Narrow';
         --record-font-size: 10px;
         --record-text-color: white;
         --record-border-thickness: 1px;
         --record-minimum-height: 400px;
+        --record-max-width: 70px;
     }
-}
-
-.weekdayName-names-contianer {
-    display: grid;
-    grid-template-columns: var(--day-grid-template-columns);
-}
-
-.weekdayName-names-contianer div {
-    margin-left: var(--main-margin);
-    margin-right: var(--main-margin);
-    grid-row: 1;
-    font-weight: var(--weekday-name-font-weight);
-    text-align: center;
-    font-size: var(--weekday-name-and-number-font-size);
-    color: var(--weekday-name-and-number-text-color);
-}
-
-.weekdayName-names-contianer div[data-col="1"] {
-    grid-column: 1;
 }
 
 .today {
     background-color: rgb(88, 85, 253, 0.4) !important;
 }
 
-.day {
-    color: white;
-    text-align: center;
+.date-box-contianer>.day, .date-box-contianer>.date-box>.time-div {
+    font-family: var(--weekday-name-font-family);
+    font-weight: var(--weekday-name-font-weight);
+    font-size: var(--weekday-name-and-number-font-size);
+    color: var(--weekday-name-and-number-text-color);
+    
 }
 
-.record {
-    color: white;
+.record { 
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: var(--record-max-width);
+    color: var(--record-text-color);
+    border: 1px dotted grey;
+    font-family: var(--record-font-family);
+    font-size: var(--record-font-size);
+    margin-left: var(--main-margin);
+}
+
+.day{
+    text-align: center;
 }
 
 .date-box-contianer {
@@ -79,43 +93,16 @@
     margin-right: var(--main-margin);
     display: grid;
     grid-template-columns: var(--day-grid-template-columns);
-    grid-template-rows: repeat(25, auto);
+    grid-template-rows: repeat(25, minmax(60px, auto));
+    /* background-color: rgba(0, 0, 0, 0.5); */
 }
 
 .date-box-contianer>.date-box.empty {
     background-image: linear-gradient(40deg, rgb(73, 72, 72), black);
 }
 
-.date-box-contianer>.date-box {
-    background-color: rgba(0, 0, 0, 0.5);
-    /* min-height: var(--record-minimum-height); */
-    /* display: grid;
-    grid-template-rows: repeat(25, 50px); */
-}
-
-.table {
-    display: grid;
-    grid-template-rows: repeat(24, 50px);
-    grid-row: 2 / 25;
-}
-
 .time-div {
     color: var(--weekday-name-and-number-text-color);
-}
-
-.record-container {
-    color: var(--record-text-color);
-    border: 1px dotted grey;
-}
-
-.record {
-    display: inline;
-}
-
-.date-box-contianer>.date-box>.day {
-    font-size: var(--weekday-name-and-number-font-size);
-    color: var(--weekday-name-and-number-text-color);
-    grid-row: 1;
 }
 
 .date-box-contianer>.date-box>.table>.record {
@@ -129,49 +116,42 @@
     border-left: var(--record-border-red);
     border-top: var(--record-border-red);
     border-bottom: var(--record-border-red);
-    grid-column: 2;
-    grid-row: 1;
-    background-color: black;
+    background-color: red;
+}
+
+.testy{
+    background-color: green !important;
 }
 
 .date-box-contianer>[data-col="2"].date-box {
     border-left: var(--record-border-orange);
     border-top: var(--record-border-orange);
     border-bottom: var(--record-border-orange);
-    grid-column: 3;
-    grid-row: 1;
+    background-color: red;
 }
 
 .date-box-contianer>[data-col="3"].date-box {
     border-left: var(--record-border-yellow);
     border-top: var(--record-border-yellow);
     border-bottom: var(--record-border-yellow);
-    grid-column: 4;
-    grid-row: 1;
 }
 
 .date-box-contianer>[data-col="4"].date-box {
     border-left: var(--record-border-green);
     border-top: var(--record-border-green);
     border-bottom: var(--record-border-green);
-    grid-column: 5;
-    grid-row: 1;
 }
 
 .date-box-contianer>[data-col="5"].date-box {
     border-left: var(--record-border-light-blue);
     border-top: var(--record-border-light-blue);
     border-bottom: var(--record-border-light-blue);
-    grid-column: 6;
-    grid-row: 1;
 }
 
 .date-box-contianer>[data-col="6"].date-box {
     border-left: var(--record-border-pink);
     border-top: var(--record-border-pink);
     border-bottom: var(--record-border-pink);
-    grid-column: 7;
-    grid-row: 1;
 }
 
 .date-box-contianer>[data-col="7"].date-box {
@@ -179,8 +159,6 @@
     border-top: var(--record-border-violet);
     border-bottom: var(--record-border-violet);
     border-right: var(--record-border-violet);
-    grid-column: 8;
-    grid-row: 1;
 }
 
 button {

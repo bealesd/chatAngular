@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, AfterContentInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { LoginHelper } from '../helpers/login-helper';
@@ -11,7 +11,7 @@ import { CalendarService } from '../services/calendar.service';
   templateUrl: './calendar-week.component.html',
   styleUrls: ['./calendar-week.component.css']
 })
-export class CalendarWeekComponent implements OnInit, OnDestroy {
+export class CalendarWeekComponent implements OnInit, OnDestroy, AfterContentInit {
   subscriptions: Subscription[] = [];
   lastGridRow: number;
   penultimateGridRow: number;
@@ -30,27 +30,63 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
     this.calendarService.calendarDaysInWeek.empty.forEach((dayInfo) => {
       dayData.empty.push({ 'gridCol': dayInfo.col, 'name': dayInfo.name, 'dayInMonthArrayIndex': dayInfo.dayInMonthArrayIndex });
     });
-    console.log(dayData)
+
     return dayData;
   }
 
+  fillEmptyRecords(){
+    const cols = 8;
+    const rows = 25;
+    const dateBoxContianer = document.querySelector('.date-box-contianer');
+    for (let col = 1; col <= cols; col++) {
+      for (let row = 1; row <= rows; row++) {
+        const dateBox = document.querySelector(`[data-col="${col}"][data-row="${row}"]`);
+        if (dateBox === null || dateBox === undefined) {
+          // create new date-box
+          const div = document.createElement('div');
+          div.classList.add('date-box');
+          div.classList.add('testy');
+          
+          div.dataset.col = `${col}`;
+          div.style.gridColumn = `${col}`;
+          div.dataset.row = `${row}`;
+          div.style.gridRow = `${row}`;
+          dateBoxContianer.append(div);
+        } 
+      }
+    }
+  }
+
+  addOridnalIndictor(day) {
+    const j = day % 10;
+    const k = day % 100;
+    let oridnalIndictor;
+    if (j == 1 && k != 11)
+      oridnalIndictor = "st";
+    else if (j == 2 && k != 12)
+      oridnalIndictor = "nd";
+    else if (j == 3 && k != 13)
+      oridnalIndictor = "rd";
+    else
+      oridnalIndictor = "th";
+    return oridnalIndictor;
+  }
+
   get dateTimeRecords() {
-    let c = [];
+    let allRecordsGroupedByHour = [];
     let validDays = this.dayDataForWeek.valid;
     for (const validDay of validDays) {
       for (const groupedRecord of this.getCalendardRecordHourGroupsByDay(validDay.dayInMonthArrayIndex)) {
-        let a = {
+        let recordsGroupedByHour = {
           'hour': groupedRecord.hour,
           'day': validDay.dayInMonthArrayIndex,
           'records': groupedRecord.records,
           'col': validDay.gridCol
         }
-        c.push(a);
+        allRecordsGroupedByHour.push(recordsGroupedByHour);
       }
     }
-    return c;
-
-    //{hour: 17, day: 22, records: [], col}
+    return allRecordsGroupedByHour;
   }
 
   get hoursOfDay() {
@@ -72,16 +108,16 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
 
     let grouped = this.groupBy(records, 'hour');
 
-    let b = [];
+    let allGroupedRecords = [];
     for (let i = 0; i < Object.keys(grouped).length; i++) {
       const hour = Object.keys(grouped)[i];
-      b.push({
+      allGroupedRecords.push({
         'hour': hour,
         'records': grouped[hour]
       });
     }
-    //[{'hour': 4, 'records': []}]
-    return b;
+
+    return allGroupedRecords;
   }
 
   groupBy(xs, key) {
@@ -119,6 +155,10 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
 
     this.calendarService.openUpdateEventForm.next({ 'record': {}, 'open': false });
     this.calendarService.openAddEventForm.next({ 'dayData': {}, 'open': false });
+  }
+
+  ngAfterContentInit(){
+    this.fillEmptyRecords();
   }
 
   openUpdateEventForm(record) {
