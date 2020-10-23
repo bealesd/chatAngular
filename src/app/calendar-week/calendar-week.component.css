@@ -65,12 +65,21 @@
     background-color: rgb(88, 85, 253, 0.4) !important;
 }
 
+.day {
+    color: white;
+    text-align: center;
+}
+
+.record {
+    color: white;
+}
+
 .date-box-contianer {
     margin-left: var(--main-margin);
     margin-right: var(--main-margin);
     display: grid;
     grid-template-columns: var(--day-grid-template-columns);
-    grid-template-rows: repeat(auto, minmax(var(--record-minimum-height), auto));
+    grid-template-rows: repeat(25, auto);
 }
 
 .date-box-contianer>.date-box.empty {
@@ -79,9 +88,9 @@
 
 .date-box-contianer>.date-box {
     background-color: rgba(0, 0, 0, 0.5);
-    min-height: var(--record-minimum-height);
-    display: grid;
-    grid-template-rows: repeat(25, 50px);
+    /* min-height: var(--record-minimum-height); */
+    /* display: grid;
+    grid-template-rows: repeat(25, 50px); */
 }
 
 .table {

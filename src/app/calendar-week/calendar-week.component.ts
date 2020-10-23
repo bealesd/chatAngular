@@ -30,8 +30,27 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
     this.calendarService.calendarDaysInWeek.empty.forEach((dayInfo) => {
       dayData.empty.push({ 'gridCol': dayInfo.col, 'name': dayInfo.name, 'dayInMonthArrayIndex': dayInfo.dayInMonthArrayIndex });
     });
-
+    console.log(dayData)
     return dayData;
+  }
+
+  get dateTimeRecords() {
+    let c = [];
+    let validDays = this.dayDataForWeek.valid;
+    for (const validDay of validDays) {
+      for (const groupedRecord of this.getCalendardRecordHourGroupsByDay(validDay.dayInMonthArrayIndex)) {
+        let a = {
+          'hour': groupedRecord.hour,
+          'day': validDay.dayInMonthArrayIndex,
+          'records': groupedRecord.records,
+          'col': validDay.gridCol
+        }
+        c.push(a);
+      }
+    }
+    return c;
+
+    //{hour: 17, day: 22, records: [], col}
   }
 
   get hoursOfDay() {
@@ -42,7 +61,9 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
     return hours;
   }
 
-  hourToGridRow(hour) { return parseInt(hour.split(':')[0]) + 1; }
+  hourToInt(hour) {
+    return parseInt(hour);
+  }
 
   getCalendardRecordHourGroupsByDay(calendarDay) {
     const records = this.calendarService.getRecordsByDay(calendarDay);
@@ -59,6 +80,7 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
         'records': grouped[hour]
       });
     }
+    //[{'hour': 4, 'records': []}]
     return b;
   }
 
