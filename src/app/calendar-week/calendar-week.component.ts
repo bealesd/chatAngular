@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, AfterContentInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy, AfterContentInit, HostBinding, Directive, AfterViewInit } from '@angular/core';
+import { fromEvent, Subscription } from 'rxjs';
 
 import { LoginHelper } from '../helpers/login-helper';
 import { CalendarRepo } from './../services/calendar.repo';
@@ -9,12 +9,60 @@ import { CalendarService } from '../services/calendar.service';
 @Component({
   selector: 'app-calendar-week',
   templateUrl: './calendar-week.component.html',
-  styleUrls: ['./calendar-week.component.css']
+  styleUrls: ['./calendar-week.component.css'],
+  template: `<input [(ngModel)]="prop">`
 })
-export class CalendarWeekComponent implements OnInit, OnDestroy, AfterContentInit {
+export class CalendarWeekComponent implements OnInit, OnDestroy, AfterViewInit {
+  @HostBinding("style.--record-bacground-color")
+  private recordBackgroundColor: string = 'blue';
+
+  @HostBinding("style.--record-border-thickness")
+  private recordBorderThickness: string = '2px';
+  @HostBinding("style.--record-border-type")
+  private recordBorderType: string = 'solid';
+
+  @HostBinding("style.--record-border-red-color")
+  private recordBorderRedColor: string = 'rgb(255, 53, 94)';
+  @HostBinding("style.--record-border-red")
+  private recordBorderRed: string = `${this.recordBorderRedColor} ${this.recordBorderThickness} ${this.recordBorderType}`;
+
+  @HostBinding("style.--record-border-orange-color")
+  private recordBorderOrangeColor: string = 'rgb(255, 96, 55)';
+  @HostBinding("style.--record-border-orange")
+  private recordBorderOrange: string = `${this.recordBorderOrangeColor} ${this.recordBorderThickness} ${this.recordBorderType}`;
+
+  @HostBinding("style.--record-border-yellow-color")
+  private recordBorderYellowColor: string = 'rgb(255, 204, 51)';
+  @HostBinding("style.--record-border-yellow")
+  private recordBorderYellow: string = `${this.recordBorderYellowColor} ${this.recordBorderThickness} ${this.recordBorderType}`;
+
+  @HostBinding("style.--record-border-green-color")
+  private recordBorderGreenColor: string = 'rgb(102, 255, 102)';
+  @HostBinding("style.--record-border-green")
+  private recordBorderGreen: string = `${this.recordBorderGreenColor} ${this.recordBorderThickness} ${this.recordBorderType}`;
+
+  @HostBinding("style.--record-border-light-blue-color")
+  private recordBorderLightBlueColor: string = 'rgb(80, 191, 230)';
+  @HostBinding("style.--record-border-light-blue")
+  private recordBorderLightBlue: string = `${this.recordBorderLightBlueColor} ${this.recordBorderThickness} ${this.recordBorderType}`;
+
+  @HostBinding("style.--record-border-pink-color")
+  private recordBorderPinkColor: string = 'rgb(255, 0, 204)';
+  @HostBinding("style.--record-border-pink")
+  private recordBorderPink: string = `${this.recordBorderPinkColor} ${this.recordBorderThickness} ${this.recordBorderType}`;
+
+  @HostBinding("style.--record-border-violet-color")
+  private recordBorderVioletColor: string = 'rgb(150, 78, 202)';
+  @HostBinding("style.--record-border-violet")
+  private recordBorderViolet: string = `${this.recordBorderVioletColor} ${this.recordBorderThickness} ${this.recordBorderType}`;
+
+
   subscriptions: Subscription[] = [];
   lastGridRow: number;
   penultimateGridRow: number;
+  resizeObservable$: any;
+  resizeSubscription$: any;
+  innerWidth: number;
 
   get dayDataForWeek() {
     const dayData = { 'empty': [], 'valid': [] };
@@ -34,9 +82,10 @@ export class CalendarWeekComponent implements OnInit, OnDestroy, AfterContentIni
     return dayData;
   }
 
-  fillEmptyRecords(){
+  fillEmptyRecords() {
     const cols = 8;
     const rows = 25;
+
     const dateBoxContianer = document.querySelector('.date-box-contianer');
     for (let col = 1; col <= cols; col++) {
       for (let row = 1; row <= rows; row++) {
@@ -45,15 +94,24 @@ export class CalendarWeekComponent implements OnInit, OnDestroy, AfterContentIni
           // create new date-box
           const div = document.createElement('div');
           div.classList.add('date-box');
-          div.classList.add('testy');
-          
+
           div.dataset.col = `${col}`;
           div.style.gridColumn = `${col}`;
           div.dataset.row = `${row}`;
           div.style.gridRow = `${row}`;
+          this.styleDateBoxBorder(div);
+          // div.style.backgroundColor = this.recordBackgroundColor;
           dateBoxContianer.append(div);
-        } 
+        }
       }
+    }
+  }
+
+  styleDateBoxBorder(div){
+    if(parseInt(div.dataset.col) === 2){
+      div.style.borderLeft = this.recordBorderOrange;
+      div.style.borderRight = this.recordBorderOrange;
+      div.style.borderBottom = this.recordBorderOrange;
     }
   }
 
@@ -135,6 +193,15 @@ export class CalendarWeekComponent implements OnInit, OnDestroy, AfterContentIni
   ) { }
 
   ngOnInit() {
+    this.resizeObservable$ = fromEvent(window, 'resize')
+    this.resizeSubscription$ = this.resizeObservable$.subscribe(evt => {
+      console.log('event: ', window.innerWidth)
+      if (window.innerWidth < 800) {
+        this.recordBorderThickness = '1px';
+      }
+
+    })
+
     this.menuService.disableMenuItem('undo-click');
 
     if (!this.loginHelper.checkPersonSelected()) this.loginHelper.setPerson();
@@ -157,7 +224,7 @@ export class CalendarWeekComponent implements OnInit, OnDestroy, AfterContentIni
     this.calendarService.openAddEventForm.next({ 'dayData': {}, 'open': false });
   }
 
-  ngAfterContentInit(){
+  ngAfterViewInit() {
     this.fillEmptyRecords();
   }
 

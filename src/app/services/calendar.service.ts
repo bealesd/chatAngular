@@ -84,7 +84,6 @@ export class CalendarService {
     this.week = Math.ceil((firstOfMonth.getDay() + date.getDate()) / 7);
 
     this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'day': date.getDate() };
-
   }
 
   get weeksInMonth() {

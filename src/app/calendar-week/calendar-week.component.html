@@ -6,7 +6,7 @@
         {{calendarService.weekdayNames[i]}} {{dayData.dayInMonthArrayIndex}}<sup>{{addOridnalIndictor(dayData.dayInMonthArrayIndex)}}</sup>
     </div>
 
-    <div class="date-box testy" *ngFor="let result of dateTimeRecords;" 
+    <div class="date-box" *ngFor="let result of dateTimeRecords;" 
     [style.gridRow]="hourToInt(result.hour) + 2" 
     [attr.data-row]="hourToInt(result.hour) + 2"
     [style.gridColumn]="hourToInt(result.col) + 1"

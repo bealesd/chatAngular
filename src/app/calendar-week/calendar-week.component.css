@@ -9,22 +9,6 @@
     --record-minimum-height: 800px;
     --record-font-family: inherit;
     --record-text-color: white;
-    --record-border-type: solid;
-    --record-border-thickness: 2px;
-    --record-border-red-color: rgb(255, 53, 94);
-    --record-border-red: var(--record-border-type) var(--record-border-thickness) var(--record-border-red-color);
-    --record-border-orange-color: rgb(255, 96, 55);
-    --record-border-orange: var(--record-border-type) var(--record-border-thickness) var(--record-border-orange-color);
-    --record-border-yellow-color: rgb(255, 204, 51);
-    --record-border-yellow: var(--record-border-type) var(--record-border-thickness) var(--record-border-yellow-color);
-    --record-border-green-color: rgb(102, 255, 102);
-    --record-border-green: var(--record-border-type) var(--record-border-thickness) var(--record-border-green-color);
-    --record-border-light-blue-color: rgb(80, 191, 230);
-    --record-border-light-blue: var(--record-border-type) var(--record-border-thickness) var(--record-border-light-blue-color);
-    --record-border-pink-color: rgb(255, 0, 204);
-    --record-border-pink: var(--record-border-type) var(--record-border-thickness) var(--record-border-pink-color);
-    --record-border-violet-color: rgb(150, 78, 202);
-    --record-border-violet: var(--record-border-type) var(--record-border-thickness) var(--record-border-violet-color);
     --record-max-width: 250px;
 }
 
@@ -53,7 +37,6 @@
         --record-font-family: 'Arial Narrow';
         --record-font-size: 10px;
         --record-text-color: white;
-        --record-border-thickness: 1px;
         --record-minimum-height: 400px;
         --record-max-width: 70px;
     }
@@ -116,18 +99,13 @@
     border-left: var(--record-border-red);
     border-top: var(--record-border-red);
     border-bottom: var(--record-border-red);
-    background-color: red;
-}
-
-.testy{
-    background-color: green !important;
 }
 
 .date-box-contianer>[data-col="2"].date-box {
     border-left: var(--record-border-orange);
     border-top: var(--record-border-orange);
     border-bottom: var(--record-border-orange);
-    background-color: red;
+    background-color: var(--record-bacground-color);
 }
 
 .date-box-contianer>[data-col="3"].date-box {
