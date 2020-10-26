@@ -4,6 +4,21 @@
     --form-font-size: 20px;
     --form-heading-color: black;
     --form-undo-button-col-start: 11;
+    --form-input-hour-start-col: 2;
+    --form-input-hour-end-col: 4;
+    --form-input-minute-start-col: 4;
+    --form-input-minute-end-col: 6;
+    --form-status-font-size: 20px;
+    --form-input-submit-start-row: 9;
+    --form-input-submit-end-row: 10;
+    --form-input-close-start-row: 11;
+    --form-input-close-end-row: 12;
+    --form-input-delete-start-row: 11;
+    --form-input-delete-end-row: 12;
+    --form-div-time-start-row: 6;
+    --form-div-time-end-row: 7;
+    --form-input-time-start-row: 7;
+    --form-input-time-end-row: 8;
 }
 
 
@@ -15,6 +30,21 @@
         --form-height: 250px;
         --form-width: 200px;
         --form-undo-button-col-start: 10;
+        --form-input-hour-start-col: 2;
+        --form-input-hour-end-col: 5;
+        --form-input-minute-start-col: 5;
+        --form-input-minute-end-col: 8;
+        --form-status-font-size: 12px;
+        --form-input-submit-start-row: 8;
+        --form-input-submit-end-row: 10;
+        --form-input-close-start-row: 11;
+        --form-input-close-end-row: 13;
+        --form-input-delete-start-row: 11;
+        --form-input-delete-end-row: 13;
+        --form-div-time-start-row: 5;
+        --form-div-time-end-row: 6;
+        --form-input-time-start-row: 6;
+        --form-input-time-end-row: 7;
     }
 }
 
@@ -112,32 +142,40 @@ input.what {
 }
 
 div.time {
-    grid-row: 6 / 7;
+    grid-row-start: var(--form-div-time-start-row);
+    grid-row-end: var(--form-div-time-end-row);
     grid-column: 2 / 12;
 }
 
 input.hour {
-    grid-row: 7 / 8;
-    grid-column: 2 / 4;
+    grid-row-start: var(--form-input-time-start-row);
+    grid-row-end: var(--form-input-time-end-row);
+    grid-column-start: var(--form-input-hour-start-col);
+    grid-column-end: var(--form-input-hour-end-col);
 }
 
 input.minute {
-    grid-row: 7 / 8;
-    grid-column: 4 / 6;
+    grid-row-start: var(--form-input-time-start-row);
+    grid-row-end: var(--form-input-time-end-row);
+    grid-column-start: var(--form-input-minute-start-col);
+    grid-column-end: var(--form-input-minute-end-col);
 }
 
 .submit {
-    grid-row: 9 / 10;
+    grid-row-start: var(--form-input-submit-start-row);
+    grid-row-end: var(--form-input-submit-end-row);
     grid-column: 2 / 12;
 }
 
 .close-button {
-    grid-row: 11 / 12;
+    grid-row-start: var(--form-input-close-start-row);
+    grid-row-end: var(--form-input-close-end-row);
     grid-column: 2 / 6;
 }
 
 .delete-button {
-    grid-row: 11 / 12;
+    grid-row-start: var(--form-input-delete-start-row);
+    grid-row-end: var(--form-input-delete-end-row);
     grid-column: 8 / 12;
 }
 
@@ -145,6 +183,7 @@ input.minute {
     grid-row: 13 / 14;
     grid-column: 1 / 12;
     text-align: center;
+    font-size: var(--form-status-font-size);
 }
 
 .minute input,
