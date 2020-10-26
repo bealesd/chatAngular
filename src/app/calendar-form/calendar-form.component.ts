@@ -128,8 +128,8 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
 
     this.profileForm.patchValue({
       what: '',
-      hour: 0,
-      minute: 0,
+      hour: parseInt(dayData.hour ?? 0),
+      minute: parseInt(dayData.minute ?? 0),
       day: dayData.dayInMonthArrayIndex,
       month: this.calendarService.zeroIndexedMonth,
       year: this.calendarService.year,
