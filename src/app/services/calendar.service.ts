@@ -13,6 +13,8 @@ export class CalendarService {
   public openUpdateEventForm = new BehaviorSubject<any>({});
   public openAddEventForm = new BehaviorSubject<any>({});
 
+  public week = new BehaviorSubject<number>(1);
+
   get monthNames(): string[] {
     return Object.keys(this.monthsEnum);
   }
@@ -31,7 +33,6 @@ export class CalendarService {
 
   year: number;
   zeroIndexedMonth: number;
-  week: number;
   today: {};
   monthName: string;
 
@@ -81,7 +82,7 @@ export class CalendarService {
     this.zeroIndexedMonth = date.getMonth();
 
     const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
-    this.week = Math.ceil((firstOfMonth.getDay() + date.getDate()) / 7);
+    this.week.next(Math.ceil((firstOfMonth.getDay() + date.getDate()) / 7));
 
     this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'day': date.getDate() };
   }
@@ -102,7 +103,7 @@ export class CalendarService {
     const daysIntoFirstWeek = firstOfMonth.getDay();
     let maxWeek = this.weeksInMonth;
 
-    if (this.week === 1) {
+    if (this.week.getValue() === 1) {
       startDay = 0;
       endDay = (7 - daysIntoFirstWeek);
       validDays = this.daysInMonthArray.slice(startDay, endDay);
@@ -111,22 +112,22 @@ export class CalendarService {
       let col = 1;
       for (let daysIntoPreviousMonth = totalDaysInPreviousMonth - 1; daysIntoPreviousMonth >= 0; daysIntoPreviousMonth--) {
         const date = new Date(this.year, this.zeroIndexedMonth, -daysIntoPreviousMonth);
-        emptyDays.push({'col': col++, 'name': this.weekdayNames[date.getDay()], 'dayInMonthArrayIndex': date.getDate() });
+        emptyDays.push({ 'col': col++, 'name': this.weekdayNames[date.getDay()], 'dayInMonthArrayIndex': date.getDate() });
       }
     }
     else {
-      const unajustedStartDay = (this.week - 1) * 7;
+      const unajustedStartDay = (this.week.getValue() - 1) * 7;
       startDay = unajustedStartDay - daysIntoFirstWeek;
       endDay = unajustedStartDay + (7 - daysIntoFirstWeek);
       validDays = this.daysInMonthArray.slice(startDay, endDay);
 
-      if (this.week === maxWeek) {
+      if (this.week.getValue() === maxWeek) {
         let totalDaysInNextMonth = 7 - validDays.length;
         let lastDayOfMonth = this.daysInMonthArray.slice(-1)[0];
 
         for (let daysIntoNextMonth = 1; daysIntoNextMonth <= totalDaysInNextMonth; daysIntoNextMonth++) {
           const date = new Date(this.year, this.zeroIndexedMonth, lastDayOfMonth + daysIntoNextMonth);
-          emptyDays.push({'col': validDays.length + daysIntoNextMonth, 'name': this.weekdayNames[date.getDay()], 'dayInMonthArrayIndex': date.getDate() });
+          emptyDays.push({ 'col': validDays.length + daysIntoNextMonth, 'name': this.weekdayNames[date.getDay()], 'dayInMonthArrayIndex': date.getDate() });
         }
       }
     }
@@ -154,10 +155,17 @@ export class CalendarService {
 
   changeWeek(nextOrPrevious) {
     let maxWeek = this.weeksInMonth;
-    if (nextOrPrevious === 'next')
-      if (++this.week > maxWeek) this.changeMonth('next');
-    if (nextOrPrevious === 'previous')
-      if (--this.week < 1) this.changeMonth('previous');
+    let week = this.week.getValue();
+    if (nextOrPrevious === 'next') {
+      this.week.next(++week);
+      if (week > maxWeek)
+        this.changeMonth('next');
+    }
+    else if (nextOrPrevious === 'previous') {
+      this.week.next(--week);
+      if (week < 1)
+        this.changeMonth('previous');
+    }
   }
 
   changeMonth(nextOrPrevious) {
@@ -170,13 +178,13 @@ export class CalendarService {
       tempDate.setMonth(zeroIndexedMonth + 1);
       this.year = tempDate.getFullYear();
       this.zeroIndexedMonth = tempDate.getMonth();
-      this.week = 1;
+      this.week.next(1);
     }
     else if (nextOrPrevious === 'previous') {
       tempDate.setMonth(zeroIndexedMonth - 1);
       this.year = tempDate.getFullYear();
       this.zeroIndexedMonth = tempDate.getMonth();
-      this.week = this.weeksInMonth;
+      this.week.next(this.weeksInMonth);
     }
 
     this.calendarRepo.calendarRecords.next({});

@@ -1,32 +1,21 @@
 <div class="date-box-contianer">
 
-    <div class="date-box day" (click)="openAddEventForm(dayData)" *ngFor="let dayData of dayDataForWeek.valid; let i = index" 
-     [style.gridRow]="1" [attr.data-row]="1"
-     [style.gridColumn]="dayData.gridCol + 1" [attr.data-col]="dayData.gridCol + 1">
-        {{calendarService.weekdayNames[i]}} {{dayData.dayInMonthArrayIndex}}<sup>{{addOridnalIndictor(dayData.dayInMonthArrayIndex)}}</sup>
+    <div class="date-box day" (click)="openAddEventForm(dayData)" *ngFor="let dayData of dayDataForWeek.valid; let i = index" [style.gridRow]="1" [attr.data-row]="1" [style.gridColumn]="dayData.gridCol + 1" [attr.data-col]="dayData.gridCol + 1">
+        {{calendarService.weekdayNames[i]}} {{dayData.dayInMonthArrayIndex}}
+        <sup>{{addOridnalIndictor(dayData.dayInMonthArrayIndex)}}</sup>
+    </div>
+    <div class="date-box day invalid" *ngFor="let dayData of dayDataForWeek.invalid; let i = index" [style.gridRow]="1" [attr.data-row]="1" [style.gridColumn]="dayData.gridCol + 1" [attr.data-col]="dayData.gridCol + 1">
+        {{calendarService.weekdayNames[i]}} {{dayData.dayInMonthArrayIndex}}
+        <sup>{{addOridnalIndictor(dayData.dayInMonthArrayIndex)}}</sup>
     </div>
 
-    <div class="date-box" *ngFor="let result of dateTimeRecords;" 
-    [style.gridRow]="hourToInt(result.hour) + 2" 
-    [attr.data-row]="hourToInt(result.hour) + 2"
-    [style.gridColumn]="hourToInt(result.col) + 1"
-    [attr.data-col]="hourToInt(result.col) + 1">
-
+    <div class="date-box" *ngFor="let result of dateTimeRecords;" [style.gridRow]="hourToInt(result.hour) + 2" [attr.data-row]="hourToInt(result.hour) + 2" [style.gridColumn]="hourToInt(result.col) + 1" [attr.data-col]="hourToInt(result.col) + 1">
         <div class="record" (click)="openUpdateEventForm(record)" *ngFor="let record of result.records;">
             {{ record.what }}
         </div>
     </div>
 
-    <div class="date-box empty" *ngFor="let dayData of dayDataForWeek.empty; let i = index" 
-    [attr.data-col]="dayData.gridCol">
-        <div class="day">{{dayData.dayInMonthArrayIndex}}</div>
-    </div>
-
-    <div class="date-box" *ngFor="let hour of hoursOfDay;" 
-    [style.gridRow]="hourToInt(hour) + 2"
-    [attr.data-row]="hourToInt(hour) + 2"
-     [style.gridColumn]="1"
-     [attr.data-col]="1">
+    <div class="date-box" *ngFor="let hour of hoursOfDay;" [style.gridRow]="hourToInt(hour) + 2" [attr.data-row]="hourToInt(hour) + 2" [style.gridColumn]="1" [attr.data-col]="1">
 
         <div class="time-div">
             {{calendarService.padToTwo(hour)}}

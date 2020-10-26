@@ -13,18 +13,20 @@
 }
 
 @media screen and (max-width: 1300px) and (min-width: 1100px) {
-    :host {
-       --record-max-width: 150px;
-   }
+     :host {
+        --record-max-width: 150px;
+    }
 }
+
 
 /*medium size wrapper*/
 
 @media screen and (max-width: 1100px) and (min-width: 800px) {
-    :host {
-       --record-max-width: 100px;
-   }
+     :host {
+        --record-max-width: 100px;
+    }
 }
+
 
 /*small size wrapper*/
 
@@ -46,15 +48,23 @@
     background-color: rgb(88, 85, 253, 0.4) !important;
 }
 
-.date-box-contianer>.day, .date-box-contianer>.date-box>.time-div {
+.date-box-contianer>.day,
+.date-box-contianer>.date-box>.time-div {
     font-family: var(--weekday-name-font-family);
     font-weight: var(--weekday-name-font-weight);
     font-size: var(--weekday-name-and-number-font-size);
     color: var(--weekday-name-and-number-text-color);
-    
 }
 
-.record { 
+.date-box-contianer>.day.invalid,
+.date-box-contianer>.date-box>.time-div {
+    font-family: var(--weekday-name-font-family);
+    font-weight: var(--weekday-name-font-weight);
+    font-size: var(--weekday-name-and-number-font-size);
+    color: peachpuff;
+}
+
+.record {
     display: inline-block;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -67,7 +77,7 @@
     margin-left: var(--main-margin);
 }
 
-.day{
+.day {
     text-align: center;
 }
 
@@ -78,10 +88,6 @@
     grid-template-columns: var(--day-grid-template-columns);
     grid-template-rows: repeat(25, minmax(60px, auto));
     /* background-color: rgba(0, 0, 0, 0.5); */
-}
-
-.date-box-contianer>.date-box.empty {
-    background-image: linear-gradient(40deg, rgb(73, 72, 72), black);
 }
 
 .time-div {
@@ -95,47 +101,43 @@
     letter-spacing: var(--record-letter-spacing);
 }
 
-.date-box-contianer>[data-col="1"].date-box {
-    border-left: var(--record-border-red);
-    border-top: var(--record-border-red);
-    border-bottom: var(--record-border-red);
+.date-box-contianer>[data-row="1"].date-box {
+    border: none!important;
 }
 
 .date-box-contianer>[data-col="2"].date-box {
-    border-left: var(--record-border-orange);
-    border-top: var(--record-border-orange);
-    border-bottom: var(--record-border-orange);
-    background-color: var(--record-bacground-color);
+    border-left: var(--record-border-red);
+    border-top: var(--record-border-red);
 }
 
 .date-box-contianer>[data-col="3"].date-box {
-    border-left: var(--record-border-yellow);
-    border-top: var(--record-border-yellow);
-    border-bottom: var(--record-border-yellow);
+    border-left: var(--record-border-orange);
+    border-top: var(--record-border-orange);
 }
 
 .date-box-contianer>[data-col="4"].date-box {
-    border-left: var(--record-border-green);
-    border-top: var(--record-border-green);
-    border-bottom: var(--record-border-green);
+    border-left: var(--record-border-yellow);
+    border-top: var(--record-border-yellow);
 }
 
 .date-box-contianer>[data-col="5"].date-box {
-    border-left: var(--record-border-light-blue);
-    border-top: var(--record-border-light-blue);
-    border-bottom: var(--record-border-light-blue);
+    border-left: var(--record-border-green);
+    border-top: var(--record-border-green);
 }
 
 .date-box-contianer>[data-col="6"].date-box {
-    border-left: var(--record-border-pink);
-    border-top: var(--record-border-pink);
-    border-bottom: var(--record-border-pink);
+    border-left: var(--record-border-light-blue);
+    border-top: var(--record-border-light-blue);
 }
 
 .date-box-contianer>[data-col="7"].date-box {
+    border-left: var(--record-border-pink);
+    border-top: var(--record-border-pink);
+}
+
+.date-box-contianer>[data-col="8"].date-box {
     border-left: var(--record-border-violet);
     border-top: var(--record-border-violet);
-    border-bottom: var(--record-border-violet);
     border-right: var(--record-border-violet);
 }
 

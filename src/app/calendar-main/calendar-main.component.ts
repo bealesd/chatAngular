@@ -9,7 +9,7 @@ import { MenuService } from '../services/menu.service';
   styleUrls: ['./calendar-main.component.css']
 })
 export class CalendarMainComponent implements OnInit, OnDestroy {
-  monthOrWeek = 'month';
+  monthOrWeek: string = 'month';
 
   constructor(public calendarService: CalendarService, public menuService: MenuService) { }
 

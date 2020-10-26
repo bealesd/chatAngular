@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterContentInit, HostBinding, Directive, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostBinding } from '@angular/core';
 import { fromEvent, Subscription } from 'rxjs';
 
 import { LoginHelper } from '../helpers/login-helper';
@@ -12,10 +12,7 @@ import { CalendarService } from '../services/calendar.service';
   styleUrls: ['./calendar-week.component.css'],
   template: `<input [(ngModel)]="prop">`
 })
-export class CalendarWeekComponent implements OnInit, OnDestroy, AfterViewInit {
-  @HostBinding("style.--record-bacground-color")
-  private recordBackgroundColor: string = 'blue';
-
+export class CalendarWeekComponent implements OnInit, OnDestroy {
   @HostBinding("style.--record-border-thickness")
   private recordBorderThickness: string = '2px';
   @HostBinding("style.--record-border-type")
@@ -65,7 +62,7 @@ export class CalendarWeekComponent implements OnInit, OnDestroy, AfterViewInit {
   innerWidth: number;
 
   get dayDataForWeek() {
-    const dayData = { 'empty': [], 'valid': [] };
+    const dayData = { 'invalid': [], 'valid': [] };
     this.calendarService.calendarDaysInWeek.valid.forEach((dayNumber) => {
       const day = new Date(this.calendarService.year, this.calendarService.zeroIndexedMonth, dayNumber).getDay();
 
@@ -76,7 +73,7 @@ export class CalendarWeekComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this.calendarService.calendarDaysInWeek.empty.forEach((dayInfo) => {
-      dayData.empty.push({ 'gridCol': dayInfo.col, 'name': dayInfo.name, 'dayInMonthArrayIndex': dayInfo.dayInMonthArrayIndex });
+      dayData.invalid.push({ 'gridCol': dayInfo.col, 'name': dayInfo.name, 'dayInMonthArrayIndex': dayInfo.dayInMonthArrayIndex });
     });
 
     return dayData;
@@ -86,32 +83,88 @@ export class CalendarWeekComponent implements OnInit, OnDestroy, AfterViewInit {
     const cols = 8;
     const rows = 25;
 
+    const invalidCols = this.dayDataForWeek.invalid.map(row => row.gridCol + 1)
+    document.querySelectorAll('.date-box-contianer > .date-box.empty').forEach(div => div.remove());
+
     const dateBoxContianer = document.querySelector('.date-box-contianer');
     for (let col = 1; col <= cols; col++) {
-      for (let row = 1; row <= rows; row++) {
+      for (let row = 2; row <= rows; row++) {
+        const isInvalidDiv = invalidCols.includes(col);
         const dateBox = document.querySelector(`[data-col="${col}"][data-row="${row}"]`);
         if (dateBox === null || dateBox === undefined) {
-          // create new date-box
           const div = document.createElement('div');
           div.classList.add('date-box');
-
+          div.classList.add('empty')
           div.dataset.col = `${col}`;
           div.style.gridColumn = `${col}`;
           div.dataset.row = `${row}`;
           div.style.gridRow = `${row}`;
           this.styleDateBoxBorder(div);
-          // div.style.backgroundColor = this.recordBackgroundColor;
+          if (isInvalidDiv) {
+            div.style.backgroundSize = '5px 5px';
+            div.style.backgroundImage = `linear-gradient(
+              45deg,
+              rgba(255,255,255,0.5) 25%,
+              transparent 25%,
+              transparent 50%,
+              rgba(255,255,255,0.5) 50%,
+              rgba(255,255,255,0.5) 75%,
+              transparent 75%,
+              transparent
+              )`;
+          }
+          else {
+            div.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+          }
           dateBoxContianer.append(div);
         }
       }
     }
   }
 
-  styleDateBoxBorder(div){
-    if(parseInt(div.dataset.col) === 2){
+  styleDateBoxBorder(div) {
+    if ((parseInt(div.dataset.col) - 1) === 1) {
+      div.style.borderLeft = this.recordBorderRed;
+      div.style.borderTop = this.recordBorderRed;
+      if (parseInt(div.dataset.row) === 25)
+        div.style.borderBottom = this.recordBorderRed;
+    }
+    else if ((parseInt(div.dataset.col) - 1) === 2) {
       div.style.borderLeft = this.recordBorderOrange;
-      div.style.borderRight = this.recordBorderOrange;
-      div.style.borderBottom = this.recordBorderOrange;
+      div.style.borderTop = this.recordBorderOrange;
+      if (parseInt(div.dataset.row) === 25)
+        div.style.borderBottom = this.recordBorderOrange;
+    }
+    else if ((parseInt(div.dataset.col) - 1) === 3) {
+      div.style.borderLeft = this.recordBorderYellow;
+      div.style.borderTop = this.recordBorderYellow;
+      if (parseInt(div.dataset.row) === 25)
+        div.style.borderBottom = this.recordBorderYellow;
+    }
+    else if ((parseInt(div.dataset.col) - 1) === 4) {
+      div.style.borderLeft = this.recordBorderGreen;
+      div.style.borderTop = this.recordBorderGreen;
+      if (parseInt(div.dataset.row) === 25)
+        div.style.borderBottom = this.recordBorderGreen;
+    }
+    else if ((parseInt(div.dataset.col) - 1) === 5) {
+      div.style.borderLeft = this.recordBorderLightBlue;
+      div.style.borderTop = this.recordBorderLightBlue;
+      if (parseInt(div.dataset.row) === 25)
+        div.style.borderBottom = this.recordBorderLightBlue;
+    }
+    else if ((parseInt(div.dataset.col) - 1) === 6) {
+      div.style.borderLeft = this.recordBorderPink;
+      div.style.borderTop = this.recordBorderPink;
+      if (parseInt(div.dataset.row) === 25)
+        div.style.borderBottom = this.recordBorderPink;
+    }
+    else if ((parseInt(div.dataset.col) - 1) === 7) {
+      div.style.borderLeft = this.recordBorderViolet;
+      div.style.borderRight = this.recordBorderViolet;
+      div.style.borderTop = this.recordBorderViolet;
+      if (parseInt(div.dataset.row) === 25)
+        div.style.borderBottom = this.recordBorderViolet;
     }
   }
 
@@ -144,6 +197,7 @@ export class CalendarWeekComponent implements OnInit, OnDestroy, AfterViewInit {
         allRecordsGroupedByHour.push(recordsGroupedByHour);
       }
     }
+    this.fillEmptyRecords();
     return allRecordsGroupedByHour;
   }
 
@@ -195,11 +249,10 @@ export class CalendarWeekComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.resizeObservable$ = fromEvent(window, 'resize')
     this.resizeSubscription$ = this.resizeObservable$.subscribe(evt => {
-      console.log('event: ', window.innerWidth)
-      if (window.innerWidth < 800) {
+      if (window.innerWidth < 800)
         this.recordBorderThickness = '1px';
-      }
-
+      else if (window.innerWidth >= 800)
+        this.recordBorderThickness = '2px';
     })
 
     this.menuService.disableMenuItem('undo-click');
@@ -214,6 +267,7 @@ export class CalendarWeekComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this.calendarRepo.getCalendarRecords(this.calendarService.year, this.calendarService.zeroIndexedMonth);
+
   }
 
   ngOnDestroy() {
@@ -222,10 +276,6 @@ export class CalendarWeekComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.calendarService.openUpdateEventForm.next({ 'record': {}, 'open': false });
     this.calendarService.openAddEventForm.next({ 'dayData': {}, 'open': false });
-  }
-
-  ngAfterViewInit() {
-    this.fillEmptyRecords();
   }
 
   openUpdateEventForm(record) {
