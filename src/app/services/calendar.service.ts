@@ -33,7 +33,7 @@ export class CalendarService {
 
   year: number;
   zeroIndexedMonth: number;
-  today: {};
+  today: { year: number; month: number; week: number; day: number; };
   monthName: string;
 
   records: [] = [];
@@ -84,7 +84,7 @@ export class CalendarService {
     const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
     this.week.next(Math.ceil((firstOfMonth.getDay() + date.getDate()) / 7));
 
-    this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'day': date.getDate() };
+    this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'week': this.week.getValue(), 'day': date.getDate() };
   }
 
   get weeksInMonth() {
@@ -193,7 +193,14 @@ export class CalendarService {
     this.closeAddOrUpdateEventForm.next(true);
   }
 
-  subscribeToCalendarRecords(){
+  changeToToday() {
+    this.year = this.today.year;
+    this.zeroIndexedMonth = this.today.month;
+    this.week.next(this.today.week);
+    this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
+  }
+
+  subscribeToCalendarRecords() {
     this.calendarRepo.calendarRecords.subscribe(calendarRecords => {
       if (calendarRecords.hasOwnProperty(`${this.year}-${this.zeroIndexedMonth}`))
         this.records = calendarRecords[`${this.year}-${this.zeroIndexedMonth}`].records;
@@ -221,7 +228,7 @@ export class CalendarService {
     this.calendarRepo.calendarRecords.next({});
   }
 
-  resetSubsciptions(){
+  resetSubsciptions() {
     this.removeSubscriptions();
     this.subscribeToCalendarRecords();
     this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);

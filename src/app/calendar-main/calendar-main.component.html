@@ -1,5 +1,7 @@
 <div class="changePageContainer">
     <button class="green-button" (click)="monthOrWeek === 'month' ? calendarService.changeMonth('previous') : calendarService.changeWeek('previous')"><span>&#60;</span></button>
+    <button class="today-button" (click)="calendarService.changeToToday()">Today</button>
+    
     <div>{{calendarService.monthNames[calendarService.zeroIndexedMonth]}} - {{calendarService.year}}</div>
     <button class="green-button" (click)="monthOrWeek === 'month' ? calendarService.changeMonth('next') : calendarService.changeWeek('next')"><span>&#62;</span></button>
 </div>

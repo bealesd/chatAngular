@@ -64,7 +64,6 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: repeat(auto, minmax(var(--record-minimum-height), auto));
-    /* background-image: linear-gradient(40deg, grey, white); */
 }
 
 .date-box-contianer > .date-box {

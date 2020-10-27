@@ -35,7 +35,7 @@
 
 .changePageContainer div {
     grid-row: 1;
-    grid-column: 3 / 11;
+    grid-column: 5 / 9;
     font-size: var(--heading-font-size);
     font-weight: var(--heading-font-weight);
     text-align: center;
@@ -46,6 +46,11 @@
 .changePageContainer button:first-of-type {
     grid-row: 1;
     grid-column: 1 / 2;
+}
+
+.today-button {
+    grid-row: 1;
+    grid-column: 3 / 4;
 }
 
 .changePageContainer button:last-of-type {
@@ -63,12 +68,12 @@ button {
     cursor: pointer;
 }
 
-.green-button {
+.green-button,.today-button {
     background-color: #1fb123;
     border: 1px solid darkgreen;
 }
 
-.green-button:hover {
+.green-button:hover ,.today-button:hover {
     background-color: darkgreen;
     border: 1px solid #1fb123;
 }
