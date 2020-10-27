@@ -13,7 +13,7 @@ export class CalendarService {
   public openUpdateEventForm = new BehaviorSubject<any>({});
   public openAddEventForm = new BehaviorSubject<any>({});
 
-  public week = new BehaviorSubject<number>(1);
+
 
   get monthNames(): string[] {
     return Object.keys(this.monthsEnum);
@@ -33,6 +33,8 @@ export class CalendarService {
 
   year: number;
   zeroIndexedMonth: number;
+  public week = new BehaviorSubject<number>(1);
+  day: number;
   today: { year: number; month: number; week: number; day: number; };
   monthName: string;
 
@@ -83,8 +85,9 @@ export class CalendarService {
 
     const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
     this.week.next(Math.ceil((firstOfMonth.getDay() + date.getDate()) / 7));
+    this.day =  date.getDate();
 
-    this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'week': this.week.getValue(), 'day': date.getDate() };
+    this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'week': this.week.getValue(), 'day': this.day };
   }
 
   get weeksInMonth() {
@@ -153,6 +156,18 @@ export class CalendarService {
     return Object.keys(this.daysLongEnum)[dayNumber];
   }
 
+  changeDay(nextOrPrevious) {
+    let maxDay = this.daysInMonthArray[this.daysInMonthArray.length - 1];
+    if (nextOrPrevious === 'next') {
+      if (++this.day > maxDay)
+        this.changeMonth('next');
+    }
+    else if (nextOrPrevious === 'previous') {
+      if (--this.day < 1)
+        this.changeMonth('previous');
+    }
+  }
+
   changeWeek(nextOrPrevious) {
     let maxWeek = this.weeksInMonth;
     let week = this.week.getValue();
@@ -209,6 +224,17 @@ export class CalendarService {
     });
   }
 
+  removeSubscriptions() {
+    this.calendarRepo.calendarRecords.observers.forEach(element => { element.complete(); });
+    this.calendarRepo.calendarRecords.next({});
+  }
+
+  resetSubsciptions() {
+    this.removeSubscriptions();
+    this.subscribeToCalendarRecords();
+    this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
+  }
+
   private compareByTime(a, b) {
     const is_hour_a_before_b = a.hour < b.hour ? true : (a.hour === b.hour ? null : false);
     const is_minute_a_before_b = a.minute < b.minute ? true : (a.minute === b.minute ? null : false);
@@ -221,16 +247,5 @@ export class CalendarService {
 
   public padToTwo(value: number): string {
     return value <= 99 ? `0${value}`.slice(-2) : `${value}`;
-  }
-
-  removeSubscriptions() {
-    this.calendarRepo.calendarRecords.observers.forEach(element => { element.complete(); });
-    this.calendarRepo.calendarRecords.next({});
-  }
-
-  resetSubsciptions() {
-    this.removeSubscriptions();
-    this.subscribeToCalendarRecords();
-    this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
   }
 }

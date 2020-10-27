@@ -24,6 +24,7 @@ import { TodoComponent } from './todo/todo.component';
 import { CalendarMonthComponent } from './calendar-month/calendar-month.component';
 import { CalendarWeekComponent } from './calendar-week/calendar-week.component';
 import { CalendarFormComponent } from './calendar-form/calendar-form.component';
+import { CalendarDayComponent } from './calendar-day/calendar-day.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { CalendarFormComponent } from './calendar-form/calendar-form.component';
     TodoComponent,
     CalendarMonthComponent,
     CalendarWeekComponent,
-    CalendarFormComponent
+    CalendarFormComponent,
+    CalendarDayComponent
   ],
   imports: [
     BrowserModule,

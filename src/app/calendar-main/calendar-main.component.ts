@@ -15,6 +15,12 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   constructor(private calendarRepo: CalendarRepo,public calendarService: CalendarService, public menuService: MenuService) { }
 
   ngOnInit() {
+    this.menuService.enableMenuItem('day-click',
+      () => {
+        this.menuService.hideMenu();
+        this.monthOrWeek = 'day';
+      });
+
     this.menuService.enableMenuItem('week-click',
       () => {
         this.menuService.hideMenu();
