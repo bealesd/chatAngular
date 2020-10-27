@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CalendarRepo } from '../services/calendar.repo';
 
 import { CalendarService } from '../services/calendar.service';
 import { MenuService } from '../services/menu.service';
@@ -11,7 +12,7 @@ import { MenuService } from '../services/menu.service';
 export class CalendarMainComponent implements OnInit, OnDestroy {
   monthOrWeek: string = 'month';
 
-  constructor(public calendarService: CalendarService, public menuService: MenuService) { }
+  constructor(private calendarRepo: CalendarRepo,public calendarService: CalendarService, public menuService: MenuService) { }
 
   ngOnInit() {
     this.menuService.enableMenuItem('week-click',
@@ -25,6 +26,8 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
         this.menuService.hideMenu();
         this.monthOrWeek = 'month';
       });
+
+      this.calendarRepo.getCalendarRecords(this.calendarService.year, this.calendarService.zeroIndexedMonth);
   }
 
   ngOnDestroy() {

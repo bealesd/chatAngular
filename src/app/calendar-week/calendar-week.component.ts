@@ -1,8 +1,6 @@
-import { Component, OnInit, OnDestroy, HostBinding } from '@angular/core';
-import { fromEvent, Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy} from '@angular/core';
 
 import { LoginHelper } from '../helpers/login-helper';
-import { CalendarRepo } from './../services/calendar.repo';
 import { MenuService } from '../services/menu.service';
 import { CalendarService } from '../services/calendar.service';
 
@@ -13,19 +11,10 @@ import { CalendarService } from '../services/calendar.service';
   template: `<input [(ngModel)]="prop">`
 })
 export class CalendarWeekComponent implements OnInit, OnDestroy {
-
-  subscriptions: Subscription[] = [];
-  lastGridRow: number;
-  penultimateGridRow: number;
-  resizeObservable$: any;
-  resizeSubscription$: any;
-  innerWidth: number;
-
   get dayDataForWeek() {
     const dayData = { 'invalid': [], 'valid': [] };
     this.calendarService.calendarDaysInWeek.valid.forEach((dayNumber) => {
       const day = new Date(this.calendarService.year, this.calendarService.zeroIndexedMonth, dayNumber).getDay();
-
       const col = (day % 7);
       const dayName = this.calendarService.weekdayNames[col];
 
@@ -35,23 +24,7 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
     this.calendarService.calendarDaysInWeek.empty.forEach((dayInfo) => {
       dayData.invalid.push({ 'gridCol': dayInfo.col, 'name': dayInfo.name, 'dayInMonthArrayIndex': dayInfo.dayInMonthArrayIndex });
     });
-
     return dayData;
-  }
-
-  addOridnalIndictor(day) {
-    const j = day % 10;
-    const k = day % 100;
-    let oridnalIndictor;
-    if (j == 1 && k != 11)
-      oridnalIndictor = "st";
-    else if (j == 2 && k != 12)
-      oridnalIndictor = "nd";
-    else if (j == 3 && k != 13)
-      oridnalIndictor = "rd";
-    else
-      oridnalIndictor = "th";
-    return oridnalIndictor;
   }
 
   get dateTimeRecords() {
@@ -111,6 +84,40 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
     return hours;
   }
 
+  constructor(
+    private loginHelper: LoginHelper,
+    private menuService: MenuService,
+    public calendarService: CalendarService
+  ) { }
+
+  ngOnInit() {
+    this.menuService.disableMenuItem('undo-click');
+
+    if (!this.loginHelper.checkPersonSelected()) this.loginHelper.setPerson();
+
+    this.calendarService.resetSubsciptions();
+  }
+
+  ngOnDestroy() {
+    this.calendarService.openUpdateEventForm.next({ 'record': {}, 'open': false });
+    this.calendarService.openAddEventForm.next({ 'dayData': {}, 'open': false });
+  }
+
+  addOridnalIndictor(day) {
+    const j = day % 10;
+    const k = day % 100;
+    let oridnalIndictor;
+    if (j == 1 && k != 11)
+      oridnalIndictor = "st";
+    else if (j == 2 && k != 12)
+      oridnalIndictor = "nd";
+    else if (j == 3 && k != 13)
+      oridnalIndictor = "rd";
+    else
+      oridnalIndictor = "th";
+    return oridnalIndictor;
+  }
+
   hourToInt(hour) {
     return parseInt(hour);
   }
@@ -146,37 +153,6 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
       return rv;
     }, {});
   };
-
-  constructor(
-    private calendarRepo: CalendarRepo,
-    private loginHelper: LoginHelper,
-    private menuService: MenuService,
-    public calendarService: CalendarService
-  ) { }
-
-  ngOnInit() {
-    this.menuService.disableMenuItem('undo-click');
-
-    if (!this.loginHelper.checkPersonSelected()) this.loginHelper.setPerson();
-
-    this.calendarRepo.calendarRecords.subscribe(calendarRecords => {
-      if (calendarRecords.hasOwnProperty(`${this.calendarService.year}-${this.calendarService.zeroIndexedMonth}`))
-        this.calendarService.records = calendarRecords[`${this.calendarService.year}-${this.calendarService.zeroIndexedMonth}`].records;
-      else
-        this.calendarService.records = [];
-    });
-
-    this.calendarRepo.getCalendarRecords(this.calendarService.year, this.calendarService.zeroIndexedMonth);
-
-  }
-
-  ngOnDestroy() {
-    this.calendarRepo.calendarRecords.observers.forEach(element => { element.complete(); });
-    this.calendarRepo.calendarRecords.next({});
-
-    this.calendarService.openUpdateEventForm.next({ 'record': {}, 'open': false });
-    this.calendarService.openAddEventForm.next({ 'dayData': {}, 'open': false });
-  }
 
   openUpdateEventForm(record) {
     this.calendarService.openUpdateEventForm.next({ 'record': record, 'open': true });

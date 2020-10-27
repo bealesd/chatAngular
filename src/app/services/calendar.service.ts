@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 import { CalendarRepo } from './calendar.repo'
@@ -193,6 +193,15 @@ export class CalendarService {
     this.closeAddOrUpdateEventForm.next(true);
   }
 
+  subscribeToCalendarRecords(){
+    this.calendarRepo.calendarRecords.subscribe(calendarRecords => {
+      if (calendarRecords.hasOwnProperty(`${this.year}-${this.zeroIndexedMonth}`))
+        this.records = calendarRecords[`${this.year}-${this.zeroIndexedMonth}`].records;
+      else
+        this.records = [];
+    });
+  }
+
   private compareByTime(a, b) {
     const is_hour_a_before_b = a.hour < b.hour ? true : (a.hour === b.hour ? null : false);
     const is_minute_a_before_b = a.minute < b.minute ? true : (a.minute === b.minute ? null : false);
@@ -207,4 +216,14 @@ export class CalendarService {
     return value <= 99 ? `0${value}`.slice(-2) : `${value}`;
   }
 
+  removeSubscriptions() {
+    this.calendarRepo.calendarRecords.observers.forEach(element => { element.complete(); });
+    this.calendarRepo.calendarRecords.next({});
+  }
+
+  resetSubsciptions(){
+    this.removeSubscriptions();
+    this.subscribeToCalendarRecords();
+    this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
+  }
 }
