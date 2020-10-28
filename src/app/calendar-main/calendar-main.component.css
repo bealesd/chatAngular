@@ -1,46 +1,41 @@
-:host { 
+:host {
     --main-margin: 5px;
     --record-text-and-heading-color: white;
-    --heading-font-size: 30px;
-    --heading-font-weight: bolder;
-    --heading-letter-spacing: 3px;
-    --change-page-font-size: 30px;
+    --heading-font-size: 16px;
+    --heading-font-weight: normal;
+    --change-page-font-size: 20px;
+    --mask-background-color: rgba(68, 68, 68, 0.5);
 }
 
 /*small size wrapper*/
 
 @media screen and (max-width: 800px) {
-     :host {
-        --change-page-font-size: 20px;
-        --heading-font-size: 20px;
-        --heading-font-weight: bold;
-        --heading-letter-spacing: 2px;
-    }
+    :host {}
 }
 
 .changePageContainer {
-    padding-top: 10px;
-    padding-bottom: 10px;
+    /* padding-top: 10px;
+    padding-bottom: 10px; */
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: 1;
-    margin-left: 5px;
-    margin-right: 5px;
+    grid-template-columns: repeat(9, minmax(50px, 50px));
+    /* grid-template-rows: repeat(1, 40px); */
     color: var(--record-text-and-heading-color);
+    background-color: var(--mask-background-color);
 }
 
-.changePageContainer button {
-    font-size: var(--change-page-font-size);
-}
-
-.changePageContainer div {
+.title {
     grid-row: 1;
-    grid-column: 5 / 9;
+    grid-column: 6 / 9;
+    width: 200px;
     font-size: var(--heading-font-size);
     font-weight: var(--heading-font-weight);
     text-align: center;
-    text-transform: uppercase;
-    letter-spacing: var(--heading-letter-spacing);
+    /* padding: 2px 7px; */
+}
+
+.changePageContainer button:not(.today-button) {
+    font-size: var(--change-page-font-size);
+    width: 50px;
 }
 
 .changePageContainer button:first-of-type {
@@ -50,30 +45,37 @@
 
 .today-button {
     grid-row: 1;
-    grid-column: 3 / 4;
+    grid-column: 4 / 6;
+    width: 100px;
+    font-size: var(--heading-font-size);
+    font-weight: var(--heading-font-weight);
 }
 
 .changePageContainer button:last-of-type {
     grid-row: 1;
-    grid-column: 12 / 13;
+    grid-column: 2 / 3;
 }
 
-button {
+.changePageContainer > div {
     color: white;
-    padding: 2px 7px;
+    padding: 10px 4px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
+
+}
+
+.[*-button]{
     cursor: pointer;
 }
 
-.green-button,.today-button {
-    background-color: #1fb123;
-    border: 1px solid darkgreen;
+.green-button, .today-button {
+    background-color: transparent;
+    border: none;
 }
 
-.green-button:hover ,.today-button:hover {
-    background-color: darkgreen;
-    border: 1px solid #1fb123;
+.green-button:hover, .today-button:hover {
+    background-color: black;
+    /* border: 1px solid white; */
 }

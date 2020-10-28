@@ -3,21 +3,21 @@
     <div class="date-box day {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.zeroIndexedMonth && calendarService.today.day === (calendarService.day) ? 'today' : '' }}" (click)="openAddEventForm({'day': calendarService.day})"
      [attr.data-row]="1" [attr.data-col]="2">
         {{calendarService.getDayNameLongForMonth(calendarService.day)}} {{calendarService.day}}
-        <sup>{{addOridnalIndictor(calendarService.day)}}</sup>
+        <sup>{{calendarService.addOridnalIndictor(calendarService.day)}}</sup>
     </div>
 
-    <div class="date-box mask" *ngFor="let result of dateTimeRecords; " (click)="openAddEventForm({'dayInMonthArrayIndex': result.day, 'hour': result.hour})" [style.gridRow]="hourToInt(result.hour) + 2 " [attr.data-row]="hourToInt(result.hour) + 2 " 
+    <div class="date-box mask" *ngFor="let result of dateTimeRecords; " (click)="openAddEventForm({'dayInMonthArrayIndex': result.day, 'hour': result.hour})" [style.gridRow]="calendarService.hourToInt(result.hour) + 2 " [attr.data-row]="calendarService.hourToInt(result.hour) + 2 " 
         [attr.data-col]="2">
         <div class="record " (click)="openUpdateEventForm(record) " *ngFor="let record of result.records; ">
             {{calendarService.padToTwo(record.hour)}}:{{calendarService.padToTwo(record.minute)}} - {{record.what}}
         </div>
     </div>
 
-    <div class="date-box empty mask" *ngFor="let result of dateTimeEmptyRecords; " (click)="openAddEventForm({'dayInMonthArrayIndex': result.day, 'hour': result.hour})" [style.gridRow]="hourToInt(result.hour) + 2 " [attr.data-row]="hourToInt(result.hour) + 2 "
+    <div class="date-box empty mask" *ngFor="let result of dateTimeEmptyRecords; " (click)="openAddEventForm({'dayInMonthArrayIndex': result.day, 'hour': result.hour})" [style.gridRow]="calendarService.hourToInt(result.hour) + 2 " [attr.data-row]="calendarService.hourToInt(result.hour) + 2 "
         [attr.data-col]="2">
     </div>
 
-    <div class="date-box " *ngFor="let hour of hoursOfDay; " [style.gridRow]="hourToInt(hour) + 2 " [attr.data-row]="hourToInt(hour) + 2 " [style.gridColumn]="1 " [attr.data-col]="1 ">
+    <div class="date-box " *ngFor="let hour of hoursOfDay; " [style.gridRow]="calendarService.hourToInt(hour) + 2 " [attr.data-row]="calendarService.hourToInt(hour) + 2 " [style.gridColumn]="1 " [attr.data-col]="1 ">
         <div class="time-div">
             <div>{{calendarService.padToTwo(hour)}}</div>
         </div>

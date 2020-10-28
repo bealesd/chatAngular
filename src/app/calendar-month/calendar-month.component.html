@@ -16,12 +16,12 @@
         [attr.data-empty-below]="penultimateGridRow === dayData.gridRow && dayData.gridCol > lastCol ? 1 : 0" 
         [attr.last-item]="i === dayDataForMonth.length - 1 ? 1 : 0">
 
-        <div class="day" (click)="openAddEventForm(dayData)">{{dayData.dayInMonthArrayIndex}}</div>
+        <div class="day" (click)="openAddEventForm(dayData)">{{dayData.dayInMonthArrayIndex}}<sup>{{calendarService.addOridnalIndictor(dayData.dayInMonthArrayIndex)}}</sup></div>
 
         <div class="table" *ngFor="let record of calendarService.getRecordsByDay(dayData.dayInMonthArrayIndex);">
 
             <div class="record" (click)="openUpdateEventForm(record)">
-                {{calendarService.padToTwo(record.hour)}}:{{calendarService.padToTwo(record.minute)}} - {{record.what}}
+                <div class="record-time">{{calendarService.padToTwo(record.hour)}}:{{calendarService.padToTwo(record.minute)}} - </div>{{record.what}}
             </div>
 
         </div>

@@ -3,9 +3,12 @@
     --weekday-name-font-weight: 600;
     --weekday-name-and-number-font-size: 18px;
     --weekday-name-and-number-text-color: hotpink;
+    --weekday-name-font-family: inherit;
+
     --record-font-size: 14px;
     --record-minimum-height: 150px;
     --record-font-family: inherit;
+    --record-max-width: 250px;
     --record-border-type: solid;
     --record-border-thickness: 2px;
     --record-border-red-color: rgb(255, 53, 94);
@@ -22,19 +25,55 @@
     --record-border-pink: var(--record-border-type) var(--record-border-thickness) var(--record-border-pink-color);
     --record-border-violet-color: rgb(150, 78, 202);
     --record-border-violet: var(--record-border-type) var(--record-border-thickness) var(--record-border-violet-color);
+    --record-time-display: inline-block;
     --mask-background-color: rgba(68, 68, 68, 0.5);
 }
 
-/*small size wrapper*/
+@media screen and (max-width: 1700px) and (min-width: 1300px) {
+    :host {
+        --weekday-name-and-number-font-size: 16px;
+        --weekday-name-font-weight: 400;
+        --weekday-name-font-family: 'Arial Narrow';
+        --record-max-width: 200px;
+        --record-font-family: 'Arial Narrow';
+        --record-font-size: 13px;
+   }
+}
 
+@media screen and (max-width: 1300px) and (min-width: 1100px) {
+    :host {
+        --weekday-name-and-number-font-size: 16px;
+        --weekday-name-font-weight: 400;
+        --weekday-name-font-family: 'Arial Narrow';
+        --record-max-width: 150px;
+        --record-font-family: 'Arial Narrow';
+        --record-font-size: 12px;
+   }
+}
+
+/*medium size wrapper*/
+@media screen and (max-width: 1100px) and (min-width: 800px) {
+    :host {
+       --weekday-name-and-number-font-size: 14px;
+       --weekday-name-font-weight: 300;
+       --weekday-name-font-family: 'Arial Narrow';
+       --record-max-width: 100px;
+       --record-font-family: 'Arial Narrow';
+       --record-font-size: 11px;
+       --record-time-display: none;
+   }
+}
+
+/*small size wrapper*/
 @media screen and (max-width: 800px) {
     :host {
         --weekday-name-and-number-font-size: 13px;
-        --record-minimum-height: 100px;
+        --weekday-name-font-weight: 300;
+        --weekday-name-font-family: 'Arial Narrow';
+        --record-max-width: 60px;
         --record-font-family: 'Arial Narrow';
         --record-font-size: 10px;
-        --record-text-color: white;
-        --record-border-thickness: 1px;
+        --record-time-display: none;
     }
 }
 
@@ -66,6 +105,10 @@
     grid-template-rows: repeat(auto, minmax(var(--record-minimum-height), auto));
 }
 
+.date-box-contianer .record-time{
+    display: var(--record-time-display);
+}
+
 .date-box-contianer>.date-box {
     background-color: var(--mask-background-color);
     min-height: var(--record-minimum-height);
@@ -74,6 +117,8 @@
 .date-box-contianer>.date-box>.day {
     font-size: var(--weekday-name-and-number-font-size);
     color: var(--weekday-name-and-number-text-color);
+    font-family: var(--weekday-name-font-family);
+    font-weight: var(--weekday-name-font-weight);
 }
 
 .date-box-contianer>.date-box>.table>.record {
@@ -81,6 +126,12 @@
     font-size: var(--record-font-size);
     font-family: var(--record-font-family);
     letter-spacing: var(--record-letter-spacing);
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: var(--record-max-width);
+    margin-left: 5px;
 }
 
 .date-box-contianer>[data-col="1"].date-box, [data-max-row="1"][data-col="1"].date-box {

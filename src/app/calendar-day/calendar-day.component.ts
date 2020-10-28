@@ -68,24 +68,6 @@ export class CalendarDayComponent implements OnInit, OnDestroy {
     return emptyHoursData;
   }
 
-  addOridnalIndictor(day) {
-    const j = day % 10;
-    const k = day % 100;
-    let oridnalIndictor;
-    if (j == 1 && k != 11)
-      oridnalIndictor = "st";
-    else if (j == 2 && k != 12)
-      oridnalIndictor = "nd";
-    else if (j == 3 && k != 13)
-      oridnalIndictor = "rd";
-    else
-      oridnalIndictor = "th";
-    return oridnalIndictor;
-  }
-
-  hourToInt(hour) {
-    return parseInt(hour);
-  }
 
   getEmptyHoursByDay(calendarDay) {
     const records = this.calendarService.getRecordsByDay(calendarDay);

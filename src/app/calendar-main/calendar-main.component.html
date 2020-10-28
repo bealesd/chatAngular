@@ -1,21 +1,26 @@
 <div class="changePageContainer">
-    <button class="green-button" (click)="monthOrWeek === 'month' ?
+
+    <div class="green-button" (click)="monthOrWeek === 'month' ?
       calendarService.changeMonth('previous') :
       monthOrWeek === 'week' ? 
       calendarService.changeWeek('previous') :
       calendarService.changeDay('previous')
-      "><span>&#60;</span></button>
-    <button class="today-button" (click)="calendarService.changeToToday()">Today</button>
+      "><span>&#60;</span></div>
 
-    <div>{{calendarService.monthNames[calendarService.zeroIndexedMonth]}} - {{calendarService.year}}</div>
-    <button class="green-button" (click)="monthOrWeek === 'month' ?
+    <div class="today-button" (click)="calendarService.changeToToday()">Today</div>
+
+    <div class="title">{{calendarService.monthNames[calendarService.zeroIndexedMonth]}} - {{calendarService.year}}</div>
+
+    <div class="green-button" (click)="monthOrWeek === 'month' ?
     calendarService.changeMonth('next') :
     monthOrWeek === 'week' ? 
     calendarService.changeWeek('next') :
-    calendarService.changeDay('next')"><span>&#62;</span></button>
+    calendarService.changeDay('next')"><span>&#62;</span></div>
+
 </div>
 
 <app-calendar-month *ngIf="monthOrWeek === 'month'"></app-calendar-month>
 <app-calendar-week *ngIf="monthOrWeek === 'week'"></app-calendar-week>
 <app-calendar-day *ngIf="monthOrWeek === 'day'"></app-calendar-day>
+
 <app-calendar-form></app-calendar-form>

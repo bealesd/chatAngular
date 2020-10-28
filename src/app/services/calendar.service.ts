@@ -256,4 +256,23 @@ export class CalendarService {
   public padToTwo(value: number): string {
     return value <= 99 ? `0${value}`.slice(-2) : `${value}`;
   }
+
+  public addOridnalIndictor(day) {
+    const j = day % 10;
+    const k = day % 100;
+    let oridnalIndictor;
+    if (j == 1 && k != 11)
+      oridnalIndictor = "st";
+    else if (j == 2 && k != 12)
+      oridnalIndictor = "nd";
+    else if (j == 3 && k != 13)
+      oridnalIndictor = "rd";
+    else
+      oridnalIndictor = "th";
+    return oridnalIndictor;
+  }
+
+  public hourToInt(hour) {
+    return parseInt(hour);
+  }
 }

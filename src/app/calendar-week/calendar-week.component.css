@@ -139,12 +139,12 @@
     grid-row: 2;
 }
 
-.date-box-contianer>.date-box>.table>.record {
+/* .date-box-contianer>.date-box>.table>.record {
     color: var(--record-text-and-heading-color);
     font-size: var(--record-font-size);
     font-family: var(--record-font-family);
     letter-spacing: var(--record-letter-spacing);
-}
+} */
 
 .date-box-contianer>[data-row="1"].date-box {
     border: none!important;
