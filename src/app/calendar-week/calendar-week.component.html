@@ -27,7 +27,7 @@
     <div class="date-box " *ngFor="let hour of hoursOfDay; " [style.gridRow]="hourToInt(hour) + 2 " [attr.data-row]="hourToInt(hour) + 2 " [style.gridColumn]="1 " [attr.data-col]="1 ">
 
         <div class="time-div ">
-            {{calendarService.padToTwo(hour)}}
+            <div>{{calendarService.padToTwo(hour)}}</div>
         </div>
 
     </div>

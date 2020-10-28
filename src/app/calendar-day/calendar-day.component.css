@@ -4,13 +4,16 @@
     --weekday-name-and-number-font-size: 18px;
     --weekday-name-and-number-text-color: lightgrey;
     --weekday-name-font-family: inherit;
-    --day-grid-template-columns: 50px repeat(7, 1fr);
-    --record-font-size: 33px;
+    --day-grid-template-columns-first-width: 30px;
+    --day-grid-template-columns: var(--day-grid-template-columns-first-width) repeat(7, 1fr);
+    --day-grid-template-rows-first-width: 30px;
+    --day-grid-template-rows: var(--day-grid-template-rows-first-width) repeat(24, minmax(60px, auto));
+    --record-font-size: 24px;
     --record-minimum-height: 800px;
     --record-font-family: inherit;
     --record-text-color: rgb(169, 211, 242);
     --record-background-color: rgba(0, 120, 212, 0.24);
-    --record-max-width: 250px;
+    --record-max-width: 400px;
     --record-border-type: solid;
     --record-border-thickness: 2px;
     --record-border-color: black;
@@ -20,7 +23,7 @@
 
 @media screen and (max-width: 1300px) and (min-width: 1100px) {
     :host {
-        --record-max-width: 150px;
+        --record-max-width: 300px;
     }
 }
 
@@ -28,7 +31,7 @@
 
 @media screen and (max-width: 1100px) and (min-width: 800px) {
     :host {
-        --record-max-width: 100px;
+        --record-max-width: 200px;
     }
 }
 
@@ -39,18 +42,28 @@
         --weekday-name-and-number-font-size: 13px;
         --weekday-name-font-weight: 300;
         --weekday-name-font-family: 'Arial Narrow';
+        --day-grid-template-rows-first-width: 20px;
+        --day-grid-template-columns-first-width: 20px;
         --record-minimum-height: 100px;
         --record-font-family: 'Arial Narrow';
         --record-font-size: 10px;
         --record-text-color: white;
         --record-minimum-height: 400px;
-        --record-max-width: 70px;
+        --record-max-width: 150px;
         --record-border-thickness: 1px;
     }
 }
 
 .today {
     font-style: italic;
+}
+
+.date-box-contianer {
+    margin-left: var(--main-margin);
+    margin-right: var(--main-margin);
+    display: grid;
+    grid-template-columns: var(--day-grid-template-columns);
+    grid-template-rows: var(--day-grid-template-rows);
 }
 
 .date-box-contianer>.day, .date-box-contianer>.date-box>.time-div {
@@ -83,16 +96,8 @@
     border: 1px dotted grey;
     font-family: var(--record-font-family);
     font-size: var(--record-font-size);
-    margin: 5px, 5px, 0px, 5px;
+    margin: 5px 5px 0px 5px;
     background-color: var(--record-background-color);
-}
-
-.date-box-contianer {
-    margin-left: var(--main-margin);
-    margin-right: var(--main-margin);
-    display: grid;
-    grid-template-columns: var(--day-grid-template-columns);
-    grid-template-rows: repeat(25, minmax(60px, auto));
 }
 
 .day {
@@ -105,6 +110,13 @@
 
 .time-div {
     color: var(--weekday-name-and-number-text-color);
+    height: 100%;
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
+}
+
+.time-div > div{
+    grid-row: 2;
 }
 
 .date-box-contianer>[data-row="1"].date-box {
@@ -142,4 +154,3 @@ button {
     background-color: darkgreen;
     border: 1px solid #1fb123;
 }
-
