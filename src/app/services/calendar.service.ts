@@ -147,6 +147,11 @@ export class CalendarService {
     return records;
   }
 
+  getDayNameShortForMonth(day) {
+    const date = new Date(this.year, this.zeroIndexedMonth, day);
+    return this.getDayName(date.getDay());
+  }
+
   getDayNameLongForMonth(day) {
     const date = new Date(this.year, this.zeroIndexedMonth, day);
     return this.getDayNameLong(date.getDay());
@@ -194,12 +199,14 @@ export class CalendarService {
       this.year = tempDate.getFullYear();
       this.zeroIndexedMonth = tempDate.getMonth();
       this.week.next(1);
+      this.day = 1;
     }
     else if (nextOrPrevious === 'previous') {
       tempDate.setMonth(zeroIndexedMonth - 1);
       this.year = tempDate.getFullYear();
       this.zeroIndexedMonth = tempDate.getMonth();
       this.week.next(this.weeksInMonth);
+      this.day = this.daysInMonth;
     }
 
     this.calendarRepo.calendarRecords.next({});
@@ -212,6 +219,7 @@ export class CalendarService {
     this.year = this.today.year;
     this.zeroIndexedMonth = this.today.month;
     this.week.next(this.today.week);
+    this.day = this.today.day;
     this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
   }
 

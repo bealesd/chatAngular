@@ -1,12 +1,12 @@
 <div class="date-box-contianer">
 
     <div class="date-box day {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.zeroIndexedMonth && calendarService.today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}" (click)="openAddEventForm(dayData)"
-        *ngFor="let dayData of dayDataForWeek.valid; let i=i ndex " [style.gridRow]="1 " [attr.data-row]="1 " [style.gridColumn]="dayData.gridCol + 1 " [attr.data-col]="dayData.gridCol + 1 ">
-        {{calendarService.weekdayNames[i]}} {{dayData.dayInMonthArrayIndex}}
+        *ngFor="let dayData of dayDataForWeek.valid; " [style.gridRow]="1 " [attr.data-row]="1 " [style.gridColumn]="dayData.gridCol + 1 " [attr.data-col]="dayData.gridCol + 1 ">
+        {{calendarService.getDayNameShortForMonth(dayData.dayInMonthArrayIndex)}} {{dayData.dayInMonthArrayIndex}}
         <sup>{{addOridnalIndictor(dayData.dayInMonthArrayIndex)}}</sup>
     </div>
-    <div class="date-box day invalid" *ngFor="let dayData of dayDataForWeek.invalid; let i=i ndex " [style.gridRow]="1 " [attr.data-row]="1 " [style.gridColumn]="dayData.gridCol + 1 " [attr.data-col]="dayData.gridCol + 1 ">
-        {{calendarService.weekdayNames[i]}} {{dayData.dayInMonthArrayIndex}}
+    <div class="date-box day invalid" *ngFor="let dayData of dayDataForWeek.invalid;" [style.gridRow]="1 " [attr.data-row]="1 " [style.gridColumn]="dayData.gridCol + 1 " [attr.data-col]="dayData.gridCol + 1 ">
+        {{calendarService.getDayNameShortForMonth(dayData.dayInMonthArrayIndex)}} {{dayData.dayInMonthArrayIndex}}
         <sup>{{addOridnalIndictor(dayData.dayInMonthArrayIndex)}}</sup>
     </div>
 
