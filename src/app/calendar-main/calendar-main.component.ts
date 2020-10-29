@@ -1,4 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Observable } from 'rxjs';
+import { fromEvent } from 'rxjs';
 import { CalendarRepo } from '../services/calendar.repo';
 
 import { CalendarService } from '../services/calendar.service';
@@ -11,8 +13,17 @@ import { MenuService } from '../services/menu.service';
 })
 export class CalendarMainComponent implements OnInit, OnDestroy {
   monthOrWeek: string = 'month';
+  title: string;
 
-  constructor(private calendarRepo: CalendarRepo,public calendarService: CalendarService, public menuService: MenuService) { }
+  constructor(private calendarRepo: CalendarRepo,public calendarService: CalendarService, public menuService: MenuService) { 
+    this.updateTitle();
+
+    Observable.fromEvent(window, 'resize')
+        .debounceTime(1000)
+        .subscribe(() => {
+          this.updateTitle();
+        });
+  }
 
   ngOnInit() {
     this.menuService.enableMenuItem('day-click',
@@ -41,4 +52,8 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     this.menuService.disableMenuItem('week-click');
     this.menuService.disableMenuItem('month-click');
   }
+
+   updateTitle() {
+    this.title = (window.innerWidth < 1000 ? this.calendarService.monthNamesShort[this.calendarService.zeroIndexedMonth] : this.calendarService.monthNames[this.calendarService.zeroIndexedMonth]) + ' ' +  this.calendarService.year;
+  }  
 }

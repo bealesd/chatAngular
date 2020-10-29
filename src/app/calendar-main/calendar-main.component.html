@@ -8,8 +8,8 @@
       "><span>&#60;</span></div>
 
     <div class="today-button" (click)="calendarService.changeToToday()">Today</div>
-
-    <div class="title">{{calendarService.monthNames[calendarService.zeroIndexedMonth]}} - {{calendarService.year}}</div>
+    <!-- monthNamesShort -->
+    <div class="title" (window:resize)="updateTitle()">{{title}}</div>
 
     <div class="green-button" (click)="monthOrWeek === 'month' ?
     calendarService.changeMonth('next') :

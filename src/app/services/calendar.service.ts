@@ -19,6 +19,10 @@ export class CalendarService {
     return Object.keys(this.monthsEnum);
   }
 
+  get monthNamesShort(): string[] {
+    return Object.keys(this.monthsShortEnum);
+  }
+
   get daysInMonth() {
     // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
     return new Date(this.year, this.zeroIndexedMonth + 1, 0).getDate();
@@ -78,6 +82,21 @@ export class CalendarService {
     "December": 11
   }
 
+  monthsShortEnum = {
+    "Jan": 0,
+    "Feb": 1,
+    "Mar": 2,
+    "Apr": 3,
+    "May": 4,
+    "Jun": 5,
+    "Jul": 6,
+    "Aug": 7,
+    "Sep": 8,
+    "Oct": 9,
+    "Nov": 10,
+    "Dec": 11
+  }
+
   constructor(private calendarRepo: CalendarRepo) {
     let date = new Date();
     this.year = date.getFullYear();
@@ -85,7 +104,7 @@ export class CalendarService {
 
     const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
     this.week.next(Math.ceil((firstOfMonth.getDay() + date.getDate()) / 7));
-    this.day =  date.getDate();
+    this.day = date.getDate();
 
     this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'week': this.week.getValue(), 'day': this.day };
   }
