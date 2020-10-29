@@ -15,27 +15,19 @@
     --record-max-width: 250px;
     --record-border-type: solid;
     --record-border-thickness: 2px;
-    --record-background-color: rgba(0, 120, 212, 0.24);
-    /* --record-border-red-color: rgb(255, 53, 94); */
-    --record-border-red-color: black;
+    --record-border-red-color: rgb(255, 53, 94);
     --record-border-red: var(--record-border-type) var(--record-border-thickness) var(--record-border-red-color);
-    /* --record-border-orange-color: rgb(255, 96, 55); */
-    --record-border-orange-color: black;
+    --record-border-orange-color: rgb(255, 96, 55);
     --record-border-orange: var(--record-border-type) var(--record-border-thickness) var(--record-border-orange-color);
-    /* --record-border-yellow-color: rgb(255, 204, 51); */
-    --record-border-yellow-color: black;
+    --record-border-yellow-color: rgb(255, 204, 51);
     --record-border-yellow: var(--record-border-type) var(--record-border-thickness) var(--record-border-yellow-color);
-    /* --record-border-green-color: rgb(102, 255, 102); */
-    --record-border-green-color: black;
+    --record-border-green-color: rgb(102, 255, 102);
     --record-border-green: var(--record-border-type) var(--record-border-thickness) var(--record-border-green-color);
-    /* --record-border-light-blue-color: rgb(80, 191, 230); */
-    --record-border-light-blue-color: black;
+    --record-border-light-blue-color: rgb(80, 191, 230);
     --record-border-light-blue: var(--record-border-type) var(--record-border-thickness) var(--record-border-light-blue-color);
-    /* --record-border-pink-color: rgb(255, 0, 204); */
-    --record-border-pink-color: black;
+    --record-border-pink-color: rgb(255, 0, 204);
     --record-border-pink: var(--record-border-type) var(--record-border-thickness) var(--record-border-pink-color);
-    /* --record-border-violet-color: rgb(150, 78, 202); */
-    --record-border-violet-color: black;
+    --record-border-violet-color: rgb(150, 78, 202);
     --record-border-violet: var(--record-border-type) var(--record-border-thickness) var(--record-border-violet-color);
     --mask-background-color: rgba(68, 68, 68, 0.5);
 }

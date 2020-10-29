@@ -18,6 +18,20 @@
     --record-border-thickness: 2px;
     --record-border-color: black;
     --record-border: var(--record-border-type) var(--record-border-thickness) var(--record-border-color);
+    --record-border-red-color: rgb(255, 53, 94);
+    --record-border-red: var(--record-border-type) var(--record-border-thickness) var(--record-border-red-color);
+    --record-border-orange-color: rgb(255, 96, 55);
+    --record-border-orange: var(--record-border-type) var(--record-border-thickness) var(--record-border-orange-color);
+    --record-border-yellow-color: rgb(255, 204, 51);
+    --record-border-yellow: var(--record-border-type) var(--record-border-thickness) var(--record-border-yellow-color);
+    --record-border-green-color: rgb(102, 255, 102);
+    --record-border-green: var(--record-border-type) var(--record-border-thickness) var(--record-border-green-color);
+    --record-border-light-blue-color: rgb(80, 191, 230);
+    --record-border-light-blue: var(--record-border-type) var(--record-border-thickness) var(--record-border-light-blue-color);
+    --record-border-pink-color: rgb(255, 0, 204);
+    --record-border-pink: var(--record-border-type) var(--record-border-thickness) var(--record-border-pink-color);
+    --record-border-violet-color: rgb(150, 78, 202);
+    --record-border-violet: var(--record-border-type) var(--record-border-thickness) var(--record-border-violet-color);
     --mask-background-color: rgba(68, 68, 68, 0.5);
 }
 
@@ -124,15 +138,61 @@
 }
 
 .date-box-contianer>[data-col="2"].date-box {
-    border-left: var(--record-border);
-    border-top: var(--record-border);
-    border-right: var(--record-border);
     grid-column-start: 2;
     grid-column-end: 9;
 }
 
+.date-box-contianer>[data-col="2"][data-row="2"].date-box {
+    border-left: var(--record-border-red);
+    border-top: var(--record-border-red);
+    border-right: var(--record-border-red);
+}
+
+.red-border{
+    border-left: var(--record-border-red);
+    border-top: var(--record-border-red);
+    border-right: var(--record-border-red);
+}
+
+.orange-border{
+    border-left: var(--record-border-orange);
+    border-top: var(--record-border-orange);
+    border-right: var(--record-border-orange);
+}
+
+.yellow-border{
+    border-left: var(--record-border-yellow);
+    border-top: var(--record-border-yellow);
+    border-right: var(--record-border-yellow);
+}
+
+.green-border{
+    border-left: var(--record-border-green);
+    border-top: var(--record-border-green);
+    border-right: var(--record-border-green);
+}
+
+
+.light-blue-border{
+    border-left: var(--record-border-light-blue);
+    border-top: var(--record-border-light-blue);
+    border-right: var(--record-border-light-blue);
+}
+
+.pink-border{
+    border-left: var(--record-border-pink);
+    border-top: var(--record-border-pink);
+    border-right: var(--record-border-pink);
+}
+
+.violet-border{
+    border-left: var(--record-border-violet);
+    border-top: var(--record-border-violet);
+    border-right: var(--record-border-violet);
+}
+
 .date-box-contianer>[data-col="2"][data-row="25"].date-box {
-    border-bottom: var(--record-border);
+    border-bottom: var(--record-border-green);
 }
 
 button {

@@ -68,6 +68,29 @@ export class CalendarDayComponent implements OnInit, OnDestroy {
     return emptyHoursData;
   }
 
+  getBorderClass(row) {
+    const day = row % 7;
+    let borderClass = ''
+
+    if (day === 1)
+      borderClass = 'red-border';
+    else if (day === 2)
+      borderClass = 'orange-border';
+    else if (day === 3)
+      borderClass = 'yellow-border';
+    else if (day === 4)
+      borderClass = 'green-border';
+    else if (day === 5)
+      borderClass = 'light-blue-border';
+    else if (day === 6)
+      borderClass = 'pink-border';
+    else if (day === 7)
+      borderClass = 'violet-border';
+    else
+      borderClass = 'red-border';
+
+    return borderClass;
+  }
 
   getEmptyHoursByDay(calendarDay) {
     const records = this.calendarService.getRecordsByDay(calendarDay);
