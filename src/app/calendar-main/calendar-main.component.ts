@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Observable } from 'rxjs';
 import { fromEvent } from 'rxjs';
-import { CalendarRepo } from '../services/calendar.repo';
+import { debounceTime } from 'rxjs/operators';
 
+import { CalendarRepo } from '../services/calendar.repo';
 import { CalendarService } from '../services/calendar.service';
 import { MenuService } from '../services/menu.service';
 
@@ -13,16 +13,13 @@ import { MenuService } from '../services/menu.service';
 })
 export class CalendarMainComponent implements OnInit, OnDestroy {
   monthOrWeek: string = 'month';
+  calendarViews = ['Month', 'Week', 'Day'];
   title: string;
 
-  constructor(private calendarRepo: CalendarRepo,public calendarService: CalendarService, public menuService: MenuService) { 
-    this.updateTitle();
+  get width() { return window.innerWidth; }
 
-    Observable.fromEvent(window, 'resize')
-        .debounceTime(1000)
-        .subscribe(() => {
-          this.updateTitle();
-        });
+  constructor(private calendarRepo: CalendarRepo, public calendarService: CalendarService, public menuService: MenuService) {
+    fromEvent(window, 'resize').pipe(debounceTime(1000)).subscribe(() => { this.width; });
   }
 
   ngOnInit() {
@@ -44,7 +41,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
         this.monthOrWeek = 'month';
       });
 
-      this.calendarRepo.getCalendarRecords(this.calendarService.year, this.calendarService.zeroIndexedMonth);
+    this.calendarRepo.getCalendarRecords(this.calendarService.year, this.calendarService.zeroIndexedMonth);
   }
 
   ngOnDestroy() {
@@ -53,7 +50,10 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     this.menuService.disableMenuItem('month-click');
   }
 
-   updateTitle() {
-    this.title = (window.innerWidth < 1000 ? this.calendarService.monthNamesShort[this.calendarService.zeroIndexedMonth] : this.calendarService.monthNames[this.calendarService.zeroIndexedMonth]) + ' ' +  this.calendarService.year;
-  }  
+  updateCalendarView(value: string) {
+    if (this.calendarViews.includes(value))
+      this.monthOrWeek = value.toLowerCase();
+    else
+      console.error(`Invalid calendar view selected in dropdown: '${value}'.`);
+  }
 }

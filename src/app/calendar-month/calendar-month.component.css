@@ -4,7 +4,6 @@
     --weekday-name-and-number-font-size: 18px;
     --weekday-name-and-number-text-color: hotpink;
     --weekday-name-font-family: inherit;
-
     --record-font-size: 14px;
     --record-minimum-height: 150px;
     --record-font-family: inherit;
@@ -30,47 +29,51 @@
 }
 
 @media screen and (max-width: 1700px) and (min-width: 1300px) {
-    :host {
+     :host {
         --weekday-name-and-number-font-size: 16px;
         --weekday-name-font-weight: 400;
         --weekday-name-font-family: 'Arial Narrow';
         --record-max-width: 200px;
         --record-font-family: 'Arial Narrow';
         --record-font-size: 13px;
-   }
+    }
 }
 
 @media screen and (max-width: 1300px) and (min-width: 1100px) {
-    :host {
+     :host {
         --weekday-name-and-number-font-size: 16px;
         --weekday-name-font-weight: 400;
         --weekday-name-font-family: 'Arial Narrow';
         --record-max-width: 150px;
         --record-font-family: 'Arial Narrow';
         --record-font-size: 12px;
-   }
+    }
 }
+
 
 /*medium size wrapper*/
+
 @media screen and (max-width: 1100px) and (min-width: 800px) {
-    :host {
-       --weekday-name-and-number-font-size: 14px;
-       --weekday-name-font-weight: 300;
-       --weekday-name-font-family: 'Arial Narrow';
-       --record-max-width: 100px;
-       --record-font-family: 'Arial Narrow';
-       --record-font-size: 11px;
-       --record-time-display: none;
-   }
+     :host {
+        --weekday-name-and-number-font-size: 14px;
+        --weekday-name-font-weight: 300;
+        --weekday-name-font-family: 'Arial Narrow';
+        --record-max-width: 100px;
+        --record-font-family: 'Arial Narrow';
+        --record-font-size: 11px;
+        --record-time-display: none;
+    }
 }
 
+
 /*small size wrapper*/
+
 @media screen and (max-width: 800px) {
-    :host {
+     :host {
         --weekday-name-and-number-font-size: 13px;
         --weekday-name-font-weight: 300;
         --weekday-name-font-family: 'Arial Narrow';
-        --record-max-width: 60px;
+        --record-max-width: 50px;
         --record-font-family: 'Arial Narrow';
         --record-font-size: 10px;
         --record-time-display: none;
@@ -105,7 +108,7 @@
     grid-template-rows: repeat(auto, minmax(var(--record-minimum-height), auto));
 }
 
-.date-box-contianer .record-time{
+.date-box-contianer .record-time {
     display: var(--record-time-display);
 }
 
@@ -134,7 +137,8 @@
     margin-left: 5px;
 }
 
-.date-box-contianer>[data-col="1"].date-box, [data-max-row="1"][data-col="1"].date-box {
+.date-box-contianer>[data-col="1"].date-box,
+[data-max-row="1"][data-col="1"].date-box {
     border-left: var(--record-border-red);
     border-top: var(--record-border-red);
 }
@@ -170,31 +174,38 @@
     border-top: var(--record-border-violet);
 }
 
-.date-box-contianer>[data-empty-below="1"][data-col="1"].date-box, .date-box-contianer>[data-max-row="1"][data-col="1"].date-box {
+.date-box-contianer>[data-empty-below="1"][data-col="1"].date-box,
+.date-box-contianer>[data-max-row="1"][data-col="1"].date-box {
     border-bottom: var(--record-border-red);
 }
 
-.date-box-contianer>[data-empty-below="1"][data-col="2"].date-box, .date-box-contianer>[data-max-row="1"][data-col="2"].date-box {
+.date-box-contianer>[data-empty-below="1"][data-col="2"].date-box,
+.date-box-contianer>[data-max-row="1"][data-col="2"].date-box {
     border-bottom: var(--record-border-orange);
 }
 
-.date-box-contianer>[data-empty-below="1"][data-col="3"].date-box, .date-box-contianer>[data-max-row="1"][data-col="3"].date-box {
+.date-box-contianer>[data-empty-below="1"][data-col="3"].date-box,
+.date-box-contianer>[data-max-row="1"][data-col="3"].date-box {
     border-bottom: var(--record-border-yellow);
 }
 
-.date-box-contianer>[data-empty-below="1"][data-col="4"].date-box, .date-box-contianer>[data-max-row="1"][data-col="4"].date-box {
+.date-box-contianer>[data-empty-below="1"][data-col="4"].date-box,
+.date-box-contianer>[data-max-row="1"][data-col="4"].date-box {
     border-bottom: var(--record-border-green);
 }
 
-.date-box-contianer>[data-empty-below="1"][data-col="5"].date-box, .date-box-contianer>[data-max-row="1"][data-col="5"].date-box {
+.date-box-contianer>[data-empty-below="1"][data-col="5"].date-box,
+.date-box-contianer>[data-max-row="1"][data-col="5"].date-box {
     border-bottom: var(--record-border-light-blue);
 }
 
-.date-box-contianer>[data-empty-below="1"][data-col="6"].date-box, .date-box-contianer>[data-max-row="1"][data-col="6"].date-box {
+.date-box-contianer>[data-empty-below="1"][data-col="6"].date-box,
+.date-box-contianer>[data-max-row="1"][data-col="6"].date-box {
     border-bottom: var(--record-border-pink);
 }
 
-.date-box-contianer>[data-empty-below="1"][data-col="7"].date-box, .date-box-contianer>[data-max-row="1"][data-col="7"].date-box {
+.date-box-contianer>[data-empty-below="1"][data-col="7"].date-box,
+.date-box-contianer>[data-max-row="1"][data-col="7"].date-box {
     border-bottom: var(--record-border-violet);
 }
 

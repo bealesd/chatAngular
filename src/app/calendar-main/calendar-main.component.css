@@ -4,24 +4,35 @@
     --heading-font-size: 16px;
     --heading-font-weight: normal;
     --change-page-font-size: 20px;
-    --mask-background-color: rgba(68, 68, 68, 0.5);
-    --title-grid-column: 6/9;
+    --mask-background-color: rgba(38, 38, 38);
     --change-page-first-grid-column: 1/2;
     --change-page-last-grid-column: 2/3;
     --today-button-grid-column: 4/6;
+    --title-grid-column: 7/10;
+    --calendar-view-grid-column: 12/13;
+    --column-width: 50px;
+    --column-view-width: 2*var(--column-width);
+    --column-count: 10;
+    --change-page-container-template-columns: repeat(var(--column-count), var(--column-width)) calc(100% - (var(--column-view-width) + (var(--column-count)*var(--column-width)))) auto;
 }
+
 
 /*small size wrapper*/
 
 @media screen and (max-width: 800px) {
-    :host {}
+     :host {
+        --column-count: 7;
+        --today-button-grid-column: 3/5;
+        --title-grid-column: 5/8;
+        --calendar-view-grid-column: 9/10;
+    }
 }
 
 .changePageContainer {
-
     display: grid;
-    grid-template-columns: repeat(9, minmax(50px, 50px));
+    grid-template-columns: var(--change-page-container-template-columns);
     color: var(--record-text-and-heading-color);
+    grid-template-rows: repeat(1, var(--column-width));
     background-color: var(--mask-background-color);
 }
 
@@ -37,8 +48,7 @@
 
 .today-button {
     grid-row: 1;
-    grid-column:var(--today-button-grid-column);
-    width: 100px;
+    grid-column: var(--today-button-grid-column);
     font-size: var(--heading-font-size);
     font-weight: var(--heading-font-weight);
 }
@@ -46,17 +56,38 @@
 .title {
     grid-row: 1;
     grid-column: var(--title-grid-column);
-    width: 200px;
+}
+
+#calendarView {
+    border: 0px;
+    outline: 0;
+    background-color: var(--mask-background-color);
+    color: var(--record-text-and-heading-color);
+    font: inherit;
+    grid-column: var(--calendar-view-grid-column);
+    text-align: left;
+    margin-right: 10px;
+}
+
+#calendarView>option {
+    border: 0px;
+    outline: 0;
+    background-color: inherit;
+}
+
+#calendarView>option:hover {
+    border: 0px;
+    outline: 0;
+    background-color: red;
 }
 
 .changePageContainer button:not(.today-button) {
     font-size: var(--change-page-font-size);
-    width: 50px;
 }
 
-.changePageContainer > div {
+.changePageContainer>div {
     color: white;
-    padding: 10px 4px;
+    padding: 12px 4px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -64,15 +95,19 @@
     font-style: arial-narrow;
 }
 
-[class*="-button"]{
+[class*="-button"],
+#calendarView {
     cursor: pointer;
 }
 
-.green-button, .today-button {
+.green-button,
+.today-button {
     background-color: transparent;
     border: none;
 }
 
-.green-button:hover, .today-button:hover {
+#calendarView:hover,
+.green-button:hover,
+.today-button:hover {
     background-color: black;
 }
