@@ -1,3 +1,4 @@
+import { CalendarRecord } from './../models/calendar-record.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -162,13 +163,14 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
   }
 
   postEvent() {
-    const record = {
-      'what': this.profileForm.value.what,
-      'day': parseInt(`${this.profileForm.value.day}`),
-      'hour': parseInt(`${this.profileForm.value.hour}`),
-      'minute': parseInt(`${this.profileForm.value.minute}`),
-      'id': this.profileForm.value.id
-    }
+    const record: CalendarRecord = new CalendarRecord(
+      this.profileForm.value.id,
+      this.profileForm.value.what,
+      parseInt(`${this.profileForm.value.day}`),
+      parseInt(`${this.profileForm.value.hour}`),
+      parseInt(`${this.profileForm.value.minute}`)
+    );
+
     this.calendarRepo.postCalendarRecord(parseInt(`${this.profileForm.value.year}`), parseInt(`${this.profileForm.value.month}`), record);
     this.closeAddOrUpdateEventForm();
   }

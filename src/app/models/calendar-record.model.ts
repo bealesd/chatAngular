@@ -3,13 +3,16 @@ export class CalendarRecord {
   what: string;
   day: number;
   hour: number;
-  minute: number
+  minute: number;
+  // month: number;
 
-  constructor(jsonImport: CalendarRecord) {
-    this.id = jsonImport.id;
-    this.what = jsonImport.what;
-    this.day = jsonImport.day;
-    this.hour = jsonImport.minute;
+  constructor(id, what, day, hour, minute) {
+    this.id = id;
+    this.what = what;
+    this.day = day;
+    this.hour = hour;
+    this.minute = minute;
+    // this.month = month;
   }
 
   get paddedHour(): string {

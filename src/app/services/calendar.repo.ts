@@ -1,3 +1,4 @@
+import { CalendarRecord } from './../models/calendar-record.model';
 import { CalendarRecordRest } from './../models/calendar-record-rest.model';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -76,10 +77,10 @@ export class CalendarRepo {
     );
   }
 
-  postCalendarRecord(year: number, month: number, record: { id: string, what: string, day: number, hour: number, minute: number }): void {
+  postCalendarRecord(year: number, month: number, record: CalendarRecord): void {
     const calendarRecords = this.calendarRecords.getValue();
 
-    let calendarRecordsForMonth;
+    let calendarRecordsForMonth: CalendarRecordRest;
     if (calendarRecords.hasOwnProperty(`${year}-${month}`))
       calendarRecordsForMonth = calendarRecords[`${year}-${month}`]
     else
@@ -90,7 +91,7 @@ export class CalendarRepo {
       calendarRecordsForMonth.records.forEach((r) => {
         if (r.id === record.id) {
           r.what = record.what;
-          r.month = month;
+          // r.month = month;
           r.day = record.day;
           r.hour = record.hour;
           r.minute = record.minute;
