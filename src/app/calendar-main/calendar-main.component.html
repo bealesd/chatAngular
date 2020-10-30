@@ -19,20 +19,26 @@
 
     <div class="today-button" (click)="calendarService.changeToToday()">Today</div>
 
-    <div class="title">
-        {{(width
-        < 600 ? calendarService.monthNamesShort[calendarService.zeroIndexedMonth] : calendarService.monthNames[calendarService.zeroIndexedMonth])}} {{calendarService.year}}</div>
-            <select (change)="updateCalendarView(calendarView.value)" #calendarView id="calendarView">
-    <option class='calendarView' *ngFor='let view of calendarViews' [value]="view"
-      [selected]="monthOrWeek === view.toLowerCase() ">
+
+    <select class="dropdown" (change)="updateMonth(title.value)" #title id="title">
+      <option *ngFor='let month of calendarService.monthNames; let i = index;' [value]="i"
+        [selected]="getSelectedMonth(month)">
+        {{(width < 800 ? calendarService.monthNamesShort[i]:month)}} {{calendarService.year}}
+      </option>
+    </select>
+
+
+    <select class="dropdown" (change)="updateCalendarView(calendarView.value)" #calendarView id="calendarView">
+    <option *ngFor='let view of calendarViews' [value]="view"
+      [selected]="monthOrWeek === view.toLowerCase()">
       {{view}}
     </option>
   </select>
 
-    </div>
+</div>
 
-    <app-calendar-month *ngIf="monthOrWeek === 'month'"></app-calendar-month>
-    <app-calendar-week *ngIf="monthOrWeek === 'week'"></app-calendar-week>
-    <app-calendar-day *ngIf="monthOrWeek === 'day'"></app-calendar-day>
+<app-calendar-month *ngIf="monthOrWeek === 'month'"></app-calendar-month>
+<app-calendar-week *ngIf="monthOrWeek === 'week'"></app-calendar-week>
+<app-calendar-day *ngIf="monthOrWeek === 'day'"></app-calendar-day>
 
-    <app-calendar-form></app-calendar-form>
+<app-calendar-form></app-calendar-form>

@@ -8,7 +8,7 @@
     --change-page-first-grid-column: 1/2;
     --change-page-last-grid-column: 2/3;
     --today-button-grid-column: 4/6;
-    --title-grid-column: 7/10;
+    --title-grid-column: 7/11;
     --calendar-view-grid-column: 12/13;
     --column-width: 50px;
     --column-view-width: 2*var(--column-width);
@@ -37,45 +37,44 @@
 }
 
 .changePageContainer button:first-of-type {
-    grid-row: 1;
     grid-column: var(--change-page-first-grid-column);
 }
 
 .changePageContainer button:last-of-type {
-    grid-row: 1;
     grid-column: var(--change-page-last-grid-column);
 }
 
 .today-button {
-    grid-row: 1;
     grid-column: var(--today-button-grid-column);
     font-size: var(--heading-font-size);
     font-weight: var(--heading-font-weight);
 }
 
-.title {
-    grid-row: 1;
+#title {
     grid-column: var(--title-grid-column);
 }
 
 #calendarView {
+    grid-column: var(--calendar-view-grid-column);
+}
+
+.dropdown {
     border: 0px;
     outline: 0;
     background-color: var(--mask-background-color);
     color: var(--record-text-and-heading-color);
     font: inherit;
-    grid-column: var(--calendar-view-grid-column);
     text-align: left;
     margin-right: 10px;
 }
 
-#calendarView>option {
+#dropdown>option {
     border: 0px;
     outline: 0;
     background-color: inherit;
 }
 
-#calendarView>option:hover {
+#dropdown>option:hover {
     border: 0px;
     outline: 0;
     background-color: red;
@@ -96,7 +95,7 @@
 }
 
 [class*="-button"],
-#calendarView {
+.dropdown {
     cursor: pointer;
 }
 
@@ -106,7 +105,7 @@
     border: none;
 }
 
-#calendarView:hover,
+.dropdown:hover,
 .green-button:hover,
 .today-button:hover {
     background-color: black;

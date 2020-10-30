@@ -110,8 +110,8 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
 
   checkEnableUndo() {
     return this.updatingEvent
-      && (this.profileForm.value.hour !== this.currentRecord.hour
-        || this.profileForm.value.minute !== this.currentRecord.minute
+      && (parseInt(`${this.profileForm.value.hour}`) !== parseInt(`${this.currentRecord.hour}`)
+        || parseInt(`${this.profileForm.value.minute}`) !== parseInt(`${this.currentRecord.minute}`)
         || this.profileForm.value.what !== this.currentRecord.what);
   }
 
@@ -130,9 +130,9 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
       what: '',
       hour: parseInt(dayData.hour ?? 0),
       minute: parseInt(dayData.minute ?? 0),
-      day: dayData.dayInMonthArrayIndex,
-      month: this.calendarService.zeroIndexedMonth,
-      year: this.calendarService.year,
+      day: parseInt(`${dayData.dayInMonthArrayIndex}`),
+      month: parseInt(`${this.calendarService.zeroIndexedMonth}`),
+      year: parseInt(`${this.calendarService.year}`),
       id: uuid()
     });
   }
@@ -143,11 +143,11 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
 
     this.currentRecord = {
       what: record.what,
-      hour: record.hour,
-      minute: record.minute,
-      day: record.day,
-      month: this.calendarService.zeroIndexedMonth,
-      year: this.calendarService.year,
+      hour: parseInt(`${record.hour}`),
+      minute: parseInt(`${record.minute}`),
+      day: parseInt(`${record.day}`),
+      month: parseInt(`${this.calendarService.zeroIndexedMonth}`),
+      year: parseInt(`${this.calendarService.year}`),
       id: record.id
     };
 
@@ -164,18 +164,18 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
   postEvent() {
     const record = {
       'what': this.profileForm.value.what,
-      'day': this.profileForm.value.day,
-      'hour': this.profileForm.value.hour,
-      'minute': this.profileForm.value.minute,
+      'day': parseInt(`${this.profileForm.value.day}`),
+      'hour': parseInt(`${this.profileForm.value.hour}`),
+      'minute': parseInt(`${this.profileForm.value.minute}`),
       'id': this.profileForm.value.id
     }
-    this.calendarRepo.postCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, record);
+    this.calendarRepo.postCalendarRecord(parseInt(`${this.profileForm.value.year}`), parseInt(`${this.profileForm.value.month}`), record);
     this.closeAddOrUpdateEventForm();
   }
 
   deleteEvent() {
     if (window.confirm(`Are you sure you want to delete this record?`)) {
-      this.calendarRepo.deleteCalendarRecord(this.profileForm.value.year, this.profileForm.value.month, this.profileForm.value.id);
+      this.calendarRepo.deleteCalendarRecord(parseInt(`${this.profileForm.value.year}`), parseInt(`${this.profileForm.value.month}`), this.profileForm.value.id);
       this.closeAddOrUpdateEventForm();
     }
   }

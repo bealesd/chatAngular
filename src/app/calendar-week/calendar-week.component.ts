@@ -106,7 +106,7 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
 
   getEmptyHoursByDay(calendarDay) {
     const records = this.calendarService.getRecordsByDay(calendarDay);
-    const emptyHours = this.hoursOfDay.filter(hour => !records.map(rec => parseInt(rec['hour'])).includes(hour));
+    const emptyHours = this.hoursOfDay.filter(hour => !records.map(rec => parseInt(`${rec.hour}`)).includes(hour));
     emptyHours.forEach((hour: string) => hour = this.calendarService.padToTwo(parseInt(hour)));
     return emptyHours;
   }

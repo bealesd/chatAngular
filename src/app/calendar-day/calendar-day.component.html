@@ -9,7 +9,7 @@
     <div class="date-box mask {{getBorderClass(calendarService.hourToInt(result.hour) + 2)}}" *ngFor="let result of dateTimeRecords; " (click)="openAddEventForm({'dayInMonthArrayIndex': result.day, 'hour': result.hour})" [style.gridRow]="calendarService.hourToInt(result.hour) + 2 "
         [attr.data-row]="calendarService.hourToInt(result.hour) + 2 " [attr.data-col]="2">
         <div class="record " (click)="openUpdateEventForm(record) " *ngFor="let record of result.records; ">
-            {{calendarService.padToTwo(record.hour)}}:{{calendarService.padToTwo(record.minute)}} - {{record.what}}
+            {{record.hour}}:{{calendarService.padToTwo(record.minute)}} - {{record.what}}
         </div>
     </div>
 

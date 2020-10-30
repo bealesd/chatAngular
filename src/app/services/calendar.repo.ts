@@ -1,3 +1,4 @@
+import { CalendarRecordRest } from './../models/calendar-record-rest.model';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -12,8 +13,8 @@ import { MessageService } from '../services/message.service';
 })
 export class CalendarRepo {
   private baseMessagesUrl = 'https://api.github.com/repos/bealesd/calendarStore/contents';
-  public calendarRecords = new BehaviorSubject<any>({});
-  
+  public calendarRecords: BehaviorSubject<{ [id: string] : CalendarRecordRest; }> = new BehaviorSubject<any>({});
+
   constructor(
     private cryptoService: CryptoService,
     private http: HttpClient,
@@ -39,7 +40,7 @@ export class CalendarRepo {
     return this.http.get<[]>(this.restHelper.removeUrlParams(getUrl), this.options());
   }
 
-  postCalendarRecordsRest(year, month, calendarRecords: any, sha): Observable<any> {
+  postCalendarRecordsRest(year: number, month: number, calendarRecords: any, sha: string): Observable<any> {
     const postUrl = `${this.baseMessagesUrl}/${year}-${month}.json`;
 
     const rawCommitBody = JSON.stringify({
@@ -51,9 +52,7 @@ export class CalendarRepo {
     return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.options());
   }
 
-
-
-  deleteCalendarRecord(year, month, id): void {
+  deleteCalendarRecord(year: number, month: number, id: string): void {
     this.messageService.add(`Deleting calendar record for ${year}-${month + 1}, ${id}.`);
     const calendarRecords = this.calendarRecords.getValue();
 
@@ -77,7 +76,7 @@ export class CalendarRepo {
     );
   }
 
-  postCalendarRecord(year, month, record): void {
+  postCalendarRecord(year: number, month: number, record: { id: string, what: string, day: number, hour: number, minute: number }): void {
     const calendarRecords = this.calendarRecords.getValue();
 
     let calendarRecordsForMonth;
@@ -91,7 +90,7 @@ export class CalendarRepo {
       calendarRecordsForMonth.records.forEach((r) => {
         if (r.id === record.id) {
           r.what = record.what;
-          r.month = record.month;
+          r.month = month;
           r.day = record.day;
           r.hour = record.hour;
           r.minute = record.minute;
@@ -119,9 +118,10 @@ export class CalendarRepo {
     );
   }
 
-  getCalendarRecords(year, month): void {
+  getCalendarRecords(year: number, month: number): void {
     this.messageService.add(`Getting calendar record for ${year}-${month + 1}.`);
     const calendarRecords = this.calendarRecords.getValue()
+    console.log(calendarRecords);
     this.getCalendarRecordsForMonthRest(year, month).subscribe(
       {
         next: (calendarRecord: any) => {
@@ -129,6 +129,7 @@ export class CalendarRepo {
             'sha': calendarRecord.sha,
             'records': JSON.parse(atob(atob(calendarRecord.content)))
           }
+
           this.calendarRecords.next(calendarRecords);
           this.messageService.add(` • Got ${(<any>Object.values(calendarRecords)[0]).records.length} calendar records.`);
         },

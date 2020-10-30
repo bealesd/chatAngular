@@ -1,7 +1,9 @@
 import { Injectable, OnDestroy, OnInit } from '@angular/core';
+import { stringToKeyValue } from '@angular/flex-layout/extended/typings/style/style-transforms';
 import { BehaviorSubject } from 'rxjs';
 
 import { CalendarRepo } from './calendar.repo'
+import { CalendarRecord } from '../models/calendar-record.model'
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +15,6 @@ export class CalendarService {
   public openUpdateEventForm = new BehaviorSubject<any>({});
   public openAddEventForm = new BehaviorSubject<any>({});
 
-
-
   get monthNames(): string[] {
     return Object.keys(this.monthsEnum);
   }
@@ -23,12 +23,12 @@ export class CalendarService {
     return Object.keys(this.monthsShortEnum);
   }
 
-  get daysInMonth() {
+  get daysInMonth(): number {
     // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
     return new Date(this.year, this.zeroIndexedMonth + 1, 0).getDate();
   }
 
-  get daysInMonthArray() {
+  get daysInMonthArray(): number[] {
     // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
     const days: number[] = [];
     for (let i = 1; i <= (this.daysInMonth); i++) days.push(i);
@@ -42,7 +42,7 @@ export class CalendarService {
   today: { year: number; month: number; week: number; day: number; };
   monthName: string;
 
-  records: [] = [];
+  records: CalendarRecord[] = [];
   daysEnum = {
     'Sun': 0,
     'Mon': 1,
@@ -109,43 +109,43 @@ export class CalendarService {
     this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'week': this.week.getValue(), 'day': this.day };
   }
 
-  get weeksInMonth() {
-    const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
-    const daysIntoWeek = firstOfMonth.getDay();
+  get weeksInMonth(): number {
+    const firstOfMonth: Date = new Date(this.year, this.zeroIndexedMonth, 1);
+    const daysIntoWeek: number = firstOfMonth.getDay();
     return Math.ceil((daysIntoWeek + this.daysInMonth) / 7);
   }
 
   get calendarDaysInWeek() {
-    let startDay;
-    let endDay;
-    let validDays = [];
+    let startDay: number;
+    let endDay: number;
+    let validDays: number[] = [];
     let emptyDays = [];
 
     const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
     const daysIntoFirstWeek = firstOfMonth.getDay();
-    let maxWeek = this.weeksInMonth;
+    let maxWeek: number = this.weeksInMonth;
 
     if (this.week.getValue() === 1) {
       startDay = 0;
       endDay = (7 - daysIntoFirstWeek);
       validDays = this.daysInMonthArray.slice(startDay, endDay);
 
-      let totalDaysInPreviousMonth = 7 - validDays.length;
-      let col = 1;
+      let totalDaysInPreviousMonth: number = 7 - validDays.length;
+      let col: number = 1;
       for (let daysIntoPreviousMonth = totalDaysInPreviousMonth - 1; daysIntoPreviousMonth >= 0; daysIntoPreviousMonth--) {
         const date = new Date(this.year, this.zeroIndexedMonth, -daysIntoPreviousMonth);
         emptyDays.push({ 'col': col++, 'name': this.weekdayNames[date.getDay()], 'dayInMonthArrayIndex': date.getDate() });
       }
     }
     else {
-      const unajustedStartDay = (this.week.getValue() - 1) * 7;
+      const unajustedStartDay: number = (this.week.getValue() - 1) * 7;
       startDay = unajustedStartDay - daysIntoFirstWeek;
       endDay = unajustedStartDay + (7 - daysIntoFirstWeek);
       validDays = this.daysInMonthArray.slice(startDay, endDay);
 
       if (this.week.getValue() === maxWeek) {
-        let totalDaysInNextMonth = 7 - validDays.length;
-        let lastDayOfMonth = this.daysInMonthArray.slice(-1)[0];
+        let totalDaysInNextMonth: number = 7 - validDays.length;
+        let lastDayOfMonth: number = this.daysInMonthArray.slice(-1)[0];
 
         for (let daysIntoNextMonth = 1; daysIntoNextMonth <= totalDaysInNextMonth; daysIntoNextMonth++) {
           const date = new Date(this.year, this.zeroIndexedMonth, lastDayOfMonth + daysIntoNextMonth);
@@ -153,34 +153,34 @@ export class CalendarService {
         }
       }
     }
-    return { 'valid': validDays, 'empty': emptyDays };
+    return { valid: validDays, empty: emptyDays };
   }
 
-  getDayName(dayNumber) {
+  getDayName(dayNumber: number): string {
     return Object.keys(this.daysEnum)[dayNumber];
   }
 
-  getRecordsByDay(day) {
+  getRecordsByDay(day: number): CalendarRecord[] {
     const records = this.records.filter(r => r['day'] === day);
     records.sort(this.compareByTime);
     return records;
   }
 
-  getDayNameShortForMonth(day) {
+  getDayNameShortForMonth(day: number): string {
     const date = new Date(this.year, this.zeroIndexedMonth, day);
     return this.getDayName(date.getDay());
   }
 
-  getDayNameLongForMonth(day) {
+  getDayNameLongForMonth(day: number): string {
     const date = new Date(this.year, this.zeroIndexedMonth, day);
     return this.getDayNameLong(date.getDay());
   }
 
-  getDayNameLong(dayNumber) {
+  getDayNameLong(dayNumber: number): string {
     return Object.keys(this.daysLongEnum)[dayNumber];
   }
 
-  changeDay(nextOrPrevious) {
+  changeDay(nextOrPrevious: string) {
     let maxDay = this.daysInMonthArray[this.daysInMonthArray.length - 1];
     if (nextOrPrevious === 'next') {
       if (++this.day > maxDay)
@@ -192,9 +192,9 @@ export class CalendarService {
     }
   }
 
-  changeWeek(nextOrPrevious) {
+  changeWeek(nextOrPrevious: string) {
     let maxWeek = this.weeksInMonth;
-    let week = this.week.getValue();
+    let week = parseInt(`${this.week.getValue()}`);
     if (nextOrPrevious === 'next') {
       this.week.next(++week);
       if (week > maxWeek)
@@ -207,8 +207,8 @@ export class CalendarService {
     }
   }
 
-  changeMonth(nextOrPrevious) {
-    let zeroIndexedMonth = this.zeroIndexedMonth;
+  changeMonth(nextOrPrevious: string) {
+    let zeroIndexedMonth = parseInt(`${this.zeroIndexedMonth}`);
     let oneIndexedMonth = this.zeroIndexedMonth + 1;
 
     let tempDate = new Date(`${this.year} ${oneIndexedMonth}`);
@@ -234,11 +234,17 @@ export class CalendarService {
     this.closeAddOrUpdateEventForm.next(true);
   }
 
+  updateMonthRecords() {
+    this.calendarRepo.calendarRecords.next({});
+    this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
+  }
+
   changeToToday() {
     this.year = this.today.year;
     this.zeroIndexedMonth = this.today.month;
     this.week.next(this.today.week);
     this.day = this.today.day;
+    this.calendarRepo.calendarRecords.next({});
     this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
   }
 
@@ -276,7 +282,7 @@ export class CalendarService {
     return value <= 99 ? `0${value}`.slice(-2) : `${value}`;
   }
 
-  public addOridnalIndictor(day) {
+  public addOridnalIndictor(day: number): string {
     const j = day % 10;
     const k = day % 100;
     let oridnalIndictor;
@@ -291,7 +297,7 @@ export class CalendarService {
     return oridnalIndictor;
   }
 
-  public hourToInt(hour) {
+  public hourToInt(hour: string): number {
     return parseInt(hour);
   }
 }

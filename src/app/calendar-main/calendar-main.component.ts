@@ -41,7 +41,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
         this.monthOrWeek = 'month';
       });
 
-    this.calendarRepo.getCalendarRecords(this.calendarService.year, this.calendarService.zeroIndexedMonth);
+    this.calendarRepo.getCalendarRecords(parseInt(`${this.calendarService.year}`), parseInt(`${this.calendarService.zeroIndexedMonth}`));
   }
 
   ngOnDestroy() {
@@ -55,5 +55,18 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
       this.monthOrWeek = value.toLowerCase();
     else
       console.error(`Invalid calendar view selected in dropdown: '${value}'.`);
+  }
+
+  updateMonth(value: number) {
+    this.calendarService.zeroIndexedMonth = parseInt(`${value}`);
+    this.calendarService.updateMonthRecords();
+  }
+
+  getSelectedMonth(month: string) {
+    if(this.calendarService.monthNames[parseInt(`${this.calendarService.zeroIndexedMonth}`)].toLowerCase() === month.toLowerCase()){
+      console.log(`selected ${month}`);
+      return true;
+    }
+
   }
 }
