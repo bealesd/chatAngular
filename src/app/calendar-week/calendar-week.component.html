@@ -10,24 +10,24 @@
         <sup>{{calendarService.addOridnalIndictor(dayData.dayInMonthArrayIndex)}}</sup>
     </div>
 
-    <div class="date-box mask" *ngFor="let result of dateTimeRecords; " (click)="openAddEventForm({'dayInMonthArrayIndex': result.day, 'hour': result.hour})" [style.gridRow]="calendarService.hourToInt(result.hour) + 2 " [attr.data-row]="calendarService.hourToInt(result.hour) + 2 " [style.gridColumn]="calendarService.hourToInt(result.col) + 1 "
-        [attr.data-col]="calendarService.hourToInt(result.col) + 1 ">
+    <div class="date-box mask" *ngFor="let result of dateTimeRecords; " (click)="openAddEventForm({'dayInMonthArrayIndex': result.day, 'hour': result.hour})" [style.gridRow]="result.hour + 2 " [attr.data-row]="result.hour + 2 " [style.gridColumn]="result.col + 1 "
+        [attr.data-col]="result.col + 1 ">
         <div class="record " (click)="openUpdateEventForm(record) " *ngFor="let record of result.records; ">
             {{ record.what }}
         </div>
     </div>
 
-    <div class="date-box empty mask" *ngFor="let result of dateTimeEmptyRecords; " (click)="openAddEventForm({'dayInMonthArrayIndex': result.day, 'hour': result.hour})" [style.gridRow]="calendarService.hourToInt(result.hour) + 2 " [attr.data-row]="calendarService.hourToInt(result.hour) + 2 "
-        [style.gridColumn]="calendarService.hourToInt(result.col) + 1 " [attr.data-col]="calendarService.hourToInt(result.col) + 1 ">
+    <div class="date-box empty mask" *ngFor="let result of dateTimeEmptyRecords; " (click)="openAddEventForm({'dayInMonthArrayIndex': result.day, 'hour': result.hour})" [style.gridRow]="result.hour + 2 " [attr.data-row]="result.hour + 2 "
+        [style.gridColumn]="result.col + 1 " [attr.data-col]="result.col + 1 ">
     </div>
 
-    <div class="date-box invalid" *ngFor="let result of dateTimeInvalidEmptyRecords; " [style.gridRow]="calendarService.hourToInt(result.hour) + 2 " [attr.data-row]="calendarService.hourToInt(result.hour) + 2 " [style.gridColumn]="calendarService.hourToInt(result.col) + 1 " [attr.data-col]="calendarService.hourToInt(result.col) + 1 ">
+    <div class="date-box invalid" *ngFor="let result of dateTimeInvalidEmptyRecords; " [style.gridRow]="result.hour + 2 " [attr.data-row]="result.hour + 2 " [style.gridColumn]="result.col + 1 " [attr.data-col]="result.col + 1 ">
     </div>
 
-    <div class="date-box " *ngFor="let hour of hoursOfDay; " [style.gridRow]="calendarService.hourToInt(hour) + 2 " [attr.data-row]="calendarService.hourToInt(hour) + 2 " [style.gridColumn]="1 " [attr.data-col]="1 ">
+    <div class="date-box " *ngFor="let hour of calendarService.records.hoursOfDay; " [style.gridRow]="hour.value + 2 " [attr.data-row]="hour.value + 2 " [style.gridColumn]="1 " [attr.data-col]="1 ">
 
         <div class="time-div ">
-            <div>{{calendarService.padToTwo(hour)}}</div>
+            <div>{{hour.toString()}}</div>
         </div>
 
     </div>

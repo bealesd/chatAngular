@@ -7,6 +7,7 @@ import * as uuid from 'uuid';
 import { CalendarRepo } from './../services/calendar.repo';
 import { MenuService } from '../services/menu.service';
 import { CalendarService } from '../services/calendar.service';
+import { CalendarRecordRest } from '../models/calendar-record-rest.model';
 
 @Component({
   selector: 'app-calendar-form',
@@ -66,7 +67,7 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.calendarRepo.calendarRecords.next({});
+    this.calendarRepo.calendarRecordRest.next(new CalendarRecordRest());
     this.calendarService.closeAddOrUpdateEventForm.next(false);
     this.calendarService.openUpdateEventForm.next({});
     this.calendarService.openAddEventForm.next({});
@@ -90,8 +91,8 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
 
-    this.calendarRepo.calendarRecords.observers.forEach(element => { element.complete(); });
-    this.calendarRepo.calendarRecords.next({});
+    this.calendarRepo.calendarRecordRest.observers.forEach(element => { element.complete(); });
+    this.calendarRepo.calendarRecordRest.next(new CalendarRecordRest());
 
     this.calendarService.closeAddOrUpdateEventForm.observers.forEach(element => { element.complete(); });
     this.calendarService.closeAddOrUpdateEventForm.next(false);
@@ -171,13 +172,13 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
       parseInt(`${this.profileForm.value.minute}`)
     );
 
-    this.calendarRepo.postCalendarRecord(parseInt(`${this.profileForm.value.year}`), parseInt(`${this.profileForm.value.month}`), record);
+    this.calendarRepo.postCalendarRecord(record);
     this.closeAddOrUpdateEventForm();
   }
 
   deleteEvent() {
     if (window.confirm(`Are you sure you want to delete this record?`)) {
-      this.calendarRepo.deleteCalendarRecord(parseInt(`${this.profileForm.value.year}`), parseInt(`${this.profileForm.value.month}`), this.profileForm.value.id);
+      this.calendarRepo.deleteCalendarRecord(this.profileForm.value.id);
       this.closeAddOrUpdateEventForm();
     }
   }

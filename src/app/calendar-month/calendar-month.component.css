@@ -8,6 +8,7 @@
     --record-minimum-height: 150px;
     --record-font-family: inherit;
     --record-max-width: 250px;
+    --record-text-and-heading-color: white;
     --record-border-type: solid;
     --record-border-thickness: 2px;
     --record-border-red-color: rgb(255, 53, 94);

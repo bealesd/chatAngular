@@ -58,15 +58,20 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   }
 
   updateMonth(value: number) {
-    this.calendarService.zeroIndexedMonth = parseInt(`${value}`);
-    this.calendarService.updateMonthRecords();
+    this.calendarService.zeroIndexedMonth = value;
+    this.calendarService.updateRecords();
+  }
+
+  updateYear(value: number) {
+    this.calendarService.year = value;
+    this.calendarService.updateRecords();
   }
 
   getSelectedMonth(month: string) {
-    if(this.calendarService.monthNames[parseInt(`${this.calendarService.zeroIndexedMonth}`)].toLowerCase() === month.toLowerCase()){
-      console.log(`selected ${month}`);
-      return true;
-    }
+    return this.calendarService.monthNames[parseInt(`${this.calendarService.zeroIndexedMonth}`)].toLowerCase() === month.toLowerCase();
+  }
 
+  getSelectedYear(year: number) {
+    return this.calendarService.year === year;
   }
 }

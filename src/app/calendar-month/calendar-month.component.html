@@ -18,10 +18,10 @@
 
         <div class="day" (click)="openAddEventForm(dayData)">{{dayData.dayInMonthArrayIndex}}<sup>{{calendarService.addOridnalIndictor(dayData.dayInMonthArrayIndex)}}</sup></div>
 
-        <div class="table" *ngFor="let record of calendarService.getRecordsByDay(dayData.dayInMonthArrayIndex);">
+        <div class="table" *ngFor="let record of calendarService.records.getRecordsByDay(dayData.dayInMonthArrayIndex);">
 
             <div class="record" (click)="openUpdateEventForm(record)">
-                <div class="record-time">{{calendarService.padToTwo(record.hour)}}:{{calendarService.padToTwo(record.minute)}} - </div>{{record.what}}
+                <div class="record-time">{{calendarService.records.padToTwo(record.hour)}}:{{calendarService.records.padToTwo(record.minute)}} -</div> {{record.what}}
             </div>
 
         </div>

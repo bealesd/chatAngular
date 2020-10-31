@@ -11,7 +11,7 @@
     --record-font-size: 24px;
     --record-minimum-height: 800px;
     --record-font-family: inherit;
-    --record-text-color: rgb(169, 211, 242);
+    --record-text-color: white;
     --record-background-color: rgba(0, 120, 212, 0.24);
     --record-max-width: 400px;
     --record-border-type: solid;

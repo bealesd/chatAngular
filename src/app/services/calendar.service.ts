@@ -1,19 +1,27 @@
-import { Injectable, OnDestroy, OnInit } from '@angular/core';
-import { stringToKeyValue } from '@angular/flex-layout/extended/typings/style/style-transforms';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, interval, Subscription } from 'rxjs';
 
 import { CalendarRepo } from './calendar.repo'
-import { CalendarRecord } from '../models/calendar-record.model'
+import { CalendarRecordRest } from '../models/calendar-record-rest.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CalendarService {
+export class CalendarService implements OnDestroy {
+  public subscriptions: Subscription[] = [];
+
   public calendarRecords = new BehaviorSubject<any>({});
 
   public closeAddOrUpdateEventForm = new BehaviorSubject<boolean>(true);
   public openUpdateEventForm = new BehaviorSubject<any>({});
   public openAddEventForm = new BehaviorSubject<any>({});
+
+  get years() {
+
+    const years: number[] = [];
+    for (let i = this.today.year - 5; i <= this.today.year + 10; i++) years.push(i);
+    return years;
+  }
 
   get monthNames(): string[] {
     return Object.keys(this.monthsEnum);
@@ -42,7 +50,7 @@ export class CalendarService {
   today: { year: number; month: number; week: number; day: number; };
   monthName: string;
 
-  records: CalendarRecord[] = [];
+  records: CalendarRecordRest = new CalendarRecordRest();
   daysEnum = {
     'Sun': 0,
     'Mon': 1,
@@ -107,6 +115,18 @@ export class CalendarService {
     this.day = date.getDate();
 
     this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'week': this.week.getValue(), 'day': this.day };
+
+    this.records.month = this.zeroIndexedMonth;
+    this.records.year = this.year;
+
+    this.subscriptions.push(interval(1000 * 60 * 5).subscribe(() => {
+      this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'week': this.week.getValue(), 'day': this.day };
+    }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach((subscription) => { subscription.unsubscribe(); });
+    this.subscriptions = [];
   }
 
   get weeksInMonth(): number {
@@ -158,12 +178,6 @@ export class CalendarService {
 
   getDayName(dayNumber: number): string {
     return Object.keys(this.daysEnum)[dayNumber];
-  }
-
-  getRecordsByDay(day: number): CalendarRecord[] {
-    const records = this.records.filter(r => r['day'] === day);
-    records.sort(this.compareByTime);
-    return records;
   }
 
   getDayNameShortForMonth(day: number): string {
@@ -228,14 +242,14 @@ export class CalendarService {
       this.day = this.daysInMonth;
     }
 
-    this.calendarRepo.calendarRecords.next({});
+    this.calendarRepo.calendarRecordRest.next(new CalendarRecordRest());
     this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
 
     this.closeAddOrUpdateEventForm.next(true);
   }
 
-  updateMonthRecords() {
-    this.calendarRepo.calendarRecords.next({});
+  updateRecords() {
+    this.calendarRepo.calendarRecordRest.next(new CalendarRecordRest());
     this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
   }
 
@@ -244,42 +258,25 @@ export class CalendarService {
     this.zeroIndexedMonth = this.today.month;
     this.week.next(this.today.week);
     this.day = this.today.day;
-    this.calendarRepo.calendarRecords.next({});
+    this.calendarRepo.calendarRecordRest.next(new CalendarRecordRest());
     this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
   }
 
   subscribeToCalendarRecords() {
-    this.calendarRepo.calendarRecords.subscribe(calendarRecords => {
-      if (calendarRecords.hasOwnProperty(`${this.year}-${this.zeroIndexedMonth}`))
-        this.records = calendarRecords[`${this.year}-${this.zeroIndexedMonth}`].records;
-      else
-        this.records = [];
+    this.calendarRepo.calendarRecordRest.subscribe(calendarRecords => {
+      this.records = calendarRecords;
     });
   }
 
   removeSubscriptions() {
-    this.calendarRepo.calendarRecords.observers.forEach(element => { element.complete(); });
-    this.calendarRepo.calendarRecords.next({});
+    this.calendarRepo.calendarRecordRest.observers.forEach(element => { element.complete(); });
+    this.calendarRepo.calendarRecordRest.next(new CalendarRecordRest());
   }
 
   resetSubsciptions() {
     this.removeSubscriptions();
     this.subscribeToCalendarRecords();
     this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
-  }
-
-  private compareByTime(a, b) {
-    const is_hour_a_before_b = a.hour < b.hour ? true : (a.hour === b.hour ? null : false);
-    const is_minute_a_before_b = a.minute < b.minute ? true : (a.minute === b.minute ? null : false);
-
-    const is_a_before_b = is_hour_a_before_b || (is_hour_a_before_b === null && is_minute_a_before_b);
-    const is_a_same_as_b = is_hour_a_before_b === null && is_minute_a_before_b === null;
-
-    return is_a_before_b ? -1 : (is_a_same_as_b ? 1 : 0);
-  }
-
-  public padToTwo(value: number): string {
-    return value <= 99 ? `0${value}`.slice(-2) : `${value}`;
   }
 
   public addOridnalIndictor(day: number): string {
@@ -295,9 +292,5 @@ export class CalendarService {
     else
       oridnalIndictor = "th";
     return oridnalIndictor;
-  }
-
-  public hourToInt(hour: string): number {
-    return parseInt(hour);
   }
 }

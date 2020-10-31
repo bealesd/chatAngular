@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-import { GitHubMetaData } from './../gitHubMetaData';
-
 import { MessageService } from '../services/message.service';
 import { ChatRepo } from '../services/chat.repo';
 

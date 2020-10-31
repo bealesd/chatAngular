@@ -1,10 +1,29 @@
 export class CalendarRecord {
   id: string;
   what: string;
-  day: number;
-  hour: number;
-  minute: number;
-  // month: number;
+
+  private _hour: number;
+  get hour() { return this._hour; }
+  set hour(hour: number) { this._hour = parseInt(`${hour}`); }
+
+  private _minute: number;
+  get minute() { return this._minute; }
+  set minute(minute: number) { this._minute = parseInt(`${minute}`); }
+
+  private _day: number;
+  get day() { return this._day; }
+  set day(day: number) { this._day = parseInt(`${day}`); }
+
+  toJsonString(): string {
+    let json = JSON.stringify(this);
+
+    const keysToUpdate = Object.keys(this).filter(key => key[0] === "_");
+    keysToUpdate.forEach(key => {
+      json = json.replace(key, key.substring(1));
+    });
+    
+    return json;
+  }
 
   constructor(id, what, day, hour, minute) {
     this.id = id;
@@ -12,7 +31,6 @@ export class CalendarRecord {
     this.day = day;
     this.hour = hour;
     this.minute = minute;
-    // this.month = month;
   }
 
   get paddedHour(): string {

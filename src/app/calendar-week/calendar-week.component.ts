@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy} from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { LoginHelper } from '../helpers/login-helper';
 import { MenuService } from '../services/menu.service';
 import { CalendarService } from '../services/calendar.service';
+import { CalendarRecord } from '../models/calendar-record.model';
 
 @Component({
   selector: 'app-calendar-week',
@@ -27,12 +28,12 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
     return dayData;
   }
 
-  get dateTimeRecords() {
-    let allRecordsGroupedByHour = [];
-    let validDays = this.dayDataForWeek.valid;
-    for (const validDay of validDays) {
-      for (const groupedRecord of this.getCalendardRecordHourGroupsByDay(validDay.dayInMonthArrayIndex)) {
-        let recordsGroupedByHour = {
+  get dateTimeRecords(): { hour: number; day: number; records: CalendarRecord[]; col: number; }[] {
+    const allRecordsGroupedByHour: { hour: number, day: number, records: CalendarRecord[], col: number }[] = [];
+    const validDays = this.dayDataForWeek.valid;
+    for (let validDay of validDays) {
+      for (let groupedRecord of this.calendarService.records.getCalendardRecordHourGroupsByDay(validDay.dayInMonthArrayIndex)) {
+        const recordsGroupedByHour = {
           'hour': groupedRecord.hour,
           'day': validDay.dayInMonthArrayIndex,
           'records': groupedRecord.records,
@@ -44,15 +45,15 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
     return allRecordsGroupedByHour;
   }
 
-  get dateTimeEmptyRecords() {
-    let emptyHoursData = [];
-    let validDays = this.dayDataForWeek.valid;
-    for (const validDay of validDays) {
-      for (const emptyHour of this.getEmptyHoursByDay(validDay.dayInMonthArrayIndex)) {
-        let empytHourData = {
-          'hour': emptyHour,
-          'day': validDay.dayInMonthArrayIndex,
-          'col': validDay.gridCol
+  get dateTimeEmptyRecords(): { hour: number, day: number, col: number }[] {
+    const emptyHoursData: { hour: number, day: number, col: number }[] = [];
+    const validDays = this.dayDataForWeek.valid;
+    for (let validDay of validDays) {
+      for (let emptyHour of this.calendarService.records.getEmptyHoursByDay(validDay.dayInMonthArrayIndex)) {
+        const empytHourData = {
+          hour: parseInt(emptyHour.value),
+          day: validDay.dayInMonthArrayIndex,
+          col: validDay.gridCol
         }
         emptyHoursData.push(empytHourData);
       }
@@ -61,12 +62,12 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
   }
 
   get dateTimeInvalidEmptyRecords() {
-    let emptyHoursData = [];
-    let invalidDays = this.dayDataForWeek.invalid;
-    for (const validDay of invalidDays) {
-      for (const emptyHour of this.hoursOfDay) {
-        let empytHourData = {
-          'hour': emptyHour,
+    const emptyHoursData = [];
+    const invalidDays = this.dayDataForWeek.invalid;
+    for (let validDay of invalidDays) {
+      for (let emptyHour of this.calendarService.records.hoursOfDay) {
+        const empytHourData = {
+          'hour': emptyHour.value,
           'day': validDay.dayInMonthArrayIndex,
           'col': validDay.gridCol
         }
@@ -74,14 +75,6 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
       }
     }
     return emptyHoursData;
-  }
-
-  get hoursOfDay() {
-    const hours = [];
-    for (let i = 0; i < 24; i++) {
-      hours.push(i)
-    }
-    return hours;
   }
 
   constructor(
@@ -102,39 +95,6 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
     this.calendarService.openUpdateEventForm.next({ 'record': {}, 'open': false });
     this.calendarService.openAddEventForm.next({ 'dayData': {}, 'open': false });
   }
-
-
-  getEmptyHoursByDay(calendarDay) {
-    const records = this.calendarService.getRecordsByDay(calendarDay);
-    const emptyHours = this.hoursOfDay.filter(hour => !records.map(rec => parseInt(`${rec.hour}`)).includes(hour));
-    emptyHours.forEach((hour: string) => hour = this.calendarService.padToTwo(parseInt(hour)));
-    return emptyHours;
-  }
-
-  getCalendardRecordHourGroupsByDay(calendarDay) {
-    const records = this.calendarService.getRecordsByDay(calendarDay);
-
-    records.forEach((record: any) => record.hour = this.calendarService.padToTwo(record.hour));
-    let grouped = this.groupBy(records, 'hour');
-
-    let allGroupedRecords = [];
-    for (let i = 0; i < Object.keys(grouped).length; i++) {
-      const hour = Object.keys(grouped)[i];
-      allGroupedRecords.push({
-        'hour': hour,
-        'records': grouped[hour]
-      });
-    }
-
-    return allGroupedRecords;
-  }
-
-  groupBy(xs, key) {
-    return xs.reduce(function (rv, x) {
-      (rv[x[key]] = rv[x[key]] || []).push(x);
-      return rv;
-    }, {});
-  };
 
   openUpdateEventForm(record) {
     this.calendarService.openUpdateEventForm.next({ 'record': record, 'open': true });

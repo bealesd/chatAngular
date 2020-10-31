@@ -14,7 +14,7 @@ import { MessageService } from '../services/message.service';
 })
 export class CalendarRepo {
   private baseMessagesUrl = 'https://api.github.com/repos/bealesd/calendarStore/contents';
-  public calendarRecords: BehaviorSubject<{ [id: string] : CalendarRecordRest; }> = new BehaviorSubject<any>({});
+  public calendarRecordRest: BehaviorSubject<CalendarRecordRest> = new BehaviorSubject<CalendarRecordRest>(new CalendarRecordRest());
 
   constructor(
     private cryptoService: CryptoService,
@@ -41,57 +41,49 @@ export class CalendarRepo {
     return this.http.get<[]>(this.restHelper.removeUrlParams(getUrl), this.options());
   }
 
-  postCalendarRecordsRest(year: number, month: number, calendarRecords: any, sha: string): Observable<any> {
-    const postUrl = `${this.baseMessagesUrl}/${year}-${month}.json`;
+  postCalendarRecordsRest(calendarRecords: CalendarRecordRest): Observable<any> {
+    const postUrl = `${this.baseMessagesUrl}/${calendarRecords.year}-${calendarRecords.month}.json`;
 
     const rawCommitBody = JSON.stringify({
       "message": `Api commit by calendar record wesbite at ${new Date().toLocaleString()}`,
-      "content": btoa(btoa(JSON.stringify(calendarRecords))),
-      'sha': sha
+      "content": btoa(btoa(calendarRecords.toJsonString())),
+      'sha': calendarRecords.sha
     });
 
     return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.options());
   }
 
-  deleteCalendarRecord(year: number, month: number, id: string): void {
-    this.messageService.add(`Deleting calendar record for ${year}-${month + 1}, ${id}.`);
-    const calendarRecords = this.calendarRecords.getValue();
+  deleteCalendarRecord(id: string): void {
+    const calendarRecords = this.calendarRecordRest.getValue();
+    this.messageService.add(`Deleting calendar record for ${calendarRecords.year}-${calendarRecords.month + 1}, ${id}.`);
 
-    let calendarRecordsForMonth = calendarRecords[`${year}-${month}`]
-    calendarRecordsForMonth.records = calendarRecordsForMonth.records.filter(r => r.id !== id);
+    const recordsToKeep = calendarRecords.records.filter(r => r.id !== id);
+    const deepCopyRecords = JSON.parse(JSON.stringify(recordsToKeep));
+    calendarRecords.records = recordsToKeep;
 
-    this.postCalendarRecordsRest(year, month, calendarRecordsForMonth.records, calendarRecordsForMonth.sha).subscribe(
+    this.postCalendarRecordsRest(calendarRecords).subscribe(
       {
-        next: (calendarRecordsResult: any[]) => {
-          this.messageService.add(` • Deleted calendar record for ${year}-${month + 1}, ${id}.`);
-          const sha = (<any>calendarRecordsResult).content.sha;
-          calendarRecordsForMonth.sha = sha;
-
-          this.calendarRecords.next(calendarRecords);
-
+        next: (calendarRecordsResult) => {
+          calendarRecords.sha = (<any>calendarRecordsResult).content.sha;
+          this.messageService.add(` • Deleted calendar record for ${calendarRecords.year}-${calendarRecords.month + 1}, ${id}.`);
+          this.calendarRecordRest.next(calendarRecords);
         },
         error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, `deleting calendar record for ${year}-${month + 1}, ${id}.`);
+          this.restHelper.errorMessageHandler(err, `deleting calendar record for ${calendarRecords.year}-${calendarRecords.month + 1}, ${id}.`);
+          calendarRecords.records = deepCopyRecords;
         }
       }
     );
   }
 
-  postCalendarRecord(year: number, month: number, record: CalendarRecord): void {
-    const calendarRecords = this.calendarRecords.getValue();
+  postCalendarRecord(record: CalendarRecord): void {
+    const calendarRecords = this.calendarRecordRest.getValue();
 
-    let calendarRecordsForMonth: CalendarRecordRest;
-    if (calendarRecords.hasOwnProperty(`${year}-${month}`))
-      calendarRecordsForMonth = calendarRecords[`${year}-${month}`]
-    else
-      calendarRecordsForMonth = { 'records': [], 'sha': '' };
-
-    const isUpdate = calendarRecordsForMonth.records.find(r => r.id === record.id) !== undefined;
+    const isUpdate = calendarRecords.records.find(r => r.id === record.id) !== undefined;
     if (isUpdate) {
-      calendarRecordsForMonth.records.forEach((r) => {
+      calendarRecords.records.forEach((r) => {
         if (r.id === record.id) {
           r.what = record.what;
-          // r.month = month;
           r.day = record.day;
           r.hour = record.hour;
           r.minute = record.minute;
@@ -99,21 +91,19 @@ export class CalendarRepo {
       });
     }
     else
-      calendarRecordsForMonth.records.push(record);
+      calendarRecords.records.push(record);
 
-    this.messageService.add(`Posting calendar record for ${year}-${month + 1}.`);
-    this.postCalendarRecordsRest(year, month, calendarRecordsForMonth.records, calendarRecordsForMonth.sha).subscribe(
+    this.messageService.add(`Posting calendar record for ${calendarRecords.year}-${calendarRecords.month + 1}.`);
+    this.postCalendarRecordsRest(calendarRecords).subscribe(
       {
         next: (calendarRecordsResult: any[]) => {
-          const sha = (<any>calendarRecordsResult).content.sha;
-          calendarRecordsForMonth.sha = sha;
+          calendarRecords.sha = (<any>calendarRecordsResult).content.sha;
 
-          this.messageService.add(` • Posted calendar record for ${year}-${month + 1}.`);
-          this.calendarRecords.next(calendarRecords);
-
+          this.messageService.add(` • Posted calendar record for ${calendarRecords.year}-${calendarRecords.month + 1}.`);
+          this.calendarRecordRest.next(calendarRecords);
         },
         error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, `posting calendar records for ${year}-${month + 1}. Record: ${JSON.stringify(record)}.`);
+          this.restHelper.errorMessageHandler(err, `posting calendar records for ${calendarRecords.year}-${calendarRecords.month + 1}. Record: ${JSON.stringify(record)}.`);
         }
       }
     );
@@ -121,24 +111,26 @@ export class CalendarRepo {
 
   getCalendarRecords(year: number, month: number): void {
     this.messageService.add(`Getting calendar record for ${year}-${month + 1}.`);
-    const calendarRecords = this.calendarRecords.getValue()
-    console.log(calendarRecords);
+    const calendarRecords = this.calendarRecordRest.getValue();
+    calendarRecords.year = year;
+    calendarRecords.month = month;
+
     this.getCalendarRecordsForMonthRest(year, month).subscribe(
       {
-        next: (calendarRecord: any) => {
-          calendarRecords[`${year}-${month}`] = {
-            'sha': calendarRecord.sha,
-            'records': JSON.parse(atob(atob(calendarRecord.content)))
-          }
+        next: (calendarRecordGitHub: any) => {
+          JSON.parse(atob(atob(calendarRecordGitHub.content))).forEach(rec => {;
+              calendarRecords.records.push(new CalendarRecord(rec.id, rec.what, rec.day, rec.hour, rec.minute));
+          });
+          calendarRecords.sha = calendarRecordGitHub.sha;
 
-          this.calendarRecords.next(calendarRecords);
-          this.messageService.add(` • Got ${(<any>Object.values(calendarRecords)[0]).records.length} calendar records.`);
+          this.calendarRecordRest.next(calendarRecords);
+          this.messageService.add(` • Got ${calendarRecords.records.length} calendar records.`);
         },
         error: (err: any) => {
           this.restHelper.errorMessageHandler(err, 'getting calendar records');
 
-          calendarRecords[`${year}-${month}`] = { 'records': [], 'sha': '' };
-          this.calendarRecords.next(calendarRecords);
+          calendarRecords.records = [];
+          this.calendarRecordRest.next(calendarRecords);
         }
       }
     );

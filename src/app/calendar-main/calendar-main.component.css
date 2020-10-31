@@ -8,11 +8,12 @@
     --change-page-first-grid-column: 1/2;
     --change-page-last-grid-column: 2/3;
     --today-button-grid-column: 4/6;
-    --title-grid-column: 7/11;
-    --calendar-view-grid-column: 12/13;
+    --title-grid-column: 7/10;
+    --year-grid-column: 10/12;
+    --calendar-view-grid-column: 14/15;
     --column-width: 50px;
     --column-view-width: 2*var(--column-width);
-    --column-count: 10;
+    --column-count: 12;
     --change-page-container-template-columns: repeat(var(--column-count), var(--column-width)) calc(100% - (var(--column-view-width) + (var(--column-count)*var(--column-width)))) auto;
 }
 
@@ -23,7 +24,8 @@
      :host {
         --column-count: 7;
         --today-button-grid-column: 3/5;
-        --title-grid-column: 5/8;
+        --title-grid-column: 5/7;
+        --year-grid-column: 7/9;
         --calendar-view-grid-column: 9/10;
     }
 }
@@ -52,6 +54,10 @@
 
 #title {
     grid-column: var(--title-grid-column);
+}
+
+#titleYear {
+    grid-column: var(--year-grid-column);
 }
 
 #calendarView {
