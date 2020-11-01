@@ -1,0 +1,100 @@
+{
+  "configVersion": 1,
+  "timestamp": 1604241288792,
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/favicon.ico",
+        "/index.html",
+        "/main.377e6b0d4ba9776a0bf5.js",
+        "/manifest.webmanifest",
+        "/polyfills.90a1af69ea786e34948d.js",
+        "/runtime.0824cc72a1281011b185.js",
+        "/styles.c867fa49f8d2b2876d7d.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/assets/calendar.png",
+        "/assets/calendar.svg",
+        "/assets/chat.png",
+        "/assets/chat.svg",
+        "/assets/icons/icon-128x128.png",
+        "/assets/icons/icon-144x144.png",
+        "/assets/icons/icon-152x152.png",
+        "/assets/icons/icon-192x192.png",
+        "/assets/icons/icon-384x384.png",
+        "/assets/icons/icon-512x512.png",
+        "/assets/icons/icon-72x72.png",
+        "/assets/icons/icon-96x96.png",
+        "/assets/ringOnBlack.jpg",
+        "/assets/spaceRed.jpg",
+        "/assets/todo.png",
+        "/assets/todo.svg",
+        "/ringOnBlack.d984cbf79e45cf4b65b3.jpg",
+        "/spaceRed.5cef890584a51d7e2d04.jpg"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "/assets/calendar.png": "360534bd71727f6ed533dc0767b7ef69a8c52b1d",
+    "/assets/calendar.svg": "41c362718c14bd3ac59605771699445705a368ec",
+    "/assets/chat.png": "d7156cb3a028eeabe217cd0d4880bb7d19db3227",
+    "/assets/chat.svg": "8d7b01f3b560a7439c3add4c0d3bee565e58645f",
+    "/assets/icons/icon-128x128.png": "016d6913c44f84182ba469930a352315f93da94b",
+    "/assets/icons/icon-144x144.png": "17a26efdfa3fbd75430dd88750ba70b1563f4fef",
+    "/assets/icons/icon-152x152.png": "4b51c1f2d7ebc068a4e9b5de911c51a09e0180e7",
+    "/assets/icons/icon-192x192.png": "aaa21e4d857806ea53724039306f08521cb60c28",
+    "/assets/icons/icon-384x384.png": "263c819de5031ac5f21981e5d69e4848a17c7f44",
+    "/assets/icons/icon-512x512.png": "4568ae32ddac7e7fb4e3a3e3fc7dae7a251daaad",
+    "/assets/icons/icon-72x72.png": "1af143f25dba0c39feb46325dff0ce6dc2e9913e",
+    "/assets/icons/icon-96x96.png": "e382ea8ee7e81d28da9b775023f3d9743facb1e1",
+    "/assets/ringOnBlack.jpg": "fbe290a89855ca59ffab843058b45f53107afd98",
+    "/assets/spaceRed.jpg": "474538b6ec2d7906c035531100c2de72bcf6d4d8",
+    "/assets/todo.png": "f2890a9ac8ee4d81b37ff7199b0c8861b77fc118",
+    "/assets/todo.svg": "558d7543708220d254a9c8dc33af7f6341f47f86",
+    "/favicon.ico": "fcbcf16ac9d543f785ec36346161838334fdce13",
+    "/index.html": "87447a28603bc3ff0d4db809aeb8a172b7ed2aa9",
+    "/main.377e6b0d4ba9776a0bf5.js": "c07de0c762164cb2b2f85ef862eb5a8f93beeccf",
+    "/manifest.webmanifest": "17505c8d3653725d2d4ceba1318fc95fc9bdfa44",
+    "/polyfills.90a1af69ea786e34948d.js": "5d073ab1808d400ada31a564ec984eb4453647de",
+    "/ringOnBlack.d984cbf79e45cf4b65b3.jpg": "fbe290a89855ca59ffab843058b45f53107afd98",
+    "/runtime.0824cc72a1281011b185.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
+    "/spaceRed.5cef890584a51d7e2d04.jpg": "474538b6ec2d7906c035531100c2de72bcf6d4d8",
+    "/styles.c867fa49f8d2b2876d7d.css": "461213c20e48c8d4fe62d77b3703a1c7a0da1f74"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ]
+}
