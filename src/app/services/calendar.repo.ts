@@ -121,6 +121,7 @@ export class CalendarRepo {
           JSON.parse(atob(atob(calendarRecordGitHub.content))).forEach(rec => {;
               calendarRecords.records.push(new CalendarRecord(rec.id, rec.what, rec.day, rec.hour, rec.minute));
           });
+          console.log(calendarRecords.records)
           calendarRecords.sha = calendarRecordGitHub.sha;
 
           this.calendarRecordRest.next(calendarRecords);

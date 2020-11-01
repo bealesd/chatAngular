@@ -44,7 +44,14 @@ export class CalendarService implements OnDestroy {
   }
 
   year: number;
-  zeroIndexedMonth: number;
+  
+  _zeroIndexedMonth: number;
+  get zeroIndexedMonth() { return this._zeroIndexedMonth; }
+  set zeroIndexedMonth(value: number) {
+    if (isNaN(value)) console.error('zeroIndexedMonth is not a number.');
+    else this._zeroIndexedMonth = parseInt(`${value}`);
+  }
+
   public week = new BehaviorSubject<number>(1);
   day: number;
   today: { year: number; month: number; week: number; day: number; };
@@ -222,20 +229,18 @@ export class CalendarService implements OnDestroy {
   }
 
   changeMonth(nextOrPrevious: string) {
-    let zeroIndexedMonth = parseInt(`${this.zeroIndexedMonth}`);
-    let oneIndexedMonth = this.zeroIndexedMonth + 1;
-
+    const oneIndexedMonth =  this.zeroIndexedMonth + 1;
     let tempDate = new Date(`${this.year} ${oneIndexedMonth}`);
 
     if (nextOrPrevious === 'next') {
-      tempDate.setMonth(zeroIndexedMonth + 1);
+      tempDate.setMonth(this.zeroIndexedMonth + 1);
       this.year = tempDate.getFullYear();
       this.zeroIndexedMonth = tempDate.getMonth();
       this.week.next(1);
       this.day = 1;
     }
     else if (nextOrPrevious === 'previous') {
-      tempDate.setMonth(zeroIndexedMonth - 1);
+      tempDate.setMonth(this.zeroIndexedMonth - 1);
       this.year = tempDate.getFullYear();
       this.zeroIndexedMonth = tempDate.getMonth();
       this.week.next(this.weeksInMonth);
@@ -251,6 +256,8 @@ export class CalendarService implements OnDestroy {
   updateRecords() {
     this.calendarRepo.calendarRecordRest.next(new CalendarRecordRest());
     this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
+    this.day = 1;
+    this.closeAddOrUpdateEventForm.next(true);
   }
 
   changeToToday() {

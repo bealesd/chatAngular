@@ -55,6 +55,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
       this.monthOrWeek = value.toLowerCase();
     else
       console.error(`Invalid calendar view selected in dropdown: '${value}'.`);
+    this.calendarService.closeAddOrUpdateEventForm.next(true);
   }
 
   updateMonth(value: number) {

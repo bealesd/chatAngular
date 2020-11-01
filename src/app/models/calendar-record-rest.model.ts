@@ -55,7 +55,7 @@ export class CalendarRecordRest {
     const hours = [];
     for (let i = 0; i < 24; i++) {
       const hour = {
-        toString: () => { this.padToTwo(i) },
+        toString: () => { return this.padToTwo(i) },
         value: i
       };
       hours.push(hour);
