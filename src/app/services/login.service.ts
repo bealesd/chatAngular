@@ -3,7 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { GitHubMetaData } from './../gitHubMetaData';
+import { GitHubMetaData } from '../models/gitHubMetaData';
 import { MessageService } from '../services/message.service';
 import { CryptoService } from './crypto.service';
 

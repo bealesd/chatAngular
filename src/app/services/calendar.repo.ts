@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import { GitHubMetaData } from '../gitHubMetaData'
+import { GitHubMetaData } from '../models/gitHubMetaData'
 import { CryptoService } from './crypto.service';
 import { RestHelper } from '../helpers/rest-helper';
 import { MessageService } from '../services/message.service';

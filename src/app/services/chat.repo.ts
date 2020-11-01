@@ -6,7 +6,7 @@ import { map, retry, mergeMap, defaultIfEmpty } from 'rxjs/operators';
 
 import { RecieveChat } from '../models/recieve-chat.model';
 import { SendChat } from '../models/send-chat.model';
-import { GitHubMetaData } from '../gitHubMetaData'
+import { GitHubMetaData } from '../models/gitHubMetaData'
 
 import { CryptoService } from './crypto.service';
 import { RestHelper } from '../helpers/rest-helper';

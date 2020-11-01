@@ -25,6 +25,8 @@ import { CalendarMonthComponent } from './calendar-month/calendar-month.componen
 import { CalendarWeekComponent } from './calendar-week/calendar-week.component';
 import { CalendarFormComponent } from './calendar-form/calendar-form.component';
 import { CalendarDayComponent } from './calendar-day/calendar-day.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -53,6 +55,8 @@ import { CalendarDayComponent } from './calendar-day/calendar-day.component';
     FormsModule,
 
     ReactiveFormsModule,
+
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
 
   ],
   providers: [
