@@ -10,8 +10,6 @@ import { ChatDetailComponent } from './chat-detail/chat-detail.component';
 //emoji issue?
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { TokenInterceptor } from './interceptors/tokenInterceptor';
 import { LoginComponent } from './login/login.component';
 import { AppRoutingModule } from './app-routing.module';
 import { DialogBoxComponent } from './dialog-box/dialog-box.component';
@@ -59,13 +57,7 @@ import { environment } from '../environments/environment';
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
 
   ],
-  providers: [
-    // {
-    //   provide: HTTP_INTERCEPTORS,
-    //   useClass: TokenInterceptor,
-    //   multi: true
-    // }
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

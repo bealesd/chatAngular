@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1604242664238,
+  "timestamp": 1604305623442,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -13,7 +13,7 @@
       "urls": [
         "/favicon.ico",
         "/index.html",
-        "/main.f9cf0c2dd2a8a4573716.js",
+        "/main.4e788327ad12822ba6b3.js",
         "/manifest.webmanifest",
         "/polyfills.90a1af69ea786e34948d.js",
         "/runtime.0824cc72a1281011b185.js",
@@ -70,9 +70,9 @@
     "/assets/images/todo.png": "f2890a9ac8ee4d81b37ff7199b0c8861b77fc118",
     "/assets/images/todo.svg": "558d7543708220d254a9c8dc33af7f6341f47f86",
     "/favicon.ico": "fcbcf16ac9d543f785ec36346161838334fdce13",
-    "/index.html": "ac8749ce68425def670ee0f485ed6d82cff943ed",
-    "/main.f9cf0c2dd2a8a4573716.js": "76dca1605e1b1113e94ee2b4eeaea4be43093249",
-    "/manifest.webmanifest": "17505c8d3653725d2d4ceba1318fc95fc9bdfa44",
+    "/index.html": "f959e28fc0461102b1214a8d8ab33eec23f50ffb",
+    "/main.4e788327ad12822ba6b3.js": "ab1a241c4d02a8fc321e7069a2ed886b806387f2",
+    "/manifest.webmanifest": "144ca79afa098a203d532e45460115988c546f68",
     "/polyfills.90a1af69ea786e34948d.js": "5d073ab1808d400ada31a564ec984eb4453647de",
     "/ringOnBlack.d984cbf79e45cf4b65b3.jpg": "fbe290a89855ca59ffab843058b45f53107afd98",
     "/runtime.0824cc72a1281011b185.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",

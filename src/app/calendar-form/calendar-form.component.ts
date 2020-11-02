@@ -2,7 +2,8 @@ import { CalendarRecord } from './../models/calendar-record.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import * as uuid from 'uuid';
+
+import { Utilities } from '../helpers/utilities-helper';
 
 import { CalendarRepo } from './../services/calendar.repo';
 import { MenuService } from '../services/menu.service';
@@ -32,12 +33,15 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
   undoEnabled: boolean = false;
 
   subscriptions: Subscription[] = [];
+  utilities: Utilities;
 
   constructor(
     private calendarRepo: CalendarRepo,
     private fb: FormBuilder,
     private menuService: MenuService,
-    private calendarService: CalendarService) { }
+    private calendarService: CalendarService) {
+    this.utilities = new Utilities();
+  }
 
   ngOnInit() {
 
@@ -135,7 +139,7 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
       day: parseInt(`${dayData.dayInMonthArrayIndex}`),
       month: parseInt(`${this.calendarService.zeroIndexedMonth}`),
       year: parseInt(`${this.calendarService.year}`),
-      id: uuid()
+      id: this.utilities.uuidv4()
     });
   }
 
