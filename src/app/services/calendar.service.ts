@@ -37,7 +37,6 @@ export class CalendarService implements OnDestroy {
   }
 
   get daysInMonthArray(): number[] {
-    // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
     const days: number[] = [];
     for (let i = 1; i <= (this.daysInMonth); i++) days.push(i);
     return days;
@@ -140,47 +139,6 @@ export class CalendarService implements OnDestroy {
     const firstOfMonth: Date = new Date(this.year, this.zeroIndexedMonth, 1);
     const daysIntoWeek: number = firstOfMonth.getDay();
     return Math.ceil((daysIntoWeek + this.daysInMonth) / 7);
-  }
-
-  get calendarDaysInWeek() {
-    let startDay: number;
-    let endDay: number;
-    let validDays: number[] = [];
-    let emptyDays = [];
-
-    const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
-    const daysIntoFirstWeek = firstOfMonth.getDay();
-    let maxWeek: number = this.weeksInMonth;
-
-    if (this.week.getValue() === 1) {
-      startDay = 0;
-      endDay = (7 - daysIntoFirstWeek);
-      validDays = this.daysInMonthArray.slice(startDay, endDay);
-
-      let totalDaysInPreviousMonth: number = 7 - validDays.length;
-      let col: number = 1;
-      for (let daysIntoPreviousMonth = totalDaysInPreviousMonth - 1; daysIntoPreviousMonth >= 0; daysIntoPreviousMonth--) {
-        const date = new Date(this.year, this.zeroIndexedMonth, -daysIntoPreviousMonth);
-        emptyDays.push({ 'col': col++, 'name': this.weekdayNames[date.getDay()], 'dayInMonthArrayIndex': date.getDate() });
-      }
-    }
-    else {
-      const unajustedStartDay: number = (this.week.getValue() - 1) * 7;
-      startDay = unajustedStartDay - daysIntoFirstWeek;
-      endDay = unajustedStartDay + (7 - daysIntoFirstWeek);
-      validDays = this.daysInMonthArray.slice(startDay, endDay);
-
-      if (this.week.getValue() === maxWeek) {
-        let totalDaysInNextMonth: number = 7 - validDays.length;
-        let lastDayOfMonth: number = this.daysInMonthArray.slice(-1)[0];
-
-        for (let daysIntoNextMonth = 1; daysIntoNextMonth <= totalDaysInNextMonth; daysIntoNextMonth++) {
-          const date = new Date(this.year, this.zeroIndexedMonth, lastDayOfMonth + daysIntoNextMonth);
-          emptyDays.push({ 'col': validDays.length + daysIntoNextMonth, 'name': this.weekdayNames[date.getDay()], 'dayInMonthArrayIndex': date.getDate() });
-        }
-      }
-    }
-    return { valid: validDays, empty: emptyDays };
   }
 
   getDayName(dayNumber: number): string {

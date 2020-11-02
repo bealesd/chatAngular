@@ -110,16 +110,18 @@ export class CalendarRepo {
   }
 
   getCalendarRecords(year: number, month: number): void {
+    let calendarRecords = new CalendarRecordRest();
+
     this.messageService.add(`Getting calendar record for ${year}-${month + 1}.`);
-    const calendarRecords = this.calendarRecordRest.getValue();
+    // const calendarRecords: CalendarRecordRest = this.calendarRecordRest.getValue();
     calendarRecords.year = year;
     calendarRecords.month = month;
 
     this.getCalendarRecordsForMonthRest(year, month).subscribe(
       {
         next: (calendarRecordGitHub: any) => {
-          JSON.parse(atob(atob(calendarRecordGitHub.content))).forEach(rec => {;
-              calendarRecords.records.push(new CalendarRecord(rec.id, rec.what, rec.day, rec.hour, rec.minute));
+          JSON.parse(atob(atob(calendarRecordGitHub.content))).forEach(rec => {
+            calendarRecords.records.push(new CalendarRecord(rec.id, rec.what, rec.day, rec.hour, rec.minute));
           });
           console.log(calendarRecords.records)
           calendarRecords.sha = calendarRecordGitHub.sha;

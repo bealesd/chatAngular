@@ -32,7 +32,7 @@ export class CalendarDayComponent implements OnInit, OnDestroy {
 
   get dateTimeRecords(): { hour: number; day: number; records: CalendarRecord[]; col: number; }[] {
     const allRecordsGroupedByHour: { hour: number, day: number, records: CalendarRecord[], col: number }[] = [];
-    for (let groupedRecord of this.calendarService.records.getCalendardRecordHourGroupsByDay(this.calendarService.day)) {
+    for (let groupedRecord of this.calendarService.records.getRecordsGroupedByHourForDay(this.calendarService.day)) {
       const recordsGroupedByHour = {
         hour: groupedRecord.hour,
         day: this.calendarService.day,

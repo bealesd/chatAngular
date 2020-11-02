@@ -14,17 +14,23 @@ import { CalendarRecord } from '../models/calendar-record.model';
 export class CalendarWeekComponent implements OnInit, OnDestroy {
   get dayDataForWeek() {
     const dayData = { 'invalid': [], 'valid': [] };
-    this.calendarService.calendarDaysInWeek.valid.forEach((dayNumber) => {
+
+    const week  = this.calendarService.week.getValue();
+    this.calendarService.records.getDayRangeForWeek(week).forEach((dayNumber) => {
       const day = new Date(this.calendarService.year, this.calendarService.zeroIndexedMonth, dayNumber).getDay();
       const col = (day % 7);
       const dayName = this.calendarService.weekdayNames[col];
 
       dayData.valid.push({ 'gridCol': col + 1, 'name': dayName, 'dayInMonthArrayIndex': dayNumber });
     });
+    this.calendarService.records.getDaysForWeekOutsideOfMonth(week).forEach((dayInfo) => {
+      const day = dayInfo.date.getDay();
+      const col = (day % 7) + 1;
+      const dayName = this.calendarService.weekdayNames[col];
 
-    this.calendarService.calendarDaysInWeek.empty.forEach((dayInfo) => {
-      dayData.invalid.push({ 'gridCol': dayInfo.col, 'name': dayInfo.name, 'dayInMonthArrayIndex': dayInfo.dayInMonthArrayIndex });
+      dayData.invalid.push({ 'gridCol': col, 'name': dayName, 'dayInMonthArrayIndex': dayInfo.dayInMonthArrayIndex });
     });
+
     return dayData;
   }
 
@@ -32,7 +38,7 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
     const allRecordsGroupedByHour: { hour: number, day: number, records: CalendarRecord[], col: number }[] = [];
     const validDays = this.dayDataForWeek.valid;
     for (let validDay of validDays) {
-      for (let groupedRecord of this.calendarService.records.getCalendardRecordHourGroupsByDay(validDay.dayInMonthArrayIndex)) {
+      for (let groupedRecord of this.calendarService.records.getRecordsGroupedByHourForDay(validDay.dayInMonthArrayIndex)) {
         const recordsGroupedByHour = {
           'hour': groupedRecord.hour,
           'day': validDay.dayInMonthArrayIndex,
