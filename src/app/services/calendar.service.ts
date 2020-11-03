@@ -10,8 +10,6 @@ import { CalendarRecordRest } from '../models/calendar-record-rest.model';
 export class CalendarService implements OnDestroy {
   public subscriptions: Subscription[] = [];
 
-  public calendarRecords = new BehaviorSubject<any>({});
-
   public closeAddOrUpdateEventForm = new BehaviorSubject<boolean>(true);
   public openUpdateEventForm = new BehaviorSubject<any>({});
   public openAddEventForm = new BehaviorSubject<any>({});
@@ -43,7 +41,7 @@ export class CalendarService implements OnDestroy {
   }
 
   year: number;
-  
+
   _zeroIndexedMonth: number;
   get zeroIndexedMonth() { return this._zeroIndexedMonth; }
   set zeroIndexedMonth(value: number) {
@@ -51,12 +49,12 @@ export class CalendarService implements OnDestroy {
     else this._zeroIndexedMonth = parseInt(`${value}`);
   }
 
-  public week = new BehaviorSubject<number>(1);
+  public week = 1;
   day: number;
   today: { year: number; month: number; week: number; day: number; };
   monthName: string;
 
-  records: CalendarRecordRest = new CalendarRecordRest();
+  records: CalendarRecordRest;
   daysEnum = {
     'Sun': 0,
     'Mon': 1,
@@ -112,22 +110,21 @@ export class CalendarService implements OnDestroy {
   }
 
   constructor(private calendarRepo: CalendarRepo) {
+    this.records = this.calendarRepo.calendarRecordRest;
+
     let date = new Date();
     this.year = date.getFullYear();
     this.zeroIndexedMonth = date.getMonth();
 
     const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
-    this.week.next(Math.ceil((firstOfMonth.getDay() + date.getDate()) / 7));
+    this.week = Math.ceil((firstOfMonth.getDay() + date.getDate()) / 7);
     this.day = date.getDate();
-
-    this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'week': this.week.getValue(), 'day': this.day };
 
     this.records.month = this.zeroIndexedMonth;
     this.records.year = this.year;
 
-    this.subscriptions.push(interval(1000 * 60 * 5).subscribe(() => {
-      this.today = { 'year': this.year, 'month': this.zeroIndexedMonth, 'week': this.week.getValue(), 'day': this.day };
-    }));
+    this.setTodaysDate();
+    this.subscriptions.push(interval(1000 * 60 * 5).subscribe(() => this.setTodaysDate()));
   }
 
   ngOnDestroy() {
@@ -139,6 +136,16 @@ export class CalendarService implements OnDestroy {
     const firstOfMonth: Date = new Date(this.year, this.zeroIndexedMonth, 1);
     const daysIntoWeek: number = firstOfMonth.getDay();
     return Math.ceil((daysIntoWeek + this.daysInMonth) / 7);
+  }
+
+  setTodaysDate() {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstOfMonth = new Date(year, month, 1);
+    const week = Math.ceil((firstOfMonth.getDay() + date.getDate()) / 7);
+    const day = date.getDate();
+    this.today = { 'year': year, 'month': month, 'week': week, 'day': day };
   }
 
   getDayName(dayNumber: number): string {
@@ -160,59 +167,43 @@ export class CalendarService implements OnDestroy {
   }
 
   changeDay(nextOrPrevious: string) {
-    let maxDay = this.daysInMonthArray[this.daysInMonthArray.length - 1];
-    if (nextOrPrevious === 'next') {
-      if (++this.day > maxDay)
-        this.changeMonth('next');
-    }
-    else if (nextOrPrevious === 'previous') {
-      if (--this.day < 1)
-        this.changeMonth('previous');
-    }
+    const maxDay = this.daysInMonthArray[this.daysInMonthArray.length - 1];
+    if (nextOrPrevious === 'next' && ++this.day > maxDay) this.changeMonth('next');
+    else if (nextOrPrevious === 'previous' && --this.day < 1) this.changeMonth('previous')
   }
 
   changeWeek(nextOrPrevious: string) {
-    let maxWeek = this.weeksInMonth;
-    let week = parseInt(`${this.week.getValue()}`);
-    if (nextOrPrevious === 'next') {
-      this.week.next(++week);
-      if (week > maxWeek)
-        this.changeMonth('next');
-    }
-    else if (nextOrPrevious === 'previous') {
-      this.week.next(--week);
-      if (week < 1)
-        this.changeMonth('previous');
-    }
+    const maxWeek = this.weeksInMonth;
+    if (nextOrPrevious === 'next' && ++this.week > maxWeek) this.changeMonth('next');
+    else if (nextOrPrevious === 'previous' && --this.week < 1) this.changeMonth('previous');
   }
 
   changeMonth(nextOrPrevious: string) {
-    const oneIndexedMonth =  this.zeroIndexedMonth + 1;
+    const oneIndexedMonth = this.zeroIndexedMonth + 1;
     let tempDate = new Date(`${this.year} ${oneIndexedMonth}`);
 
     if (nextOrPrevious === 'next') {
       tempDate.setMonth(this.zeroIndexedMonth + 1);
       this.year = tempDate.getFullYear();
       this.zeroIndexedMonth = tempDate.getMonth();
-      this.week.next(1);
+      this.week = 1;
       this.day = 1;
     }
     else if (nextOrPrevious === 'previous') {
       tempDate.setMonth(this.zeroIndexedMonth - 1);
       this.year = tempDate.getFullYear();
       this.zeroIndexedMonth = tempDate.getMonth();
-      this.week.next(this.weeksInMonth);
+      this.week = this.weeksInMonth;
       this.day = this.daysInMonth;
     }
 
-    this.calendarRepo.calendarRecordRest.next(new CalendarRecordRest());
     this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
 
     this.closeAddOrUpdateEventForm.next(true);
   }
 
   updateRecords() {
-    this.calendarRepo.calendarRecordRest.next(new CalendarRecordRest());
+    this.calendarRepo.calendarRecordRest.records = [];
     this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
     this.day = 1;
     this.closeAddOrUpdateEventForm.next(true);
@@ -221,26 +212,8 @@ export class CalendarService implements OnDestroy {
   changeToToday() {
     this.year = this.today.year;
     this.zeroIndexedMonth = this.today.month;
-    this.week.next(this.today.week);
+    this.week = this.today.week;
     this.day = this.today.day;
-    this.calendarRepo.calendarRecordRest.next(new CalendarRecordRest());
-    this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
-  }
-
-  subscribeToCalendarRecords() {
-    this.calendarRepo.calendarRecordRest.subscribe(calendarRecords => {
-      this.records = calendarRecords;
-    });
-  }
-
-  removeSubscriptions() {
-    this.calendarRepo.calendarRecordRest.observers.forEach(element => { element.complete(); });
-    this.calendarRepo.calendarRecordRest.next(new CalendarRecordRest());
-  }
-
-  resetSubsciptions() {
-    this.removeSubscriptions();
-    this.subscribeToCalendarRecords();
     this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
   }
 

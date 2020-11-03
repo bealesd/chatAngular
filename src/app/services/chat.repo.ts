@@ -74,9 +74,7 @@ export class ChatRepo {
 
   parseGitHubResults(results: any[]): RecieveChat[] {
     if (results === null || results === undefined || results.length === 0) return [];
-    const recievedChats = [];
-    results.forEach((result) => { recievedChats.push(this.parseGitHubResult(result)); });
-    return recievedChats;
+    return results.map((result) => this.parseGitHubResult(result));
   }
 
   getNewChatMessages(lastId: number): Observable<RecieveChat[]> {

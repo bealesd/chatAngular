@@ -46,8 +46,6 @@ export class CalendarMonthComponent implements OnInit, OnDestroy {
     this.menuService.disableMenuItem('undo-click');
 
     if (!this.loginHelper.checkPersonSelected()) this.loginHelper.setPerson();
-
-    this.calendarService.resetSubsciptions();
   }
 
   ngOnDestroy() {

@@ -6,114 +6,82 @@ export class CalendarRecordRest {
   year: number;
   month: number;
 
-  daysEnum = {
-    'Sun': 0,
-    'Mon': 1,
-    'Tue': 2,
-    'Wed': 3,
-    'Thu': 4,
-    'Fri': 5,
-    'Sat': 6
-  };
-
-  get weekdayNames(): string[] {
-    return Object.keys(this.daysEnum);
-  }
   get key(): string {
     if (this.year !== null && this.year !== undefined && this.month !== null && this.month !== undefined)
       return `${this.year}-${this.month}`;
-    else
-      return null;
+    else return null;
   }
 
-  constructor() { }
-
   toJsonString(): string {
-    let jsonRecords = [];
-    for (let i = 0; i < this.records.length; i++) {
-      const record = this.records[i];
-      jsonRecords.push(JSON.parse(record.toJsonString()));
-    }
-    return JSON.stringify(jsonRecords);
+    return JSON.stringify(this.records.map(record => JSON.parse(record.toJsonString())));
   }
 
   getDayRangeForWeek(week: number) {
-    if (week > this.weeksInMonth || week < 1) {
-      console.error(`Week is out of range for year and month: ${this.year} ${this.month}.`);
-      return null;
-    }
+    if (week > this.weeksInMonth || week < 1)
+      return console.error(`Week is out of range for year and month: ${this.year} ${this.month}.`) === null ? [] : [];
 
-    const lastDayOfMonth = this.daysInMonthArray.slice(-1)[0];
     const firstOfMonth = new Date(this.year, this.month, 1);
-
     const daysIntoFirstWeek = firstOfMonth.getDay();
 
     let startDay = ((week - 1) * 7) - daysIntoFirstWeek;
-    let endDay = startDay + 7;
+    const endDay = startDay + 7;
     startDay = startDay < 0 ? 0 : startDay;
 
-    let validDays = this.daysInMonthArray.slice(startDay, endDay);
-    return validDays
+    return this.daysInMonthArray.slice(startDay, endDay);
+  }
+
+  getDaysForWeek(week: number) {
+    return this.getDayRangeForWeek(week).map(day => new Date(this.year, this.month, day));
   }
 
   getDaysForWeekOutsideOfMonth(week): any[] {
-    let days = this.getDayRangeForWeek(week);
-    if (week === 1) {
-      let totalDaysInPreviousMonth = 7 - days.length;
-      return this.getDaysInPreviousMonth(totalDaysInPreviousMonth);
-    }
-    else if (week === this.weeksInMonth) {
-      let totalDaysInNextMonth = 7 - days.length;
-      return this.getDaysInNextMonth(totalDaysInNextMonth);
-    }
+    const days = this.getDayRangeForWeek(week);
+    if (days.length === 0)
+      return [];
+    else if (week === 1)
+      return this.getDaysInPreviousMonth(7 - days.length);
+    else if (week === this.weeksInMonth)
+      return this.getDaysInNextMonth(7 - days.length);
     else return [];
   }
 
-  getDaysInPreviousMonth(totalDays) {
-    let emptyDays = [];
-    for (let daysIntoPreviousMonth = totalDays - 1; daysIntoPreviousMonth >= 0; daysIntoPreviousMonth--) {
-      const date = new Date(this.year, this.month, -daysIntoPreviousMonth);
-      emptyDays.push({ 'name': this.weekdayNames[date.getDay()], 'dayInMonthArrayIndex': date.getDate(), 'date':date  });
-    }
+  getDaysInPreviousMonth(totalDays): Date[] {
+    const emptyDays = [];
+    for (let daysIntoPreviousMonth = totalDays - 1; daysIntoPreviousMonth >= 0; daysIntoPreviousMonth--)
+      emptyDays.push(new Date(this.year, this.month, -daysIntoPreviousMonth));
     return emptyDays;
   }
 
-  getDaysInNextMonth(totalDays) {
-    let emptyDays = [];
-    let days = this.getDayRangeForWeek(this.weeksInMonth);
-    let lastDayOfMonth = this.daysInMonthArray.slice(-1)[0];
-    for (let daysIntoNextMonth = 1; daysIntoNextMonth <= totalDays; daysIntoNextMonth++) {
-      console.log('col' + ` ${days.length + daysIntoNextMonth}`);
-      const date = new Date(this.year, this.month, lastDayOfMonth + daysIntoNextMonth);
-      emptyDays.push({ 'name': this.weekdayNames[date.getDay()], 'dayInMonthArrayIndex': date.getDate(), 'date':date });
-    }
+  getDaysInNextMonth(totalDays): Date[] {
+    const emptyDays = [];
+    const lastDayOfMonth = this.daysInMonthArray.slice(-1)[0];
+    for (let daysIntoNextMonth = 1; daysIntoNextMonth <= totalDays; daysIntoNextMonth++)
+      emptyDays.push(new Date(this.year, this.month, lastDayOfMonth + daysIntoNextMonth));
     return emptyDays;
   }
 
   getRecordsByWeek(week: number): CalendarRecord[] {
     const dayRange = this.getDayRangeForWeek(week);
     if (dayRange === null) return [];
-
-    const records = [];
-    for (let i = 0; i < dayRange.length; i++) {
-      let day = dayRange[i];
-      records.push(...this.getRecordsByDay(day));
-    }
-
-    return records;
+    return dayRange.map(day => this.getRecordsByDay(day)).flat();
   }
 
-  getEmptyDaysByWeek(week: number): number[] {
-    const dayRange = this.getDayRangeForWeek(week);
-    if (dayRange === null) return [];
-
-    const emptyDays = [];
-    for (let i = 0; i < dayRange.length; i++){
-      let day = dayRange[i];
-      if (this.getRecordsByDay(day).length === 0) emptyDays.push(day);
+  getRecordsGroupedByHourAndDayForWeek(week: number): { hour: number; date: Date; records: CalendarRecord[]; }[] {
+    let recordsGroupedByHour = [];
+    for (let dayDate of this.getDaysForWeek(week)) {
+      for (let groupedRecord of this.getRecordsGroupedByHourForDay(dayDate.getDate()))
+        recordsGroupedByHour.push({ hour: groupedRecord.hour, date: dayDate, records: groupedRecord.records });
     }
-     
-    return emptyDays;
+    return recordsGroupedByHour
+  }
+
+  getEmptyRecordsGroupedByHourAndDayForWeek(week: number): { hour: number; date: Date; }[] {
+    const emptyHoursData = [];
+    for (let dayDate of this.getDaysForWeek(week)) {
+      for (let emptyHour of this.getEmptyHoursByDay(dayDate.getDate()))
+        emptyHoursData.push({ hour: emptyHour.value, date: dayDate });
+    }
+    return emptyHoursData;
   }
 
   get weeksInMonth(): number {
@@ -123,9 +91,7 @@ export class CalendarRecordRest {
   }
 
   get daysInMonthArray(): number[] {
-    const days: number[] = [];
-    for (let i = 1; i <= (this.daysInMonth); i++) days.push(i);
-    return days;
+    return [...Array(this.daysInMonth).keys()].map(i => i + 1);
   }
 
   getRecordsByDay(day: number): CalendarRecord[] {
@@ -134,30 +100,24 @@ export class CalendarRecordRest {
     return records;
   }
 
-  getEmpytDays(): number[] {
-    const emptyDays: number[] = [];
-    const days = this.records.map(r => r['day']);
-    for (let day = 1; day <= this.daysInMonth; day++) {
-      if (!days.includes(day))
-        emptyDays.push(day);
-    }
-    return emptyDays;
-  }
-
-  getRecordsGroupedByHourForDay(calendarDay): { hour: number, records: CalendarRecord[] }[] {
+  getRecordsGroupedByHourForDay(calendarDay): { hour: number, date: Date, records: CalendarRecord[] }[] {
     const records = this.getRecordsByDay(calendarDay);
-
     const grouped: { hour: CalendarRecord[] } = this.groupBy(records, 'hour');
 
-    const allGroupedRecords: { 'hour': number, 'records': CalendarRecord[] }[] = [];
-    for (let i = 0; i < Object.keys(grouped).length; i++) {
-      const hour = Object.keys(grouped)[i];
-      allGroupedRecords.push({
-        'hour': parseInt(hour),
-        'records': grouped[hour]
-      });
-    }
-    return allGroupedRecords;
+    return Object.keys(grouped).map(hour => Object({
+      'hour': parseInt(hour), 'records': grouped[hour], 'date': new Date(this.year, this.month, calendarDay)
+    }));
+  }
+
+  getEmpytDays(): number[] {
+    const days = this.records.map(r => r['day']);
+    return [...Array(this.daysInMonth).keys()].map(i => i + 1).filter(day => !days.includes(day));
+  }
+
+  getEmptyDaysByWeek(week: number): number[] {
+    const dayRange = this.getDayRangeForWeek(week);
+    if (dayRange === null) return [];
+    return dayRange.filter(day => this.getRecordsByDay(day).length === 0);
   }
 
   getEmptyHoursByDay(calendarDay): any[] {
@@ -166,15 +126,7 @@ export class CalendarRecordRest {
   }
 
   get hoursOfDay(): any[] {
-    const hours = [];
-    for (let i = 0; i < 24; i++) {
-      const hour = {
-        toString: () => { return this.padToTwo(i) },
-        value: i
-      };
-      hours.push(hour);
-    }
-    return hours;
+    return [...Array(24).keys()].map((hour) => Object({ toString: () => this.padToTwo(hour), value: hour }))
   }
 
   get daysInMonth(): number {
@@ -187,7 +139,7 @@ export class CalendarRecordRest {
   }
 
   private groupBy(xs, key) {
-    return xs.reduce(function (rv, x) {
+    return xs.reduce((rv, x) => {
       (rv[x[key]] = rv[x[key]] || []).push(x);
       return rv;
     }, {});
@@ -202,4 +154,6 @@ export class CalendarRecordRest {
 
     return is_a_before_b ? -1 : (is_a_same_as_b ? 1 : 0);
   }
+
+  // [...Array(size).keys()].map(i => i + startAt);
 }

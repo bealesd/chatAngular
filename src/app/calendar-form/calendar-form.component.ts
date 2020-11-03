@@ -8,7 +8,6 @@ import { Utilities } from '../helpers/utilities-helper';
 import { CalendarRepo } from './../services/calendar.repo';
 import { MenuService } from '../services/menu.service';
 import { CalendarService } from '../services/calendar.service';
-import { CalendarRecordRest } from '../models/calendar-record-rest.model';
 
 @Component({
   selector: 'app-calendar-form',
@@ -44,7 +43,6 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
     this.subscriptions.push(
       this.profileForm.valueChanges.subscribe(() => {
         this.undoEnabled = this.checkEnableUndo();
@@ -71,7 +69,6 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.calendarRepo.calendarRecordRest.next(new CalendarRecordRest());
     this.calendarService.closeAddOrUpdateEventForm.next(false);
     this.calendarService.openUpdateEventForm.next({});
     this.calendarService.openAddEventForm.next({});
@@ -94,9 +91,6 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
-
-    this.calendarRepo.calendarRecordRest.observers.forEach(element => { element.complete(); });
-    this.calendarRepo.calendarRecordRest.next(new CalendarRecordRest());
 
     this.calendarService.closeAddOrUpdateEventForm.observers.forEach(element => { element.complete(); });
     this.calendarService.closeAddOrUpdateEventForm.next(false);
