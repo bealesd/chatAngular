@@ -105,12 +105,11 @@ export class CalendarRepo {
     this.messageService.add(`Getting calendar record for ${year}-${month + 1}.`);
     this.calendarRecordRest.year = year;
     this.calendarRecordRest.month = month;
-
+    this.calendarRecordRest.records = [];
+    
     this.getCalendarRecordsForMonthRest(year, month).subscribe(
       {
         next: (calendarRecordGitHub: any) => {
-          this.calendarRecordRest.records = [];
-
           JSON.parse(atob(atob(calendarRecordGitHub.content))).forEach(rec => {
             this.calendarRecordRest.records.push(new CalendarRecord(rec.id, rec.what, rec.day, rec.hour, rec.minute));
           });
