@@ -12,7 +12,7 @@ import { CryptoService } from './crypto.service';
 })
 export class LoginService {
   public loggedIn = new BehaviorSubject<boolean>(false);
-  private githubApiUrl = 'https://api.github.com/repos/bealesd/chatStore/contents';
+  private githubApiUrl = 'https://api.github.com';
 
   options = (): { headers: HttpHeaders } => {
     return {

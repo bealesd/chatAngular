@@ -1,11 +1,10 @@
 import { CalendarRecord } from './../models/calendar-record.model';
 import { CalendarRecordRest } from './../models/calendar-record-rest.model';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient} from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { GitHubMetaData } from '../models/gitHubMetaData'
-import { CryptoService } from './crypto.service';
 import { RestHelper } from '../helpers/rest-helper';
 import { MessageService } from '../services/message.service';
 
@@ -17,28 +16,14 @@ export class CalendarRepo {
   public calendarRecordRest: CalendarRecordRest = new CalendarRecordRest();
 
   constructor(
-    private cryptoService: CryptoService,
     private http: HttpClient,
     private restHelper: RestHelper,
     private messageService: MessageService) {
   }
 
-  options = (): { headers: HttpHeaders } => {
-    return {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.cryptoService.getToken()}`
-      })
-    }
-  }
-
-  getCalendarListingsRest = (): Observable<GitHubMetaData[]> => {
-    return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options());
-  }
-
   getCalendarRecordsForMonthRest(year: number, month: number): Observable<any> {
     const getUrl = `${this.baseMessagesUrl}/${year}-${month}.json`;
-    return this.http.get<[]>(this.restHelper.removeUrlParams(getUrl), this.options());
+    return this.http.get<[]>(this.restHelper.removeUrlParams(getUrl), this.restHelper.options());
   }
 
   postCalendarRecordsRest(calendarRecords: CalendarRecordRest): Observable<any> {
@@ -50,7 +35,7 @@ export class CalendarRepo {
       'sha': calendarRecords.sha
     });
 
-    return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.options());
+    return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.restHelper.options());
   }
 
   deleteCalendarRecord(id: string): void {
@@ -106,7 +91,7 @@ export class CalendarRepo {
     this.calendarRecordRest.year = year;
     this.calendarRecordRest.month = month;
     this.calendarRecordRest.records = [];
-    
+
     this.getCalendarRecordsForMonthRest(year, month).subscribe(
       {
         next: (calendarRecordGitHub: any) => {
@@ -119,11 +104,17 @@ export class CalendarRepo {
           this.messageService.add(` • Got ${this.calendarRecordRest.records.length} calendar records.`);
         },
         error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, 'getting calendar records');
-
           this.calendarRecordRest.records = [];
+
+          if (err.status === 404 && err.message.toLowerCase() === "not found") {
+            this.messageService.add(` • Creating repo: calendarStore.`);
+            this.restHelper.createRepo('calendarStore', 'store calendar records');
+          }
+          else
+            this.restHelper.errorMessageHandler(err, 'getting calendar records');
         }
       }
     );
   }
+
 }

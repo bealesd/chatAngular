@@ -8,7 +8,6 @@ import { RecieveChat } from '../models/recieve-chat.model';
 import { SendChat } from '../models/send-chat.model';
 import { GitHubMetaData } from '../models/gitHubMetaData'
 
-import { CryptoService } from './crypto.service';
 import { RestHelper } from '../helpers/rest-helper';
 
 @Injectable({
@@ -18,22 +17,12 @@ export class ChatRepo {
   private baseMessagesUrl = 'https://api.github.com/repos/bealesd/chatStore/contents';
 
   constructor(
-    private cryptoService: CryptoService,
     private http: HttpClient,
     private restHelper: RestHelper) {
   }
 
-  options = (): { headers: HttpHeaders } => {
-    return {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.cryptoService.getToken()}`
-      })
-    }
-  }
-
   getMessageListings = (): Observable<GitHubMetaData[]> => {
-    return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.options());
+    return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.restHelper.options());
   }
 
   getLastTen(): Observable<RecieveChat[]> {
@@ -46,7 +35,7 @@ export class ChatRepo {
           for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
             const messageMetaData = messagesMetaData[i];
             idShaLookup[this.idExtractor(messageMetaData.name)] = messageMetaData.sha;
-            chatUrls.push(this.http.get<any>(this.restHelper.removeUrlParams(messageMetaData['git_url']), this.options()));
+            chatUrls.push(this.http.get<any>(this.restHelper.removeUrlParams(messageMetaData['git_url']), this.restHelper.options()));
           }
           return chatUrls;
         }),
@@ -89,7 +78,7 @@ export class ChatRepo {
           for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
             const messageMetaData = messagesMetaData[i];
             if (this.idExtractor(messageMetaData.name) > lastId)
-              chatUrls.push(this.http.get<any>(this.restHelper.removeUrlParams(messageMetaData['git_url'])), this.options());
+              chatUrls.push(this.http.get<any>(this.restHelper.removeUrlParams(messageMetaData['git_url'])), this.restHelper.options());
           }
           return chatUrls;
         }),
@@ -106,7 +95,7 @@ export class ChatRepo {
   }
 
   checkForUpdatedMessage(id: number): Observable<RecieveChat> {
-    return this.http.get<any>(`${this.baseMessagesUrl}/id_${id}.json`, this.options())
+    return this.http.get<any>(`${this.baseMessagesUrl}/id_${id}.json`, this.restHelper.options())
       .pipe(
         retry(10)
       ).pipe(
@@ -132,7 +121,7 @@ export class ChatRepo {
       "content": btoa(btoa(JSON.stringify(newMessage)))
     })
 
-    return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.options())
+    return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.restHelper.options())
       .pipe(
         map((result: { content: GitHubMetaData }) => {
           let metadata = <GitHubMetaData>result['content'];
@@ -154,7 +143,7 @@ export class ChatRepo {
       'sha': message.Sha
     })
 
-    return this.http.put(postUrl, rawCommitBody, this.options())
+    return this.http.put(postUrl, rawCommitBody, this.restHelper.options())
       .pipe(
         map((result: { content: GitHubMetaData }) => {
           let metadata = result.content;
@@ -172,7 +161,7 @@ export class ChatRepo {
     }
     const rawCommitBody = JSON.stringify(commitBody);
 
-    return this.http.request('delete', deletetUrl, { body: rawCommitBody, headers: this.options().headers })
+    return this.http.request('delete', deletetUrl, { body: rawCommitBody, headers: this.restHelper.options().headers })
   }
 
   // helpers

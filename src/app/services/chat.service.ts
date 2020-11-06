@@ -32,7 +32,14 @@ export class ChatService {
           this.messageService.add(` • Got last 10 chat messages.`);
         },
         error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, 'getting last 10 chat records');
+
+          if (err.status === 404 && err.message.toLowerCase() === "not found") {
+            this.messageService.add(` • Creating repo: chatStore.`);
+            this.restHelper.createRepo('chatStore', 'store chat messages');
+          }
+          else
+            this.restHelper.errorMessageHandler(err, 'getting last 10 chat records');
+
         }
       });
   }
