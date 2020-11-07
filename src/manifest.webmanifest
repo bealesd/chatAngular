@@ -1,6 +1,6 @@
 {
-  "name": "chatAngular",
-  "short_name": "chatAngular",
+  "name": "myApp",
+  "short_name": "myApp",
   "theme_color": "white",
   "background_color": "black",
   "display": "standalone",

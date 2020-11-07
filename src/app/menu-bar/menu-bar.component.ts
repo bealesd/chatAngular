@@ -29,7 +29,7 @@ export class MenuBarComponent implements OnInit {
 
     this.menuService.setupMenuEvents();
 
-    this.menuService.disableMenuItem('todo-click');
+    // this.menuService.disableMenuItem('todo-click');
 
     this.menuService.disableMenuItem('cancel-click');
     this.menuService.disableMenuItem('delete-click');

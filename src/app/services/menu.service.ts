@@ -96,6 +96,12 @@ It is serverless, thanks to GitHub API.`
         this.router.navigate(['calendar']);
       });
 
+      this.registerMenuEvent('todo-click',
+      () => {
+        this.hideMenu();
+        this.router.navigate(['todo']);
+      });
+
     // this.router.routeReuseStrategy.shouldReuseRoute = () => { return false; }
     // this.router.onSameUrlNavigation = 'reload';
   }
