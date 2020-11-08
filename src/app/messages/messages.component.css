@@ -1,4 +1,6 @@
-/* MessagesComponent's private CSS styles */
+.message-container{
+    background-color: rgba(0, 0, 0, 0.5);
+}
 
 .infoHeader {
     display: inline;

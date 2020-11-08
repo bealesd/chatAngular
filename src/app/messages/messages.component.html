@@ -1,8 +1,10 @@
-<div class="infoHeader">Messages</div>
-<button class="clear" (click)="messageService.clear()">clear</button>
+<div class="message-container">
+    <div class="infoHeader">Messages</div>
+    <button class="clear" (click)="messageService.clear()">clear</button>
 
-<div class="messages-container" >
-    <div  *ngFor='let message of messageService.messages'>
-        <div class="{{message.type}}">{{message.message}} </div>
+    <div class="messages-container">
+        <div *ngFor='let message of messageService.messages'>
+            <div class="{{message.type}}">{{message.message}} </div>
+        </div>
     </div>
 </div>

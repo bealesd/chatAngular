@@ -37,16 +37,15 @@ export class RestHelper {
     }
 
     createRepo(name: string, description: string) {
-        const repoPath = 'https://api.github.com/bealesd/repos'
-        const postUrl = `${repoPath}`;
+        const postUrl = 'https://api.github.com/users/bealesd/repos';
 
-        const rawCommitBody = JSON.stringify({
+        const rawCommitBody = {
             "name": name,
             "description": description,
             "private": false
-        });
+        };
 
-        this.http.put<{ content: any }>(postUrl, rawCommitBody, this.options()).subscribe(
+        this.http.post<{ content: any }>(postUrl, rawCommitBody, this.options()).subscribe(
             {
                 next: (result: any) => {
                     this.messageService.add(` • Created repo: ${name}.`);

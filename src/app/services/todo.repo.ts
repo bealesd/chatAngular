@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient} from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import { GitHubMetaData } from '../models/gitHubMetaData'
 import { RestHelper } from '../helpers/rest-helper';
@@ -10,8 +10,10 @@ import { MessageService } from '../services/message.service';
   providedIn: 'root'
 })
 export class TodoRepo {
-  private baseMessagesUrl = 'https://api.github.com/repos/bealesd/todo/contents';
-  // public calendarRecordRest: CalendarRecordRest = new CalendarRecordRest();
+  private baseMessagesUrl = 'https://api.github.com/repos/bealesd/todoStore/contents';
+  // public todoList = new BehaviorSubject([]);
+  public todoList = [];
+  public sha = '';
 
   constructor(
     private http: HttpClient,
@@ -19,100 +21,133 @@ export class TodoRepo {
     private messageService: MessageService) {
   }
 
-  // getTodoRecordsForMonthRest(year: number, month: number): Observable<any> {
-  //   const getUrl = `${this.baseMessagesUrl}/${year}-${month}.json`;
-  //   return this.http.get<[]>(this.restHelper.removeUrlParams(getUrl), this.restHelper.options());
-  // }
+  postTodoItemRest(todoItemList: {}[]): Observable<any> {
+    const postUrl = `${this.baseMessagesUrl}/todo.json`;
 
-  // postCalendarRecordsRest(calendarRecords: CalendarRecordRest): Observable<any> {
-  //   const postUrl = `${this.baseMessagesUrl}/${calendarRecords.year}-${calendarRecords.month}.json`;
+    const rawCommitBody = JSON.stringify({
+      "message": `Api commit by todo list wesbite at ${new Date().toLocaleString()}`,
+      "content": btoa(btoa(JSON.stringify(todoItemList))),
+      'sha': this.sha
+    });
 
-  //   const rawCommitBody = JSON.stringify({
-  //     "message": `Api commit by calendar record wesbite at ${new Date().toLocaleString()}`,
-  //     "content": btoa(btoa(calendarRecords.toJsonString())),
-  //     'sha': calendarRecords.sha
-  //   });
+    return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.restHelper.options());
+  }
 
-  //   return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.restHelper.options());
-  // }
+  deleteItem(id): void {
+    this.messageService.add(`Deleting todo item: ${id}.`);
 
-  // deleteCalendarRecord(id: string): void {
-  //   this.messageService.add(`Deleting calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}, ${id}.`);
+    let todoList = this.todoList;
 
-  //   const recordsToKeep = this.calendarRecordRest.records.filter(r => r.id !== id);
-  //   const deepCopyRecords = JSON.parse(JSON.stringify(recordsToKeep));
-  //   this.calendarRecordRest.records = recordsToKeep;
+    todoList = todoList.filter(t => t.id !== id);
 
-  //   this.postCalendarRecordsRest(this.calendarRecordRest).subscribe(
-  //     {
-  //       next: (calendarRecordsResult) => {
-  //         this.calendarRecordRest.sha = (<any>calendarRecordsResult).content.sha;
-  //         this.messageService.add(` • Deleted calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}, ${id}.`);
-  //       },
-  //       error: (err: any) => {
-  //         this.restHelper.errorMessageHandler(err, `deleting calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}, ${id}.`);
-  //         this.calendarRecordRest.records = deepCopyRecords;
-  //       }
-  //     }
-  //   );
-  // }
+    this.postTodoItemRest(todoList).subscribe(
+      {
+        next: (calendarRecordsResult: any[]) => {
+          this.sha = (<any>calendarRecordsResult).content.sha;
+          this.todoList = todoList;
 
-  // postCalendarRecord(record: CalendarRecord): void {
-  //   const isUpdate = this.calendarRecordRest.records.find(r => r.id === record.id) !== undefined;
-  //   if (isUpdate) {
-  //     let recordTopdate = this.calendarRecordRest.records.find(r => r.id === record.id);
-  //     recordTopdate.what = record.what;
-  //     recordTopdate.day = record.day;
-  //     recordTopdate.hour = record.hour;
-  //     recordTopdate.minute = record.minute;
-  //   }
-  //   else
-  //     this.calendarRecordRest.records.push(record);
+          this.messageService.add(` • Deleted todo item for ${id}.`);
+        },
+        error: (err: any) => {
+          this.restHelper.errorMessageHandler(err, `deleting todo item for ${id}.`);
+        }
+      }
+    );
+  }
 
-  //   this.messageService.add(`Posting calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}.`);
-  //   this.postCalendarRecordsRest(this.calendarRecordRest).subscribe(
-  //     {
-  //       next: (calendarRecordsResult: any[]) => {
-  //         this.calendarRecordRest.sha = (<any>calendarRecordsResult).content.sha;
+  updateItem(id, text, complete): void {
+    this.messageService.add(`Updating todo item: ${id}.`);
 
-  //         this.messageService.add(` • Posted calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}.`);
-  //       },
-  //       error: (err: any) => {
-  //         this.restHelper.errorMessageHandler(err, `posting calendar records for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}. Record: ${JSON.stringify(record)}.`);
-  //       }
-  //     }
-  //   );
-  // }
+    let todoList = this.todoList;
 
-  // getCalendarRecords(year: number, month: number): void {
-  //   this.messageService.add(`Getting calendar record for ${year}-${month + 1}.`);
-  //   this.calendarRecordRest.year = year;
-  //   this.calendarRecordRest.month = month;
-  //   this.calendarRecordRest.records = [];
+    let item = this.todoList.find(t => t.id === id);
+    item.text = text;
+    item.complete = complete;
 
-  //   this.getCalendarRecordsForMonthRest(year, month).subscribe(
-  //     {
-  //       next: (calendarRecordGitHub: any) => {
-  //         JSON.parse(atob(atob(calendarRecordGitHub.content))).forEach(rec => {
-  //           this.calendarRecordRest.records.push(new CalendarRecord(rec.id, rec.what, rec.day, rec.hour, rec.minute));
-  //         });
+    this.postTodoItemRest(todoList).subscribe(
+      {
+        next: (calendarRecordsResult: any[]) => {
+          this.sha = (<any>calendarRecordsResult).content.sha;
+          this.todoList = todoList;
 
-  //         this.calendarRecordRest.sha = calendarRecordGitHub.sha;
+          this.messageService.add(` • Updated todo item for ${id}.`);
+        },
+        error: (err: any) => {
+          this.restHelper.errorMessageHandler(err, `updating todo item for ${id}.`);
+        }
+      }
+    );
+  }
 
-  //         this.messageService.add(` • Got ${this.calendarRecordRest.records.length} calendar records.`);
-  //       },
-  //       error: (err: any) => {
-  //         this.calendarRecordRest.records = [];
+  postNewItem(text): void {
+    this.messageService.add(`Posting todo item: ${text}.`);
 
-  //         if (err.status === 404 && err.message.toLowerCase() === "not found") {
-  //           this.messageService.add(` • Creating repo: calendarStore.`);
-  //           this.restHelper.createRepo('calendarStore', 'store calendar records');
-  //         }
-  //         else
-  //           this.restHelper.errorMessageHandler(err, 'getting calendar records');
-  //       }
-  //     }
-  //   );
-  // }
+    let todoList = this.todoList;
+
+    const ids = todoList.map(t => t.id)
+    let id = 1
+    if (ids.length > 0)
+      id = Math.max(...Object.values(todoList.map(t => t.id))) + 1;
+
+    todoList.push({ id: id, text: text, complete: false });
+
+    this.postTodoItemRest(todoList).subscribe(
+      {
+        next: (calendarRecordsResult: any[]) => {
+          this.sha = (<any>calendarRecordsResult).content.sha;
+          this.todoList = todoList;
+
+          this.messageService.add(` • Posted todo item for ${id} with text ${text}.`);
+        },
+        error: (err: any) => {
+          this.restHelper.errorMessageHandler(err, `posting todo item for ${id} with text ${text}.`);
+        }
+      }
+    );
+  }
+
+  getTodoList(): void {
+    this.messageService.add(`Getting todo list.`);
+
+    const getUrl = `${this.baseMessagesUrl}/todo.json`;
+
+    let todoList = [];
+    this.http.get<[]>(this.restHelper.removeUrlParams(getUrl), this.restHelper.options())
+      .subscribe(
+        {
+          next: (todoGitHub: any) => {
+            JSON.parse(atob(atob(todoGitHub.content))).forEach(item => todoList.push(item));
+            this.todoList = todoList;
+            this.sha = todoGitHub.sha;
+
+            this.messageService.add(` • Got ${todoList.length} todo items.`);
+          },
+          error: (err: any) => {
+            this.todoList = todoList;
+
+            if (err.status === 404 && err.statusText.toLowerCase() === 'not found' && err.error.message === 'Not Found') {
+              this.messageService.add(` • Creating repo: todoStore.`);
+              this.restHelper.createRepo('todoStore', 'store todo list');
+            }
+            else if (err.status === 404 && err.statusText.toLowerCase() === 'not found' && err.error.message === 'This repository is empty.') {
+              this.messageService.add(` • Creating file: todo.json.`);
+              this.postTodoItemRest([]).subscribe(
+                {
+                  next: (calendarRecordsResult: any[]) => {
+                    this.sha = (<any>calendarRecordsResult).content.sha;
+                    this.messageService.add(` • Created todo.json.`);
+                  },
+                  error: (err: any) => {
+                    this.restHelper.errorMessageHandler(err, `creating todo.json.`);
+                  }
+                }
+              );
+            }
+            else
+              this.restHelper.errorMessageHandler(err, 'getting todo list');
+          }
+        }
+      );
+  }
 
 }

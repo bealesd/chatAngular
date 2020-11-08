@@ -20,7 +20,7 @@
         </div>
 
         <div class="todo-item-container" *ngFor="let item of sortedTodoList; let i = index">
-            <div class="todo-text">{{item.text}}</div>
+            <div class="todo-text {{item.complete ? 'strikethrough' : ''}}">{{item.text}}</div>
 
             <div class="delete-btn-container">
                 <button class="delete-btn" type="submit" (click)="deleteTodo(item)">

@@ -106,7 +106,7 @@ export class CalendarRepo {
         error: (err: any) => {
           this.calendarRecordRest.records = [];
 
-          if (err.status === 404 && err.message.toLowerCase() === "not found") {
+          if (err.status === 404 && err.statusText.toLowerCase() === "not found") {
             this.messageService.add(` • Creating repo: calendarStore.`);
             this.restHelper.createRepo('calendarStore', 'store calendar records');
           }

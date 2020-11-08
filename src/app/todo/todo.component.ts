@@ -1,45 +1,41 @@
 import { Component, OnInit } from '@angular/core';
+import { TodoRepo } from '../services/todo.repo'
 
 @Component({
   selector: 'app-todo',
   templateUrl: './todo.component.html',
   styleUrls: ['./todo.component.css']
 })
-export class TodoComponent implements OnInit {
-  todoList = [
-    { id: 6, text: 'tennis' },
-    { id: 1, text: 'swimming' },
-    { id: 2, text: 'jogging' }
-  ];
 
+export class TodoComponent implements OnInit {
   get sortedTodoList() {
-    return this.todoList.sort((a, b) => {
+    return this.todoRepo.todoList.sort((a, b) => {
       return a.id - b.id;
     });
   }
 
-  constructor() { }
+  constructor(public todoRepo: TodoRepo) { }
 
   ngOnInit(): void {
     document.querySelector('body').classList.remove('dark');
     document.querySelector('body').classList.add('todo');
+
+    this.todoRepo.getTodoList();
   }
 
   deleteTodo(todo) {
-
+    this.todoRepo.deleteItem(todo.id);
   }
 
   addTodo() {
-    const value = (<HTMLInputElement>document.querySelector('.todo-input')).value;
-    // Math.max(  O
-    const id = Math.max(...Object.values(this.todoList.map(t => t.id))) + 1;
-    this.todoList.push({id: id, text: value});
-
+    const text = (<HTMLInputElement>document.querySelector('.todo-input')).value;
     (<HTMLInputElement>document.querySelector('.todo-input')).value = '';
+    this.todoRepo.postNewItem(text);
   }
 
   markTodoAsDone(todo) {
-
+    todo.complete = !todo.complete;
+    this.todoRepo.updateItem(todo.id, todo.text, todo.complete);
   }
 
 }
