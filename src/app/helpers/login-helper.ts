@@ -19,10 +19,6 @@ export class LoginHelper {
 
     document.body.className = '';
     document.body.classList.add('dark');
-    // if (this.who === 'David')
-    //   document.body.classList.add('dark');
-    // else
-    //   document.body.classList.add('light');
   }
 
   updatePerson(chatPerson) {

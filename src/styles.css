@@ -19,10 +19,8 @@ body {
     height: 100%;
     margin: 0px;
     font-family: 'Space Mono';
-    /* background-color: var(--main-background-color); */
-    background: var(--main-background-url);
+    background: var(--main-background);
     background-size: cover;
-    /* linear-gradient(40deg, rgb(29, 48, 48), black); */
 }
 
 h1,
@@ -35,8 +33,8 @@ h6 {
 }
 
 .dark {
-    --main-background-color: rgba(0, 0, 0, 1);
-    --main-background-url: url(https://raw.githubusercontent.com/bealesd/chatAngular/master/src/assets/images/ringOnBlack.jpg);
+    /* --main-background: rgba(0, 0, 0, 1); */
+    --main-background: url(https://raw.githubusercontent.com/bealesd/chatAngular/master/src/assets/images/ringOnBlack.jpg);
     --main-header-font-color: rgb(248, 248, 248);
     --message-continer-border: 2px solid rgb(255, 0, 0);
     --message-padding: 5px 10px 5px 10px;
@@ -49,8 +47,8 @@ h6 {
 }
 
 .light {
-    --main-background-color: rgba(248, 248, 248, 1);
-    --main-background-url: url(https://raw.githubusercontent.com/bealesd/chatAngular/master/src/assets/images/spaceRed.jpg);
+    /* --main-background: rgba(248, 248, 248, 1); */
+    --main-background: url(https://raw.githubusercontent.com/bealesd/chatAngular/master/src/assets/images/spaceRed.jpg);
     --main-header-font-color: rgb(0, 0, 0);
     --message-continer-border: 2px solid rgb(252, 113, 113);
     --message-padding: 5px 10px 5px 10px;
@@ -60,4 +58,9 @@ h6 {
     --david-message-border: 2px solid rgb(126, 126, 240);
     --message-size: 14px;
     --message-weight: 600;
+}
+
+.todo {
+    --main-background: linear-gradient(120deg, #1d4e89, #00b2ca);
+    /* --main-background-url: url(https://raw.githubusercontent.com/bealesd/chatAngular/master/src/assets/images/spaceRed.jpg); */
 }

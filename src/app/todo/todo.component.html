@@ -1,1 +1,45 @@
-<p>todo works!</p>
+<div class="grid-container">
+
+    <h1>Todo List</h1>
+
+    <div class="todo-list-container">
+
+        <div class="todo-header-container">
+            <input type="text" class="todo-input" maxlength="20" />
+
+            <div class="add-btn-container">
+                <button class="add-btn" type="submit" (click)="addTodo()">
+                    <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="plus" role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
+                        <path fill="currentColor"
+                            d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="todo-item-container" *ngFor="let item of sortedTodoList; let i = index">
+            <div class="todo-text">{{item.text}}</div>
+
+            <div class="delete-btn-container">
+                <button class="delete-btn" type="submit" (click)="deleteTodo(item)">
+                    <svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="trash-alt" role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
+                        <path fill="currentColor"
+                            d="M268 416h24a12 12 0 0 0 12-12V188a12 12 0 0 0-12-12h-24a12 12 0 0 0-12 12v216a12 12 0 0 0 12 12zM432 80h-82.41l-34-56.7A48 48 0 0 0 274.41 0H173.59a48 48 0 0 0-41.16 23.3L98.41 80H16A16 16 0 0 0 0 96v16a16 16 0 0 0 16 16h16v336a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48V128h16a16 16 0 0 0 16-16V96a16 16 0 0 0-16-16zM171.84 50.91A6 6 0 0 1 177 48h94a6 6 0 0 1 5.15 2.91L293.61 80H154.39zM368 464H80V128h288zm-212-48h24a12 12 0 0 0 12-12V188a12 12 0 0 0-12-12h-24a12 12 0 0 0-12 12v216a12 12 0 0 0 12 12z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="checkbox-btn-container">
+                <button class="checkbox-btn" type="submit" (click)="markTodoAsDone(item)">
+                    <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="clipboard-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" data-fa-i2svg=""><path fill="currentColor" d="M336 64h-80c0-35.3-28.7-64-64-64s-64 28.7-64 64H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48zM192 40c13.3 0 24 10.7 24 24s-10.7 24-24 24-24-10.7-24-24 10.7-24 24-24zm121.2 231.8l-143 141.8c-4.7 4.7-12.3 4.6-17-.1l-82.6-83.3c-4.7-4.7-4.6-12.3.1-17L99.1 285c4.7-4.7 12.3-4.6 17 .1l46 46.4 106-105.2c4.7-4.7 12.3-4.6 17 .1l28.2 28.4c4.7 4.8 4.6 12.3-.1 17z"></path></svg>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
