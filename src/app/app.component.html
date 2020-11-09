@@ -1,8 +1,10 @@
-<app-menu-bar></app-menu-bar>
+<div class="page-container">
+    <div class="main-container">
+        <app-menu-bar></app-menu-bar>
+        <router-outlet></router-outlet>
+        <app-dialog-box></app-dialog-box>
+    </div>
 
-<router-outlet></router-outlet>
-<br>
-<app-messages></app-messages>
+    <app-messages></app-messages>
 
-
-<app-dialog-box></app-dialog-box>
+</div>

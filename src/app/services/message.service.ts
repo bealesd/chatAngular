@@ -5,18 +5,12 @@ import { Injectable } from '@angular/core';
 })
 export class MessageService {
   messages: any = [];
+  types = ['error', 'info', 'warning']
 
   add(message: string, type?: string) {
-    if (type === null || type === undefined) type = 'info';
+    if (!this.types.includes(type)) type = 'info';
 
-    if (type.toLocaleLowerCase() === 'error')
-      this.messages.push({ 'type': 'error', 'message': `${new Date().toLocaleString()} - ${message}` });
-    else if (type.toLocaleLowerCase() === 'info')
-      this.messages.push({ 'type': 'info', 'message': `${new Date().toLocaleString()} - ${message}` });
-    else if (type.toLocaleLowerCase() === 'warning')
-      this.messages.push({ 'type': 'warning', 'message': `${new Date().toLocaleString()} - ${message}` });
-    else
-      this.messages.push({ 'type': 'info', 'message': `${new Date().toLocaleString()} - ${message}` });
+    this.messages.unshift({ 'type': type.toLocaleLowerCase(), 'message': `${new Date().toLocaleString()} - ${message}` });
   }
 
   clear() {

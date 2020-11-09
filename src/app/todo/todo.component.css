@@ -8,6 +8,23 @@
     --col-three: calc(var(--plus-button-padding) + var(--plus-button-width) + var(--plus-button-padding));
 }
 
+/*medium size wrapper*/
+
+@media screen and (max-width: 600px) and (min-width: 400px) {
+  :host {
+    --text-ouput-width: 250px;
+ }
+}
+
+
+/*small size wrapper*/
+
+@media screen and (max-width: 400px) {
+  :host {
+     --text-ouput-width: 200px;
+ }
+}
+
 .grid-container {
     display: grid;
     grid-template-columns: auto calc(var(--col-one) + var(--col-two) + var(--col-three)) auto;
