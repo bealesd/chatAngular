@@ -1,7 +1,13 @@
  :host{
     --text-ouput-width: 320px;
     --plus-button-width: 40px;
+    --plus-button-height: 40px;
     --plus-button-padding: 5px;
+    --todo-item-height: 40px;
+    --todo-text-font-size: 25px;
+    --todo-text-font-family: inherit;
+
+    --todo-item-vertical-spacing: 5px;
 
     --col-one: calc(var(--plus-button-padding) + var(--plus-button-width) + var(--plus-button-padding));
     --col-two: var(--text-ouput-width);
@@ -13,6 +19,15 @@
 @media screen and (max-width: 600px) and (min-width: 400px) {
   :host {
     --text-ouput-width: 250px;
+    --todo-text-font-size: 14px;
+    --todo-text-font-family: inherit;
+
+    --todo-item-height: 30px;
+    --plus-button-width: 30px;
+    --plus-button-height: 30px;
+    --plus-button-padding: 3px;
+
+    --todo-item-vertical-spacing: 4px;
  }
 }
 
@@ -22,6 +37,15 @@
 @media screen and (max-width: 400px) {
   :host {
      --text-ouput-width: 200px;
+     --todo-text-font-size: 13px;
+     --todo-text-font-family: 'Arial Narrow';
+
+     --todo-item-height: 20px;
+     --plus-button-width: 20px;
+     --plus-button-height: 20px;
+     --plus-button-padding: 2px;
+
+     --todo-item-vertical-spacing: 3px;
  }
 }
 
@@ -46,7 +70,7 @@ h1{
 }
 
 .todo-header-container{
-    height: 40px;
+    /* height: var(--todo-item-height); */
     grid-row: 1;
     display: grid;
     grid-template-columns: calc(var(--col-one) + var(--col-two))  var(--col-three);
@@ -56,16 +80,6 @@ h1{
     margin-top: var(--plus-button-padding);
     margin-bottom: var(--plus-button-padding);
 }
-
- .todo-input {
-    grid-column: 1;
-    grid-row: 1;
-    font-size: 25px;
-    padding-left: var(--plus-button-padding);
-    border: none;
-    outline: none;
-    background-color: white;
-  }
 
    .add-btn-container{
     grid-column: 2;
@@ -80,26 +94,49 @@ h1{
     background: #000082;
     color: #fff;
     cursor: pointer;
-    transition: all ease-in-out 0.2s;
+    transition: all ease-in-out 0.4s;
 
     width: var(--plus-button-width);
-    height: var(--plus-button-width);
+    height: var(--plus-button-height);
   }
 
    .add-btn-container >.add-btn:hover {
     background: #ff6b24;
-    transform: scale(1.3);
+    transform: scale(1.2);
   } 
 
-
   .todo-item-container{
-    height: 40px;
     display: grid;
     grid-template-columns: var(--col-two) var(--col-one) var(--col-three);
     background-color: white; 
     padding-top: var(--plus-button-padding);
     padding-bottom: var(--plus-button-padding);
-    margin-top: var(--plus-button-padding);
+    margin-top: var(--todo-item-vertical-spacing);
+}
+
+.todo-input {
+  grid-column: 1;
+  grid-row: 1;
+  font-size: var(--todo-text-font-size);
+  font-family: var(--todo-text--font-family);
+  padding-left: var(--plus-button-padding);
+  border: none;
+  outline: none;
+  background-color: white;
+}
+
+.todo-text{
+  grid-column: 1;
+  font-size: var(--todo-text-font-size);
+  font-family: var(--todo-text--font-family);
+  padding-left: var(--plus-button-padding);
+  border: none;
+  outline: none;
+  background-color: white;
+}
+
+.strikethrough {
+  text-decoration: line-through;
 }
 
   .delete-btn-container{
@@ -114,15 +151,15 @@ h1{
     background: #000082;
     color: #fff;
     cursor: pointer;
-    transition: all ease-in-out 0.2s;
+    transition: all ease-in-out 0.4s;
 
     width: var(--plus-button-width);
-    height: var(--plus-button-width);
+    height: var(--plus-button-height);
   }
 
   .delete-btn-container >.delete-btn:hover {
     background: #f00000;
-    transform: scale(1.3);
+    transform: scale(1.2);
   } 
 
   .checkbox-btn-container{
@@ -137,30 +174,17 @@ h1{
     background: #000082;
     color: #fff;
     cursor: pointer;
-    transition: all ease-in-out 0.2s;
+    transition: all ease-in-out 0.4s;
 
     width: var(--plus-button-width);
-    height: var(--plus-button-width);
+    height: var(--plus-button-height);
   }
 
   .checkbox-btn-container >.checkbox-btn:hover {
     background: #008000;
-    transform: scale(1.3);
+    transform: scale(1.2);
   }
 
-
-.todo-text{
-    grid-column: 1;
-    font-size: 25px;
-    padding-left: var(--plus-button-padding);
-    border: none;
-    outline: none;
-    background-color: white;
-  }
-
-  .strikethrough {
-    text-decoration: line-through;
-  }
 
 
   /* .form-alert {

@@ -78,12 +78,6 @@ button:hover {
     overflow-x: auto;
 }
 
-.messages-container::-webkit-scrollbar {
-    /* width: 0px; */
-    /* background: transparent; */
-    /* make scrollbar transparent */
-}
-
 .messages-container::-webkit-scrollbar,.message-container::-webkit-scrollbar  {
     width: 10px;
     height: 10px;
