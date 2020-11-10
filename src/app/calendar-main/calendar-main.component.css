@@ -2,13 +2,14 @@
     --main-margin: 5px;
     --record-text-and-heading-color: white;
     --heading-font-size: 16px;
+    --heading-font-family: inherit;
     --heading-font-weight: normal;
     --change-page-font-size: 20px;
     --mask-background-color: rgba(38, 38, 38);
     --change-page-first-grid-column: 1/2;
     --change-page-last-grid-column: 2/3;
     --today-button-grid-column: 4/6;
-    --title-grid-column: 7/10;
+    --month-grid-column: 7/10;
     --year-grid-column: 10/12;
     --calendar-view-grid-column: 14/15;
     --column-width: 50px;
@@ -18,16 +19,36 @@
 }
 
 
+/*medium size wrapper*/
+
+@media screen and (max-width: 700px) and (min-width: 450px) {
+    :host {
+        --column-width: 40px;
+        --column-count: 9;
+        --today-button-grid-column: 3/5;
+        --month-grid-column: 5/7;
+        --year-grid-column: 7/9;
+        --calendar-view-grid-column: 11/13;
+
+        --heading-font-size: 14px;
+        --heading-font-family: 'Arial Narrow';
+   }
+  }
+
 /*small size wrapper*/
 
-@media screen and (max-width: 800px) {
-     :host {
-        --column-count: 7;
-        --today-button-grid-column: 3/5;
-        --title-grid-column: 5/7;
-        --year-grid-column: 7/9;
-        --calendar-view-grid-column: 9/10;
-    }
+@media screen and (max-width: 450px) {
+    :host {
+       --column-count: 9;
+       --column-width: 30px;
+       --today-button-grid-column: 3/5;
+       --month-grid-column: 5/7;
+       --year-grid-column: 7/9;
+       --calendar-view-grid-column: 10/12;
+
+       --heading-font-size: 12px;
+       --heading-font-family: 'Arial Narrow';
+   }
 }
 
 .changePageContainer {
@@ -36,6 +57,8 @@
     color: var(--record-text-and-heading-color);
     grid-template-rows: repeat(1, var(--column-width));
     background-color: var(--mask-background-color);
+    font-size: var(--heading-font-size);
+    font-style: var(--heading-font-family);
 }
 
 .changePageContainer button:first-of-type {
@@ -48,12 +71,10 @@
 
 .today-button {
     grid-column: var(--today-button-grid-column);
-    font-size: var(--heading-font-size);
-    font-weight: var(--heading-font-weight);
 }
 
-#title {
-    grid-column: var(--title-grid-column);
+#titleMonth {
+    grid-column: var(--month-grid-column);
 }
 
 #titleYear {
@@ -70,11 +91,11 @@
     background-color: var(--mask-background-color);
     color: var(--record-text-and-heading-color);
     font: inherit;
-    text-align: left;
     margin-right: 10px;
 }
 
 #dropdown>option {
+    font: inherit;
     border: 0px;
     outline: 0;
     background-color: inherit;
@@ -86,19 +107,6 @@
     background-color: red;
 }
 
-.changePageContainer button:not(.today-button) {
-    font-size: var(--change-page-font-size);
-}
-
-.changePageContainer>div {
-    color: white;
-    padding: 12px 4px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    font-style: arial-narrow;
-}
 
 [class*="-button"],
 .dropdown {
@@ -109,6 +117,10 @@
 .today-button {
     background-color: transparent;
     border: none;
+    margin: auto 0px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .dropdown:hover,

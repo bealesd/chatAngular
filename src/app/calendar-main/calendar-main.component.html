@@ -18,7 +18,7 @@
 
     <div class="today-button" (click)="calendarService.changeToToday()">Today</div>
 
-    <select class="dropdown" (change)="updateMonth(title.value)" #title id="title">
+    <select class="dropdown" (change)="updateMonth(titleMonth.value)" #titleMonth id="titleMonth">
       <option *ngFor='let month of calendarService.monthNames; let i = index;' [value]="i"
         [selected]="getSelectedMonth(month)">
         {{(width < 800 ? calendarService.monthNamesShort[i]:month)}}

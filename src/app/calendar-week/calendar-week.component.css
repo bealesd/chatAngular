@@ -52,7 +52,7 @@
 
 @media screen and (max-width: 800px) {
      :host {
-        --weekday-name-and-number-font-size: 13px;
+        --weekday-name-and-number-font-size: 11px;
         --weekday-name-font-weight: 300;
         --weekday-name-font-family: 'Arial Narrow';
         --day-grid-template-rows-first-width: 20px;
