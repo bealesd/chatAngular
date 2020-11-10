@@ -78,6 +78,14 @@ It is serverless, thanks to GitHub API.`
         else this.logout();
       });
 
+      this.registerMenuEvent('new-user-click',
+      () => {
+        this.hideMenu();
+        this.router.navigate(['newUser']);
+      });
+
+      // app-new-user
+
       this.registerMenuEvent('home-click',
       () => {
         this.hideMenu();

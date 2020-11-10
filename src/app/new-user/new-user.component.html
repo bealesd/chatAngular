@@ -1,0 +1,14 @@
+<div class="new-user-container">
+
+    <h1>Create new User</h1>
+        <form>
+            <label for="username">Username</label>
+            <input type="text" #username name="username">
+
+            <label for="password">Password</label>
+            <input [type]="show ? 'text' : 'password'" #password name="password" placeholder="key">
+
+            <button (click)="showPassword()">Show</button>
+            <input (click)='createNewUser(username.value, password.value)' type="submit" value="Create"> 
+        </form>
+    </div>

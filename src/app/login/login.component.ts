@@ -39,14 +39,13 @@ export class LoginComponent implements OnInit {
     this.who = this.loginHelper.who;
   }
 
-  login() {
-    const citherKey = (<HTMLInputElement>document.querySelector('#login')).value;
-    this.cryptoService.encryptCredentials(citherKey);
+  login(username:string, password:string) {
+    this.cryptoService.encryptCredentials(username, password);
 
     this.loginService.login();
   }
 
-  password() {
+  showPassword() {
     this.show = !this.show;
   }
 

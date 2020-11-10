@@ -1,19 +1,12 @@
 <div class="login" *ngIf='loggedIn === false'>
 
-    <div id="usernameContainer">
-        <h4>
-            Username:
-            <select [ngModel]="who" (ngModelChange)="changePerson($event)" name="sel2">
-                <option [ngValue]="name" *ngFor="let name of names">{{name}}</option>
-            </select>
-        </h4>
-    </div>
-
-
+<h1>Login</h1>
     <form>
-        <label for="login">Login</label><br>
-        <input [type]="show ? 'text' : 'password'" id="login" name="login" placeholder="key">
-        <button (click)="password()">Show</button>
-        <input (click)='login()' type="submit" value="Submit">
+        <label for="username">Username</label>
+        <input [type]="text" #username name="username">
+        <label for="password">Password</label>
+        <input [type]="show ? 'text' : 'password'" #password name="password" placeholder="key">
+        <button (click)="showPassword()">Show</button>
+        <input (click)='login(username.value, password.value)' type="submit" value="Submit">
     </form>
 </div>

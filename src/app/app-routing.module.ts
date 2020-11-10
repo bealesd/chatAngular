@@ -8,10 +8,12 @@ import { CalendarMainComponent } from './calendar-main/calendar-main.component';
 import { ChatComponent } from './chat-main/chat-main.component';
 import { TodoComponent } from './todo/todo.component';
 import { AppsComponent } from './apps/apps.component';
+import { NewUserComponent } from './new-user/new-user.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'newUser', component: NewUserComponent },
   { path: 'apps', component: AppsComponent },
   { path: 'chat', component: ChatComponent },
   { path: 'calendar', component: CalendarMainComponent },
