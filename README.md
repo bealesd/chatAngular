@@ -10,4 +10,4 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Build Githib
 Run `ng build --prod` to build the project. The build artifacts will be stored in the `dist/` directory. Copy dist content to docs folder. Copy index.html as 404.html. Add ```<base href="">``` in  ```<head>```.
-ng build --prod --output-path docs --base-href chatAngular
+ng build --prod --output-path docs --base-href ""
