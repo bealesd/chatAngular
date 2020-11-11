@@ -13,4 +13,13 @@ export class Utilities {
             return v.toString(16);
         });
     }
+
+    defaultTheme(){
+        this.updateTheme('dark');
+    }
+
+    updateTheme(theme){
+        document.body.className = '';
+        document.body.classList.add(theme);
+    }
 }

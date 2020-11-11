@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MenuService } from '../services/menu.service';
 import { TodoRepo } from '../services/todo.repo'
 
 @Component({
@@ -14,13 +15,14 @@ export class TodoComponent implements OnInit {
     });
   }
 
-  constructor(public todoRepo: TodoRepo) { }
+  constructor(
+    public todoRepo: TodoRepo,
+    public menuService: MenuService
+  ) { }
 
   ngOnInit(): void {
-    document.querySelector('body').classList.remove('dark');
-    document.querySelector('body').classList.add('todo');
-
     this.todoRepo.getTodoList();
+    this.menuService.activateRoute('todo-click');
   }
 
   deleteTodo(todo) {

@@ -75,18 +75,19 @@ It is serverless, thanks to GitHub API.`
       () => {
         this.hideMenu();
         if (this.loggedIn === false && this.router.url === '/login') alert('Already logged out.');
-        else this.logout();
+        else {
+          this.logout();
+          this.activateRoute('logout-click');
+        }
       });
 
-      this.registerMenuEvent('new-user-click',
+    this.registerMenuEvent('new-user-click',
       () => {
         this.hideMenu();
         this.router.navigate(['newUser']);
       });
 
-      // app-new-user
-
-      this.registerMenuEvent('home-click',
+    this.registerMenuEvent('home-click',
       () => {
         this.hideMenu();
         this.router.navigate(['apps']);
@@ -104,7 +105,7 @@ It is serverless, thanks to GitHub API.`
         this.router.navigate(['calendar']);
       });
 
-      this.registerMenuEvent('todo-click',
+    this.registerMenuEvent('todo-click',
       () => {
         this.hideMenu();
         this.router.navigate(['todo']);
@@ -114,6 +115,15 @@ It is serverless, thanks to GitHub API.`
     // this.router.onSameUrlNavigation = 'reload';
   }
 
+  deactivateRoutes() {
+    const menuItems = window['GridMenu'].getMenuItemsAll().filter(item => item.html.id.trim() !== "");
+    menuItems.forEach(item => item.html.classList.remove('active-link'));
+  }
+
+  activateRoute(menuId) {
+    this.deactivateRoutes();
+    window['GridMenu'].getMenuItemsAll().find(item => item.html.id === menuId).html.classList.add('active-link');
+  }
 
 
 }

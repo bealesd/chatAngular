@@ -3,9 +3,9 @@
 <h1>Login</h1>
     <form>
         <label for="username">Username</label>
-        <input [type]="text" #username name="username">
+        <input [type]="text" #username name="username" autocomplete="username">
         <label for="password">Password</label>
-        <input [type]="show ? 'text' : 'password'" #password name="password" placeholder="key">
+        <input [type]="show ? 'text' : 'password'" #password name="password" placeholder="key" autocomplete="current-password">
         <button (click)="showPassword()">Show</button>
         <input (click)='login(username.value, password.value)' type="submit" value="Submit">
     </form>

@@ -125,11 +125,7 @@ export class TodoRepo {
           error: (err: any) => {
             this.todoList = todoList;
 
-            if (err.status === 404 && err.statusText.toLowerCase() === 'not found' && err.error.message === 'Not Found') {
-              this.messageService.add(` • Creating repo: todoStore.`);
-              this.restHelper.createRepo('todoStore', 'store todo list');
-            }
-            else if (err.status === 404 && err.statusText.toLowerCase() === 'not found' && err.error.message === 'This repository is empty.') {
+            if (err.status === 404 && err.statusText.toLowerCase() === 'not found' && err.error.message === 'This repository is empty.') {
               this.messageService.add(` • Creating file: todo.json.`);
               this.postTodoItemRest([]).subscribe(
                 {

@@ -15,12 +15,17 @@ export class RestHelper {
     ) { }
 
     options = (): { headers: HttpHeaders } => {
-        return {
-            headers: new HttpHeaders({
+        const options = { headers: new HttpHeaders() };
+        try {
+            options.headers = new HttpHeaders({
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.cryptoService.getToken()}`
-            })
+            });
         }
+        catch (error) {
+            this.messageService.add(` • Getting token failed.`, 'error');
+        }
+        return options;
     }
 
     removeUrlParams = (rawUrl: string) =>

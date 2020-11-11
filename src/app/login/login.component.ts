@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { LoginService } from '../services/login.service';
 import { CryptoService } from '../services/crypto.service';
 import { LoginHelper } from '../helpers/login-helper';
+import { MenuService } from '../services/menu.service';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +22,7 @@ export class LoginComponent implements OnInit {
     private loginService: LoginService,
     private loginHelper: LoginHelper,
     private router: Router,
+    private menuSerivce: MenuService
   ) {
     this.show = false;
     this.names = this.loginHelper.names;
@@ -37,6 +39,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.loginHelper.setPerson();
     this.who = this.loginHelper.who;
+    this.menuSerivce.activateRoute('login-click');
   }
 
   login(username:string, password:string) {

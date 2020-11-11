@@ -18,7 +18,11 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
 
   get width() { return window.innerWidth; }
 
-  constructor(private calendarRepo: CalendarRepo, public calendarService: CalendarService, public menuService: MenuService) {
+  constructor(
+    private calendarRepo: CalendarRepo,
+    public calendarService: CalendarService,
+    public menuService: MenuService
+  ) {
     fromEvent(window, 'resize').pipe(debounceTime(1000)).subscribe(() => { this.width; });
   }
 
@@ -42,6 +46,8 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
       });
 
     this.calendarRepo.getCalendarRecords(parseInt(`${this.calendarService.year}`), parseInt(`${this.calendarService.zeroIndexedMonth}`));
+
+    this.menuService.activateRoute('calendar-click');
   }
 
   ngOnDestroy() {
@@ -55,7 +61,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
       this.monthOrWeek = value.toLowerCase();
     else
       console.error(`Invalid calendar view selected in dropdown: '${value}'.`);
-      
+
     this.calendarService.closeAddOrUpdateEventForm.next(true);
   }
 

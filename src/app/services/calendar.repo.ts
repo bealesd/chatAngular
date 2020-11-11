@@ -1,7 +1,7 @@
 import { CalendarRecord } from './../models/calendar-record.model';
 import { CalendarRecordRest } from './../models/calendar-record-rest.model';
 import { Injectable } from '@angular/core';
-import { HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { GitHubMetaData } from '../models/gitHubMetaData'
@@ -106,12 +106,7 @@ export class CalendarRepo {
         error: (err: any) => {
           this.calendarRecordRest.records = [];
 
-          if (err.status === 404 && err.statusText.toLowerCase() === "not found") {
-            this.messageService.add(` • Creating repo: calendarStore.`);
-            this.restHelper.createRepo('calendarStore', 'store calendar records');
-          }
-          else
-            this.restHelper.errorMessageHandler(err, 'getting calendar records');
+          this.restHelper.errorMessageHandler(err, 'getting calendar records');
         }
       }
     );

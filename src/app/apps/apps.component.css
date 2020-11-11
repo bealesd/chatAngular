@@ -21,6 +21,10 @@
     overflow: hidden;
 }
 
+svg{
+    height: var(--icon-height);
+}
+
 img{
     height: var(--icon-height);
 }
