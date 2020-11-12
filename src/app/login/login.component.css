@@ -42,3 +42,37 @@ label {
 #usernameContainer h4{
      padding-top: 5px;
 }
+
+.links{
+    margin-left:5px;
+    padding-top: 5px;
+    color: var(--main-header-font-color);
+    font-family: inherit;
+}
+
+.links a{
+    margin-left:10px;
+    transition: 1000ms;
+    border-bottom: 1px solid transparent;
+    text-decoration: none;
+    color: var(--main-header-font-color);
+}
+
+.links > a:hover {
+    border-bottom: 1px solid lightskyblue;
+    color:lightskyblue;
+    text-decoration:none;
+    cursor:pointer;
+}
+
+.links > a.nostyle:link {
+    text-decoration: none;
+    color:var(--main-header-font-color);
+    cursor: auto;
+}
+
+.links > a.nostyle:visited {
+    text-decoration: none;
+    color:var(--main-header-font-color);
+    cursor: auto;
+}

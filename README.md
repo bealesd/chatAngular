@@ -9,5 +9,4 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
 ## Build Githib
-Run `ng build --prod` to build the project. The build artifacts will be stored in the `dist/` directory. Copy dist content to docs folder. Copy index.html as 404.html. Add ```<base href="">``` in  ```<head>```.
-ng build --prod --output-path docs --base-href ""
+Run `ng build --prod --output-path docs --base-href "/chatAngular/"` to build the project.

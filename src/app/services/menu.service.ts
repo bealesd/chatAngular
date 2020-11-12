@@ -110,9 +110,6 @@ It is serverless, thanks to GitHub API.`
         this.hideMenu();
         this.router.navigate(['todo']);
       });
-
-    // this.router.routeReuseStrategy.shouldReuseRoute = () => { return false; }
-    // this.router.onSameUrlNavigation = 'reload';
   }
 
   deactivateRoutes() {

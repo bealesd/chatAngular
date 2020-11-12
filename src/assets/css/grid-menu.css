@@ -1,0 +1,88 @@
+:root {
+    --header-height: 24px;
+    --header-border-size: 1px;
+    --header-background-color: white;
+    --header-vertical-padding: 4px;
+    --header-font-size: 18px;
+    --heading-size: calc(var(--header-vertical-padding) * 2 + var(--header-font-size) + var(--header-border-size));
+}
+
+#gm-menu-container {
+    display: grid;
+    z-index: 12;
+    width: 100%;
+    position: fixed;
+    top: 0px;
+    grid-template-rows: repeat(1, var(--heading-size));
+    border-bottom: solid 1px black;
+    background-color: white;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: var(--header-font-size);
+}
+
+.gm-menu {
+    padding-bottom: var(--header-vertical-padding);
+    padding-top: var(--header-vertical-padding);
+}
+
+.gm-menu:nth-of-type(1) {
+    margin-left: 20px;
+}
+
+/* [class*="menu-item"]:hover,
+.gm-menu:hover  */
+.menu-item-hover
+{
+    color: white !important;
+    background-color: black !important;
+    cursor: pointer !important;
+}
+
+[class*="gm-menu"],
+[class*="gm-sub-menu-item"],
+[class*="gm-child-menu-item"] {
+    text-align: left;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.gm-sub-menu-item,
+.gm-child-menu-item {
+    background-color: white;
+    color: black;
+    border-right: solid black 1px;
+    padding-bottom: var(--header-vertical-padding);
+    padding-top: var(--header-vertical-padding);
+}
+
+.gm-disabled{
+    color: lightgray;
+}
+
+.gm-sub-menu-item {
+    border-left: solid black 1px;
+}
+
+.gm-sub-menu-container {
+    display: grid;
+    z-index: -1;
+    position: fixed;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: var(--header-font-size);
+}
+
+.gm-hidden {
+    visibility: hidden;
+}
+
+#bodyContent {
+    height: calc(100vh - var(--heading-size));
+    margin-top: var(--heading-size);
+}
+
+#gm-span {
+    display: inline-block;
+    padding-left: 8px;
+    font-size: 8px;
+    padding-top: 4px;
+}

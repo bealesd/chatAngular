@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Utilities } from './helpers/utilities-helper';
+import { MessageService } from './services/message.service';
 
 @Component({
   selector: 'app-root',
@@ -9,16 +10,17 @@ import { Utilities } from './helpers/utilities-helper';
 })
 export class AppComponent {
   constructor(
-    private router: Router) {
-    const utilities = new Utilities();
-
+    private router: Router,
+    private utilities: Utilities
+    ) {
+    
     this.router.events.subscribe((ev) => {
       if (ev instanceof NavigationEnd) {
         if (ev.url === "/todo") {
-          utilities.updateTheme('todo');
+          this.utilities.updateTheme('todo');
         }
         else {
-          utilities.defaultTheme();
+          this.utilities.defaultTheme();
         }
       }
     });

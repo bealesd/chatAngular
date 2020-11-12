@@ -32,14 +32,13 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
   undoEnabled: boolean = false;
 
   subscriptions: Subscription[] = [];
-  utilities: Utilities;
 
   constructor(
     private calendarRepo: CalendarRepo,
     private fb: FormBuilder,
     private menuService: MenuService,
-    private calendarService: CalendarService) {
-    this.utilities = new Utilities();
+    private calendarService: CalendarService,
+    private utilities: Utilities) {
   }
 
   ngOnInit() {

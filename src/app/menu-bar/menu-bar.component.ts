@@ -13,7 +13,7 @@ export class MenuBarComponent implements OnInit {
 
   constructor(
     private loginService: LoginService,
-    private menuService: MenuService
+    private menuService: MenuService,
   ) {
 
     this.loginService.loggedIn.subscribe(loggedIn => {
@@ -25,8 +25,11 @@ export class MenuBarComponent implements OnInit {
   }
 
   async ngAfterViewInit(): Promise<void> {
-    await this.loadMenu();
+    await window['GridMenu'].load();
+    this.setup();
+  }
 
+  setup() {
     this.menuService.setupMenuEvents();
 
     this.menuService.disableMenuItem('cancel-click');
@@ -44,7 +47,4 @@ export class MenuBarComponent implements OnInit {
     (<any>document.querySelector('#save-click')).style.borderBottom = '2px dotted grey';
   }
 
-  async loadMenu(): Promise<void> {
-    await window['GridMenu'].load();
-  }
 }
