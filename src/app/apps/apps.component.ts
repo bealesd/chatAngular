@@ -7,6 +7,10 @@ import { MenuService } from '../services/menu.service';
   styleUrls: ['./apps.component.css']
 })
 export class AppsComponent implements OnInit {
+  calendarError = false;
+  chatError = false;
+  todoError = false;
+
   constructor(private menuSerivce: MenuService) { }
 
   ngOnInit(): void {
@@ -15,6 +19,19 @@ export class AppsComponent implements OnInit {
 
   customAlert(message) {
     alert(message);
+  }
+
+  fallback(evt){
+    if(evt.target.title.toLowerCase() === 'calendar'){
+      this.calendarError = true;
+    }
+    else if(evt.target.title.toLowerCase() === 'calendar'){
+      this.chatError = true;
+    }
+    else if(evt.target.title.toLowerCase() === 'todo'){
+      this.todoError = true;
+    }
+    
   }
 
 }

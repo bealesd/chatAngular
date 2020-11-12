@@ -1,15 +1,31 @@
 <div class="app-container">
     <div class="calendar" routerLink="/calendar">
-        <img src="assets/images/calendar.svg" title="calendar">
-        <!-- img (error)="myFallback inline svg" -->
+        <img *ngIf="!calendarError" src="assets/images/calendar.svg" (error)="fallback($event)" title="calendar">
+
+        <div *ngIf="calendarError" class="middle">
+            <div class="imageText"><div>Calendar</div></div>
+        </div>
+
     </div>
 
     <div class="chat" routerLink="/chat">
-        <img src="assets/images/chat.svg" title="chat" >
-     </div>
+        <img src="assets/images/chat.svg" title="chat" (error)="fallback($event)">
+
+        <div *ngIf="chatError" class="middle">
+            <div class="imageText"><div>Chat</div></div>
+        </div>
+
+    </div>
+
 
     <div class="todo" routerLink="/todo">
-        <img src="assets/images/todo.svg" title="Todo" >
+        <img src="assets/images/todo.svg" title="Todo" (error)="fallback($event)">
+
+        <div *ngIf="todoError" class="middle">
+            <div class="imageText"><div>Todo</div></div>
+        </div>
+
     </div>
-    
+
+
 </div>

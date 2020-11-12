@@ -43,3 +43,29 @@ img{
     grid-column:  10/ 12;
     grid-row: 2/4;
 }
+
+.middle{
+    height: var(--icon-height);
+    display: grid;
+    grid-template-rows: auto auto auto;
+}
+
+.imageText{
+    height: 1em;
+    grid-row: 2;
+}
+
+.imageText > div{
+    font-size: 30px;
+    text-align: center;
+    transition: 1000ms;
+    border-bottom: 1px solid transparent;
+    text-decoration: none;
+}
+
+.imageText> div:hover{
+    color: hotpink;
+    border-bottom: 1px solid lightskyblue;
+    cursor: pointer;
+}
+

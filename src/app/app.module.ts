@@ -26,6 +26,7 @@ import { CalendarDayComponent } from './calendar-day/calendar-day.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { NewUserComponent } from './new-user/new-user.component';
+import { NotepadComponent } from './notepad/notepad.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { NewUserComponent } from './new-user/new-user.component';
     CalendarWeekComponent,
     CalendarFormComponent,
     CalendarDayComponent,
-    NewUserComponent
+    NewUserComponent,
+    NotepadComponent
   ],
   imports: [
     BrowserModule,
