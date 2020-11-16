@@ -33,10 +33,9 @@ export class MenuBarComponent implements OnInit {
     this.menuService.setupMenuEvents();
 
     this.menuService.disableMenuItem('new-click');
-    this.menuService.disableMenuItem('cancel-click');
     this.menuService.disableMenuItem('delete-click');
     this.menuService.disableMenuItem('save-click');
-    this.menuService.disableMenuItem('exit-click');
+    this.menuService.disableMenuItem('close-click');
 
     this.menuService.disableMenuItem('undo-click');
 
@@ -46,7 +45,7 @@ export class MenuBarComponent implements OnInit {
 
     (<any>document.querySelector('#home-click')).style.borderBottom = '2px dotted grey';
 
-    (<any>document.querySelector('#save-click')).style.borderBottom = '2px dotted grey';
+    (<any>document.querySelector('#close-click')).style.borderBottom = '2px dotted grey';
   }
 
 }

@@ -59,9 +59,9 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
           this.menuService.disableMenuItem('save-click');
 
         if (this.addingEvent)
-          this.menuService.enableMenuItem('cancel-click', () => { this.closeClickAddEventForm(); this.menuService.hideMenu(); });
+          this.menuService.enableMenuItem('close-click', () => { this.closeClickAddEventForm(); this.menuService.hideMenu(); });
         else if (this.updatingEvent)
-          this.menuService.enableMenuItem('cancel-click', () => { this.closeClickUpdateEventForm(); this.menuService.hideMenu(); });
+          this.menuService.enableMenuItem('close-click', () => { this.closeClickUpdateEventForm(); this.menuService.hideMenu(); });
 
         if (this.updatingEvent)
           this.menuService.enableMenuItem('delete-click', () => { this.deleteEvent(); this.menuService.hideMenu(); });
@@ -100,7 +100,7 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
     this.calendarService.openAddEventForm.observers.forEach(element => { element.complete(); });
     this.calendarService.openAddEventForm.next({});
 
-    this.menuService.disableMenuItem('cancel-click');
+    this.menuService.disableMenuItem('close-click');
     this.menuService.disableMenuItem('delete-click');
     this.menuService.disableMenuItem('undo-click');
 
@@ -181,7 +181,7 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
   }
 
   closeAddOrUpdateEventForm() {
-    this.menuService.disableMenuItem('cancel-click');
+    this.menuService.disableMenuItem('close-click');
     this.menuService.disableMenuItem('delete-click');
     this.menuService.disableMenuItem('save-click');
 

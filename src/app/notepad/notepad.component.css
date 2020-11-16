@@ -55,7 +55,7 @@
     padding-top: 20px;
 }
 
-.notepad-item-container >.notepad-item{
+.notepad-item-container .notepad-item{
     color:white;
     font-family:inherit;
     font-size: 30px;
@@ -64,7 +64,7 @@
     border-bottom: transparent solid 1px;
 }
 
-.notepad-item-container >.notepad-item :hover{
+.notepad-item-container .notepad-item :hover{
     border-bottom: white solid 1px;
     cursor: pointer;
 }

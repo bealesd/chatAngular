@@ -52,9 +52,9 @@ export class NotepadRepo {
         next: (notepad: any) => {
           console.debug(notepad);
           notepad.name = notepadMetdata.name;
-          this.currentNotepad = this.parseGitHubResult(notepad);
+          this.currentNotepad = this.parseGitHubGetResult(notepad);
           this.messageService.add(` • Got notepad.`);
-          cb(notepadMetdata.name);
+          cb(notepadMetdata.name, this.currentNotepad['content']);
         },
         error: (err: any) => {
           this.restHelper.errorMessageHandler(err, 'getting notepad');
@@ -62,7 +62,7 @@ export class NotepadRepo {
       });
   }
 
-  parseGitHubResult(gitHubResult: any): any {
+  parseGitHubGetResult(gitHubResult: any): any {
     const chatObject = JSON.parse(atob(atob(gitHubResult.content)));
     return {
       sha: gitHubResult.sha,
@@ -71,19 +71,13 @@ export class NotepadRepo {
     }
   }
 
-  parseGitHubResults(results: any[]): RecieveChat[] {
-    if (results === null || results === undefined || results.length === 0) return [];
-    return results.map((result) => this.parseGitHubResult(result));
-  }
-
-
   checkForUpdatedNotepad(name: string): Observable<RecieveChat> {
     return this.http.get<any>(`${this.baseMessagesUrl}/${name}.json`, this.restHelper.options())
       .pipe(
         retry(3)
       ).pipe(
         map((gitHubResult: any) => {
-          return this.parseGitHubResult(gitHubResult);
+          return this.parseGitHubGetResult(gitHubResult);
         })
       )
   }
@@ -106,18 +100,18 @@ export class NotepadRepo {
     this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.restHelper.options())
       .subscribe({
         next: (notepad) => {
-          let newNotepad = {
-            sha: notepad['commit'].sha,
+          const newNotepad = {
+            sha: notepad['content'].sha,
+            git_url: notepad['content']['git_url'],
             content: text,
             name: name
           }
           if (oldNotepad !== undefined)
-            this.notepads.filter(np => np.name !== name);
-          
-          this.notepads.push(newNotepad);
-          
+            this.notepads = this.notepads.filter(np => np.name !== name);
 
+          this.notepads.push(newNotepad);
           this.currentNotepad = newNotepad;
+
           this.messageService.add(` • Posted notepad sha: ${newNotepad['sha']}.`);
         },
         error: (err: any) => {

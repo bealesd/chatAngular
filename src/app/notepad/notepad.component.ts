@@ -13,6 +13,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
   new = false;
   update = false;
   name: string;
+  originalText = '';
 
   constructor(
     public notepadRepo: NotepadRepo,
@@ -29,12 +30,11 @@ export class NotepadComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.menuService.disableMenuItem('new-click');
     this.menuService.disableMenuItem('save-click');
-    this.menuService.disableMenuItem('exit-click');
+    this.menuService.disableMenuItem('close-click');
   }
 
   saveNotepad() {
-    const content = (document.querySelector('.notepad-text-input') as any).innerText;
-    this.notepadRepo.postNotepad(content, this.name);
+    this.notepadRepo.postNotepad(this.notepadText, this.name);
   }
 
   openNotepad(notepad) {
@@ -42,16 +42,31 @@ export class NotepadComponent implements OnInit, OnDestroy {
 
     this.update = true;
     this.notepadIsOpen = false;
-    this.notepadRepo.getNotepad(notepad, (name) => {
-      this.notepadIsOpen = true;
-      this.name = name;
-      this.menuService.enableMenuItem('save-click', () => { this.saveNotepad(); this.menuService.hideMenu(); });
-      this.menuService.enableMenuItem('exit-click', () => { this.exitNotepad(); this.menuService.hideMenu(); });
-    });
+    this.notepadRepo.getNotepad(notepad,
+      (name, text) => {
+        this.notepadIsOpen = true;
+        this.name = name;
+        this.menuService.enableMenuItem('save-click', () => { this.saveNotepad(); this.menuService.hideMenu(); });
+        this.menuService.enableMenuItem('close-click', () => { this.exitNotepad(); this.menuService.hideMenu(); });
+        this.originalText = text;
+      });
+  }
+
+  get notepadText() {
+    return (document.querySelector('.notepad-text-input') as any).innerText;
+  }
+
+  get notepadTextHasChanged() {
+    return this.notepadText !== this.originalText;
   }
 
   newNotepadForm() {
-    this.notepadFormIsOpen = true;
+    if ((this.update || this.new) && this.notepadTextHasChanged) { 
+      if(window.confirm('Discard unsaved changes?')) {
+        this.notepadFormIsOpen = true;
+        this.originalText = '';
+      }
+    }    
   }
 
   newNotepad() {
@@ -63,17 +78,21 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.name = (document.querySelector('#value') as any).value;
 
     this.menuService.enableMenuItem('save-click', () => { this.saveNotepad(); this.menuService.hideMenu(); });
-    this.menuService.enableMenuItem('exit-click', () => { this.exitNotepad(); this.menuService.hideMenu(); });
+    this.menuService.enableMenuItem('close-click', () => { this.exitNotepad(); this.menuService.hideMenu(); });
   }
 
-  exitNotepad(){
-    this.update = false;
-    this.new = false;
-    this.notepadFormIsOpen = false;
-    this.notepadIsOpen = false;
-
-    this.menuService.disableMenuItem('exit-click');
-    this.menuService.disableMenuItem('save-click');
+  exitNotepad() {
+    if (this.notepadTextHasChanged) { 
+      if(window.confirm('Discard unsaved changes?')) {
+        this.originalText = '';
+        this.update = false;
+        this.new = false;
+        this.notepadFormIsOpen = false;
+        this.notepadIsOpen = false;
+    
+        this.menuService.disableMenuItem('close-click');
+        this.menuService.disableMenuItem('save-click');
+      }
+    }
   }
-
 }
