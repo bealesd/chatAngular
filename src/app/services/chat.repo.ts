@@ -26,7 +26,6 @@ export class ChatRepo {
   }
 
   getLastTen(): Observable<RecieveChat[]> {
-    const idShaLookup = {};
     return this.getMessageListings()
       .pipe(
         map((messagesMetaData: GitHubMetaData[]) => {
@@ -34,7 +33,6 @@ export class ChatRepo {
           const chatUrls = [];
           for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
             const messageMetaData = messagesMetaData[i];
-            idShaLookup[this.idExtractor(messageMetaData.name)] = messageMetaData.sha;
             chatUrls.push(this.http.get<any>(this.restHelper.removeUrlParams(messageMetaData['git_url']), this.restHelper.options()));
           }
           return chatUrls;

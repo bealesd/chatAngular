@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { GitHubMetaData } from '../models/gitHubMetaData'
 import { RestHelper } from '../helpers/rest-helper';
@@ -11,7 +11,6 @@ import { MessageService } from '../services/message.service';
 })
 export class TodoRepo {
   private baseMessagesUrl = 'https://api.github.com/repos/bealesd/todoStore/contents';
-  // public todoList = new BehaviorSubject([]);
   public todoList = [];
   public sha = '';
 

@@ -9,7 +9,7 @@
     </div>
 
     <div class="chat" routerLink="/chat">
-        <img src="assets/images/chat.svg" title="chat" (error)="fallback($event)">
+        <img *ngIf="!chatError" src="assets/images/chat.svg" title="chat" (error)="fallback($event)">
 
         <div *ngIf="chatError" class="middle">
             <div class="imageText"><div>Chat</div></div>
@@ -19,10 +19,19 @@
 
 
     <div class="todo" routerLink="/todo">
-        <img src="assets/images/todo.svg" title="Todo" (error)="fallback($event)">
+        <img *ngIf="!todoError" src="assets/images/todo.svg" title="Todo" (error)="fallback($event)">
 
         <div *ngIf="todoError" class="middle">
             <div class="imageText"><div>Todo</div></div>
+        </div>
+
+    </div>
+
+    <div class="notepad" routerLink="/notepad">
+        <img *ngIf="!notepadError" src="assets/images/address-book.svg" title="Notepad" (error)="fallback($event)">
+
+        <div *ngIf="notepadError" class="middle">
+            <div class="imageText"><div>Notepad</div></div>
         </div>
 
     </div>

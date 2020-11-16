@@ -1,1 +1,26 @@
-<p>notepad works!</p>
+<div *ngIf="!notepadIsOpen">
+    <div class="notepad-item-container" *ngFor="let item of notepadRepo.notepads; let i = index">
+        <div (click)="openNotepad(item)" class="notepad-item">{{item.name}}</div>
+    </div>
+</div>
+
+
+<div class="notepad-container">
+
+    <div *ngIf="notepadIsOpen && update" class="notepad-text">
+        <div class="notepad-title">{{notepadRepo.currentNotepad.name}}</div>
+        <div class="notepad-text-input" contenteditable="true">{{notepadRepo.currentNotepad.content}}</div>
+    </div>
+
+    <div *ngIf="notepadIsOpen && new" class="notepad-text">
+        <div class="notepad-title">{{name}}</div>
+        <div class="notepad-text-input" contenteditable="true"></div>
+    </div>
+
+</div>
+
+
+<div *ngIf="notepadFormIsOpen" class="notepad-text">
+    <input type="text" placeholder="filename" id="value">
+    <button (click)="newNotepad()">Open</button>
+</div>

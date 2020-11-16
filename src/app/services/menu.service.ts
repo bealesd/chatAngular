@@ -110,6 +110,12 @@ It is serverless, thanks to GitHub API.`
         this.hideMenu();
         this.router.navigate(['todo']);
       });
+
+      this.registerMenuEvent('notepad-click',
+      () => {
+        this.hideMenu();
+        this.router.navigate(['notepad']);
+      });
   }
 
   deactivateRoutes() {
