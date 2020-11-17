@@ -48,6 +48,10 @@
     color: black;
     font-family:inherit;
     font-size: 18px;
+
+
+        white-space: pre-wrap;
+    
 }
 
 .notepad-item-container{
@@ -64,7 +68,11 @@
     border-bottom: transparent solid 1px;
 }
 
-.notepad-item-container .notepad-item :hover{
+.notepad-item-container .notepad-item:hover{
     border-bottom: white solid 1px;
     cursor: pointer;
+}
+
+.notepad-unsaved-changes{
+    border-left: 5px red solid;
 }

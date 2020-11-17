@@ -54,7 +54,7 @@ export class NotepadRepo {
           notepad.name = notepadMetdata.name;
           this.currentNotepad = this.parseGitHubGetResult(notepad);
           this.messageService.add(` • Got notepad.`);
-          cb(notepadMetdata.name, this.currentNotepad['content']);
+          cb(notepadMetdata.name);
         },
         error: (err: any) => {
           this.restHelper.errorMessageHandler(err, 'getting notepad');
@@ -120,27 +120,29 @@ export class NotepadRepo {
       });
   }
 
-  hardDeleteNotepad(message: any): void {
-    const deletetUrl = this.baseMessagesUrl + `/${message.name}.json`;
+  deleteNotepad(name: any): void {
+    const deletetUrl = this.baseMessagesUrl + `/${name}.json`;
+    const sha = this.notepads.filter((n) => n.name !== name);
+
     const commitBody = {
       "message": `Api delete commit by notepad repo at ${new Date().toLocaleString()}`,
-      "sha": `${message.sha}`
+      "sha": `${sha}`
     }
     const rawCommitBody = JSON.stringify(commitBody);
 
     this.http.request('delete', deletetUrl, { body: rawCommitBody, headers: this.restHelper.options().headers }).subscribe({
       next: (notepad: any) => {
         if (notepad !== undefined && notepad !== null) {
-          this.messageService.add(` • notepad ${message.name} deleted.`);
-          this.notepads = this.notepads.filter((n) => n.name !== message.name);
+          this.messageService.add(` • notepad ${name} deleted.`);
+          this.notepads = this.notepads.filter((n) => n.name !== name);
         }
         else {
-          this.messageService.add(` • notepad ${message.name} could not be deleted.`);
+          this.messageService.add(` • notepad ${name} could not be deleted.`);
         }
 
       },
       error: (err: any) => {
-        this.restHelper.errorMessageHandler(err, `deleting notepade${message.name}`);
+        this.restHelper.errorMessageHandler(err, `deleting notepad ${name}`);
       }
     });
   }
