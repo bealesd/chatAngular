@@ -16,7 +16,7 @@ import { MessageService } from './message.service';
 export class NotepadRepo {
   private baseMessagesUrl = 'https://api.github.com/repos/bealesd/notepadStore/contents';
   public notepads = [];
-  public currentNotepad = new BehaviorSubject({'name': '', 'content': ''});
+  public currentNotepad = new BehaviorSubject({ 'name': '', 'content': '' });
 
   constructor(
     private http: HttpClient,
@@ -37,6 +37,7 @@ export class NotepadRepo {
           notepads.forEach(np => np.name = np.name.split('.json')[0]);
           this.notepads = notepads;
           this.messageService.add(` • Got all notepads.`);
+          this.currentNotepad.next({ 'name': '', 'content': '' });
         },
         error: (err: any) => {
           this.restHelper.errorMessageHandler(err, 'getting notepads');
@@ -46,7 +47,6 @@ export class NotepadRepo {
 
   getNotepad(notepadMetdata) {
     this.messageService.add(`Get notepad.`);
-    this.currentNotepad.next({'name': '', 'content': ''});
     this.http.get<any>(this.restHelper.removeUrlParams(notepadMetdata['git_url']), this.restHelper.options()).subscribe(
       {
         next: (notepad: any) => {
@@ -82,7 +82,7 @@ export class NotepadRepo {
   }
 
   postNotepad(text: string, name: string): void {
-    const postUrl = this.baseMessagesUrl + `/${name}.json`;
+    const postUrl = `${this.baseMessagesUrl}/${name}.json`;
 
     const newMessage = { content: text };
     let commit = {
@@ -120,25 +120,26 @@ export class NotepadRepo {
   }
 
   deleteNotepad(name: any): void {
-    const deletetUrl = this.baseMessagesUrl + `/${name}.json`;
-    const sha = this.notepads.filter((n) => n.name !== name);
+    const deletetUrl = `${this.baseMessagesUrl}/${name}.json`;
+    const sha = this.notepads.find(np => np.name === name).sha;
 
-    const commitBody = {
+    const commit = {
       "message": `Api delete commit by notepad repo at ${new Date().toLocaleString()}`,
       "sha": `${sha}`
     }
-    const rawCommitBody = JSON.stringify(commitBody);
+
+    const rawCommitBody = JSON.stringify(commit);
 
     this.http.request('delete', deletetUrl, { body: rawCommitBody, headers: this.restHelper.options().headers }).subscribe({
       next: (notepad: any) => {
         if (notepad !== undefined && notepad !== null) {
           this.messageService.add(` • notepad ${name} deleted.`);
-          this.notepads = this.notepads.filter((n) => n.name !== name);
+          this.notepads = this.notepads.filter(n => n.name !== name);
         }
         else {
           this.messageService.add(` • notepad ${name} could not be deleted.`);
         }
-
+        this.currentNotepad.next({ 'name': '', 'content': '' });
       },
       error: (err: any) => {
         this.restHelper.errorMessageHandler(err, `deleting notepad ${name}`);

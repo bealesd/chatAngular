@@ -29,6 +29,11 @@ img{
     height: var(--icon-height);
 }
 
+img:hover{
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
 .calendar{
     grid-column:  2/ 4;
     grid-row: 2/4;

@@ -1,11 +1,17 @@
 <div *ngIf="!notepadIsOpen">
+
     <div class="notepad-item-container" *ngFor="let item of notepadRepo.notepads; let i = index">
-        <div class="notepad-item" (click)="openNotepad(item)">{{item.name}}</div>
+
+        <div class="notepad-item" (click)="openNotepad(item)">
+            <div class="notepad-item-name">{{item.name}}</div>
+            <div class="notepad-item-size">{{item.size}}</div>
+            <div class="notepad-item-type">json</div>
+        </div>
     </div>
 
     <div class="notepad-text">
         <input type="text" placeholder="filename" id="value" #name>
-        <button (click)="newNotepad(name.value)">Open</button>
+        <button (click)="newNotepad(name.value)">Create</button>
     </div>
 </div>
 
