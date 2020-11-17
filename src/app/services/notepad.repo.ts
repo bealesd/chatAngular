@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
 
 import { RecieveChat } from '../models/recieve-chat.model';
@@ -16,7 +16,7 @@ import { MessageService } from './message.service';
 export class NotepadRepo {
   private baseMessagesUrl = 'https://api.github.com/repos/bealesd/notepadStore/contents';
   public notepads = [];
-  public currentNotepad = {};
+  public currentNotepad = new BehaviorSubject({'name': '', 'content': ''});
 
   constructor(
     private http: HttpClient,
@@ -44,17 +44,16 @@ export class NotepadRepo {
       });
   }
 
-  getNotepad(notepadMetdata, cb) {
+  getNotepad(notepadMetdata) {
     this.messageService.add(`Get notepad.`);
-    this.currentNotepad = {};
+    this.currentNotepad.next({'name': '', 'content': ''});
     this.http.get<any>(this.restHelper.removeUrlParams(notepadMetdata['git_url']), this.restHelper.options()).subscribe(
       {
         next: (notepad: any) => {
           console.debug(notepad);
           notepad.name = notepadMetdata.name;
-          this.currentNotepad = this.parseGitHubGetResult(notepad);
+          this.currentNotepad.next(this.parseGitHubGetResult(notepad));
           this.messageService.add(` • Got notepad.`);
-          cb(notepadMetdata.name);
         },
         error: (err: any) => {
           this.restHelper.errorMessageHandler(err, 'getting notepad');
@@ -110,7 +109,7 @@ export class NotepadRepo {
             this.notepads = this.notepads.filter(np => np.name !== name);
 
           this.notepads.push(newNotepad);
-          this.currentNotepad = newNotepad;
+          this.currentNotepad.next(newNotepad);
 
           this.messageService.add(` • Posted notepad sha: ${newNotepad['sha']}.`);
         },

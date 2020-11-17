@@ -48,10 +48,7 @@
     color: black;
     font-family:inherit;
     font-size: 18px;
-
-
-        white-space: pre-wrap;
-    
+    white-space: pre-wrap;    
 }
 
 .notepad-item-container{
