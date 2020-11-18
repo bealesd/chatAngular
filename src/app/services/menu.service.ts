@@ -41,6 +41,7 @@ export class MenuService {
   }
 
   enableMenuItem(id, callabck) {
+    this.disableMenuItem(id);
     window['GridMenu'].enableMenuItem(id);
     this.registerMenuEvent(id, callabck);
   }

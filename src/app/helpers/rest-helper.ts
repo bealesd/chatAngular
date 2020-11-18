@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CryptoService } from '../services/crypto.service';
+import { LoggerService } from '../services/logger.service';
 
 import { MessageService } from '../services/message.service';
 
@@ -11,7 +12,8 @@ export class RestHelper {
     constructor(
         private cryptoService: CryptoService,
         private messageService: MessageService,
-        private http: HttpClient
+        private http: HttpClient,
+        private loggerService: LoggerService
     ) { }
 
     options = (): { headers: HttpHeaders } => {
@@ -32,13 +34,19 @@ export class RestHelper {
         new URL(rawUrl).origin + new URL(rawUrl).pathname;
 
     errorMessageHandler(err: any, type: string) {
-        if (err.status === 404)
+        if (err.status === 404) {
+            this.loggerService.log(` • No data found when '${type}'.`, 'error');
             this.messageService.add(` • No data found when '${type}'.`, 'error');
+        }
         else if (err.status === 401) {
+            this.loggerService.log(` • Authentication error, 401 when '${type}'.`, 'error');
             this.messageService.add(` • Authentication error, 401 when '${type}'.`, 'error');
         }
-        else
+        else {
+            this.loggerService.log(` • Rest failiure when '${type}'.`, 'error');
             this.messageService.add(` • Rest failiure when '${type}'.`, 'error');
+        }
+
     }
 
     createRepo(name: string, description: string) {

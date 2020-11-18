@@ -9,6 +9,7 @@ import { GitHubMetaData } from '../models/gitHubMetaData'
 
 import { RestHelper } from '../helpers/rest-helper';
 import { MessageService } from './message.service';
+import { LoggerService } from './logger.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,12 +17,17 @@ import { MessageService } from './message.service';
 export class NotepadRepo {
   private baseMessagesUrl = 'https://api.github.com/repos/bealesd/notepadStore/contents';
   public notepads = [];
-  public currentNotepad = new BehaviorSubject({ 'name': '', 'content': '' });
+  public currentNotepad = new BehaviorSubject({ name: '', content: '', sha: '' });
 
   constructor(
     private http: HttpClient,
     private restHelper: RestHelper,
-    private messageService: MessageService) {
+    private messageService: MessageService,
+    private loggerService: LoggerService) {
+  }
+
+  resetCurrentNotepad(){
+    this.currentNotepad.next({ name: '', content: '', sha: '' });
   }
 
   getNotepadListing = (): Observable<GitHubMetaData[]> => {
@@ -29,15 +35,17 @@ export class NotepadRepo {
   }
 
   getAllNotepads(): void {
+    this.loggerService.log('getting all notepads', 'info');
     this.messageService.add(`Getting all notepads.`);
     this.getNotepadListing().subscribe(
       {
         next: (notepads: any[]) => {
-          console.debug(notepads);
+          this.loggerService.log('got all notepads', 'info');
+          this.loggerService.log(notepads, 'info');
           notepads.forEach(np => np.name = np.name.split('.json')[0]);
           this.notepads = notepads;
           this.messageService.add(` • Got all notepads.`);
-          this.currentNotepad.next({ 'name': '', 'content': '' });
+          this.resetCurrentNotepad();
         },
         error: (err: any) => {
           this.restHelper.errorMessageHandler(err, 'getting notepads');
@@ -46,11 +54,12 @@ export class NotepadRepo {
   }
 
   getNotepad(notepadMetdata) {
+    this.loggerService.log('getting notepad', 'info');
     this.messageService.add(`Get notepad.`);
     this.http.get<any>(this.restHelper.removeUrlParams(notepadMetdata['git_url']), this.restHelper.options()).subscribe(
       {
         next: (notepad: any) => {
-          console.debug(notepad);
+          this.loggerService.log('got notepad', 'info');
           notepad.name = notepadMetdata.name;
           this.currentNotepad.next(this.parseGitHubGetResult(notepad));
           this.messageService.add(` • Got notepad.`);
@@ -81,20 +90,19 @@ export class NotepadRepo {
       )
   }
 
-  postNotepad(text: string, name: string): void {
+  postNotepad(text: string, name: string, sha: string): void {
+    this.messageService.add(`Posting notepad sha: ${sha}.`);
+
     const postUrl = `${this.baseMessagesUrl}/${name}.json`;
 
     const newMessage = { content: text };
-    let commit = {
+    const rawCommitBody = JSON.stringify({
       "message": `Api commit by notepad repo at ${new Date().toLocaleString()}`,
       "content": btoa(btoa(JSON.stringify(newMessage))),
-    }
+      'sha': sha
+    });
 
-    const oldNotepad = this.notepads.find(np => np.name === name);
-    if (oldNotepad !== undefined)
-      commit['sha'] = oldNotepad['sha'];
-
-    const rawCommitBody = JSON.stringify(commit);
+    this.loggerService.log(`Sha before post: ${sha}.`, 'info');
 
     this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.restHelper.options())
       .subscribe({
@@ -102,11 +110,14 @@ export class NotepadRepo {
           const newNotepad = {
             sha: notepad['content'].sha,
             git_url: notepad['content']['git_url'],
+            size: notepad['content']['size'],
             content: text,
-            name: name
+            name: name,
           }
-          if (oldNotepad !== undefined)
-            this.notepads = this.notepads.filter(np => np.name !== name);
+
+          this.loggerService.log(`Sha after post: ${notepad['content'].sha}`, 'info');
+
+          this.notepads = this.notepads.filter(np => np.sha !== sha);
 
           this.notepads.push(newNotepad);
           this.currentNotepad.next(newNotepad);
@@ -114,7 +125,7 @@ export class NotepadRepo {
           this.messageService.add(` • Posted notepad sha: ${newNotepad['sha']}.`);
         },
         error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, 'posting notepad');
+          this.restHelper.errorMessageHandler(err, `posting notepad sha: ${sha}`);
         }
       });
   }
@@ -130,16 +141,17 @@ export class NotepadRepo {
 
     const rawCommitBody = JSON.stringify(commit);
 
+    this.notepads = this.notepads.filter(n => n.name !== name);
+
     this.http.request('delete', deletetUrl, { body: rawCommitBody, headers: this.restHelper.options().headers }).subscribe({
       next: (notepad: any) => {
         if (notepad !== undefined && notepad !== null) {
           this.messageService.add(` • notepad ${name} deleted.`);
-          this.notepads = this.notepads.filter(n => n.name !== name);
         }
         else {
           this.messageService.add(` • notepad ${name} could not be deleted.`);
         }
-        this.currentNotepad.next({ 'name': '', 'content': '' });
+        this.resetCurrentNotepad();
       },
       error: (err: any) => {
         this.restHelper.errorMessageHandler(err, `deleting notepad ${name}`);

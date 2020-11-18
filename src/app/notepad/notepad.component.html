@@ -1,26 +1,30 @@
-<div *ngIf="!notepadIsOpen">
+<div class="{{disablePage ? 'disabled-page' : ''}}">
 
-    <div class="notepad-item-container" *ngFor="let item of notepadRepo.notepads; let i = index">
+    <div *ngIf="!notepadIsOpen">
 
-        <div class="notepad-item" (click)="openNotepad(item)">
-            <div class="notepad-item-name">{{item.name}}</div>
-            <div class="notepad-item-size">{{item.size}}</div>
-            <div class="notepad-item-type">json</div>
+        <div class="notepad-item-container">
+            <div class="notepad-item-name notepad-item-header">File Name</div>
+            <div class="notepad-item-size notepad-item-header">File Size</div>
+
+            <ng-container *ngFor="let item of notepadRepo.notepads; let i = index">
+                <div class="notepad-item-name"><span (click)="openNotepad(item)">{{item.name}}</span></div>
+                <div class="notepad-item-size">{{item.size}}</div>
+            </ng-container>
+        </div>
+
+        <div class="notepad-text">
+            <input type="text" placeholder="filename" id="value" #name>
+            <button (click)="newNotepad(name.value)">Create</button>
         </div>
     </div>
 
-    <div class="notepad-text">
-        <input type="text" placeholder="filename" id="value" #name>
-        <button (click)="newNotepad(name.value)">Create</button>
-    </div>
-</div>
+    <div class="notepad-container">
+        <div class="notepad-text {{notepadIsOpen ? '' : 'hide'}}">
+            <div class="notepad-title">{{notepad.name}}</div>
+            <textarea #textArea class="notepad-text-input {{notepadTextHasChanged ? 'notepad-unsaved-changes' : ''}}"
+                contenteditable="true" (input)="updateText(textArea.value)">{{notepad.text.original}}</textarea>
+        </div>
 
-<div class="notepad-container">
-
-    <div *ngIf="notepadIsOpen" class="notepad-text">
-        <div class="notepad-title">{{notepad.name}}</div>
-        <div class="notepad-text-input {{notepadTextHasChanged ? 'notepad-unsaved-changes' : ''}}" contenteditable="true" (input)="updateText($event)">{{notepad.text.original}}</div>
     </div>
 
 </div>
-

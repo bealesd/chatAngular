@@ -19,6 +19,17 @@
  }
 }
 
+.disabled-page{
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color:#000;
+    opacity: .75;
+    z-index: 9999999;
+}
+
 .notepad-container{
     padding-top: 20px;
     padding-bottom: 20px;
@@ -51,21 +62,45 @@
     white-space: pre-wrap;    
 }
 
+.hide{
+    display: none;
+}
+
 .notepad-item-container{
+    display: grid;
+    grid-template-columns: 2;
+    grid-template-rows: auto;
+
     margin-left: 20px;
     padding-top: 20px;
 }
 
-.notepad-item-container .notepad-item{
+.notepad-item-header{
     color:white;
     font-family:inherit;
     font-size: 30px;
     font-weight: bold;
+}
+
+.notepad-item-container .notepad-item-name:not(.notepad-item-header),
+.notepad-item-container .notepad-item-size:not(.notepad-item-header){
+    color:white;
+    font-family:inherit;
+    font-size: 20px;
+}
+.notepad-item-container .notepad-item-name{
+    grid-column: 1;
+}
+
+.notepad-item-container .notepad-item-size{
+    grid-column: 2;
+}
+.notepad-item-container .notepad-item-name span{
     transition: 300ms;
     border-bottom: transparent solid 1px;
 }
 
-.notepad-item-container .notepad-item:hover{
+.notepad-item-container .notepad-item-name span:hover{
     border-bottom: white solid 1px;
     cursor: pointer;
 }

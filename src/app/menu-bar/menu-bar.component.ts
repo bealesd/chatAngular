@@ -32,7 +32,6 @@ export class MenuBarComponent implements OnInit {
   setup() {
     this.menuService.setupMenuEvents();
 
-    this.menuService.disableMenuItem('new-click');
     this.menuService.disableMenuItem('delete-click');
     this.menuService.disableMenuItem('save-click');
     this.menuService.disableMenuItem('close-click');
