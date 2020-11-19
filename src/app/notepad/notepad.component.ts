@@ -12,6 +12,7 @@ import { NotepadRepo } from '../services/notepad.repo'
 export class NotepadComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   disablePage = false;
+  createNotepadFormIsOpen = false;
   notepadIsOpen = false;
   notepad = {
     sha: '',
@@ -21,6 +22,9 @@ export class NotepadComponent implements OnInit, OnDestroy {
       current: ''
     }
   };
+  timer: number;
+  preventSimpleClick: boolean;
+  highlightedRow: number = null;
 
   get notepadTextHasChanged() { return this.notepad.text.current !== this.notepad.text.original; }
 
@@ -35,7 +39,9 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.notepadRepo.resetCurrentNotepad();
 
     this.subscriptions.push(this.notepadRepo.currentNotepad.subscribe((np) => {
+      this.createNotepadFormIsOpen = false;
       this.disablePage = false;
+      this.highlightedRow = null;
       this.notepad.text.original = np.content;
       this.notepad.text.current = np.content;
       this.notepad.name = np.name;
@@ -87,14 +93,36 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.notepad.text.current = value;
   }
 
+  createNotepadForm() {
+    this.createNotepadFormIsOpen = true;
+  }
+
+  cancelNewNotepad() {
+    this.createNotepadFormIsOpen = false;
+  }
+
   newNotepad(name) {
     this.disablePage = true;
     this.notepadRepo.postNotepad('', name, '');
   }
 
-  openNotepad(notepad) {
+  openNotepad(notepad): void {
+    this.preventSimpleClick = true;
+    clearTimeout(this.timer);
     this.disablePage = true;
-    this.notepadRepo.getNotepad(notepad)
+    this.notepadRepo.getNotepad(notepad);
+  }
+
+  highlightRow(rowNumber): void {
+    this.timer = 0;
+    this.preventSimpleClick = false;
+    let delay = 200;
+
+    this.timer = setTimeout(() => {
+      if (!this.preventSimpleClick) {
+        this.highlightedRow = rowNumber;
+      }
+    }, delay);
   }
 
   saveNotepad() {

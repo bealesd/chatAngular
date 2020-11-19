@@ -1,4 +1,33 @@
 @import '~@ctrl/ngx-emoji-mart/picker';
+
+@font-face {
+    font-family: 'ps-regular';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Product Sans'), url('assets/fonts/PS-Regular.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'ps-black';
+    font-style: normal;
+    font-weight: 900;
+    src: local('Product Sans Black'), url('assets/fonts/PS-Black.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'ps-medium';
+    font-style: normal;
+    font-weight: 500;
+    src: local('Product Sans Medium'), url('assets/fonts/PS-Medium.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'ps-light';
+    font-style: normal;
+    font-weight: 300;
+    src: local('Product Sans Light'), url('assets/fonts/PS-Regular.woff') format('woff');
+}
+
 :root {
     /* main-stlyes */
     --main-background-color: none;
