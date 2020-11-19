@@ -106,14 +106,23 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.notepadRepo.postNotepad('', name, '');
   }
 
-  openNotepad(notepad): void {
+  openNotepad(): void {
     this.preventSimpleClick = true;
     clearTimeout(this.timer);
     this.disablePage = true;
+
+    const notepad = this.notepadRepo.notepads.find(np => np.sha === this.notepad.sha);
     this.notepadRepo.getNotepad(notepad);
   }
 
-  highlightRow(rowNumber): void {
+  renameNotepad(){
+    this.disablePage = true;
+    const notepad = this.notepadRepo.notepads.find(np => np.sha === this.notepad.sha);
+    this.notepadRepo.deleteNotepad(notepad.name);
+    this.notepadRepo.postNotepad(notepad.text, notepad.name, '');
+  }
+
+  highlightRow(rowNumber, item): void {
     this.timer = 0;
     this.preventSimpleClick = false;
     let delay = 200;
@@ -121,6 +130,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.timer = setTimeout(() => {
       if (!this.preventSimpleClick) {
         this.highlightedRow = rowNumber;
+        this.notepad.sha = item.sha;
       }
     }, delay);
   }
@@ -140,7 +150,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
 
   deleteNotepad() {
     if (window.confirm('Delete notepad?')) {
-      this.notepadRepo.deleteNotepad(this.notepad.name);
+      this.notepadRepo.deleteNotepad(this.notepad.sha);
       this.disablePage = true;
     }
   }

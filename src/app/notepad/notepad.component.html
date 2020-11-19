@@ -1,21 +1,31 @@
 <div class="{{disablePage ? 'disabled-page' : ''}}">
     <div class="notepad-container">
 
-
+        <!-- 🖿  📂 🗁 -->
         <div *ngIf="!notepadIsOpen" class="notepad-item-container">
-            <div class="notepad-item-controls notepad-item ">
-                <div>Delete</div>
-                <div>Open</div>
-                <div>Rename</div>
+            <div class="notepad-item-controls">
+                <div class="notepad-item-control-open tooltip" title="Open File" (click)="openNotepad()">🗁
+                </div>
+                <div class="notepad-item-control-rename tooltip" title="Rename File" (click)="renameNotepad()">✎
+                </div>
+                <div class="notepad-item-control-bin tooltip" title="Delete File" (click)="deleteNotepad()">🗑
+                </div>
             </div>
 
-            <div class="notepad-item-name notepad-item-header notepad-item "><div>Name</div></div>
-            <div class="notepad-item-size notepad-item-header notepad-item "><div>File Size</div></div>
-            <div class="notepad-item-add notepad-item-header notepad-item " (click)="createNotepadForm()">&#43;</div>
+            <div class="notepad-item-name notepad-item-header notepad-item"><div>Name</div></div>
+            <div class="notepad-item-size notepad-item-header notepad-item"><div>File Size</div></div>
+            <div class="notepad-item-add notepad-item-header notepad-item" (click)="createNotepadForm()" title="Add File">&#43;</div>
 
             <ng-container *ngFor="let item of notepadRepo.notepads; let i = index">
-                <div class="notepad-item notepad-item-name {{highlightedRow === i ? 'highlighted-row' : ''}}" (click)="highlightRow(i)" (dblclick)="openNotepad(item)"><div><span>{{item.name}}</span></div></div>
-                <div class="notepad-item  notepad-item-size {{highlightedRow === i ? 'highlighted-row' : ''}}" (click)="highlightRow(i)" (dblclick)="openNotepad(item)"><div>{{item.size}}</div></div>
+                <div class="notepad-item notepad-item-name {{highlightedRow === i ? 'highlighted-row' : ''}}" (click)="highlightRow(i, item)" (dblclick)="openNotepad()">
+                    <div>
+                        <img class="a-Ua-c" src="assets/icons/file.png" alt="Text">
+                         {{item.name}}
+                        </div>
+                </div>
+                <div class="notepad-item  notepad-item-size {{highlightedRow === i ? 'highlighted-row' : ''}}" (click)="highlightRow(i, item)" (dblclick)="openNotepad()">
+                    <div>{{item.size}}</div>
+                </div>
             </ng-container>
 
         </div>

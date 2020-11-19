@@ -11,7 +11,6 @@
  }
 }
 
-
 /*small size wrapper*/
 
 @media screen and (max-width: 400px) {
@@ -82,10 +81,19 @@
 .notepad-item-controls{
     grid-row: 1;
     grid-column: 1/4;
-    height:48px;
+    height: 40px;
     font-family:inherit;
-    font-size: 16px;
+    font-size: 30px;
     font-weight: bold;
+    text-align: right;
+}
+div[class*="notepad-item-control-"]{
+    display: inline;
+    transition: 200ms;
+}
+
+div[class*="notepad-item-control-"]:hover{
+    cursor: pointer;
 }
 
 .notepad-item-header{
@@ -99,6 +107,10 @@
 .notepad-item {
     display: flex;
     align-items: center;
+}
+
+.notepad-item > div:hover{
+    cursor: default;
 }
 
 .notepad-item-container .notepad-item-name:not(.notepad-item-header),
