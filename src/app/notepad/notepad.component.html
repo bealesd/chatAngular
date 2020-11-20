@@ -21,13 +21,13 @@
             <div class="notepad-item-add notepad-item-header notepad-item" (click)="createNotepadForm()" title="Add File">&#43;</div>
 
             <ng-container *ngFor="let item of notepadRepo.notepads; let i = index">
-                <div class="notepad-item notepad-item-name {{highlightedRow === (item.sha + item.name) ? 'highlighted-row' : ''}}" (click)="highlightRow(item)" (dblclick)="openNotepad()">
+                <div class="notepad-item notepad-item-name {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}" (click)="highlightRow(item)" (dblclick)="openNotepad()">
                     <div>
-                        <img class="a-Ua-c" src="assets/icons/file.png" alt="Text"> {{item.name}}
+                        <img class="a-Ua-c" src="assets/icons/file.png" alt="Text"> {{item.metadata.fileName}}
                     </div>
                 </div>
-                <div class="notepad-item  notepad-item-size {{highlightedRow === (item.sha + item.name) ? 'highlighted-row' : ''}}" (click)="highlightRow(item)" (dblclick)="openNotepad()">
-                    <div>{{item.size}}</div>
+                <div class="notepad-item  notepad-item-size {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}" (click)="highlightRow(item)" (dblclick)="openNotepad()">
+                    <div>{{item.metadata.size}}</div>
                 </div>
             </ng-container>
 
@@ -36,8 +36,8 @@
 
         <div class="notepad-editor-container">
             <div class="notepad-text {{notepadIsOpen ? '' : 'hide'}}">
-                <div class="notepad-title">{{notepadRepo.currentNotepad.name}}</div>
-                <textarea #textArea class="notepad-text-input {{notepadTextHasChanged ? 'notepad-unsaved-changes' : ''}}" contenteditable="true" (input)="updateText(textArea.value)">{{this.originalNotepadText}}</textarea>
+                <div class="notepad-title">{{notepadRepo.currentNotepad.metadata.name}}</div>
+                <textarea #textArea class="notepad-text-input {{notepadTextHasChanged ? 'notepad-unsaved-changes' : ''}}" contenteditable="true" (input)="updateText(textArea.value)">{{originalNotepadText}}</textarea>
             </div>
 
         </div>

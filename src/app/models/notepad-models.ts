@@ -3,7 +3,7 @@ export class NotepadMetadata {
   path: string
   sha: string
   size: number
-  download_url: string
+  git_url: string
   type: string
 
   get fileName() {
@@ -16,6 +16,10 @@ export class NotepadMetadata {
     if (this.type === 'file')
       return this.name.split('.')[this.name.split('.').length - 1];
     else return null;
+  }
+
+  get key() {
+    return `${this.name}-${this.sha}-${this.git_url}`;
   }
 }
 
