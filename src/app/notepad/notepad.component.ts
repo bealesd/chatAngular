@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { LoggerService } from '../services/logger.service';
 import { MenuService } from '../services/menu.service';
-import { NotepadRepo } from '../services/notepad.repo'
+import { NotepadRepo, State } from '../services/notepad.repo'
 
 @Component({
   selector: 'app-notepad',
@@ -13,20 +13,15 @@ export class NotepadComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   disablePage = false;
   createNotepadFormIsOpen = false;
+  renameNotepadFormIsOpen = false;
   notepadIsOpen = false;
-  notepad = {
-    sha: '',
-    name: '',
-    text: {
-      original: '',
-      current: ''
-    }
-  };
-  timer: number;
-  preventSimpleClick: boolean;
-  highlightedRow: number = null;
+  originalNotepadText = '';
 
-  get notepadTextHasChanged() { return this.notepad.text.current !== this.notepad.text.original; }
+  preventSimpleClick: boolean;
+  highlightedRow: string = null;
+  timer: any;
+
+  get notepadTextHasChanged() { return this.notepadRepo.currentNotepad.content !==  this.originalNotepadText; }
 
   constructor(
     public notepadRepo: NotepadRepo,
@@ -36,26 +31,24 @@ export class NotepadComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.disablePage = false;
-    this.notepadRepo.resetCurrentNotepad();
 
-    this.subscriptions.push(this.notepadRepo.currentNotepad.subscribe((np) => {
+    this.subscriptions.push(this.notepadRepo.state.subscribe((state) => {
+      const lastState = state[state.length - 1];
       this.createNotepadFormIsOpen = false;
+      this.renameNotepadFormIsOpen = false;
       this.disablePage = false;
       this.highlightedRow = null;
-      this.notepad.text.original = np.content;
-      this.notepad.text.current = np.content;
-      this.notepad.name = np.name;
-      this.notepad.sha = np.sha;
+      this.originalNotepadText = this.notepadRepo.currentNotepad.content;
 
-      if (np.sha === '') {
+      if ([undefined, State.Error, State.DeletedNotepad, State.GotNotepadListing, State.RenamedNotepad].includes(lastState)) {
         this.notepadIsOpen = false;
         this.disableNotebookMenus();
-        this.loggerService.log('notepad is closed', ' info')
+        this.loggerService.log('notepad is closed', ' info');
       }
       else {
         this.notepadIsOpen = true;
-        this.loggerService.log('notepad is open', ' info')
-        this.updateNotepadInput(this.notepad.text.original);
+        this.loggerService.log('notepad is open', ' info');
+        this.updateNotepadInput( this.originalNotepadText);
         this.menuService.enableMenuItem('save-click', () => { this.saveNotepad(); this.menuService.hideMenu(); });
         this.menuService.enableMenuItem('close-click', () => { this.exitNotepad(); this.menuService.hideMenu(); });
         this.menuService.enableMenuItem('delete-click', () => { this.deleteNotepad(); this.menuService.hideMenu(); });
@@ -69,7 +62,6 @@ export class NotepadComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe());
-    this.notepadRepo.resetCurrentNotepad();
     this.disableNotebookMenus();
   }
 
@@ -81,8 +73,8 @@ export class NotepadComponent implements OnInit, OnDestroy {
   }
 
   undoNotepadChanges() {
-    this.notepad.text.current = this.notepad.text.original;
-    this.updateNotepadInput(this.notepad.text.original);
+    this.notepadRepo.currentNotepad.content =  this.originalNotepadText;
+    this.updateNotepadInput( this.originalNotepadText);
   }
 
   updateNotepadInput(value) {
@@ -90,7 +82,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
   }
 
   updateText(value) {
-    this.notepad.text.current = value;
+    this.notepadRepo.currentNotepad.content = value;
   }
 
   createNotepadForm() {
@@ -101,6 +93,15 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.createNotepadFormIsOpen = false;
   }
 
+  renameNotepadForm() {
+    if (!this.isNotepadItemSelected) return;
+    this.renameNotepadFormIsOpen = true;
+  }
+
+  cancelRenameNotepad() {
+    this.renameNotepadFormIsOpen = false;
+  }
+
   newNotepad(name) {
     this.disablePage = true;
     this.notepadRepo.postNotepad('', name, '');
@@ -109,35 +110,45 @@ export class NotepadComponent implements OnInit, OnDestroy {
   openNotepad(): void {
     this.preventSimpleClick = true;
     clearTimeout(this.timer);
+
+    if (!this.isNotepadItemSelected) return;
+
     this.disablePage = true;
 
-    const notepad = this.notepadRepo.notepads.find(np => np.sha === this.notepad.sha);
+    const notepad = this.notepadRepo.notepads.find(np => np.sha === this.notepadRepo.currentNotepad.sha && np.name === this.notepadRepo.currentNotepad.name);
     this.notepadRepo.getNotepad(notepad);
   }
 
-  renameNotepad(){
-    this.disablePage = true;
-    const notepad = this.notepadRepo.notepads.find(np => np.sha === this.notepad.sha);
-    this.notepadRepo.deleteNotepad(notepad.name);
-    this.notepadRepo.postNotepad(notepad.text, notepad.name, '');
-  }
-
-  highlightRow(rowNumber, item): void {
-    this.timer = 0;
+  highlightRow(item): void {
+    this.timer = null;
     this.preventSimpleClick = false;
     let delay = 200;
 
     this.timer = setTimeout(() => {
       if (!this.preventSimpleClick) {
-        this.highlightedRow = rowNumber;
-        this.notepad.sha = item.sha;
+        this.highlightedRow = item.sha + item.name;
+        this.notepadRepo.currentNotepad.sha = item.sha;
+        this.notepadRepo.currentNotepad.name = item.name;
       }
     }, delay);
   }
 
+  get isNotepadItemSelected() {
+    if (this.stringIsNull(this.notepadRepo.currentNotepad.sha)) {
+      alert('No notepad selected!');
+      return false;
+    }
+    return true;
+  }
+
+  renameNotepad(name) {
+    this.disablePage = true;
+    this.notepadRepo.renameNotepad(this.notepadRepo.currentNotepad.sha, this.notepadRepo.currentNotepad.name, name);
+  }
+
   saveNotepad() {
     this.disablePage = true;
-    this.notepadRepo.postNotepad(this.notepad.text.current, this.notepad.name, this.notepad.sha);
+    this.notepadRepo.postNotepad(this.notepadRepo.currentNotepad.content, this.notepadRepo.currentNotepad.name, this.notepadRepo.currentNotepad.sha);
   }
 
   exitNotepad() {
@@ -145,12 +156,16 @@ export class NotepadComponent implements OnInit, OnDestroy {
       if (!window.confirm('Discard unsaved changes?')) return;
 
     this.disablePage = true;
-    this.notepadRepo.currentNotepad.next({ name: '', content: '', sha: '' })
+    this.notepadRepo.getAllNotepads();
   }
 
+  stringIsNull(value) { return ['', null, undefined].includes(value); }
+
   deleteNotepad() {
+    if (!this.isNotepadItemSelected) return;
+
     if (window.confirm('Delete notepad?')) {
-      this.notepadRepo.deleteNotepad(this.notepad.sha);
+      this.notepadRepo.deleteNotepad(this.notepadRepo.currentNotepad.sha, this.notepadRepo.currentNotepad.name);
       this.disablePage = true;
     }
   }
