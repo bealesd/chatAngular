@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1605198725220,
+  "timestamp": 1605979798186,
   "index": "/chatAngular/index.html",
   "assetGroups": [
     {
@@ -13,12 +13,12 @@
       "urls": [
         "/chatAngular/favicon.ico",
         "/chatAngular/index.html",
-        "/chatAngular/main.e9889db9095310827d95.js",
+        "/chatAngular/main.30d8df1f53574cea1655.js",
         "/chatAngular/manifest.webmanifest",
-        "/chatAngular/polyfills.35a5ca1855eb057f016a.js",
-        "/chatAngular/runtime.acf0dec4155e77772545.js",
-        "/chatAngular/scripts.66d622cd5e2b24bb964c.js",
-        "/chatAngular/styles.de1a23b984114b331e64.css"
+        "/chatAngular/polyfills.c2629444d2427ccec805.js",
+        "/chatAngular/runtime.cad733cf18c74cfef638.js",
+        "/chatAngular/scripts.877455d419d0db8036bd.js",
+        "/chatAngular/styles.94f14c30460c007d5591.css"
       ],
       "patterns": []
     },
@@ -30,7 +30,15 @@
         "ignoreVary": true
       },
       "urls": [
+        "/chatAngular/PS-Black.3999b85c1721ca079a59.woff",
+        "/chatAngular/PS-Medium.70f0942277dd5cd83980.woff",
+        "/chatAngular/PS-Regular.0a489488ab3cb2eb11f9.woff",
         "/chatAngular/assets/css/grid-menu.css",
+        "/chatAngular/assets/fonts/PS-Black.woff",
+        "/chatAngular/assets/fonts/PS-Light.woff",
+        "/chatAngular/assets/fonts/PS-Medium.woff",
+        "/chatAngular/assets/fonts/PS-Regular.woff",
+        "/chatAngular/assets/icons/file.png",
         "/chatAngular/assets/icons/icon-128x128.png",
         "/chatAngular/assets/icons/icon-144x144.png",
         "/chatAngular/assets/icons/icon-152x152.png",
@@ -39,6 +47,12 @@
         "/chatAngular/assets/icons/icon-512x512.png",
         "/chatAngular/assets/icons/icon-72x72.png",
         "/chatAngular/assets/icons/icon-96x96.png",
+        "/chatAngular/assets/images/Responsive-WYSIWYG-Text-Editor-with-jQuery-Bootstrap-LineControl-Editor/README.md",
+        "/chatAngular/assets/images/Responsive-WYSIWYG-Text-Editor-with-jQuery-Bootstrap-LineControl-Editor/demo.html",
+        "/chatAngular/assets/images/Responsive-WYSIWYG-Text-Editor-with-jQuery-Bootstrap-LineControl-Editor/editor.css",
+        "/chatAngular/assets/images/Responsive-WYSIWYG-Text-Editor-with-jQuery-Bootstrap-LineControl-Editor/editor.js",
+        "/chatAngular/assets/images/Responsive-WYSIWYG-Text-Editor-with-jQuery-Bootstrap-LineControl-Editor/license.txt",
+        "/chatAngular/assets/images/address-book.svg",
         "/chatAngular/assets/images/calendar.svg",
         "/chatAngular/assets/images/chat.svg",
         "/chatAngular/assets/images/ringOnBlack.jpg",
@@ -52,7 +66,15 @@
   ],
   "dataGroups": [],
   "hashTable": {
-    "/chatAngular/assets/css/grid-menu.css": "368ab4383cbd41995a629497b2c39c8f3805389e",
+    "/chatAngular/PS-Black.3999b85c1721ca079a59.woff": "030687a1ee0d195a4d75bd94d814899123f59e6d",
+    "/chatAngular/PS-Medium.70f0942277dd5cd83980.woff": "42557c302587b0c54642bd94fb37502c0304a27b",
+    "/chatAngular/PS-Regular.0a489488ab3cb2eb11f9.woff": "e4e316c0be44950eccd081a791ec01ea5e0b7499",
+    "/chatAngular/assets/css/grid-menu.css": "d4ac27b577816d7e9e14f074700f4f201860e1e9",
+    "/chatAngular/assets/fonts/PS-Black.woff": "030687a1ee0d195a4d75bd94d814899123f59e6d",
+    "/chatAngular/assets/fonts/PS-Light.woff": "950a38c91f8df226a9fd3d24ea93bd316076b66f",
+    "/chatAngular/assets/fonts/PS-Medium.woff": "42557c302587b0c54642bd94fb37502c0304a27b",
+    "/chatAngular/assets/fonts/PS-Regular.woff": "e4e316c0be44950eccd081a791ec01ea5e0b7499",
+    "/chatAngular/assets/icons/file.png": "00474aefe1ed6aa1cd787802b68b8286772a39a6",
     "/chatAngular/assets/icons/icon-128x128.png": "016d6913c44f84182ba469930a352315f93da94b",
     "/chatAngular/assets/icons/icon-144x144.png": "17a26efdfa3fbd75430dd88750ba70b1563f4fef",
     "/chatAngular/assets/icons/icon-152x152.png": "4b51c1f2d7ebc068a4e9b5de911c51a09e0180e7",
@@ -61,21 +83,27 @@
     "/chatAngular/assets/icons/icon-512x512.png": "4568ae32ddac7e7fb4e3a3e3fc7dae7a251daaad",
     "/chatAngular/assets/icons/icon-72x72.png": "1af143f25dba0c39feb46325dff0ce6dc2e9913e",
     "/chatAngular/assets/icons/icon-96x96.png": "e382ea8ee7e81d28da9b775023f3d9743facb1e1",
+    "/chatAngular/assets/images/Responsive-WYSIWYG-Text-Editor-with-jQuery-Bootstrap-LineControl-Editor/README.md": "63ed85b040a3c2ddd57af2ac004b057ef78048f1",
+    "/chatAngular/assets/images/Responsive-WYSIWYG-Text-Editor-with-jQuery-Bootstrap-LineControl-Editor/demo.html": "17afafc307f9ef798f207c2aa20f77240411c8a7",
+    "/chatAngular/assets/images/Responsive-WYSIWYG-Text-Editor-with-jQuery-Bootstrap-LineControl-Editor/editor.css": "d66f3b43504d7e0fac4a879cdcb43bc95b3d0504",
+    "/chatAngular/assets/images/Responsive-WYSIWYG-Text-Editor-with-jQuery-Bootstrap-LineControl-Editor/editor.js": "a7ff8d3fdfaa07c403e7ef04c152fbba509b2700",
+    "/chatAngular/assets/images/Responsive-WYSIWYG-Text-Editor-with-jQuery-Bootstrap-LineControl-Editor/license.txt": "c4dd8fd4008439215510cc9e9a3a424c8e4ac753",
+    "/chatAngular/assets/images/address-book.svg": "1dbc87ffe63b91eec3d402d669a469eaed4c5fb7",
     "/chatAngular/assets/images/calendar.svg": "2c13aee9c57557b48a01c74527ff4ce74673e738",
     "/chatAngular/assets/images/chat.svg": "8d7b01f3b560a7439c3add4c0d3bee565e58645f",
     "/chatAngular/assets/images/ringOnBlack.jpg": "fbe290a89855ca59ffab843058b45f53107afd98",
     "/chatAngular/assets/images/spaceRed.jpg": "474538b6ec2d7906c035531100c2de72bcf6d4d8",
     "/chatAngular/assets/images/todo.svg": "6d600392b514660259a98db928887d22108d089f",
-    "/chatAngular/assets/js/grid-menu.js": "d9c537a6a3cc22f22dfcf58078e4993d7e56431b",
+    "/chatAngular/assets/js/grid-menu.js": "d2c58c27411b0af400549ce09363ee72994703cc",
     "/chatAngular/favicon.ico": "fcbcf16ac9d543f785ec36346161838334fdce13",
-    "/chatAngular/index.html": "6720c6648e4a640ef1805c8004ff30362e433410",
-    "/chatAngular/main.e9889db9095310827d95.js": "fb42b5ac54c21a00d935a4de25d3b724e0c79935",
-    "/chatAngular/manifest.webmanifest": "42045d6273e4477375e0a7d4c344bd46cbc3a064",
-    "/chatAngular/polyfills.35a5ca1855eb057f016a.js": "578360d24ce37383f261c7ef63b1f822d28e8dde",
+    "/chatAngular/index.html": "bb6abbdb36bb13a5c97a836b53b8783d8584dd39",
+    "/chatAngular/main.30d8df1f53574cea1655.js": "0590f35ba598d802665b561e5510897a2ca31015",
+    "/chatAngular/manifest.webmanifest": "3686af5616528363ac7e719b05e9ad7a39404619",
+    "/chatAngular/polyfills.c2629444d2427ccec805.js": "763cd3b34dfa4600ebb9d9588ec7116988e98920",
     "/chatAngular/ringOnBlack.d984cbf79e45cf4b65b3.jpg": "fbe290a89855ca59ffab843058b45f53107afd98",
-    "/chatAngular/runtime.acf0dec4155e77772545.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
-    "/chatAngular/scripts.66d622cd5e2b24bb964c.js": "47441cd0f93710696522bba49b7d21f93da82265",
-    "/chatAngular/styles.de1a23b984114b331e64.css": "1a7cda1d336109e6ba6bd03776e01adbd46d0df0"
+    "/chatAngular/runtime.cad733cf18c74cfef638.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
+    "/chatAngular/scripts.877455d419d0db8036bd.js": "c2f107f7a9f844d4af0bc642c039034badb579be",
+    "/chatAngular/styles.94f14c30460c007d5591.css": "b8c185da7d3e8cae4d6bb9e922700d2942ce2a15"
   },
   "navigationUrls": [
     {
@@ -94,5 +122,6 @@
       "positive": false,
       "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
     }
-  ]
+  ],
+  "navigationRequestStrategy": "performance"
 }

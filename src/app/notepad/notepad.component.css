@@ -1,40 +1,42 @@
-:host{
+:host {
     --text-area-cols: 600px;
     --main-font-color: #222222
 }
 
+
 /*medium size wrapper*/
 
 @media screen and (max-width: 700px) and (min-width: 400px) {
-  :host {
-    --text-area-cols: 300px;
- }
+     :host {
+        --text-area-cols: 300px;
+    }
 }
+
 
 /*small size wrapper*/
 
 @media screen and (max-width: 400px) {
-  :host {
-    --text-area-cols: 300px;
- }
+     :host {
+        --text-area-cols: 300px;
+    }
 }
 
-.disabled-page{
+.disabled-page {
     position: fixed;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    background-color:#000;
+    background-color: #000;
     opacity: .75;
     z-index: 9999999;
 }
 
-.notepad-container{
+.notepad-container {
     padding: 40px;
 }
 
-.notepad-editor-container{
+.notepad-editor-container {
     padding-top: 20px;
     padding-bottom: 20px;
     display: grid;
@@ -42,18 +44,17 @@
     align-content: center;
 }
 
-
-.notepad-editor-container  .notepad-text{
+.notepad-editor-container .notepad-text {
     grid-column: 2;
 }
 
-.notepad-editor-container  .notepad-title{
-    color:white;
-    font-family:inherit;
+.notepad-editor-container .notepad-title {
+    color: white;
+    font-family: inherit;
     font-size: 30px;
 }
 
-.notepad-editor-container  .notepad-text-input{
+.notepad-editor-container .notepad-text-input {
     margin-top: 20px;
     outline: none;
     resize: none;
@@ -61,45 +62,46 @@
     min-height: 500px;
     background-color: rgba(255, 255, 255, 1);
     color: black;
-    font-family:inherit;
+    font-family: inherit;
     font-size: 18px;
-    white-space: pre-wrap;    
+    white-space: pre-wrap;
 }
 
-.hide{
+.hide {
     display: none;
 }
 
-.notepad-item-container{
+.notepad-item-container {
     display: grid;
-    grid-template-columns: auto auto 20px;
+    grid-template-columns: auto auto auto 20px;
     padding: 0px 20px;
     background-color: rgba(255, 255, 255, 1);
-    color:var(--main-font-color);
+    color: var(--main-font-color);
 }
 
-.notepad-item-controls{
+.notepad-item-controls {
     grid-row: 1;
     grid-column: 1/4;
     height: 40px;
-    font-family:inherit;
+    font-family: inherit;
     font-size: 30px;
     font-weight: bold;
     text-align: right;
 }
-div[class*="notepad-item-control-"]{
+
+div[class*="notepad-item-control-"] {
     display: inline;
     transition: 200ms;
 }
 
-div[class*="notepad-item-control-"]:hover{
+div[class*="notepad-item-control-"]:hover {
     cursor: pointer;
 }
 
-.notepad-item-header{
+.notepad-item-header {
     grid-row: 2;
-    height:48px;
-    font-family:inherit;
+    height: 48px;
+    font-family: inherit;
     font-size: 16px;
     font-weight: bold;
 }
@@ -109,51 +111,60 @@ div[class*="notepad-item-control-"]:hover{
     align-items: center;
 }
 
-.notepad-item > div:hover{
+.notepad-item-name-value {
+    display: inline;
+}
+
+.notepad-item>div:hover {
     cursor: default;
 }
 
 .notepad-item-container .notepad-item-name:not(.notepad-item-header),
-.notepad-item-container .notepad-item-size:not(.notepad-item-header){
-
+.notepad-item-container .notepad-item-size:not(.notepad-item-header),
+.notepad-item-container .notepad-item-type:not(.notepad-item-header) {
     font-family: Roboto;
     font-size: 14px;
-    border-bottom: 1px solid #dadce0;    
+    border-bottom: 1px solid #dadce0;
 }
-.notepad-item-container .notepad-item-name{
-    height:48px;
+
+.notepad-item-container .notepad-item-name {
+    height: 48px;
     grid-column: 1;
 }
 
-.notepad-item-container .notepad-item-size{
-    height:48px;
+.notepad-item-container .notepad-item-type {
+    height: 48px;
     grid-column: 2;
 }
 
-.notepad-item-container .notepad-item-add{
-    height:48px;
-    font-size: 26px;
+.notepad-item-container .notepad-item-size {
+    height: 48px;
     grid-column: 3;
+}
+
+.notepad-item-container .notepad-item-add {
+    height: 48px;
+    font-size: 26px;
+    grid-column: 4;
     cursor: pointer;
     transition: 200ms;
 }
 
-.notepad-item-container .notepad-item-add:hover{
-   transform: scale(1.2);
+.notepad-item-container .notepad-item-add:hover {
+    transform: scale(1.2);
 }
 
-
-.notepad-item-container .notepad-item-name span{
+.notepad-item-container .notepad-item-name span {
     transition: 300ms;
     border-bottom: transparent solid 1px;
 }
 
-.highlighted-row{
+.highlighted-row {
     background-color: #E8F0FE;
     color: #1967d2;
 }
 
-.notepad-unsaved-changes{
+.notepad-unsaved-changes {
     border-left: 5px red solid;
 }
 
@@ -163,12 +174,12 @@ div[class*="notepad-item-control-"]:hover{
     right: 0;
     bottom: 0;
     left: 0;
-    background-color:rgba(200,200,200,0.75);
+    background-color: rgba(200, 200, 200, 0.75);
     z-index: 9999999;
     font-family: 'ps-regular'
 }
 
-.new-file > div {
+.new-file>div {
     display: grid;
     grid-template-columns: repeat(12, 30px);
     grid-template-rows: 15px 32px 15px 32px 15px 32px 15px;
@@ -180,24 +191,24 @@ div[class*="notepad-item-control-"]:hover{
     margin-top: calc(-0.5 * calc(15px + 32px + 15px + 32px + 15px + 32px + 15px));
     margin-left: calc(-0.5 * calc(12 * 30px));
     background-color: white;
-    box-shadow: 0 4px 8px rgba(0,0,0,.32), 0 8px 40px rgba(0,0,0,.4);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, .32), 0 8px 40px rgba(0, 0, 0, .4);
     border-radius: 8px;
 }
 
-.new-notepad-title{
+.new-notepad-title {
     font-size: 20px;
-    color:var(--main-font-color);;
+    color: var(--main-font-color);
     grid-row: 2;
     grid-column: 2/10;
 }
 
-.new-notepad-cancel{
+.new-notepad-cancel {
     grid-row: 2;
     grid-column: 11/12;
     cursor: pointer;
 }
 
-.new-notepad-name-input{
+.new-notepad-name-input {
     grid-row: 4;
     grid-column: 2/12;
     border: 1px solid lightgrey;
@@ -214,6 +225,15 @@ div[class*="notepad-item-control-"]:hover{
     grid-column: 10/12;
 }
 
+.new-notepad-file-type {
+    font-size: 12px;
+    color: var(--main-font-color);
+    grid-row: 6;
+    grid-column: 2/5;
+    display: flex;
+    align-items: center;
+}
+
 button {
     padding: 2px 7px;
     text-align: center;
@@ -228,7 +248,7 @@ button {
     border: none;
     border-radius: 2px;
     cursor: pointer;
-    box-shadow: 0 0 11px rgba(33,33,33,.0);
+    box-shadow: 0 0 11px rgba(33, 33, 33, .0);
     transition: 500ms;
 }
 
@@ -237,8 +257,8 @@ button {
     background-color: #4285f4;
 }
 
-.blue-button:hover{
-    box-shadow: 0 0 5px rgba(33,33,33,.7); 
+.blue-button:hover {
+    box-shadow: 0 0 5px rgba(33, 33, 33, .7);
 }
 
 .white-button {
@@ -247,5 +267,5 @@ button {
 }
 
 .white-button:hover {
-    box-shadow: 0 0 5px rgba(33,33,33,.7); 
+    box-shadow: 0 0 5px rgba(33, 33, 33, .7);
 }

@@ -17,12 +17,15 @@ export class NotepadComponent implements OnInit, OnDestroy {
   renameNotepadFormIsOpen = false;
   notepadIsOpen = false;
   originalNotepadText = '';
+  fileType = '';
 
   preventSimpleClick: boolean;
   highlightedRow: string = null;
   timer: any;
 
-  get notepadTextHasChanged() { return this.notepadRepo.currentNotepad.content !== this.originalNotepadText; }
+  get notepadTextHasChanged() { return this.currentNotepad?.content !== this.originalNotepadText; }
+
+  get currentNotepad() { return this.notepadRepo.notepads.find(np => np.metadata.key === this.notepadRepo.currentNotepadKey); }
 
   constructor(
     public notepadRepo: NotepadRepo,
@@ -34,24 +37,57 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.disablePage = false;
 
     this.subscriptions.push(this.notepadRepo.state.subscribe((state) => {
-      const lastState = state[state.length - 1];
+      const lastState = state.slice(-1)[0];
       this.createNotepadFormIsOpen = false;
       this.renameNotepadFormIsOpen = false;
       this.disablePage = false;
       this.highlightedRow = null;
 
       //TODO this should only be done on state.get or state.save
-      this.originalNotepadText = this.notepadRepo.currentNotepad.content;
 
-      if ([undefined, State.Error, State.DeletedNotepad, State.GotNotepadListing, State.RenamedNotepad].includes(lastState)) {
+      if(lastState === State.GotNotepadListing){
         this.notepadIsOpen = false;
         this.disableNotebookMenus();
-        this.loggerService.log('notepad is closed', ' info');
+        this.notepadRepo.currentNotepadKey = '';
       }
-      else {
+      else if(lastState === State.Error){
+        this.notepadIsOpen = false;
+        this.disableNotebookMenus();
+        this.notepadRepo.currentNotepadKey = '';
+      }
+      else if(lastState === State.DeletedNotepad){
+        this.notepadIsOpen = false;
+        this.disableNotebookMenus();
+        this.notepadRepo.currentNotepadKey = '';
+      }
+      else if(lastState === State.RenamedNotepad){
+        this.notepadIsOpen = false;
+        this.disableNotebookMenus();
+        this.notepadRepo.currentNotepadKey = '';
+      }
+      else if(lastState === State.CreatedNotepad){
+        this.notepadIsOpen = false;
+        this.disableNotebookMenus();
+        this.notepadRepo.currentNotepadKey = '';
+      }
+      else if(lastState === undefined){
+        this.notepadIsOpen = false;
+        this.disableNotebookMenus();
+        this.notepadRepo.currentNotepadKey = '';
+      }
+      else if(lastState === State.GotNotepad){
         this.notepadIsOpen = true;
-        this.loggerService.log('notepad is open', ' info');
-        this.updateNotepadInput(this.originalNotepadText);
+        this.originalNotepadText = this.currentNotepad.content;
+        this.resetNotepadInput();
+        this.menuService.enableMenuItem('save-click', () => { this.saveNotepad(); this.menuService.hideMenu(); });
+        this.menuService.enableMenuItem('close-click', () => { this.exitNotepad(); this.menuService.hideMenu(); });
+        this.menuService.enableMenuItem('delete-click', () => { this.deleteNotepad(); this.menuService.hideMenu(); });
+        this.menuService.enableMenuItem('undo-click', () => { this.undoNotepadChanges(); this.menuService.hideMenu(); });
+      }
+      else if(lastState === State.UpdatedNotepad){
+        this.notepadIsOpen = true;
+        this.originalNotepadText = this.currentNotepad.content;
+        this.resetNotepadInput();
         this.menuService.enableMenuItem('save-click', () => { this.saveNotepad(); this.menuService.hideMenu(); });
         this.menuService.enableMenuItem('close-click', () => { this.exitNotepad(); this.menuService.hideMenu(); });
         this.menuService.enableMenuItem('delete-click', () => { this.deleteNotepad(); this.menuService.hideMenu(); });
@@ -68,6 +104,10 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.disableNotebookMenus();
   }
 
+  getFileType(name) {
+    this.fileType = !name.includes('.') ? '' : name.split('.').slice(-1)[0];
+  }
+
   disableNotebookMenus() {
     this.menuService.disableMenuItem('close-click');
     this.menuService.disableMenuItem('save-click');
@@ -76,16 +116,16 @@ export class NotepadComponent implements OnInit, OnDestroy {
   }
 
   undoNotepadChanges() {
-    this.notepadRepo.currentNotepad.content = this.originalNotepadText;
-    this.updateNotepadInput(this.originalNotepadText);
+    (this.currentNotepad as Notepad).content = this.originalNotepadText;
+    this.resetNotepadInput();
   }
 
-  updateNotepadInput(value) {
-    (document.querySelector('.notepad-text-input ') as HTMLTextAreaElement).value = value;
+  resetNotepadInput() {
+    (document.querySelector('.notepad-text-input') as HTMLTextAreaElement).value = this.originalNotepadText;
   }
 
   updateText(value) {
-    this.notepadRepo.currentNotepad.content = value;
+    this.currentNotepad.content = value;
   }
 
   createNotepadForm() {
@@ -105,26 +145,27 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.renameNotepadFormIsOpen = false;
   }
 
+  isUniqueName(name) {
+    if (this.notepadRepo.notepads.find(np => np.metadata.name === name) !== undefined) {
+      alert('name is not unique');
+      return false;
+    }
+    return true;
+  }
+
   newNotepad(name) {
+    if (!this.isUniqueName(name)) return;
     this.disablePage = true;
-    this.notepadRepo.postNotepad('', name, '');
+    this.notepadRepo.postNotepad('', name);
   }
 
   openNotepad(): void {
     this.preventSimpleClick = true;
     clearTimeout(this.timer);
-
     if (!this.isNotepadItemSelected) return;
 
     this.disablePage = true;
-
-    const notepad: Notepad = this.notepadRepo.notepads.find((np: Notepad) => {
-      return np.metadata.sha === this.notepadRepo.currentNotepad.metadata.sha
-        && np.metadata.name === this.notepadRepo.currentNotepad.metadata.name
-    });
-    // notepad is null if you've just done a delete, then try to open another file
-    // why??
-    this.notepadRepo.getNotepad(notepad);
+    this.notepadRepo.getNotepad(this.currentNotepad.metadata.key);
   }
 
   highlightRow(item: Notepad): void {
@@ -134,16 +175,14 @@ export class NotepadComponent implements OnInit, OnDestroy {
 
     this.timer = setTimeout(() => {
       if (!this.preventSimpleClick) {
-        // this.highlightedRow = item.metadata.sha + item.metadata.name;
         this.highlightedRow = item.metadata.key;
-        this.notepadRepo.currentNotepad = item;
-        // this.notepadRepo.currentNotepad.metadata.name = item.metadata.name;
+        this.notepadRepo.currentNotepadKey = item.metadata.key;
       }
     }, delay);
   }
 
   get isNotepadItemSelected() {
-    if (this.stringIsNull(this.notepadRepo.currentNotepad.metadata.sha)) {
+    if (this.stringIsNull(this.currentNotepad?.metadata?.key)) {
       alert('No notepad selected!');
       return false;
     }
@@ -151,13 +190,18 @@ export class NotepadComponent implements OnInit, OnDestroy {
   }
 
   renameNotepad(name) {
+    if (!this.isUniqueName(name)) return;
     this.disablePage = true;
-    this.notepadRepo.renameNotepad(this.notepadRepo.currentNotepad.metadata.sha, this.notepadRepo.currentNotepad.metadata.name, name);
+    this.notepadRepo.renameNotepad2(this.currentNotepad.metadata.key, name);
   }
 
   saveNotepad() {
+    if(!this.notepadTextHasChanged){
+       alert('No changes!');
+       return;
+    }
     this.disablePage = true;
-    this.notepadRepo.postNotepad(this.notepadRepo.currentNotepad.content, this.notepadRepo.currentNotepad.metadata.name, this.notepadRepo.currentNotepad.metadata.sha);
+    this.notepadRepo.updateNotepad(this.currentNotepad.metadata.key);
   }
 
   exitNotepad() {
@@ -174,7 +218,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
     if (!this.isNotepadItemSelected) return;
 
     if (window.confirm('Delete notepad?')) {
-      this.notepadRepo.deleteNotepad(this.notepadRepo.currentNotepad.metadata.sha, this.notepadRepo.currentNotepad.metadata.name);
+      this.notepadRepo.deleteNotepad(this.currentNotepad.metadata.key);
       this.disablePage = true;
     }
   }

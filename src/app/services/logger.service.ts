@@ -4,10 +4,12 @@ import { Injectable, isDevMode } from '@angular/core';
   providedIn: 'root',
 })
 export class LoggerService {
+  isDevMode: boolean = isDevMode();
+
   types = ['info', 'error'];
 
   log(message: any, type: string) {
-    if (!isDevMode) return;
+    if (!this.isDevMode) return;
 
     if (typeof(message) === 'object') {
       if (type === 'info')

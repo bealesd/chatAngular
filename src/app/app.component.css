@@ -2,13 +2,13 @@
     background-color: white;
 }
 
-.page-container{
+.page-container {
     min-height: 100%;
-    position:relative;
+    position: relative;
 }
 
-.main-container{
-    padding-bottom: 100px;
+.main-container {
+    /* padding-bottom: 100px; */
 }
 
 h4 {

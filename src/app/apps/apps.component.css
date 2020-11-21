@@ -1,71 +1,82 @@
-:host{
+:host {
     --icon-height: 200px;
     --app-container-margin-y: 100px;
 }
 
 @media screen and (max-width: 800px) {
-    :host {
+     :host {
         --icon-height: 100px;
         --app-container-margin-y: 50px;
-   }
+    }
 }
 
-.app-container {  
+.app-container {
     display: grid;
     grid-template-columns: repeat(13, 1fr);
     grid-template-rows: repeat(8, calc(var(--icon-height)/2));
     color: white;
 }
 
-.app-container:nth-child(){
+.app-container:nth-child() {
     overflow: hidden;
 }
 
-svg{
+svg {
     height: var(--icon-height);
 }
 
-img{
+img {
     height: var(--icon-height);
 }
 
-img:hover{
+img:hover {
     cursor: pointer;
     transform: scale(1.1);
 }
 
-.calendar{
-    grid-column:  2/ 4;
+img:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+.routerLink:active,
+.routerLink:focus {
+    outline: 0;
+    border: none;
+}
+
+.calendar {
+    grid-column: 2/ 4;
     grid-row: 2/4;
 }
 
-.chat{
-    grid-column:  6 / 8;
+.chat {
+    grid-column: 6 / 8;
     grid-row: 2/4;
 }
 
-.todo{
-    grid-column:  10/ 12;
+.todo {
+    grid-column: 10/ 12;
     grid-row: 2/4;
 }
 
-.notepad{
-    grid-column:  2/ 4;
+.notepad {
+    grid-column: 2/ 4;
     grid-row: 5/7;
 }
 
-.middle{
+.middle {
     height: var(--icon-height);
     display: grid;
     grid-template-rows: auto auto auto;
 }
 
-.imageText{
+.imageText {
     height: 1em;
     grid-row: 2;
 }
 
-.imageText > div{
+.imageText>div {
     font-size: 30px;
     text-align: center;
     transition: 1000ms;
@@ -73,9 +84,8 @@ img:hover{
     text-decoration: none;
 }
 
-.imageText> div:hover{
+.imageText>div:hover {
     color: hotpink;
     border-bottom: 1px solid lightskyblue;
     cursor: pointer;
 }
-

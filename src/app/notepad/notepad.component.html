@@ -15,16 +15,27 @@
             <div class="notepad-item-name notepad-item-header notepad-item">
                 <div>Name</div>
             </div>
+
+            <div class="notepad-item-type notepad-item-header notepad-item">
+                <div>File Type</div>
+            </div>
+
             <div class="notepad-item-size notepad-item-header notepad-item">
                 <div>File Size</div>
             </div>
-            <div class="notepad-item-add notepad-item-header notepad-item" (click)="createNotepadForm()" title="Add File">&#43;</div>
+
+            <div class="notepad-item-add notepad-item-header notepad-item" (click)="createNotepadForm()" title="Add File">
+                &#43;</div>
 
             <ng-container *ngFor="let item of notepadRepo.notepads; let i = index">
                 <div class="notepad-item notepad-item-name {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}" (click)="highlightRow(item)" (dblclick)="openNotepad()">
                     <div>
-                        <img class="a-Ua-c" src="assets/icons/file.png" alt="Text"> {{item.metadata.fileName}}
+                        <img src="assets/icons/file.png" alt="Text">
+                        <div class="notepad-item-name-value"> {{item.metadata.fileName}}</div>
                     </div>
+                </div>
+                <div class="notepad-item  notepad-item-type {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}" (click)="highlightRow(item)" (dblclick)="openNotepad()">
+                    <div>{{item.metadata.fileType}}</div>
                 </div>
                 <div class="notepad-item  notepad-item-size {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}" (click)="highlightRow(item)" (dblclick)="openNotepad()">
                     <div>{{item.metadata.size}}</div>
@@ -36,8 +47,8 @@
 
         <div class="notepad-editor-container">
             <div class="notepad-text {{notepadIsOpen ? '' : 'hide'}}">
-                <div class="notepad-title">{{notepadRepo.currentNotepad.metadata.name}}</div>
-                <textarea #textArea class="notepad-text-input {{notepadTextHasChanged ? 'notepad-unsaved-changes' : ''}}" contenteditable="true" (input)="updateText(textArea.value)">{{originalNotepadText}}</textarea>
+                <div class="notepad-title">{{currentNotepad?.metadata?.name}}</div>
+                <textarea #textArea class="notepad-text-input {{notepadTextHasChanged ? 'notepad-unsaved-changes' : ''}}" contenteditable="true" (keyup)="updateText(textArea.value)">{{originalNotepadText}}</textarea>
             </div>
 
         </div>
@@ -50,7 +61,10 @@
     <div>
         <div class="new-notepad-title">New Notepad</div>
         <div class="new-notepad-cancel" (click)="cancelNewNotepad()">&#10005;</div>
-        <input class="new-notepad-name-input" type="text" placeholder="My Notepad" id="value" #name>
+        <input class="new-notepad-name-input" type="text" placeholder="My Notepad" id="value" #name (keyup)="getFileType(name.value)">
+        <div class="new-notepad-file-type">
+            <div>File Type: {{fileType}}</div>
+        </div>
         <button class="white-button new-notepad-cancel-button" (click)="cancelNewNotepad()">CANCEL</button>
         <button class="blue-button new-notepad-create-button" (click)="newNotepad(name.value)">CREATE</button>
     </div>
@@ -60,7 +74,10 @@
     <div>
         <div class="new-notepad-title">Rename Notepad</div>
         <div class="new-notepad-cancel" (click)="cancelRenameNotepad()">&#10005;</div>
-        <input class="new-notepad-name-input" type="text" value="{{notepadRepo.currentNotepad.name}}" id="value" #name>
+        <input class="new-notepad-name-input" type="text" value="{{currentNotepad.name}}" id="value" #name (keyup)="getFileType(name.value)">
+        <div class="new-notepad-file-type">
+            <div>File Type: {{fileType}}</div>
+        </div>
         <button class="white-button new-notepad-cancel-button" (click)="cancelRenameNotepad()">CANCEL</button>
         <button class="blue-button new-notepad-create-button" (click)="renameNotepad(name.value)">RENAME</button>
     </div>
