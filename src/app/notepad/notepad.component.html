@@ -17,11 +17,11 @@
             </div>
 
             <div class="notepad-item-type notepad-item-header notepad-item">
-                <div>File Type</div>
+                <div>Type</div>
             </div>
 
             <div class="notepad-item-size notepad-item-header notepad-item">
-                <div>File Size</div>
+                <div>Size</div>
             </div>
 
             <div class="notepad-item-add notepad-item-header notepad-item" (click)="createNotepadForm()" title="Add File">
@@ -29,9 +29,9 @@
 
             <ng-container *ngFor="let item of notepadRepo.notepads; let i = index">
                 <div class="notepad-item notepad-item-name {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}" (click)="highlightRow(item)" (dblclick)="openNotepad()">
-                    <div>
-                        <img src="assets/icons/file.png" alt="Text">
-                        <div class="notepad-item-name-value"> {{item.metadata.fileName}}</div>
+                    <div class="notepad-item-name-box">
+                        <img class="notepad-item-name-img" src="assets/icons/file.png" alt="Text">
+                        <span class="notepad-item-name-value"> {{item.metadata.fileName}}</span>
                     </div>
                 </div>
                 <div class="notepad-item  notepad-item-type {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}" (click)="highlightRow(item)" (dblclick)="openNotepad()">

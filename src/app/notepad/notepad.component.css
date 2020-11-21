@@ -1,23 +1,44 @@
 :host {
     --text-area-cols: 600px;
-    --main-font-color: #222222
+    --main-font-color: #222222;
+    --notepad-item-controls-font-size: 30px;
+    --notepad-item-header-font-size: 16px;
+    --notepad-item-header-font-weight: bold;
+    --notepad-item-font-family: Roboto;
+    --notepad-item-font-size: 14px;
+    --notepad-item-name-img-display: inline;
+    --notepad-item-name-img-height: 30px;
 }
 
 
 /*medium size wrapper*/
 
-@media screen and (max-width: 700px) and (min-width: 400px) {
+@media screen and (max-width: 700px) and (min-width: 500px) {
      :host {
         --text-area-cols: 300px;
+        --notepad-item-controls-font-size: 26px;
+        --notepad-item-header-font-size: 16px;
+        --notepad-item-header-font-weight: medium;
+        --notepad-item-font-family: Roboto;
+        --notepad-item-font-size: 12px;
+        --notepad-item-name-img-display: inline;
+        --notepad-item-name-img-height: 20px;
     }
 }
 
 
 /*small size wrapper*/
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 500px) {
      :host {
         --text-area-cols: 300px;
+        --notepad-item-controls-font-size: 22px;
+        --notepad-item-header-font-size: 14px;
+        --notepad-item-header-font-weight: medium;
+        --notepad-item-font-family: Arial Narrow;
+        --notepad-item-font-size: 12px;
+        --notepad-item-name-img-display: none;
+        --notepad-item-name-img-height: 15px;
     }
 }
 
@@ -77,6 +98,23 @@
     padding: 0px 20px;
     background-color: rgba(255, 255, 255, 1);
     color: var(--main-font-color);
+    overflow-x: auto;
+}
+
+.notepad-item-container::-webkit-scrollbar,.message-container::-webkit-scrollbar  {
+    width: 10px;
+    height: 10px;
+}
+
+.notepad-item-container::-webkit-scrollbar-track,.message-container::-webkit-scrollbar-track  {
+    background: linear-gradient(90deg,white,white 1px,white 0,white);
+}
+
+.notepad-item-container::-webkit-scrollbar-thumb,.message-container::-webkit-scrollbar-thumb  {
+    background: -webkit-gradient(linear,left top,left bottom,from(#ff8a00),to(#e52e71));
+    background: linear-gradient(0deg,#ff8a00,#e52e71);
+    border-radius: 10px;
+    box-shadow: inset 2px 2px 2px hsla(0,0%,100%,.25), inset -2px -2px 2px rgba(0,0,0,.25);
 }
 
 .notepad-item-controls {
@@ -84,7 +122,7 @@
     grid-column: 1/4;
     height: 40px;
     font-family: inherit;
-    font-size: 30px;
+    font-size: var(--notepad-item-controls-font-size);
     font-weight: bold;
     text-align: right;
 }
@@ -102,13 +140,24 @@ div[class*="notepad-item-control-"]:hover {
     grid-row: 2;
     height: 48px;
     font-family: inherit;
-    font-size: 16px;
-    font-weight: bold;
+    font-size: var(--notepad-item-header-font-size);
+    font-weight: var(--notepad-item-header-font-weight);
 }
 
 .notepad-item {
     display: flex;
     align-items: center;
+}
+
+.notepad-item-name-box{
+    display: flex;
+    align-items:center;
+}
+
+.notepad-item-name-img{
+    display: var(--notepad-item-name-img-display);
+    height: var(--notepad-item-name-img-height);
+    padding-right: 5px;
 }
 
 .notepad-item-name-value {
@@ -122,28 +171,28 @@ div[class*="notepad-item-control-"]:hover {
 .notepad-item-container .notepad-item-name:not(.notepad-item-header),
 .notepad-item-container .notepad-item-size:not(.notepad-item-header),
 .notepad-item-container .notepad-item-type:not(.notepad-item-header) {
-    font-family: Roboto;
-    font-size: 14px;
+    font-family: var(--notepad-item-font-family);
+    font-size: var(--notepad-item-font-size);
     border-bottom: 1px solid #dadce0;
 }
 
 .notepad-item-container .notepad-item-name {
-    height: 48px;
+    min-height: 48px;
     grid-column: 1;
 }
 
 .notepad-item-container .notepad-item-type {
-    height: 48px;
+    min-height: 48px;
     grid-column: 2;
 }
 
 .notepad-item-container .notepad-item-size {
-    height: 48px;
+    min-height: 48px;
     grid-column: 3;
 }
 
 .notepad-item-container .notepad-item-add {
-    height: 48px;
+    min-height: 48px;
     font-size: 26px;
     grid-column: 4;
     cursor: pointer;

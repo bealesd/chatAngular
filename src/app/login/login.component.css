@@ -25,6 +25,21 @@ input[type=password] {
     padding: 2px
 }
 
+button:hover,
+.submit:hover {
+    background-color: darkgreen;
+    border: 1px solid #1fb123;
+}
+
+.submit:active,
+.submit:focus,
+button:active,
+button:focus
+ {
+    outline: 0;
+    border: none;
+}
+
 button {
     display: inline;
 }
