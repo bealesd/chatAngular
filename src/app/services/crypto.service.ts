@@ -26,6 +26,10 @@ export class CryptoService {
     return SHA3(btoa(value)).toString();
   }
 
+  get username(){
+    return this.getLoginKey().username.toLowerCase();
+  }
+
   createNewUser(username: string, password: string) {
     this.messageService.add(`Creating new user.`, 'info');
 

@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { LoginHelper } from '../helpers/login-helper';
 import { MenuService } from '../services/menu.service';
 import { CalendarService } from '../services/calendar.service';
 import { CalendarRecord } from '../models/calendar-record.model';
@@ -54,15 +53,12 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    private loginHelper: LoginHelper,
     private menuService: MenuService,
     public calendarService: CalendarService
   ) { }
 
   ngOnInit() {
     this.menuService.disableMenuItem('undo-click');
-
-    if (!this.loginHelper.checkPersonSelected()) this.loginHelper.setPerson();
   }
 
   ngOnDestroy() {

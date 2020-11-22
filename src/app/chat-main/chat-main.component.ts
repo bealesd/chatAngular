@@ -8,8 +8,8 @@ import { SendChat } from '../models/send-chat.model';
 import { ChatService } from '../services/chat.service';
 import { MessageService } from '../services/message.service';
 
-import { LoginHelper } from '../helpers/login-helper'
 import { MenuService } from '../services/menu.service';
+import { CryptoService } from '../services/crypto.service';
 
 @Component({
   selector: 'app-chat',
@@ -44,7 +44,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   constructor(
     private chatService: ChatService,
     private messageService: MessageService,
-    private loginHelper: LoginHelper,
+    private cryptoService: CryptoService,
     private menuService: MenuService
   ) {
     this.content = '';
@@ -64,9 +64,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.newChatMessagesCount = 0;
 
-    if (!this.loginHelper.checkPersonSelected()) {
-      this.loginHelper.setPerson();
-    }
     this.chatService.getChatMessages()
 
     this.subscriptions.push(interval(this.secsToMilliSecs(20)).subscribe(x => this.chatService.getNewChatMessages()));
@@ -104,7 +101,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const newMessage = <SendChat>{ Who: this.loginHelper.who, Content: this.content }
+    const newMessage = <SendChat>{ Who: this.cryptoService.username, Content: this.content }
 
     this.chatService.sendChatMessage(newMessage);
 

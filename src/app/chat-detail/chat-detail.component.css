@@ -8,14 +8,14 @@
     word-wrap: break-word;
 }
 
-.Esther {
+.esther {
     padding: var(--message-padding);
     border: var(--esther-message-border);
     border-radius: 10px;
     margin-bottom: 5px;
 }
 
-.Esther>.EstherMessage {
+.esther>.message {
     grid-column-start: 1;
     grid-column-end: 4;
     grid-row-start: 2;
@@ -25,20 +25,21 @@
     text-align: right;
 }
 
-.David {
+.david, .admin {
     padding: var(--message-padding);
     border: var(--david-message-border);
     border-radius: 10px;
     margin-bottom: 5px;
 }
 
-.David>.DavidMessage {
+.david>.message, .admin>.message{
     grid-column-start: 1;
     grid-column-end: 4;
     grid-row-start: 2;
     grid-row-end: 3;
     margin-top: 0px;
     color: var(--david-message-color);
+    text-align: left;
 }
 
 .dateTime {

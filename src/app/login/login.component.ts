@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 
 import { LoginService } from '../services/login.service';
 import { CryptoService } from '../services/crypto.service';
-import { LoginHelper } from '../helpers/login-helper';
 import { MenuService } from '../services/menu.service';
 
 @Component({
@@ -20,29 +19,31 @@ export class LoginComponent implements OnInit {
   constructor(
     private cryptoService: CryptoService,
     private loginService: LoginService,
-    private loginHelper: LoginHelper,
     private router: Router,
     private menuSerivce: MenuService
   ) {
     this.show = false;
-    this.names = this.loginHelper.names;
 
     this.cryptoService.logout();
 
     this.loginService.loggedIn.subscribe(loggedIn => {
       this.loggedIn = loggedIn;
-      if(loggedIn === true)
+      if (loggedIn === true) {
         this.router.navigate(['/apps']);
+        this.setTheme();
+      }
+      else {
+        this.resetTheme();
+      }
+
     });
   }
 
   ngOnInit(): void {
-    this.loginHelper.setPerson();
-    this.who = this.loginHelper.who;
     this.menuSerivce.activateRoute('login-click');
   }
 
-  login(username:string, password:string) {
+  login(username: string, password: string) {
     this.cryptoService.encryptCredentials(username, password);
 
     this.loginService.login();
@@ -52,8 +53,16 @@ export class LoginComponent implements OnInit {
     this.show = !this.show;
   }
 
-  changePerson(person) {
-    this.loginHelper.changePerson(person);
-    this.who = person;
+  resetTheme() {
+    document.body.className = '';
   }
+
+  setTheme() {
+    const username = this.cryptoService.username;
+    if (username.toLowerCase() === 'admin' || username.toLowerCase() === 'esther')
+      document.body.classList.add('dark');
+    else
+      document.body.className = '';
+  }
+
 }
