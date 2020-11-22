@@ -242,7 +242,11 @@ GridMenu = function () {
                 div.classList.add('gm-menu');
                 div.dataset.menuCol = menuItem.menuCol;
                 if (menuItem.html.id) div.id = menuItem.html.id;
-                div.innerHTML = menuItem.html.dataset.value;
+                if (menuItem.html.classList.length === 0)
+                    div.innerHTML = menuItem.html.dataset.value;
+                else
+                    div.classList.add(...menuItem.html.classList);
+
                 this.insertContent(this.body, 0, div);
             });
 

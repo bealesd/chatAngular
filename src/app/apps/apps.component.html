@@ -1,48 +1,8 @@
 <div class="app-container">
-    <div class="calendar routerLink" routerLink="/calendar">
-        <img *ngIf="!calendarError" src="assets/images/calendar.svg" (error)="fallback($event)" title="calendar">
-
-        <div *ngIf="calendarError" class="middle">
-            <div class="imageText">
-                <div>Calendar</div>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="chat routerLink" routerLink="/chat">
-        <img *ngIf="!chatError" src="assets/images/chat.svg" title="chat" (error)="fallback($event)">
-
-        <div *ngIf="chatError" class="middle">
-            <div class="imageText">
-                <div>Chat</div>
-            </div>
-        </div>
-
-    </div>
-
-
-    <div class="todo routerLink" routerLink="/todo">
-        <img *ngIf="!todoError" src="assets/images/todo.svg" title="Todo" (error)="fallback($event)">
-
-        <div *ngIf="todoError" class="middle">
-            <div class="imageText">
-                <div>Todo</div>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="notepad routerLink" routerLink="/notepad">
-        <img *ngIf="!notepadError" src="assets/images/address-book.svg" title="Notepad" (error)="fallback($event)">
-
-        <div *ngIf="notepadError" class="middle">
-            <div class="imageText">
-                <div>Notepad</div>
-            </div>
-        </div>
-
-    </div>
-
-
+  
+        <div class="icon-calendar " title="calendar" routerLink="/calendar"></div>
+        <div class="icon-bubbles4" title="chat" routerLink="/chat"></div>
+        <div class="icon-clipboard " title="todo" routerLink="/todo"></div>
+        <div class="icon-book " title="pad" routerLink="/notepad"></div>
+ 
 </div>

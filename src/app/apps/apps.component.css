@@ -1,91 +1,48 @@
 :host {
-    --icon-height: 200px;
-    --app-container-margin-y: 100px;
+    --icon-router-link-font-size: 120px;
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 800px) and (min-width: 500px) {
+    :host {
+        --icon-router-link-font-size: 80px;
+   }
+}
+
+@media screen and (max-width: 500px) {
      :host {
-        --icon-height: 100px;
-        --app-container-margin-y: 50px;
+        --icon-router-link-font-size: 50px;
     }
 }
 
 .app-container {
-    display: grid;
-    grid-template-columns: repeat(13, 1fr);
-    grid-template-rows: repeat(8, calc(var(--icon-height)/2));
-    color: white;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    flex-flow: row wrap;
+    padding-top: 40px;
 }
 
-.app-container:nth-child() {
-    overflow: hidden;
+.app-container > div{
+    padding: 0px 40px 30px 0px;
+    display: inline-block;
 }
 
-svg {
-    height: var(--icon-height);
+.app-container > span:last-child{
+    padding: 0;
 }
 
-img {
-    height: var(--icon-height);
+[class^="icon-"], [class*=" icon-"] {
+    color: hotpink;
+    font-size: var(--icon-router-link-font-size);
 }
 
-img:hover {
+[class*=" icon-"]:hover, [class^="icon-"]:hover {
+    color: blue;
     cursor: pointer;
-    transform: scale(1.1);
 }
 
-img:hover {
-    cursor: pointer;
-    transform: scale(1.1);
-}
-
-.routerLink:active,
-.routerLink:focus {
+[class^="icon-"]:active,
+[class*=" icon-"]:focus {
     outline: 0;
     border: none;
-}
-
-.calendar {
-    grid-column: 2/ 4;
-    grid-row: 2/4;
-}
-
-.chat {
-    grid-column: 6 / 8;
-    grid-row: 2/4;
-}
-
-.todo {
-    grid-column: 10/ 12;
-    grid-row: 2/4;
-}
-
-.notepad {
-    grid-column: 2/ 4;
-    grid-row: 5/7;
-}
-
-.middle {
-    height: var(--icon-height);
-    display: grid;
-    grid-template-rows: auto auto auto;
-}
-
-.imageText {
-    height: 1em;
-    grid-row: 2;
-}
-
-.imageText>div {
-    font-size: 30px;
-    text-align: center;
-    transition: 1000ms;
-    border-bottom: 1px solid transparent;
-    text-decoration: none;
-}
-
-.imageText>div:hover {
-    color: hotpink;
-    border-bottom: 1px solid lightskyblue;
-    cursor: pointer;
 }

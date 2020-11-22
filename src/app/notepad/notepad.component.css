@@ -8,6 +8,7 @@
     --notepad-item-font-size: 14px;
     --notepad-item-name-img-display: inline;
     --notepad-item-name-img-height: 30px;
+    --notepad-title-font-size: 30px;
 }
 
 
@@ -23,15 +24,28 @@
         --notepad-item-font-size: 12px;
         --notepad-item-name-img-display: inline;
         --notepad-item-name-img-height: 20px;
+        --notepad-title-font-size: 25px;
     }
 }
-
+@media screen and (max-width: 500px) and (min-width: 400px) {
+    :host {
+       --text-area-cols: 300px;
+       --notepad-item-controls-font-size: 22px;
+       --notepad-item-header-font-size: 14px;
+       --notepad-item-header-font-weight: medium;
+       --notepad-item-font-family: Arial Narrow;
+       --notepad-item-font-size: 12px;
+       --notepad-item-name-img-display: none;
+       --notepad-item-name-img-height: 15px;
+       --notepad-title-font-size: 20px;
+   }
+}
 
 /*small size wrapper*/
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 400px) {
      :host {
-        --text-area-cols: 300px;
+        --text-area-cols: 200px;
         --notepad-item-controls-font-size: 22px;
         --notepad-item-header-font-size: 14px;
         --notepad-item-header-font-weight: medium;
@@ -39,6 +53,7 @@
         --notepad-item-font-size: 12px;
         --notepad-item-name-img-display: none;
         --notepad-item-name-img-height: 15px;
+        --notepad-title-font-size: 16px;
     }
 }
 
@@ -54,32 +69,25 @@
 }
 
 .notepad-container {
-    padding: 40px;
+    padding: 20px 20px 0px 20px;
 }
 
 .notepad-editor-container {
-    padding-top: 20px;
-    padding-bottom: 20px;
     display: grid;
-    grid-template-columns: minmax(20px, auto) var(--text-area-cols) minmax(20px, auto);
+    grid-template-columns: auto;
     align-content: center;
 }
 
-.notepad-editor-container .notepad-text {
-    grid-column: 2;
-}
-
-.notepad-editor-container .notepad-title {
+.notepad-title {
     color: white;
     font-family: inherit;
-    font-size: 30px;
+    font-size: var(--notepad-title-font-size);
 }
 
 .notepad-editor-container .notepad-text-input {
     margin-top: 20px;
     outline: none;
     resize: none;
-    width: var(--text-area-cols);
     min-height: 500px;
     background-color: rgba(255, 255, 255, 1);
     color: black;
@@ -119,7 +127,7 @@
 
 .notepad-item-controls {
     grid-row: 1;
-    grid-column: 1/4;
+    grid-column: 1/5;
     height: 40px;
     font-family: inherit;
     font-size: var(--notepad-item-controls-font-size);
@@ -129,11 +137,15 @@
 
 div[class*="notepad-item-control-"] {
     display: inline;
-    transition: 200ms;
+    padding-left: 20px;
 }
 
-div[class*="notepad-item-control-"]:hover {
+div[class*="notepad-item-control-"] > span:hover {
     cursor: pointer;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    color: #555555;
 }
 
 .notepad-item-header {
@@ -157,6 +169,11 @@ div[class*="notepad-item-control-"]:hover {
 .notepad-item-name-img{
     display: var(--notepad-item-name-img-display);
     height: var(--notepad-item-name-img-height);
+    padding-right: 5px;
+}
+
+.notepad-item-name-box > .icon-folder{
+    display: var(--notepad-item-name-img-display);
     padding-right: 5px;
 }
 
@@ -196,11 +213,6 @@ div[class*="notepad-item-control-"]:hover {
     font-size: 26px;
     grid-column: 4;
     cursor: pointer;
-    transition: 200ms;
-}
-
-.notepad-item-container .notepad-item-add:hover {
-    transform: scale(1.2);
 }
 
 .notepad-item-container .notepad-item-name span {

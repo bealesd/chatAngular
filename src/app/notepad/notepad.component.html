@@ -1,14 +1,16 @@
 <div class="{{disablePage ? 'disabled-page' : ''}}">
     <div class="notepad-container">
 
-        <!-- 🖿  📂 🗁 -->
         <div *ngIf="!notepadIsOpen" class="notepad-item-container">
             <div class="notepad-item-controls">
-                <div class="notepad-item-control-open tooltip" title="Open File" (click)="openNotepad()">🗁
+                <div class="notepad-item-control-open" title="Open File" (click)="openNotepad()">
+                    <span class="icon-folder-open"></span>
                 </div>
-                <div class="notepad-item-control-rename tooltip" title="Rename File" (click)="renameNotepadForm()">✎
+                <div class="notepad-item-control-rename" title="Rename File" (click)="renameNotepadForm()">
+                    <span class="icon-pencil"></span>
                 </div>
-                <div class="notepad-item-control-bin tooltip" title="Delete File" (click)="deleteNotepad()">🗑
+                <div class="notepad-item-control-bin" title="Delete File" (click)="deleteNotepad()">
+                    <span class="icon-bin"></span>
                 </div>
             </div>
 
@@ -24,31 +26,39 @@
                 <div>Size</div>
             </div>
 
-            <div class="notepad-item-add notepad-item-header notepad-item" (click)="createNotepadForm()" title="Add File">
+            <div class="notepad-item-add notepad-item-header notepad-item" (click)="createNotepadForm()"
+                title="Add File">
                 &#43;</div>
 
             <ng-container *ngFor="let item of notepadRepo.notepads; let i = index">
-                <div class="notepad-item notepad-item-name {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}" (click)="highlightRow(item)" (dblclick)="openNotepad()">
+                <div class="notepad-item notepad-item-name {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}"
+                    (click)="highlightRow(item)" (dblclick)="openNotepad()">
                     <div class="notepad-item-name-box">
-                        <img class="notepad-item-name-img" src="assets/icons/file.png" alt="Text">
+                        <span class="icon-folder"></span>
                         <span class="notepad-item-name-value"> {{item.metadata.fileName}}</span>
                     </div>
                 </div>
-                <div class="notepad-item  notepad-item-type {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}" (click)="highlightRow(item)" (dblclick)="openNotepad()">
+                <div class="notepad-item  notepad-item-type {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}"
+                    (click)="highlightRow(item)" (dblclick)="openNotepad()">
                     <div>{{item.metadata.fileType}}</div>
                 </div>
-                <div class="notepad-item  notepad-item-size {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}" (click)="highlightRow(item)" (dblclick)="openNotepad()">
+                <div class="notepad-item  notepad-item-size {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}"
+                    (click)="highlightRow(item)" (dblclick)="openNotepad()">
                     <div>{{item.metadata.size}}</div>
                 </div>
             </ng-container>
 
         </div>
 
-
-        <div class="notepad-editor-container">
-            <div class="notepad-text {{notepadIsOpen ? '' : 'hide'}}">
+        <div>
+            <div class="{{notepadIsOpen ? '' : 'hide'}}">
                 <div class="notepad-title">{{currentNotepad?.metadata?.name}}</div>
-                <textarea #textArea class="notepad-text-input {{notepadTextHasChanged ? 'notepad-unsaved-changes' : ''}}" contenteditable="true" (keyup)="updateText(textArea.value)">{{originalNotepadText}}</textarea>
+
+                <div class="notepad-editor-container">
+                    <textarea #textArea
+                        class="notepad-text-input {{notepadTextHasChanged ? 'notepad-unsaved-changes' : ''}}"
+                        contenteditable="true" (keyup)="updateText(textArea.value)">{{originalNotepadText}}</textarea>
+                </div>
             </div>
 
         </div>
@@ -59,9 +69,10 @@
 
 <div *ngIf="createNotepadFormIsOpen" class="new-file">
     <div>
-        <div class="new-notepad-title">New Notepad</div>
+        <div class="new-notepad-title">New Pad</div>
         <div class="new-notepad-cancel" (click)="cancelNewNotepad()">&#10005;</div>
-        <input class="new-notepad-name-input" type="text" placeholder="My Notepad" id="value" #name (keyup)="getFileType(name.value)">
+        <input class="new-notepad-name-input" type="text" placeholder="My Notepad" id="value" #name
+            (keyup)="getFileType(name.value)">
         <div class="new-notepad-file-type">
             <div>File Type: {{fileType}}</div>
         </div>
@@ -72,9 +83,10 @@
 
 <div *ngIf="renameNotepadFormIsOpen" class="new-file">
     <div>
-        <div class="new-notepad-title">Rename Notepad</div>
+        <div class="new-notepad-title">Rename Pad</div>
         <div class="new-notepad-cancel" (click)="cancelRenameNotepad()">&#10005;</div>
-        <input class="new-notepad-name-input" type="text" value="{{currentNotepad.name}}" id="value" #name (keyup)="getFileType(name.value)">
+        <input class="new-notepad-name-input" type="text" value="{{currentNotepad.name}}" id="value" #name
+            (keyup)="getFileType(name.value)">
         <div class="new-notepad-file-type">
             <div>File Type: {{fileType}}</div>
         </div>
