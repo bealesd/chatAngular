@@ -1,7 +1,6 @@
 import { Notepad } from './../models/notepad-models';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { LoggerService } from '../services/logger.service';
 import { MenuService } from '../services/menu.service';
 import { NotepadRepo, State } from '../services/notepad.repo'
 
@@ -30,7 +29,6 @@ export class NotepadComponent implements OnInit, OnDestroy {
   constructor(
     public notepadRepo: NotepadRepo,
     public menuService: MenuService,
-    private loggerService: LoggerService
   ) { }
 
   ngOnInit(): void {
