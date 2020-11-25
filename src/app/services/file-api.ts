@@ -1,4 +1,4 @@
-import { Inject, Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -7,63 +7,104 @@ import { MessageService } from './message.service';
 import { Notepad, NotepadMetadata } from '../models/notepad-models';
 import { mergeMap } from 'rxjs/operators';
 
-@Injectable()
-export class FileApi {
-  private baseMessagesUrl = 'https://api.github.com/repos/bealesd/${repoName}/contents';
-
+@Injectable({
+  providedIn: 'root',
+})
+export class FileApiFactory {
   constructor(
     private http: HttpClient,
     private restHelper: RestHelper,
     private messageService: MessageService
-    ) {
-      console.log('FileApi constructor');
+  ) { }
+
+  create() {
+    return new FileApi(this.http, this.restHelper, this.messageService);
+  }
+}
+
+class FileApi {
+  private rootFolders = ['calendarStore', 'chatStore', 'notepadStore', 'todoStore']
+  private baseMessagesUrl = 'https://api.github.com/repos/bealesd/${repoName}/contents';
+  dir: string;
+
+  constructor(private http: HttpClient,
+    private restHelper: RestHelper,
+    private messageService: MessageService) {
+    this.http = http;
   }
 
-  a(){
-    console.log('FileApi a() called');
+  getUrl(dir: string): string {
+    // folderPath - 'calendarStore/games/blah'
+    const relPath = dir.split('/').filter(part => part.trim() !== "").join('/')
+    return `https://api.github.com/repos/bealesd/${relPath}/contents`;
   }
 
-  getNotepadListing = (): Observable<NotepadMetadata[]> => {
-    return this.http.get<NotepadMetadata[]>(this.baseMessagesUrl, this.restHelper.options());
-  }
+  changeDirectory(dir: string): Promise<boolean> {
+    return new Promise((res, rej) => {
+      if (dir === 'root') {
+        this.dir = 'root';
+        res(true);
+      }
+      else {
+        const parts = dir.split('/');
 
-  getAllNotepads(): void {
-    this.messageService.add(`Getting all notepads.`);
-    this.getNotepadListing().subscribe(
-      {
-        next: (notepads: NotepadMetadata[]) => {
-          // this.notepads = [];
-          notepads.forEach((notepadMetadata: NotepadMetadata) => {
-            const notepad = new Notepad();
-            notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type);
-            notepad.content = '';
-            // this.notepads.push(notepad);
-          });
-
-          this.messageService.add(` • Got all notepads.`);
-        },
-        error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, 'getting notepads');
-
+        if (!this.rootFolders.includes(parts[0])) {
+          res(false);
         }
-      });
-  }
-
-  getNotepad(key: string) {
-    this.getNotepadObservable(key).subscribe(
-      {
-        next: (value: any) => {
-          // this.findNotepad(key).content = atob(value.content);
-
-          this.messageService.add(` • Got notepad.`);
-        },
-        error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, 'getting notepad');
+        else {
+          const url = this.getUrl(dir);
+          this.http.get<NotepadMetadata[]>(url, this.restHelper.options()).subscribe(
+            {
+              next: (notepads: NotepadMetadata[]) => {
+                this.dir = dir;
+                res(true);
+              },
+              error: (err: any) => {
+                res(false);
+              }
+            }
+          );
         }
-      });
+      }
+    });
   }
 
-  getNotepadObservable(key: string) {
-    return this.http.get<any>('', this.restHelper.options())
+  listFiles(): Promise<NotepadMetadata[]> {
+    // return each filename, url as well for get and sha for post?
+    return new Promise((res, rej) => {
+      const url = this.getUrl(this.dir);
+      const files: NotepadMetadata[] = [];
+      this.http.get<NotepadMetadata[]>(url, this.restHelper.options()).subscribe(
+        {
+          next: (notepads: NotepadMetadata[]) => {
+            notepads.forEach((notepadMetadata: NotepadMetadata) => {
+              if (notepadMetadata.type === 'file') {
+                const metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type);
+                files.push(metadata);
+              }
+            });
+            res(files);
+          },
+          error: (err: any) => {
+            res(null);
+          }
+        }
+      );
+    });
+  }
+
+  getFile(file: NotepadMetadata): Promise<string> {
+    return new Promise((res, rej) => {
+      this.http.get<any>(file.git_url, this.restHelper.options()).subscribe(
+        {
+          next: (value: any) => {
+            const content = atob(value.content);
+            res(content);
+          },
+          error: (err: any) => {
+            res(null);
+          }
+        });
+    });
   }
 }
