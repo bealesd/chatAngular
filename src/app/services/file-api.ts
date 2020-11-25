@@ -33,10 +33,14 @@ class FileApi {
     this.http = http;
   }
 
-  getUrl(dir: string): string {
-    // folderPath - 'calendarStore/games/blah'
+  getBaseUrl(dir: string): string {
     const relPath = dir.split('/').filter(part => part.trim() !== "").join('/')
-    return `https://api.github.com/repos/bealesd/${relPath}/contents`;
+    return `https://api.github.com/repos/bealesd/${relPath}`;
+  }
+
+  getUrl(dir: string): string {
+    this.getBaseUrl(dir);
+    return `${this.getBaseUrl(dir)}/contents`;
   }
 
   changeDirectory(dir: string): Promise<boolean> {
@@ -107,4 +111,53 @@ class FileApi {
         });
     });
   }
+
+  newFile(filename, text): Promise<NotepadMetadata> {
+    // filename: work.txt
+    const postUrl = `${this.getBaseUrl(this.dir)}/${filename}`;
+    const rawCommitBody = JSON.stringify({
+      'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
+      'content': btoa(text)
+    });
+
+    return new Promise((res, rej) => {
+      this.http.put(postUrl, rawCommitBody, this.restHelper.options()).subscribe(
+        {
+          next: (contentAndCommit: any) => {
+            const notepadMetadata = contentAndCommit.content as NotepadMetadata;
+            const metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type);
+            res(metadata);
+          },
+          error: (err: any) => {
+            res(null);
+          }
+        }
+      );
+    });
+  }
+
+  editFile(file: NotepadMetadata, text): Promise<NotepadMetadata> {
+    // filename: work.txt
+    const rawCommitBody = JSON.stringify({
+      'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
+      'content': btoa(text),
+      'sha': file.sha
+    });
+
+    return new Promise((res, rej) => {
+      this.http.put(file.git_url, rawCommitBody, this.restHelper.options()).subscribe(
+        {
+          next: (contentAndCommit: any) => {
+            const notepadMetadata = contentAndCommit.content as NotepadMetadata;
+            const metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type);
+            res(metadata);
+          },
+          error: (err: any) => {
+            res(null);
+          }
+        }
+      );
+    });
+  }
+
 }
