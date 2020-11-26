@@ -6,6 +6,7 @@ import { RestHelper } from '../helpers/rest-helper';
 import { MessageService } from './message.service';
 import { Notepad, NotepadMetadata } from '../models/notepad-models';
 import { mergeMap } from 'rxjs/operators';
+import { FileApiFactory } from './file-api';
 
 export enum State {
   GotNotepad = "GotNotepad",
@@ -31,7 +32,15 @@ export class NotepadRepo {
   constructor(
     private http: HttpClient,
     private restHelper: RestHelper,
-    private messageService: MessageService) {
+    private messageService: MessageService,
+    private fileApiFactory: FileApiFactory) {
+    let fileAPi = this.fileApiFactory.create();
+    fileAPi.changeDirectory('/calendarStore').then((result) => {
+      if (result)
+        console.log('changeDirectory done');
+      else
+        console.log('changeDirectory failed');
+    });
   }
 
   addState(state: State) {

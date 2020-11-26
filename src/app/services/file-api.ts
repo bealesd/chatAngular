@@ -24,8 +24,25 @@ export class FileApiFactory {
 
 class FileApi {
   private rootFolders = ['calendarStore', 'chatStore', 'notepadStore', 'todoStore']
-  private baseMessagesUrl = 'https://api.github.com/repos/bealesd/${repoName}/contents';
-  dir: string;
+  private _dir: string = '';
+
+  get dir() {
+    return this._dir;
+  }
+
+  set dir(value) {
+    value = this.parseDirectory(value);
+    if (value === null) return;
+    else this._dir = value;
+  }
+
+  private get baseUrl(): string {
+    return `https://api.github.com/repos/bealesd/${this.dir}`;
+  }
+
+  private get url(): string {
+    return `${this.baseUrl}/contents`;
+  }
 
   constructor(private http: HttpClient,
     private restHelper: RestHelper,
@@ -33,56 +50,47 @@ class FileApi {
     this.http = http;
   }
 
-  getBaseUrl(dir: string): string {
-    const relPath = dir.split('/').filter(part => part.trim() !== "").join('/')
-    return `https://api.github.com/repos/bealesd/${relPath}`;
+  parseDirectory(dir: string): string {
+    const cleanDirectory = dir.split('/').filter(part => part.trim() !== "")
+    if (!this.rootFolders.includes(cleanDirectory[0])) return null;
+    else return cleanDirectory.join('/');
   }
 
-  getUrl(dir: string): string {
-    this.getBaseUrl(dir);
-    return `${this.getBaseUrl(dir)}/contents`;
-  }
-
-  changeDirectory(dir: string): Promise<boolean> {
+  doesDirectoryExist(dir: string): Promise<boolean> {
     return new Promise((res, rej) => {
-      if (dir === 'root') {
-        this.dir = 'root';
-        res(true);
-      }
-      else {
-        const parts = dir.split('/');
+      dir = this.parseDirectory(dir);
+      if (dir === null) res(false);
+      else this.dir = dir;
 
-        if (!this.rootFolders.includes(parts[0])) {
-          res(false);
+      this.http.get<NotepadMetadata[]>(this.url, this.restHelper.options()).subscribe(
+        {
+          next: (notepads: NotepadMetadata[]) => {
+            res(true);
+          },
+          error: (err: any) => {
+            res(false);
+          }
         }
-        else {
-          const url = this.getUrl(dir);
-          this.http.get<NotepadMetadata[]>(url, this.restHelper.options()).subscribe(
-            {
-              next: (notepads: NotepadMetadata[]) => {
-                this.dir = dir;
-                res(true);
-              },
-              error: (err: any) => {
-                res(false);
-              }
-            }
-          );
-        }
-      }
+      );
     });
   }
 
-  listFiles(): Promise<NotepadMetadata[]> {
-    // return each filename, url as well for get and sha for post?
+  changeDirectory(dir: string): Promise<boolean> {
+    return new Promise(async (res, rej) => {
+      const dirExists = await this.doesDirectoryExist(dir);
+      if (dirExists) this.dir = dir;
+      res(dirExists);
+    });
+  }
+
+  listFilesAndFolders(): Promise<NotepadMetadata[]> {
     return new Promise((res, rej) => {
-      const url = this.getUrl(this.dir);
       const files: NotepadMetadata[] = [];
-      this.http.get<NotepadMetadata[]>(url, this.restHelper.options()).subscribe(
+      this.http.get<NotepadMetadata[]>(this.url, this.restHelper.options()).subscribe(
         {
           next: (notepads: NotepadMetadata[]) => {
             notepads.forEach((notepadMetadata: NotepadMetadata) => {
-              if (notepadMetadata.type === 'file') {
+              if (notepadMetadata.type === 'file' || notepadMetadata.type === 'folder') {
                 const metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type);
                 files.push(metadata);
               }
@@ -112,9 +120,8 @@ class FileApi {
     });
   }
 
-  newFile(filename, text): Promise<NotepadMetadata> {
-    // filename: work.txt
-    const postUrl = `${this.getBaseUrl(this.dir)}/${filename}`;
+  newFile(filename: string, text: string): Promise<NotepadMetadata> {
+    const postUrl = `${this.baseUrl}/${filename}`;
     const rawCommitBody = JSON.stringify({
       'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
       'content': btoa(text)
@@ -136,8 +143,27 @@ class FileApi {
     });
   }
 
-  editFile(file: NotepadMetadata, text): Promise<NotepadMetadata> {
-    // filename: work.txt
+  newFolder(folderName: string): Promise<boolean> {
+    const postUrl = `${this.baseUrl}/${folderName}/dummy.txt`;
+    const rawCommitBody = JSON.stringify({
+      'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
+      'content': btoa('dummy file to allow folder creation')
+    });
+    return new Promise((res, rej) => {
+      this.http.put(postUrl, rawCommitBody, this.restHelper.options()).subscribe(
+        {
+          next: (contentAndCommit: any) => {
+            res(true);
+          },
+          error: (err: any) => {
+            res(false);
+          }
+        }
+      );
+    });
+  }
+
+  editFile(file: NotepadMetadata, text: string): Promise<NotepadMetadata> {
     const rawCommitBody = JSON.stringify({
       'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
       'content': btoa(text),
@@ -159,5 +185,59 @@ class FileApi {
       );
     });
   }
+
+  deleteFile(file: NotepadMetadata): Promise<boolean> {
+    const commit = JSON.stringify({
+      "message": `Api delete commit by notepad repo at ${new Date().toLocaleString()}`,
+      "sha": `${file.sha}`
+    });
+
+    return new Promise((res, rej) => {
+      this.http.request('delete', file.git_url, { body: commit, headers: this.restHelper.options().headers }).subscribe(
+        {
+          next: (contentAndCommit: any) => {
+            res(true);
+          },
+          error: (err: any) => {
+            res(false);
+          }
+        }
+      );
+    });
+  }
+
+  async deleteFolder(folder: string): Promise<boolean> {
+    const currentPath = this.dir;
+    const folderPath = `${this.dir}/${folder}`;
+    try {
+      const result = await this.changeDirectory(folderPath);
+      if (result === false) return false;
+
+      const filesAndFolders = await this.listFilesAndFolders();
+      if (filesAndFolders === null) return false;
+
+      const myAsyncLoopFunction = async () => {
+        const promises = filesAndFolders.map((item) => {
+          this.deleteFile(item);
+        });
+        await Promise.all(promises);
+      }
+      await myAsyncLoopFunction();
+
+      this.dir = currentPath;
+      return true;
+
+    } catch (error) {
+      this.dir = currentPath;
+      return false
+    }
+
+    // filesAndFolders.forEach(async (item)=>{
+    //   if (item.type === 'file'){
+    //     await this.deleteFile(item);
+    //   }
+    // });
+  }
+
 
 }
