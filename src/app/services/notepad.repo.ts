@@ -36,8 +36,7 @@ export class NotepadRepo {
     private fileApiFactory: FileApiFactory) {
 
     let fileAPi = this.fileApiFactory.create();
-    messageService.add(`intial dir: ${fileAPi.dir}`, 'info');
-    //listFilesAndFolders
+
     fileAPi.changeDirectory('/calendarStore')
       .then((result) => {
         if (result)
@@ -84,7 +83,6 @@ export class NotepadRepo {
           messageService.add('changeDirectory /test done');
         else
           messageService.add('changeDirectory /test failed', 'error');
-          result
       });
 
   }

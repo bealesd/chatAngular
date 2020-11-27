@@ -117,6 +117,7 @@ class FileApi {
   }
 
   getFile(file: NotepadMetadata): Promise<string> {
+    //todo get NotepadMetadata from file name
     return new Promise((res, rej) => {
       this.http.get<any>(file.git_url, this.restHelper.options()).subscribe(
         {
@@ -184,6 +185,7 @@ class FileApi {
   }
 
   editFile(file: NotepadMetadata, text: string): Promise<NotepadMetadata> {
+    //todo get NotepadMetadata for file from name
     const rawCommitBody = JSON.stringify({
       'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
       'content': btoa(text),
@@ -207,6 +209,7 @@ class FileApi {
   }
 
   deleteFile(file: NotepadMetadata): Promise<boolean> {
+    //TODO get the NotepadMetadata using the file name
     const commit = JSON.stringify({
       "message": `Api delete commit by notepad repo at ${new Date().toLocaleString()}`,
       "sha": `${file.sha}`
@@ -233,9 +236,16 @@ class FileApi {
         this.dir = `${this.dir}/${folder}`;
         let files = await this.listFilesAndFolders();
 
-        files.forEach(async (file) => {
-          await this.deleteFile(file);
-        });
+        // files.forEach(async (file) => {
+        //   await this.deleteFile(file);
+        // });
+        const myAsyncLoopFunction = async () => {
+          const promises = files.map((file) => {
+            this.deleteFile(file);
+          });
+          await Promise.all(promises);
+        }
+        await myAsyncLoopFunction();
 
         this.dir = currentPath;
         res(true);
@@ -246,13 +256,6 @@ class FileApi {
 
     })
 
-    //   const myAsyncLoopFunction = async () => {
-    //     const promises = filesAndFolders.map((item) => {
-    //       this.deleteFile(item);
-    //     });
-    //     await Promise.all(promises);
-    //   }
-    //   await myAsyncLoopFunction();
   }
 
 
