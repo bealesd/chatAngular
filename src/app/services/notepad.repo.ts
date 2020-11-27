@@ -34,13 +34,59 @@ export class NotepadRepo {
     private restHelper: RestHelper,
     private messageService: MessageService,
     private fileApiFactory: FileApiFactory) {
+
     let fileAPi = this.fileApiFactory.create();
-    fileAPi.changeDirectory('/calendarStore').then((result) => {
-      if (result)
-        console.log('changeDirectory done');
-      else
-        console.log('changeDirectory failed');
-    });
+    messageService.add(`intial dir: ${fileAPi.dir}`, 'info');
+    //listFilesAndFolders
+    fileAPi.changeDirectory('/calendarStore')
+      .then((result) => {
+        if (result)
+          messageService.add('changeDirectory done');
+        else
+          messageService.add('changeDirectory failed', 'error');
+        messageService.add(fileAPi.dir);
+      })
+      .then(() => {
+        return fileAPi.listFilesAndFolders()
+      })
+      .then((result) => {
+
+        return fileAPi.getFile(result[0])
+      })
+      .then((result) => {
+        if (result === null) {
+          messageService.add('get failed', 'error');
+        }
+        else {
+          console.log(result);
+        }
+      })
+      .then(() => {
+        return fileAPi.newFile('deleteMe.txt', 'hello world');
+      })
+      .then((result)=>{
+        return fileAPi.editFile(result, 'updated')
+      })
+      .then((result)=>{
+        return fileAPi.deleteFile(result);
+      })
+      .then(()=>{
+        return fileAPi.newFolder('david');
+      })
+      .then((result)=>{
+        return fileAPi.deleteFolder('david');
+      })
+      .then(() => {
+        return fileAPi.changeDirectory('/calendarStore/test');
+      })
+      .then((result) => {
+        if (result)
+          messageService.add('changeDirectory /test done');
+        else
+          messageService.add('changeDirectory /test failed', 'error');
+          result
+      });
+
   }
 
   addState(state: State) {
@@ -70,7 +116,7 @@ export class NotepadRepo {
           this.notepads = [];
           notepads.forEach((notepadMetadata: NotepadMetadata) => {
             const notepad = new Notepad();
-            notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type);
+            notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
             notepad.content = '';
             this.notepads.push(notepad);
           });
@@ -133,11 +179,9 @@ export class NotepadRepo {
         next: (contentAndCommit: any) => {
           const notepadMetadata = contentAndCommit.content as NotepadMetadata;
           const notepad = new Notepad();
-          notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type);
+          notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
           notepad.content = text;
           this.notepads.push(notepad);
-
-          // this.currentNotepadKey = notepad.metadata.key;
 
           this.messageService.add(` • Posted notepad name: ${notepad.metadata.name}.`);
           this.addState(State.CreatedNotepad);
@@ -187,27 +231,6 @@ export class NotepadRepo {
   }
 
   renameNotepad(key: string, newName: string) {
-    const notepad = this.findNotepad(key);
-    this.getNotepadObservable(key).pipe(() => {
-      return this.postNotepadObservable(notepad.content, newName, '');
-    }).subscribe({
-      next: (np: any) => {
-        this.messageService.add(` • notepad ${notepad.metadata.name} renamed to ${newName}.`);
-        this.deleteNotepadObservable(key).subscribe(() => {
-          this.getAllNotepads();
-        })
-        this.addState(State.RenamedNotepad);
-      },
-      error: (err: any) => {
-        this.restHelper.errorMessageHandler(err, `renaming notepad ${name}`);
-        this.addState(State.Error);
-      }
-    });
-  }
-
-  renameNotepad2(key: string, newName: string) {
-    const notepad = this.findNotepad(key);
-
     this.getNotepadObservable(key)
       .pipe(mergeMap((value) => {
         return this.postNotepadObservable(atob(value.content), newName, '');
@@ -223,7 +246,7 @@ export class NotepadRepo {
             this.notepads = [];
             notepads.forEach((notepadMetadata: NotepadMetadata) => {
               const notepad = new Notepad();
-              notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type);
+              notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
               notepad.content = '';
               this.notepads.push(notepad);
             });
@@ -236,24 +259,6 @@ export class NotepadRepo {
             this.addState(State.Error);
           }
         });
-
-    // this.getNotepadObservable(key).pipe(() => {
-    //   return this.postNotepadObservable(notepad.content, newName, '');
-    // }).subscribe({
-    //     next: (np: any) => {
-    //       this.messageService.add(` • notepad ${notepad.metadata.name} renamed to ${newName}.`);
-    //       this.deleteNotepadObservable(key).subscribe(() => {
-    //         this.getAllNotepads();
-    //       })
-    //       this.addState(State.RenamedNotepad);
-    //     },
-    //     error: (err: any) => {
-    //       this.restHelper.errorMessageHandler(err, `renaming notepad ${name}`);
-    //       this.addState(State.Error);
-    //     }
-    //   });
   }
-
-
 
 }

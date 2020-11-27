@@ -190,7 +190,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
   renameNotepad(name) {
     if (!this.isUniqueName(name)) return;
     this.disablePage = true;
-    this.notepadRepo.renameNotepad2(this.currentNotepad.metadata.key, name);
+    this.notepadRepo.renameNotepad(this.currentNotepad.metadata.key, name);
   }
 
   saveNotepad() {
