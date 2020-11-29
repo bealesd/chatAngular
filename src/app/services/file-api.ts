@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, } from '@angular/common/http';
-import { Observable } from 'rxjs';
 
 import { RestHelper } from '../helpers/rest-helper';
 import { MessageService } from './message.service';
-import { Notepad, NotepadMetadata } from '../models/notepad-models';
-import { mergeMap } from 'rxjs/operators';
+import { NotepadMetadata } from '../models/notepad-models';
 
 @Injectable({
   providedIn: 'root',
@@ -42,19 +40,14 @@ class FileApi {
     return `https://api.github.com/repos/bealesd/${parts.join('/')}`;
   }
 
-  private get baseUrl(): string {
-    // https://api.github.com/repos/bealesd/repo/contents/path
-    return `https://api.github.com/repos/bealesd/${this.dir}`;
-  }
-
-  private get url(): string {
-    return `${this.baseUrl}/contents`;
-  }
-
   constructor(private http: HttpClient,
     private restHelper: RestHelper,
     private messageService: MessageService) {
     this.http = http;
+  }
+
+  private fileType(name): string {
+    return !name.includes('.') ? '' : name.split('.').slice(-1)[0];
   }
 
   parseDirectory(dir: string): string {
@@ -116,9 +109,12 @@ class FileApi {
     });
   }
 
-  getFile(file: NotepadMetadata): Promise<string> {
-    //todo get NotepadMetadata from file name
-    return new Promise((res, rej) => {
+  getFile(name: string): Promise<string> {
+    return new Promise(async (res, rej) => {
+      let files = await this.listFilesAndFolders();
+      let file = files.find((f) => f.name === name);
+      if (file === null) rej(null);
+
       this.http.get<any>(file.git_url, this.restHelper.options()).subscribe(
         {
           next: (value: any) => {
@@ -132,15 +128,11 @@ class FileApi {
     });
   }
 
-  fileType(name): string {
-    return !name.includes('.') ? '' : name.split('.').slice(-1)[0];
-  }
-
-  newFile(filename: string, text: string): Promise<NotepadMetadata> {
+  newFile(name: string, text: string): Promise<NotepadMetadata> {
     return new Promise((res, rej) => {
-      if (this.fileType(filename) === '') res(null);
+      if (this.fileType(name) === '') res(null);
 
-      const postUrl = `${this.dirUrl}/${filename}`;
+      const postUrl = `${this.dirUrl}/${name}`;
       const rawCommitBody = JSON.stringify({
         'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
         'content': btoa(text),
@@ -184,15 +176,18 @@ class FileApi {
     });
   }
 
-  editFile(file: NotepadMetadata, text: string): Promise<NotepadMetadata> {
-    //todo get NotepadMetadata for file from name
-    const rawCommitBody = JSON.stringify({
-      'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
-      'content': btoa(text),
-      'sha': file.sha
-    });
+  editFile(name: string, text: string): Promise<NotepadMetadata> {
+    return new Promise(async (res, rej) => {
+      let files = await this.listFilesAndFolders();
+      let file = files.find((f) => f.name === name);
+      if (file === null || file === undefined) rej(null);
 
-    return new Promise((res, rej) => {
+      const rawCommitBody = JSON.stringify({
+        'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
+        'content': btoa(text),
+        'sha': file.sha
+      });
+
       this.http.put(file.url, rawCommitBody, this.restHelper.options()).subscribe(
         {
           next: (contentAndCommit: any) => {
@@ -208,17 +203,20 @@ class FileApi {
     });
   }
 
-  deleteFile(file: NotepadMetadata): Promise<boolean> {
-    //TODO get the NotepadMetadata using the file name
-    const commit = JSON.stringify({
-      "message": `Api delete commit by notepad repo at ${new Date().toLocaleString()}`,
-      "sha": `${file.sha}`
-    });
+  deleteFile(name: string): Promise<boolean> {
+    return new Promise(async (res, rej) => {
+      let files = await this.listFilesAndFolders();
+      let file = files.find((f) => f.name === name);
+      if (file === null || file === undefined) rej(null);
 
-    return new Promise((res, rej) => {
+      const commit = JSON.stringify({
+        "message": `Api delete commit by notepad repo at ${new Date().toLocaleString()}`,
+        "sha": `${file.sha}`
+      });
+
       this.http.request('delete', file.url, { body: commit, headers: this.restHelper.options().headers }).subscribe(
         {
-          next: (contentAndCommit: any) => {
+          next: (result: any) => {
             res(true);
           },
           error: (err: any) => {
@@ -234,29 +232,21 @@ class FileApi {
     return new Promise(async (res, rej) => {
       try {
         this.dir = `${this.dir}/${folder}`;
-        let files = await this.listFilesAndFolders();
-
-        // files.forEach(async (file) => {
-        //   await this.deleteFile(file);
-        // });
-        const myAsyncLoopFunction = async () => {
-          const promises = files.map((file) => {
-            this.deleteFile(file);
-          });
-          await Promise.all(promises);
-        }
-        await myAsyncLoopFunction();
-
+        const files = await this.listFilesAndFolders();
+        await this.asyncDeleteFiles(files);
         this.dir = currentPath;
         res(true);
       } catch (error) {
         this.dir = currentPath;
         res(false);
       }
-
     })
-
   }
 
-
+  async asyncDeleteFiles(files: NotepadMetadata[]) {
+    const promises = files.map((file) => {
+      this.deleteFile(file.name);
+    });
+    await Promise.all(promises);
+  }
 }

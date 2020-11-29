@@ -49,8 +49,7 @@ export class NotepadRepo {
         return fileAPi.listFilesAndFolders()
       })
       .then((result) => {
-
-        return fileAPi.getFile(result[0])
+        return fileAPi.getFile(result[0].name)
       })
       .then((result) => {
         if (result === null) {
@@ -64,10 +63,10 @@ export class NotepadRepo {
         return fileAPi.newFile('deleteMe.txt', 'hello world');
       })
       .then((result)=>{
-        return fileAPi.editFile(result, 'updated')
+        return fileAPi.editFile(result.name, 'updated')
       })
       .then((result)=>{
-        return fileAPi.deleteFile(result);
+        return fileAPi.deleteFile(result.name);
       })
       .then(()=>{
         return fileAPi.newFolder('david');
