@@ -163,7 +163,8 @@ export class NotepadComponent implements OnInit, OnDestroy {
     if (!this.isNotepadItemSelected) return;
 
     this.disablePage = true;
-    this.notepadRepo.getNotepad(this.currentNotepad.metadata.key);
+    this.notepadRepo.getNotepad(this.currentNotepad.metadata.name);
+    // this.notepadRepo.getNotepad(this.currentNotepad.metadata.key);
   }
 
   highlightRow(item: Notepad): void {
@@ -199,7 +200,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
        return;
     }
     this.disablePage = true;
-    this.notepadRepo.updateNotepad(this.currentNotepad.metadata.key);
+    this.notepadRepo.updateNotepad(this.currentNotepad.metadata.name);
   }
 
   exitNotepad() {

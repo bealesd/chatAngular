@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { from } from 'rxjs';
 
 import { RestHelper } from '../helpers/rest-helper';
 import { MessageService } from './message.service';
 import { Notepad, NotepadMetadata } from '../models/notepad-models';
 import { mergeMap } from 'rxjs/operators';
-import { FileApiFactory } from './file-api';
+import { FileApiFactory, FileApi } from './file-api';
 
 export enum State {
   GotNotepad = "GotNotepad",
@@ -28,6 +29,8 @@ export class NotepadRepo {
   public currentNotepadKey: string = '';
 
   public state: BehaviorSubject<State[]> = new BehaviorSubject([]);
+  fileAPi: FileApi;
+  currentNotepadName: string;
 
   constructor(
     private http: HttpClient,
@@ -35,55 +38,54 @@ export class NotepadRepo {
     private messageService: MessageService,
     private fileApiFactory: FileApiFactory) {
 
-    let fileAPi = this.fileApiFactory.create();
-
-    fileAPi.changeDirectoryAsync('/calendarStore')
-      .then((result) => {
-        if (result)
-          messageService.add('changeDirectory done');
-        else
-          messageService.add('changeDirectory failed', 'error');
-        messageService.add(fileAPi.dir);
-      })
-      .then(() => {
-        return fileAPi.listFilesAndFoldersAsync()
-      })
-      .then((result) => {
-        return fileAPi.getFileAsync(result[0].name)
-      })
-      .then((result) => {
-        if (result === null) {
-          messageService.add('get failed', 'error');
-        }
-        else {
-          console.log(result);
-        }
-      })
-      .then(() => {
-        return fileAPi.newFileAsync('deleteMe.txt', 'hello world');
-      })
-      .then((result)=>{
-        return fileAPi.editFileAsync(result.name, 'updated')
-      })
-      .then((result)=>{
-        return fileAPi.deleteFileAsync(result.name);
-      })
-      .then(()=>{
-        return fileAPi.newFolderAsync('david');
-      })
-      .then((result)=>{
-        return fileAPi.deleteFolderAsync('david');
-      })
-      .then(() => {
-        return fileAPi.changeDirectoryAsync('/calendarStore/test');
-      })
-      .then((result) => {
-        if (result)
-          messageService.add('changeDirectory /test done');
-        else
-          messageService.add('changeDirectory /test failed', 'error');
-      });
-
+    this.fileAPi = this.fileApiFactory.create();
+    this.fileAPi.dir = '/notepadStore';
+    // fileAPi.changeDirectoryAsync('/calendarStore')
+    //   .then((result) => {
+    //     if (result)
+    //       messageService.add('changeDirectory done');
+    //     else
+    //       messageService.add('changeDirectory failed', 'error');
+    //     messageService.add(fileAPi.dir);
+    //   })
+    //   .then(() => {
+    //     return fileAPi.listFilesAndFoldersAsync()
+    //   })
+    //   .then((result) => {
+    //     return fileAPi.getFileAsync(result[0].name)
+    //   })
+    //   .then((result) => {
+    //     if (result === null) {
+    //       messageService.add('get failed', 'error');
+    //     }
+    //     else {
+    //       console.log(result);
+    //     }
+    //   })
+    //   .then(() => {
+    //     return fileAPi.newFileAsync('deleteMe.txt', 'hello world');
+    //   })
+    //   .then((result)=>{
+    //     return fileAPi.editFileAsync(result.name, 'updated')
+    //   })
+    //   .then((result)=>{
+    //     return fileAPi.deleteFileAsync(result.name);
+    //   })
+    //   .then(()=>{
+    //     return fileAPi.newFolderAsync('david');
+    //   })
+    //   .then((result)=>{
+    //     return fileAPi.deleteFolderAsync('david');
+    //   })
+    //   .then(() => {
+    //     return fileAPi.changeDirectoryAsync('/calendarStore/test');
+    //   })
+    //   .then((result) => {
+    //     if (result)
+    //       messageService.add('changeDirectory /test done');
+    //     else
+    //       messageService.add('changeDirectory /test failed', 'error');
+    //   });
   }
 
   addState(state: State) {
@@ -101,8 +103,17 @@ export class NotepadRepo {
     return notepad;
   }
 
+  findNotepadByName(name) {
+    const notepad = this.notepads.find(np => np.metadata.name === name);
+    if ([undefined, null].includes(notepad)) {
+      this.addState(State.Error);
+      return null;
+    }
+    return notepad;
+  }
+
   getNotepadListing = (): Observable<NotepadMetadata[]> => {
-    return this.http.get<NotepadMetadata[]>(this.baseMessagesUrl, this.restHelper.options());
+    return from(this.fileAPi.listFilesAndFoldersAsync());
   }
 
   getAllNotepads(): void {
@@ -128,21 +139,23 @@ export class NotepadRepo {
       });
   }
 
-  getNotepad(key: string) {
-    this.getNotepadObservable(key).subscribe(
-      {
-        next: (value: any) => {
-          this.findNotepad(key).content = atob(value.content);
-          this.currentNotepadKey = key;
+  getNotepad(name: string) {
+    from(this.fileAPi.getFileAsync(name))
+      .subscribe(
+        {
+          next: (content: any) => {
+            this.notepads.find(v => v.metadata.name === name).content = content;
+            this.currentNotepadKey = this.notepads.find(v => v.metadata.name === name).metadata.key;
+            this.currentNotepadName = this.notepads.find(v => v.metadata.name === name).metadata.name;
 
-          this.messageService.add(` • Got notepad.`);
-          this.addState(State.GotNotepad);
-        },
-        error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, 'getting notepad');
-          this.addState(State.Error);
-        }
-      });
+            this.messageService.add(` • Got notepad.`);
+            this.addState(State.GotNotepad);
+          },
+          error: (err: any) => {
+            this.restHelper.errorMessageHandler(err, 'getting notepad');
+            this.addState(State.Error);
+          }
+        });
   }
 
   getNotepadObservable(key: string) {
@@ -150,14 +163,12 @@ export class NotepadRepo {
     return this.http.get<any>(this.restHelper.removeUrlParams(this.findNotepad(key).metadata.git_url), this.restHelper.options())
   }
 
-  updateNotepad(key: string): void {
-    const notepad = this.findNotepad(key);
-    this.postNotepadObservable(notepad.content, notepad.metadata.name, notepad.metadata.sha)
+  updateNotepad(name: string): void {
+    const notepad = this.findNotepadByName(name);
+    from(this.fileAPi.editFileAsync(name, notepad.content))
       .subscribe({
-        next: (contentAndCommit: any) => {
-          const notepadMetadata = contentAndCommit.content as NotepadMetadata;
-          notepad.metadata.sha = notepadMetadata.sha;
-
+        next: (result: NotepadMetadata) => {
+          notepad.metadata.sha = result.sha;
           this.currentNotepadKey = notepad.metadata.key;
 
           this.messageService.add(` • Posted notepad sha: ${notepad.metadata.sha}.`);
@@ -171,10 +182,11 @@ export class NotepadRepo {
   }
 
   postNotepad(text: string, name: string): void {
-    this.postNotepadObservable(text, name, '')
+    from(this.fileAPi.newFileAsync(name, text))
+    // this.postNotepadObservable(text, name, '')
       .subscribe({
-        next: (contentAndCommit: any) => {
-          const notepadMetadata = contentAndCommit.content as NotepadMetadata;
+        next: (notepadMetadata: NotepadMetadata) => {
+          // const notepadMetadata = contentAndCommit.content as NotepadMetadata;
           const notepad = new Notepad();
           notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
           notepad.content = text;

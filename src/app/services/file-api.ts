@@ -20,7 +20,7 @@ export class FileApiFactory {
   }
 }
 
-class FileApi {
+export class FileApi {
   private rootFolders = ['calendarStore', 'chatStore', 'notepadStore', 'todoStore']
   private _dir: string = '';
 
@@ -133,6 +133,7 @@ class FileApi {
     return new Promise((res, rej) => {
       if (this.fileType(name) === '') res(null);
 
+      //fix have cahe bamng here
       const postUrl = `${this.dirUrl}/${name}`;
       const rawCommitBody = JSON.stringify({
         'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
