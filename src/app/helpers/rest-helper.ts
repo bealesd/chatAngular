@@ -21,8 +21,7 @@ export class RestHelper {
         try {
             options.headers = new HttpHeaders({
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.cryptoService.getToken()}`,
-                // 'Cache-Control': 'no-cache'
+                'Authorization': `Bearer ${this.cryptoService.getToken()}`
             });
         }
         catch (error) {

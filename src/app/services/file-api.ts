@@ -35,9 +35,10 @@ class FileApi {
   }
 
   get dirUrl() {
+    const noCache = `?cachebust=${Math.floor(Math.random() * (9999999999999 - 1000000000000 + 1) + 1000000000000)}`;
     const parts = this.dir.split('/');
     parts.splice(1, 0, 'contents');
-    return `https://api.github.com/repos/bealesd/${parts.join('/')}`;
+    return `https://api.github.com/repos/bealesd/${parts.join('/')}${noCache}`;
   }
 
   constructor(private http: HttpClient,
@@ -58,7 +59,7 @@ class FileApi {
     else return cleanDirectory.join('/');
   }
 
-  doesDirectoryExist(dir: string): Promise<boolean> {
+  doesDirectoryExistAsync(dir: string): Promise<boolean> {
     return new Promise((res, rej) => {
       const oldDir = this.dir;
       dir = this.parseDirectory(dir);
@@ -79,15 +80,15 @@ class FileApi {
     });
   }
 
-  changeDirectory(dir: string): Promise<boolean> {
+  changeDirectoryAsync(dir: string): Promise<boolean> {
     return new Promise(async (res, rej) => {
-      const dirExists = await this.doesDirectoryExist(dir);
+      const dirExists = await this.doesDirectoryExistAsync(dir);
       if (dirExists) this.dir = dir;
       res(dirExists);
     });
   }
 
-  listFilesAndFolders(): Promise<NotepadMetadata[]> {
+  listFilesAndFoldersAsync(): Promise<NotepadMetadata[]> {
     return new Promise((res, rej) => {
       const files: NotepadMetadata[] = [];
       this.http.get<NotepadMetadata[]>(this.dirUrl, this.restHelper.options()).subscribe(
@@ -109,9 +110,9 @@ class FileApi {
     });
   }
 
-  getFile(name: string): Promise<string> {
+  getFileAsync(name: string): Promise<string> {
     return new Promise(async (res, rej) => {
-      let files = await this.listFilesAndFolders();
+      let files = await this.listFilesAndFoldersAsync();
       let file = files.find((f) => f.name === name);
       if (file === null) rej(null);
 
@@ -128,7 +129,7 @@ class FileApi {
     });
   }
 
-  newFile(name: string, text: string): Promise<NotepadMetadata> {
+  newFileAsync(name: string, text: string): Promise<NotepadMetadata> {
     return new Promise((res, rej) => {
       if (this.fileType(name) === '') res(null);
 
@@ -154,7 +155,7 @@ class FileApi {
     });
   }
 
-  newFolder(folderName: string): Promise<boolean> {
+  newFolderAsync(folderName: string): Promise<boolean> {
     const postUrl = `${this.dirUrl}/${folderName}/dummy.txt`;
 
     const rawCommitBody = JSON.stringify({
@@ -176,9 +177,9 @@ class FileApi {
     });
   }
 
-  editFile(name: string, text: string): Promise<NotepadMetadata> {
+  editFileAsync(name: string, text: string): Promise<NotepadMetadata> {
     return new Promise(async (res, rej) => {
-      let files = await this.listFilesAndFolders();
+      let files = await this.listFilesAndFoldersAsync();
       let file = files.find((f) => f.name === name);
       if (file === null || file === undefined) rej(null);
 
@@ -203,9 +204,9 @@ class FileApi {
     });
   }
 
-  deleteFile(name: string): Promise<boolean> {
+  deleteFileAsync(name: string): Promise<boolean> {
     return new Promise(async (res, rej) => {
-      let files = await this.listFilesAndFolders();
+      let files = await this.listFilesAndFoldersAsync();
       let file = files.find((f) => f.name === name);
       if (file === null || file === undefined) rej(null);
 
@@ -227,13 +228,13 @@ class FileApi {
     });
   }
 
-  async deleteFolder(folder: string): Promise<boolean> {
+  async deleteFolderAsync(folder: string): Promise<boolean> {
     const currentPath = this.dir;
     return new Promise(async (res, rej) => {
       try {
         this.dir = `${this.dir}/${folder}`;
-        const files = await this.listFilesAndFolders();
-        await this.asyncDeleteFiles(files);
+        const files = await this.listFilesAndFoldersAsync();
+        await this.deleteFilesAsync(files);
         this.dir = currentPath;
         res(true);
       } catch (error) {
@@ -243,9 +244,9 @@ class FileApi {
     })
   }
 
-  async asyncDeleteFiles(files: NotepadMetadata[]) {
+  async deleteFilesAsync(files: NotepadMetadata[]) {
     const promises = files.map((file) => {
-      this.deleteFile(file.name);
+      this.deleteFileAsync(file.name);
     });
     await Promise.all(promises);
   }

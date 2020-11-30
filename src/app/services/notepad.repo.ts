@@ -37,7 +37,7 @@ export class NotepadRepo {
 
     let fileAPi = this.fileApiFactory.create();
 
-    fileAPi.changeDirectory('/calendarStore')
+    fileAPi.changeDirectoryAsync('/calendarStore')
       .then((result) => {
         if (result)
           messageService.add('changeDirectory done');
@@ -46,10 +46,10 @@ export class NotepadRepo {
         messageService.add(fileAPi.dir);
       })
       .then(() => {
-        return fileAPi.listFilesAndFolders()
+        return fileAPi.listFilesAndFoldersAsync()
       })
       .then((result) => {
-        return fileAPi.getFile(result[0].name)
+        return fileAPi.getFileAsync(result[0].name)
       })
       .then((result) => {
         if (result === null) {
@@ -60,22 +60,22 @@ export class NotepadRepo {
         }
       })
       .then(() => {
-        return fileAPi.newFile('deleteMe.txt', 'hello world');
+        return fileAPi.newFileAsync('deleteMe.txt', 'hello world');
       })
       .then((result)=>{
-        return fileAPi.editFile(result.name, 'updated')
+        return fileAPi.editFileAsync(result.name, 'updated')
       })
       .then((result)=>{
-        return fileAPi.deleteFile(result.name);
+        return fileAPi.deleteFileAsync(result.name);
       })
       .then(()=>{
-        return fileAPi.newFolder('david');
+        return fileAPi.newFolderAsync('david');
       })
       .then((result)=>{
-        return fileAPi.deleteFolder('david');
+        return fileAPi.deleteFolderAsync('david');
       })
       .then(() => {
-        return fileAPi.changeDirectory('/calendarStore/test');
+        return fileAPi.changeDirectoryAsync('/calendarStore/test');
       })
       .then((result) => {
         if (result)
