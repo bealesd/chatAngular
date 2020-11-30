@@ -183,10 +183,14 @@ export class NotepadRepo {
 
   postNotepad(text: string, name: string): void {
     from(this.fileAPi.newFileAsync(name, text))
-    // this.postNotepadObservable(text, name, '')
       .subscribe({
         next: (notepadMetadata: NotepadMetadata) => {
-          // const notepadMetadata = contentAndCommit.content as NotepadMetadata;
+          if(notepadMetadata === null){
+            this.restHelper.errorMessageHandler(null, `posting notepad name: ${name}`);
+            this.addState(State.Error);
+            return
+          }
+
           const notepad = new Notepad();
           notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
           notepad.content = text;
@@ -194,10 +198,6 @@ export class NotepadRepo {
 
           this.messageService.add(` • Posted notepad name: ${notepad.metadata.name}.`);
           this.addState(State.CreatedNotepad);
-        },
-        error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, `posting notepad name: ${name}`);
-          this.addState(State.Error);
         }
       });
   }

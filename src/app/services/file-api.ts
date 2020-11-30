@@ -41,6 +41,13 @@ export class FileApi {
     return `https://api.github.com/repos/bealesd/${parts.join('/')}${noCache}`;
   }
 
+  dirPostUrl(fileName):string {
+    const noCache = `?cachebust=${Math.floor(Math.random() * (9999999999999 - 1000000000000 + 1) + 1000000000000)}`;
+    const parts = this.dir.split('/');
+    parts.splice(1, 0, 'contents');
+    return `https://api.github.com/repos/bealesd/${parts.join('/')}/${fileName}${noCache}`;
+  }
+
   constructor(private http: HttpClient,
     private restHelper: RestHelper,
     private messageService: MessageService) {
@@ -132,9 +139,8 @@ export class FileApi {
   newFileAsync(name: string, text: string): Promise<NotepadMetadata> {
     return new Promise((res, rej) => {
       if (this.fileType(name) === '') res(null);
-
-      //fix have cahe bamng here
-      const postUrl = `${this.dirUrl}/${name}`;
+     
+      const postUrl = this.dirPostUrl(name);
       const rawCommitBody = JSON.stringify({
         'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
         'content': btoa(text),
