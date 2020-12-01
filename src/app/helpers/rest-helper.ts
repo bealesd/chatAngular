@@ -1,7 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CryptoService } from '../services/crypto.service';
-import { LoggerService } from '../services/logger.service';
 
 import { MessageService } from '../services/message.service';
 
@@ -13,7 +12,6 @@ export class RestHelper {
         private cryptoService: CryptoService,
         private messageService: MessageService,
         private http: HttpClient,
-        private loggerService: LoggerService
     ) { }
 
     options = (): { headers: HttpHeaders } => {
@@ -25,7 +23,7 @@ export class RestHelper {
             });
         }
         catch (error) {
-            this.messageService.add(` • Getting token failed.`, 'error');
+            this.messageService.add(`RestHelper: Getting token failed.`, 'error');
         }
         return options;
     }
@@ -33,20 +31,16 @@ export class RestHelper {
     removeUrlParams = (rawUrl: string) =>
         new URL(rawUrl).origin + new URL(rawUrl).pathname;
 
-    errorMessageHandler(err: any, type: string) {
+    errorMessageHandler(err: any, message: string, caller: string) {
         if (err.status === 404) {
-            this.loggerService.log(` • No data found when '${type}'.`, 'error');
-            this.messageService.add(` • No data found when '${type}'.`, 'error');
+            this.messageService.add(`${caller}: No data found when '${message}'.`, 'error');
         }
         else if (err.status === 401) {
-            this.loggerService.log(` • Authentication error, 401 when '${type}'.`, 'error');
-            this.messageService.add(` • Authentication error, 401 when '${type}'.`, 'error');
+            this.messageService.add(`${caller}: Authentication error, 401 when '${message}'.`, 'error');
         }
         else {
-            this.loggerService.log(` • Rest failiure when '${type}'.`, 'error');
-            this.messageService.add(` • Rest failiure when '${type}'.`, 'error');
+            this.messageService.add(`${caller}: Rest failiure when '${message}'.`, 'error');
         }
-
     }
 
     createRepo(name: string, description: string) {
@@ -64,7 +58,7 @@ export class RestHelper {
                     this.messageService.add(` • Created repo: ${name}.`);
                 },
                 error: (err: any) => {
-                    this.errorMessageHandler(err, `failed to create repo: ${name}`);
+                    this.errorMessageHandler(err, `failed to create repo: ${name}`, 'CreateRepo');
                 }
             }
         );

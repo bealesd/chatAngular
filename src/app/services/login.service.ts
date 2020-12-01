@@ -26,14 +26,14 @@ export class LoginService {
   constructor(private cryptoService: CryptoService, private messageService: MessageService, private http: HttpClient) {  }
 
   login() {
-    this.messageService.add(`Login attempt.`);
+    this.messageService.add(`LoginService: Login attempt.`, 'info');
 
     this.http.get<GitHubMetaData[]>(this.githubApiUrl, this.options()).subscribe({
       next: (result) => {
-        this.messageService.add(' • Login complete.', 'info');
+        this.messageService.add('LoginService: Login complete.', 'info');
         this.loggedIn.next(true);
       }, error: (err: any) => {
-        this.messageService.add(' • Login failure.', 'error');
+        this.messageService.add('LoginService: Login failure.', 'error');
         this.loggedIn.next(false);
       }
     });

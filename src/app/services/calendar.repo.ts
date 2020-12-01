@@ -52,7 +52,7 @@ export class CalendarRepo {
           this.messageService.add(` • Deleted calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}, ${id}.`);
         },
         error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, `deleting calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}, ${id}.`);
+          this.restHelper.errorMessageHandler(err, `deleting calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}, ${id}.`, 'CalendarRepo');
           this.calendarRecordRest.records = deepCopyRecords;
         }
       }
@@ -80,7 +80,7 @@ export class CalendarRepo {
           this.messageService.add(` • Posted calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}.`);
         },
         error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, `posting calendar records for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}. Record: ${JSON.stringify(record)}.`);
+          this.restHelper.errorMessageHandler(err, `posting calendar records for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}. Record: ${JSON.stringify(record)}.`, 'CalendarRepo');
         }
       }
     );
@@ -106,7 +106,7 @@ export class CalendarRepo {
         error: (err: any) => {
           this.calendarRecordRest.records = [];
 
-          this.restHelper.errorMessageHandler(err, 'getting calendar records');
+          this.restHelper.errorMessageHandler(err, 'getting calendar records', 'CalendarRepo');
         }
       }
     );

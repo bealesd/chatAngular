@@ -31,7 +31,7 @@ export class ChatService {
           this.messageService.add(` • Got last 10 chat messages.`);
         },
         error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, 'getting last 10 chat records');
+          this.restHelper.errorMessageHandler(err, 'getting last 10 chat records', 'ChatService');
         }
       });
   }
@@ -65,7 +65,7 @@ export class ChatService {
             }
           },
           error: (err: any) => {
-            this.restHelper.errorMessageHandler(err, 'getting new chat records');
+            this.restHelper.errorMessageHandler(err, 'getting new chat records', 'ChatService');
           }
         });
   }
@@ -90,14 +90,14 @@ export class ChatService {
                   this.chatMessages.next(currentChatMessages);
                 },
                 error: (err: any) => {
-                  this.restHelper.errorMessageHandler(err, ' • getting updated chat records');
+                  this.restHelper.errorMessageHandler(err, ' • getting updated chat records', 'ChatService');
                 }
               });
           }
         }
       },
       error: (err: any) => {
-        this.restHelper.errorMessageHandler(err, 'getting chat message listing');
+        this.restHelper.errorMessageHandler(err, 'getting chat message listing', 'ChatService');
       }
     });
   }
@@ -126,7 +126,7 @@ export class ChatService {
         this.messageService.add(` • Posted chat message id ${chatMessage.Id}.`);
       },
       error: (err: any) => {
-        this.restHelper.errorMessageHandler(err, 'posting message');
+        this.restHelper.errorMessageHandler(err, 'posting message', 'ChatService');
       }
     });
   }
@@ -150,7 +150,7 @@ export class ChatService {
         this.chatMessages.next(currentChatMessages);
       },
       error: (err: any) => {
-        this.restHelper.errorMessageHandler(err, 'updating delete flag for chat message id ${id}');
+        this.restHelper.errorMessageHandler(err, 'updating delete flag for chat message id ${id}', 'ChatService');
       }
     });
   }
@@ -175,7 +175,7 @@ export class ChatService {
         this.chatMessages.next(currentChatMessages);
       },
       error: (err: any) => {
-        this.restHelper.errorMessageHandler(err, 'updating delete flag for chat message id ${id}');
+        this.restHelper.errorMessageHandler(err, 'updating delete flag for chat message id ${id}', 'ChatService');
         this.messageService.add(`Could not delete message id ${id}.`);
       }
     });

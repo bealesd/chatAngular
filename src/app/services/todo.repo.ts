@@ -48,7 +48,7 @@ export class TodoRepo {
           this.messageService.add(` • Deleted todo item for ${id}.`);
         },
         error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, `deleting todo item for ${id}.`);
+          this.restHelper.errorMessageHandler(err, `deleting todo item for ${id}.`, 'TodoRepo');
         }
       }
     );
@@ -72,7 +72,7 @@ export class TodoRepo {
           this.messageService.add(` • Updated todo item for ${id}.`);
         },
         error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, `updating todo item for ${id}.`);
+          this.restHelper.errorMessageHandler(err, `updating todo item for ${id}.`, 'TodoRepo');
         }
       }
     );
@@ -99,7 +99,7 @@ export class TodoRepo {
           this.messageService.add(` • Posted todo item for ${id} with text ${text}.`);
         },
         error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, `posting todo item for ${id} with text ${text}.`);
+          this.restHelper.errorMessageHandler(err, `posting todo item for ${id} with text ${text}.`, 'TodoRepo');
         }
       }
     );
@@ -133,13 +133,13 @@ export class TodoRepo {
                     this.messageService.add(` • Created todo.json.`);
                   },
                   error: (err: any) => {
-                    this.restHelper.errorMessageHandler(err, `creating todo.json.`);
+                    this.restHelper.errorMessageHandler(err, `creating todo.json.`, 'TodoRepo');
                   }
                 }
               );
             }
             else
-              this.restHelper.errorMessageHandler(err, 'getting todo list');
+              this.restHelper.errorMessageHandler(err, 'getting todo list', 'TodoRepo');
           }
         }
       );

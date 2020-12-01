@@ -5,8 +5,6 @@ import { RestHelper } from '../helpers/rest-helper';
 import { MessageService } from './message.service';
 import { NotepadMetadata } from '../models/notepad-models';
 
-//TODO, ensure all errors are caught. Add rollback on each method.
-
 @Injectable({
   providedIn: 'root',
 })
@@ -69,6 +67,7 @@ export class FileApi {
   }
 
   doesDirectoryExistAsync(dir: string): Promise<boolean> {
+    this.messageService.add(`FileApi: Check dir exists: ${dir}.`, 'info');
     return new Promise((res, rej) => {
       const oldDir = this.dir;
       dir = this.parseDirectory(dir);
@@ -78,10 +77,12 @@ export class FileApi {
       this.http.get<NotepadMetadata[]>(this.dirUrl, this.restHelper.options()).subscribe(
         {
           next: (notepads: NotepadMetadata[]) => {
+            this.messageService.add(`FileApi: Checked dir exists: ${dir}.`, 'info');
             res(true);
           },
           error: (err: any) => {
             this.dir = oldDir;
+            this.restHelper.errorMessageHandler(err, `checking path at: ${this.dirUrl}`, 'FileApi');
             res(false);
           }
         }
@@ -98,6 +99,7 @@ export class FileApi {
   }
 
   listFilesAndFoldersAsync(): Promise<NotepadMetadata[]> {
+    this.messageService.add(`FileApi: Listing files in: ${this.dir}.`, 'info');
     return new Promise((res, rej) => {
       const files: NotepadMetadata[] = [];
       this.http.get<NotepadMetadata[]>(this.dirUrl, this.restHelper.options()).subscribe(
@@ -109,9 +111,11 @@ export class FileApi {
                 files.push(metadata);
               }
             });
+            this.messageService.add(`FileApi: Listed files in: ${this.dir}.`, 'info');
             res(files);
           },
           error: (err: any) => {
+            this.restHelper.errorMessageHandler(err, `listing files at: ${this.dirUrl}`, 'FileApi');
             res(null);
           }
         }
@@ -120,6 +124,7 @@ export class FileApi {
   }
 
   getFileAsync(name: string): Promise<string> {
+    this.messageService.add(`FileApi: Getting file ${name}.`, 'info');
     return new Promise(async (res, rej) => {
       let files = await this.listFilesAndFoldersAsync();
       if (!files) res(null);
@@ -131,9 +136,11 @@ export class FileApi {
         {
           next: (value: any) => {
             const content = atob(value.content);
+            this.messageService.add(`FileApi: Got file ${name}.`, 'info');
             res(content);
           },
           error: (err: any) => {
+            this.restHelper.errorMessageHandler(err, `getting file: ${file.git_url}`, 'FileApi');
             res(null);
           }
         });
@@ -141,6 +148,7 @@ export class FileApi {
   }
 
   newFileAsync(name: string, text: string): Promise<NotepadMetadata> {
+    this.messageService.add(`FileApi: Creating new file ${name}.`, 'info');
     return new Promise((res, rej) => {
       if (this.fileType(name) === '') res(null);
      
@@ -156,9 +164,11 @@ export class FileApi {
           next: (contentAndCommit: any) => {
             const notepadMetadata = contentAndCommit.content as NotepadMetadata;
             const metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+            this.messageService.add(`FileApi: Created new file ${name}.`, 'info');
             res(metadata);
           },
           error: (err: any) => {
+            this.restHelper.errorMessageHandler(err, `creating file: ${name}`, 'FileApi');
             res(null);
           }
         }
@@ -167,6 +177,7 @@ export class FileApi {
   }
 
   newFolderAsync(folderName: string): Promise<boolean> {
+    this.messageService.add(`FileApi: Creating new folder ${folderName}.`, 'info');
     const postUrl = `${this.dirUrl}/${folderName}/dummy.txt`;
 
     const rawCommitBody = JSON.stringify({
@@ -178,9 +189,11 @@ export class FileApi {
         {
           next: (contentAndCommit: any) => {
             console.log(contentAndCommit);
+            this.messageService.add(`FileApi: Created new folder.`, 'info');
             res(true);
           },
           error: (err: any) => {
+            this.restHelper.errorMessageHandler(err, `creating folder: ${folderName}`, 'FileApi');
             res(false);
           }
         }
@@ -189,6 +202,7 @@ export class FileApi {
   }
 
   editFileAsync(name: string, text: string): Promise<NotepadMetadata> {
+    this.messageService.add(`FileApi: Editing file: ${name}.`, 'info');
     return new Promise(async (res, rej) => {
       let files = await this.listFilesAndFoldersAsync();
       if (!files) res(null);
@@ -207,9 +221,11 @@ export class FileApi {
           next: (contentAndCommit: any) => {
             const notepadMetadata = contentAndCommit.content as NotepadMetadata;
             const metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+            this.messageService.add(`FileApi: Edited file.`, 'info');
             res(metadata);
           },
           error: (err: any) => {
+            this.restHelper.errorMessageHandler(err, `editing file: ${name}`, 'FileApi');
             res(null);
           }
         }
@@ -218,6 +234,7 @@ export class FileApi {
   }
 
   deleteFileAsync(name: string): Promise<boolean> {
+    this.messageService.add(`FileApi: Deleting file: ${name}.`, 'info');
     return new Promise(async (res, rej) => {
       let files = await this.listFilesAndFoldersAsync();
       if (!files) res(false);
@@ -233,9 +250,11 @@ export class FileApi {
       this.http.request('delete', file.url, { body: commit, headers: this.restHelper.options().headers }).subscribe(
         {
           next: (result: any) => {
+            this.messageService.add(`FileApi: Deleted file.`, 'info');
             res(true);
           },
           error: (err: any) => {
+            this.restHelper.errorMessageHandler(err, `deleting file: ${name}`, 'FileApi');
             res(false);
           }
         }
@@ -244,6 +263,7 @@ export class FileApi {
   }
 
   async deleteFolderAsync(folder: string): Promise<boolean> {
+    this.messageService.add(`FileApi: Deleting folder ${folder}.`, 'info');
     const currentPath = this.dir;
     return new Promise(async (res, rej) => {
       try {
@@ -251,6 +271,7 @@ export class FileApi {
         const files = await this.listFilesAndFoldersAsync();
         await this.deleteFilesAsync(files);
         this.dir = currentPath;
+        this.messageService.add(`FileApi: • Deleted folder.`, 'info');
         res(true);
       } catch (error) {
         this.dir = currentPath;
@@ -260,22 +281,28 @@ export class FileApi {
   }
 
   async deleteFilesAsync(files: NotepadMetadata[]) {
+    this.messageService.add(`FileApi: Deleting files.`, 'info');
     const promises = files.map((file) => {
       this.deleteFileAsync(file.name);
+      this.messageService.add(`FileApi: • Deleted files.`, 'info');
     });
     await Promise.all(promises);
   }
 
   renameFileAsync(oldName: string, newName:string): Promise<NotepadMetadata> {
+    this.messageService.add(`FileApi: Renaming file: ${oldName} to ${newName}.`, 'info');
     return new Promise(async (res, rej) => {
       let fileContent = await this.getFileAsync(oldName);
       if (!fileContent) res(null);
 
+      let newFile = await this.newFileAsync(newName, fileContent);
+      if (!newFile) res(null);
+
       let deleted = await this.deleteFileAsync(oldName);
       if (!deleted) res(null);
 
-      let newFile = await this.newFileAsync(newName, fileContent);
-      if (!newFile) res(null);
+      this.messageService.add(`FileApi: • Renamed file.`, 'info');
+
       res(newFile)
     });
   }

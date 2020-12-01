@@ -21,9 +21,9 @@ export class LoggerService {
       if (!this.types.includes(type))
         type = 'info'
       if (type === 'info')
-        console.info(`%c${message}`, "color: green; font-size: 14px");
+        console.info(`%c${message}`, "color: green; font-size: 12px");
       else if (type === 'error')
-        console.error(`%c${message}`, "color: red; font-size: 14px");
+        console.error(`%c${message}`, "color: red; font-size: 12px");
     }
   }
 }
