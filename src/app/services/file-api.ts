@@ -5,6 +5,8 @@ import { RestHelper } from '../helpers/rest-helper';
 import { MessageService } from './message.service';
 import { NotepadMetadata } from '../models/notepad-models';
 
+//TODO, ensure all errors are caught. Add rollback on each method.
+
 @Injectable({
   providedIn: 'root',
 })
@@ -71,7 +73,7 @@ export class FileApi {
       const oldDir = this.dir;
       dir = this.parseDirectory(dir);
       if (dir === null) res(false);
-      else { this.dir = dir; }
+      else this.dir = dir;
 
       this.http.get<NotepadMetadata[]>(this.dirUrl, this.restHelper.options()).subscribe(
         {
@@ -120,8 +122,10 @@ export class FileApi {
   getFileAsync(name: string): Promise<string> {
     return new Promise(async (res, rej) => {
       let files = await this.listFilesAndFoldersAsync();
+      if (!files) res(null);
+
       let file = files.find((f) => f.name === name);
-      if (file === null) rej(null);
+      if (!file) rej(null);
 
       this.http.get<any>(file.git_url, this.restHelper.options()).subscribe(
         {
@@ -187,8 +191,10 @@ export class FileApi {
   editFileAsync(name: string, text: string): Promise<NotepadMetadata> {
     return new Promise(async (res, rej) => {
       let files = await this.listFilesAndFoldersAsync();
+      if (!files) res(null);
+
       let file = files.find((f) => f.name === name);
-      if (file === null || file === undefined) rej(null);
+      if (!file) rej(null);
 
       const rawCommitBody = JSON.stringify({
         'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
@@ -214,8 +220,10 @@ export class FileApi {
   deleteFileAsync(name: string): Promise<boolean> {
     return new Promise(async (res, rej) => {
       let files = await this.listFilesAndFoldersAsync();
+      if (!files) res(false);
+
       let file = files.find((f) => f.name === name);
-      if (file === null || file === undefined) rej(null);
+      if (!file) rej(null);
 
       const commit = JSON.stringify({
         "message": `Api delete commit by notepad repo at ${new Date().toLocaleString()}`,
@@ -256,5 +264,19 @@ export class FileApi {
       this.deleteFileAsync(file.name);
     });
     await Promise.all(promises);
+  }
+
+  renameFileAsync(oldName: string, newName:string): Promise<NotepadMetadata> {
+    return new Promise(async (res, rej) => {
+      let fileContent = await this.getFileAsync(oldName);
+      if (!fileContent) res(null);
+
+      let deleted = await this.deleteFileAsync(oldName);
+      if (!deleted) res(null);
+
+      let newFile = await this.newFileAsync(newName, fileContent);
+      if (!newFile) res(null);
+      res(newFile)
+    });
   }
 }

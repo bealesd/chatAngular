@@ -191,7 +191,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
   renameNotepad(name) {
     if (!this.isUniqueName(name)) return;
     this.disablePage = true;
-    this.notepadRepo.renameNotepad(this.currentNotepad.metadata.key, name);
+    this.notepadRepo.renameNotepad(this.currentNotepad.metadata.name, name);
   }
 
   saveNotepad() {
@@ -217,7 +217,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
     if (!this.isNotepadItemSelected) return;
 
     if (window.confirm('Delete notepad?')) {
-      this.notepadRepo.deleteNotepad(this.currentNotepad.metadata.key);
+      this.notepadRepo.deleteNotepad(this.currentNotepad.metadata.name);
       this.disablePage = true;
     }
   }
