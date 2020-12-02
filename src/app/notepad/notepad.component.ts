@@ -164,7 +164,6 @@ export class NotepadComponent implements OnInit, OnDestroy {
 
     this.disablePage = true;
     this.notepadRepo.getNotepad(this.currentNotepad.metadata.name);
-    // this.notepadRepo.getNotepad(this.currentNotepad.metadata.key);
   }
 
   highlightRow(item: Notepad): void {

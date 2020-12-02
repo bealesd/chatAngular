@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Observable, forkJoin, } from 'rxjs';
+import { Observable, forkJoin, from, } from 'rxjs';
 import { map, retry, mergeMap, defaultIfEmpty } from 'rxjs/operators';
 
 import { RecieveChat } from '../models/recieve-chat.model';
@@ -9,30 +9,69 @@ import { SendChat } from '../models/send-chat.model';
 import { GitHubMetaData } from '../models/gitHubMetaData'
 
 import { RestHelper } from '../helpers/rest-helper';
+import { FileApiFactory, FileApi } from './file-api';
+import { NotepadMetadata } from '../models/notepad-models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatRepo {
   private baseMessagesUrl = 'https://api.github.com/repos/bealesd/chatStore/contents';
+  fileApi: FileApi;
 
   constructor(
     private http: HttpClient,
-    private restHelper: RestHelper) {
+    private restHelper: RestHelper,
+    private fileApiFactory: FileApiFactory) {
+    this.fileApi = this.fileApiFactory.create();
+    this.fileApi.dir = '/chatStore';
   }
 
-  getMessageListings = (): Observable<GitHubMetaData[]> => {
-    return this.http.get<GitHubMetaData[]>(this.baseMessagesUrl, this.restHelper.options());
+  getMessageListings() {
+    return from(this.fileApi.listFilesAndFoldersAsync());
   }
 
-  getLastTen(): Observable<RecieveChat[]> {
-    return this.getMessageListings()
+  getLastTen(): Observable<any> {
+    let asyncChats = async () => {
+      let files = await this.fileApi.listFilesAndFoldersAsync()
+      let contents = [];
+      //use promise.all
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        let content = await this.fileApi.getFileAsync(file.name);
+        contents.push(content);
+      }
+      return this.parseGitHubResults2(contents);
+    }
+    return from(asyncChats());
+  }
+
+  parseGitHubResults2(results: any[]): RecieveChat[] {
+    if (results === null || results === undefined || results.length === 0) return [];
+    return results.map((result) => this.parseGitHubResult2(result));
+  }
+
+  parseGitHubResult2(content: string): RecieveChat {
+    const chatObject = JSON.parse(atob(content));
+    const recieveChat = new RecieveChat();
+    recieveChat.Content = chatObject.Content;
+    recieveChat.Deleted = chatObject.Deleted;
+    recieveChat.Who = chatObject.Who;
+    recieveChat.Datetime = chatObject.Datetime;
+    recieveChat.Id = chatObject.Id;
+    return recieveChat;
+    // need file name ??
+  }
+
+  getLastTen2(): Observable<RecieveChat[]> {
+    return from(this.fileApi.listFilesAndFoldersAsync())
       .pipe(
-        map((messagesMetaData: GitHubMetaData[]) => {
+        map((messagesMetaData: NotepadMetadata[]) => {
           messagesMetaData = this.getChatsFromEnd(this.sortByName(messagesMetaData), 10);
-          const chatUrls = [];
+          const chatUrls: Observable<any>[] = [];
           for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
             const messageMetaData = messagesMetaData[i];
+            let a = this.http.get<any>(this.restHelper.removeUrlParams(messageMetaData['git_url']), this.restHelper.options());
             chatUrls.push(this.http.get<any>(this.restHelper.removeUrlParams(messageMetaData['git_url']), this.restHelper.options()));
           }
           return chatUrls;
@@ -68,9 +107,9 @@ export class ChatRepo {
     if (lastId === null)
       return this.getLastTen();
 
-    return this.getMessageListings()
+    return from(this.fileApi.listFilesAndFoldersAsync())
       .pipe(
-        map((messagesMetaData: GitHubMetaData[]) => {
+        map((messagesMetaData: NotepadMetadata[]) => {
           messagesMetaData = this.sortByName(messagesMetaData);
           const chatUrls = [];
           for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
@@ -166,12 +205,12 @@ export class ChatRepo {
   idExtractor = (fileName: string): number =>
     parseInt(fileName.match(/[0-9]{1,100000}/)[0]);
 
-  fileNameFilter = (chatMessagesMetaData: GitHubMetaData[]): GitHubMetaData[] =>
+  fileNameFilter = (chatMessagesMetaData: NotepadMetadata[]): NotepadMetadata[] =>
     chatMessagesMetaData.filter(metdata => metdata['name'].match(/id_[0-9]{1,100000}\.json/));
 
-  sortByName = (chatMessagesMetaData: GitHubMetaData[]): GitHubMetaData[] =>
-    this.fileNameFilter(chatMessagesMetaData).sort((a, b) => this.idExtractor(a['name']) - this.idExtractor(b['name']));
+  sortByName = (chatMessagesMetaData: NotepadMetadata[]): NotepadMetadata[] =>
+    this.fileNameFilter(chatMessagesMetaData).sort((a, b) => this.idExtractor(a.name) - this.idExtractor(b.name));
 
-  getChatsFromEnd = (chatMessagesMetaData: GitHubMetaData[], fromEnd: number): GitHubMetaData[] =>
+  getChatsFromEnd = (chatMessagesMetaData: NotepadMetadata[], fromEnd: number): NotepadMetadata[] =>
     chatMessagesMetaData.slice(Math.max(chatMessagesMetaData.length - fromEnd, 0));
 }
