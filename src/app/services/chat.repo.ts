@@ -1,14 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-
-import { Observable, forkJoin, from, } from 'rxjs';
-import { map, retry, mergeMap, defaultIfEmpty } from 'rxjs/operators';
+import { Observable, from, } from 'rxjs';
 
 import { RecieveChat } from '../models/recieve-chat.model';
 import { SendChat } from '../models/send-chat.model';
-import { GitHubMetaData } from '../models/gitHubMetaData'
 
-import { RestHelper } from '../helpers/rest-helper';
 import { FileApiFactory, FileApi } from './file-api';
 import { NotepadMetadata } from '../models/notepad-models';
 
@@ -16,135 +11,65 @@ import { NotepadMetadata } from '../models/notepad-models';
   providedIn: 'root'
 })
 export class ChatRepo {
-  private baseMessagesUrl = 'https://api.github.com/repos/bealesd/chatStore/contents';
   fileApi: FileApi;
 
   constructor(
-    private http: HttpClient,
-    private restHelper: RestHelper,
     private fileApiFactory: FileApiFactory) {
     this.fileApi = this.fileApiFactory.create();
     this.fileApi.dir = '/chatStore';
   }
 
-  getMessageListings() {
+  getMessageListings(): Observable<NotepadMetadata[]> {
     return from(this.fileApi.listFilesAndFoldersAsync());
   }
 
-  getLastTen(): Observable<any> {
-    let asyncChats = async () => {
-      let files = await this.fileApi.listFilesAndFoldersAsync()
-      let contents = [];
-      //use promise.all
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        let content = await this.fileApi.getFileAsync(file.name);
-        contents.push(content);
-      }
-      return this.parseGitHubResults2(contents);
+  getLastTen(): Observable<RecieveChat[]> {
+    const asyncChats = async () => {
+      let files = await this.fileApi.listFilesAndFoldersAsync();
+      if (files === null) return null;
+
+      files = this.getChatsFromEnd(this.sortByName(files), 10);
+
+      const contents: RecieveChat[] = [];
+      const promises = files.map(async (file) => {
+        const content = await this.fileApi.getFileAsync(file.name);
+        contents.push(this.parseChatJson(content));
+      });
+      await Promise.all(promises);
+      return contents;
     }
     return from(asyncChats());
   }
 
-  parseGitHubResults2(results: any[]): RecieveChat[] {
-    if (results === null || results === undefined || results.length === 0) return [];
-    return results.map((result) => this.parseGitHubResult2(result));
-  }
-
-  parseGitHubResult2(content: string): RecieveChat {
-    const chatObject = JSON.parse(atob(content));
-    const recieveChat = new RecieveChat();
-    recieveChat.Content = chatObject.Content;
-    recieveChat.Deleted = chatObject.Deleted;
-    recieveChat.Who = chatObject.Who;
-    recieveChat.Datetime = chatObject.Datetime;
-    recieveChat.Id = chatObject.Id;
-    return recieveChat;
-    // need file name ??
-  }
-
-  getLastTen2(): Observable<RecieveChat[]> {
-    return from(this.fileApi.listFilesAndFoldersAsync())
-      .pipe(
-        map((messagesMetaData: NotepadMetadata[]) => {
-          messagesMetaData = this.getChatsFromEnd(this.sortByName(messagesMetaData), 10);
-          const chatUrls: Observable<any>[] = [];
-          for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
-            const messageMetaData = messagesMetaData[i];
-            let a = this.http.get<any>(this.restHelper.removeUrlParams(messageMetaData['git_url']), this.restHelper.options());
-            chatUrls.push(this.http.get<any>(this.restHelper.removeUrlParams(messageMetaData['git_url']), this.restHelper.options()));
-          }
-          return chatUrls;
-        }),
-        mergeMap((chatUrls) => {
-          return forkJoin(chatUrls);
-        }))
-      .pipe(
-        map((results: any[]) => {
-          return this.parseGitHubResults(results);
-        })
-      )
-  }
-
-  parseGitHubResult(gitHubResult: any): RecieveChat {
-    const chatObject = JSON.parse(atob(atob(gitHubResult.content)));
-    const recieveChat = new RecieveChat();
-    recieveChat.Sha = gitHubResult.sha;
-    recieveChat.Content = chatObject.Content;
-    recieveChat.Deleted = chatObject.Deleted;
-    recieveChat.Who = chatObject.Who;
-    recieveChat.Datetime = chatObject.Datetime;
-    recieveChat.Id = chatObject.Id;
-    return recieveChat;
-  }
-
-  parseGitHubResults(results: any[]): RecieveChat[] {
-    if (results === null || results === undefined || results.length === 0) return [];
-    return results.map((result) => this.parseGitHubResult(result));
-  }
-
   getNewChatMessages(lastId: number): Observable<RecieveChat[]> {
-    if (lastId === null)
-      return this.getLastTen();
+    if (lastId === null) return this.getLastTen();
 
-    return from(this.fileApi.listFilesAndFoldersAsync())
-      .pipe(
-        map((messagesMetaData: NotepadMetadata[]) => {
-          messagesMetaData = this.sortByName(messagesMetaData);
-          const chatUrls = [];
-          for (let i = 0; i < Object.keys(messagesMetaData).length; i++) {
-            const messageMetaData = messagesMetaData[i];
-            if (this.idExtractor(messageMetaData.name) > lastId)
-              chatUrls.push(this.http.get<any>(this.restHelper.removeUrlParams(messageMetaData['git_url'])), this.restHelper.options());
-          }
-          return chatUrls;
-        }),
-        mergeMap((chatUrls) => {
-          return forkJoin(chatUrls).pipe(
-            defaultIfEmpty(null),
-          );
-        })
-      ).pipe(
-        map((gitHubResults: any[]) => {
-          return this.parseGitHubResults(gitHubResults);
-        })
-      )
+    const asyncChats = (async () => {
+      let files = await this.fileApi.listFilesAndFoldersAsync()
+      if (files === null) return null;
+
+      files = this.sortByName(files);
+
+      const contents: RecieveChat[] = [];
+      const promises = files.map(async (file) => {
+        if (this.idExtractor(file.name) > lastId) {
+          const content = await this.fileApi.getFileAsync(file.name);
+          contents.push(this.parseChatJson(content));
+        }
+      });
+      await Promise.all(promises);
+      return contents;
+    });
+    return from(asyncChats());
   }
 
-  checkForUpdatedMessage(id: number): Observable<RecieveChat> {
-    return this.http.get<any>(`${this.baseMessagesUrl}/id_${id}.json`, this.restHelper.options())
-      .pipe(
-        retry(10)
-      ).pipe(
-        map((gitHubResult: any) => {
-          return this.parseGitHubResult(gitHubResult);
-        })
-      )
+  async checkForUpdatedMessage(id: number): Promise<RecieveChat> {
+    let file = await this.fileApi.getFileAsync(`id_${id}.json`);
+    if (!file) return null;
+    return this.parseChatJson(file);
   }
 
-  postMessage(message: SendChat): Observable<RecieveChat> {
-    const postUrl = this.baseMessagesUrl + `/id_${message.Id}.json`;
-
+  async postMessage(message: SendChat): Promise<RecieveChat> {
     const newMessage: RecieveChat = {
       Who: message.Who,
       Content: message.Content,
@@ -158,50 +83,51 @@ export class ChatRepo {
       "content": btoa(btoa(JSON.stringify(newMessage)))
     })
 
-    return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.restHelper.options())
-      .pipe(
-        map((result: { content: GitHubMetaData }) => {
-          let metadata = <GitHubMetaData>result['content'];
-          newMessage.Sha = metadata.sha;
-          return <RecieveChat>newMessage;
-        })
-      );
+    const result = await this.fileApi.newFileAsync(`id_${message.Id}.json`, rawCommitBody);
+    if (!result) return null;
+
+    newMessage.Sha = result.sha;
+    return newMessage;
   }
 
   softDeleteMessage(message: RecieveChat, deleteFlag: boolean): Observable<RecieveChat> {
-    const postUrl = this.baseMessagesUrl + `/id_${message.Id}.json`;
+    const asyncChats = async () => {
+      const newMessage = <SendChat>message;
+      newMessage.Deleted = deleteFlag ? 'true' : 'false';
 
-    const newMessage = <SendChat>message;
-    newMessage.Deleted = deleteFlag ? 'true' : 'false';
+      const rawCommitBody = JSON.stringify({
+        'message': `Api commit by ${newMessage.Who} at ${new Date().toLocaleString()}`,
+        'content': btoa(btoa(JSON.stringify(newMessage))),
+        'sha': message.Sha
+      });
 
-    const rawCommitBody = JSON.stringify({
-      'message': `Api commit by ${newMessage.Who} at ${new Date().toLocaleString()}`,
-      'content': btoa(btoa(JSON.stringify(newMessage))),
-      'sha': message.Sha
-    })
-
-    return this.http.put(postUrl, rawCommitBody, this.restHelper.options())
-      .pipe(
-        map((result: { content: GitHubMetaData }) => {
-          let metadata = result.content;
-          message.Sha = metadata.sha;
-          return <RecieveChat>message;
-        })
-      );
+      const result = await this.fileApi.editFileAsync(`id_${message.Id}.json`, rawCommitBody);
+      message.Sha = result.sha;
+      return message;
+    }
+    return from(asyncChats());
   }
 
-  hardDeleteMessage(message: RecieveChat): Observable<any> {
-    const deletetUrl = this.baseMessagesUrl + `/id_${message.Id}.json`;
-    const commitBody = {
-      "message": `Api delete commit by ${message.Who} at ${new Date().toLocaleString()}`,
-      "sha": `${message.Sha}`
+  hardDeleteMessage(message: RecieveChat): Observable<Boolean> {
+    const asyncChats = async () => {
+      const result = await this.fileApi.deleteFileAsync(`id_${message.Id}.json`);
+      return result;
     }
-    const rawCommitBody = JSON.stringify(commitBody);
-
-    return this.http.request('delete', deletetUrl, { body: rawCommitBody, headers: this.restHelper.options().headers })
+    return from(asyncChats());
   }
 
   // helpers
+  parseChatJson(content: string): RecieveChat {
+    const chatObject = JSON.parse(atob(content));
+    const recieveChat = new RecieveChat();
+    recieveChat.Content = chatObject.Content;
+    recieveChat.Deleted = chatObject.Deleted;
+    recieveChat.Who = chatObject.Who;
+    recieveChat.Datetime = chatObject.Datetime;
+    recieveChat.Id = chatObject.Id;
+    return recieveChat;
+  }
+
   idExtractor = (fileName: string): number =>
     parseInt(fileName.match(/[0-9]{1,100000}/)[0]);
 
