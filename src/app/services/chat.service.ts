@@ -18,46 +18,43 @@ export class ChatService {
   constructor(private messageService: MessageService, private chatRepo: ChatRepo) {
   }
 
-  getChatMessages(): void {
+  async getChatMessages(): Promise<void> {
     this.messageService.add('ChatService: Getting last 10 chat messages.');
-    this.chatRepo.getLastTen().subscribe((chatMessages: RecieveChat[]) => {
-      if (chatMessages === null)
-        this.messageService.add(`ChatService: Failed to get last 10 chat messages.`, 'error');
-      else {
-        this.chatMessages.next(chatMessages);
-        this.messageService.add(`ChatService: Got last 10 chat messages.`);
-      }
-    });
+    const chatMessages = await this.chatRepo.getLastTen()
+    if (chatMessages === null)
+      this.messageService.add(`ChatService: Failed to get last 10 chat messages.`, 'error');
+    else {
+      this.chatMessages.next(chatMessages);
+      this.messageService.add(`ChatService: Got last 10 chat messages.`);
+    }
   }
 
-  getNewChatMessages(): void {
+  async getNewChatMessages(): Promise<void> {
     this.messageService.add('ChatService: Fetching new messages.');
 
     const currentChatMessages = this.chatMessages.getValue();
     let id = null;
-    if (!currentChatMessages) id = null;
+    if (!currentChatMessages || currentChatMessages.length === 0) id = null;
     else id = currentChatMessages[currentChatMessages.length - 1].Id;
 
-    this.chatRepo.getNewChatMessages(id)
-      .subscribe((chatMessages: RecieveChat[]) => {
-        if (chatMessages === null) {
-          this.messageService.add(`ChatService: Failed to get new chat messages.`, 'error');
-          return;
-        }
-        if (chatMessages === null || chatMessages === undefined || chatMessages.length === 0) {
-          this.messageService.add(`ChatService: No new messages.`);
-          return;
-        }
-        else {
-          const currentMessagesCount = this.newChatMessagesCount.getValue();
-          const newMessageCount = chatMessages.length;
-          this.newChatMessagesCount.next(currentMessagesCount + newMessageCount);
-          this.messageService.add(`ChatService: ${newMessageCount} new message${newMessageCount > 1 ? 's' : ''}.`);
+    let chatMessages = await this.chatRepo.getNewChatMessages(id)
+    if (chatMessages === null) {
+      this.messageService.add(`ChatService: Failed to get new chat messages.`, 'error');
+      return;
+    }
+    if (chatMessages.length === 0) {
+      this.messageService.add(`ChatService: No new messages.`);
+      return;
+    }
+    else {
+      const currentMessagesCount = this.newChatMessagesCount.getValue();
+      const newMessageCount = chatMessages.length;
+      this.newChatMessagesCount.next(currentMessagesCount + newMessageCount);
+      this.messageService.add(`ChatService: ${newMessageCount} new message${newMessageCount > 1 ? 's' : ''}.`);
 
-          currentChatMessages.push(...chatMessages);
-          this.chatMessages.next(currentChatMessages);
-        }
-      });
+      currentChatMessages.push(...chatMessages);
+      this.chatMessages.next(currentChatMessages);
+    }
   }
 
   async checkForUpdatedMessages(): Promise<void> {
@@ -79,11 +76,11 @@ export class ChatService {
   }
 
   async sendChatMessage(chatMessage: SendChat): Promise<void> {
-    if (chatMessage.Content) {
+    if (!chatMessage.Content) {
       this.messageService.add(`ChatService: Please enter a message before posting.`, 'error');
       return;
     }
-    else if (chatMessage.Who === "" || chatMessage.Who === null || chatMessage.Who === undefined) {
+    else if (!chatMessage.Who) {
       this.messageService.add(`ChatService: Unknown message sender.`, 'error');
       return;
     }
@@ -91,7 +88,7 @@ export class ChatService {
     this.messageService.add('ChatService: Posting chat message.');
 
     const currentChatMessages = this.chatMessages.getValue();
-    const newId = Math.max(...currentChatMessages.map(msg => msg.Id)) + 1;
+    const newId = currentChatMessages.length === 0 ? 1 : Math.max(...currentChatMessages.map(msg => msg.Id)) + 1;
     chatMessage.Id = newId;
 
     const chatMessageResult = await this.chatRepo.postMessage(chatMessage);
@@ -105,44 +102,40 @@ export class ChatService {
     }
   }
 
-  softDeleteChatMessage(id: number, deleteFlag: boolean): void {
+  async softDeleteChatMessage(id: number, deleteFlag: boolean): Promise<void> {
     this.messageService.add(`ChatService: Marking chat message id ${id} as ${deleteFlag ? 'deleted' : 'not deleted'}.`);
 
     const currentChatMessages = this.chatMessages.getValue();
     const currentChatMessage = currentChatMessages.find(chat => chat.Id === id);
 
-    this.chatRepo.softDeleteMessage(currentChatMessage, deleteFlag).subscribe(
-      (chatMessage: RecieveChat) => {
-        if (chatMessage !== undefined && chatMessage !== null) {
-          Object.assign(currentChatMessage, chatMessage);
-          this.messageService.add(`ChatService: Message id ${id} marked: ${deleteFlag ? 'deleted' : 'not deleted'}.`);
-        }
-        else
-          this.messageService.add(`ChatService: Message id ${id} delete flag could not be updated.`, 'error');
+    const chatMessage = await this.chatRepo.softDeleteMessage(currentChatMessage, deleteFlag)
 
-        this.chatMessages.next(currentChatMessages);
-      }
-    );
+    if (chatMessage !== undefined && chatMessage !== null) {
+      Object.assign(currentChatMessage, chatMessage);
+      this.messageService.add(`ChatService: Message id ${id} marked: ${deleteFlag ? 'deleted' : 'not deleted'}.`);
+    }
+    else
+      this.messageService.add(`ChatService: Message id ${id} delete flag could not be updated.`, 'error');
+
+    this.chatMessages.next(currentChatMessages);
   }
 
 
-  hardDeleteChatMessage(id: number): void {
+  async hardDeleteChatMessage(id: number): Promise<void> {
     this.messageService.add(`ChatService: Deleting message id ${id}.`);
 
     let currentChatMessages = this.chatMessages.getValue();
     const currentChatMessage = currentChatMessages.find(chat => chat.Id === id);
 
-    this.chatRepo.hardDeleteMessage(currentChatMessage).subscribe(
-      (chatMessage: Boolean) => {
-        if (chatMessage) {
-          this.messageService.add(`ChatService: Message id ${id} deleted.`);
-          currentChatMessages = currentChatMessages.filter((chat) => chat.Id !== id);
-        }
-        else
-          this.messageService.add(`ChatService: Could not delete message id ${id}.`, 'error');
+    let chatMessage = await this.chatRepo.hardDeleteMessage(currentChatMessage)
 
-        this.chatMessages.next(currentChatMessages);
-      }
-    );
+    if (chatMessage) {
+      this.messageService.add(`ChatService: Message id ${id} deleted.`);
+      currentChatMessages = currentChatMessages.filter((chat) => chat.Id !== id);
+    }
+    else
+      this.messageService.add(`ChatService: Could not delete message id ${id}.`, 'error');
+
+    this.chatMessages.next(currentChatMessages);
   }
 }

@@ -23,50 +23,44 @@ export class ChatRepo {
     return from(this.fileApi.listFilesAndFoldersAsync());
   }
 
-  getLastTen(): Observable<RecieveChat[]> {
-    const asyncChats = async () => {
-      let files = await this.fileApi.listFilesAndFoldersAsync();
-      if (files === null) return null;
+  async getLastTen(): Promise<RecieveChat[]> {
+    let files = await this.fileApi.listFilesAndFoldersAsync();
+    if (files === null) return null;
 
-      files = this.getChatsFromEnd(this.sortByName(files), 10);
+    files = this.getChatsFromEnd(this.sortByName(files), 10);
 
-      const contents: RecieveChat[] = [];
-      const promises = files.map(async (file) => {
-        const content = await this.fileApi.getFileAsync(file.name);
-        contents.push(this.parseChatJson(content));
-      });
-      await Promise.all(promises);
-      return contents;
-    }
-    return from(asyncChats());
+    const contents: RecieveChat[] = [];
+    const promises = files.map(async (file) => {
+      const content = await this.fileApi.getFileAsync(file.name);
+      contents.push(this.parseChatJson(JSON.parse(content).content));
+    });
+    await Promise.all(promises);
+    return contents;
   }
 
-  getNewChatMessages(lastId: number): Observable<RecieveChat[]> {
-    if (lastId === null) return this.getLastTen();
+  async getNewChatMessages(lastId: number): Promise<RecieveChat[]> {
+    if (lastId === null)
+      return await this.getLastTen();
 
-    const asyncChats = (async () => {
-      let files = await this.fileApi.listFilesAndFoldersAsync()
-      if (files === null) return null;
+    let files = await this.fileApi.listFilesAndFoldersAsync()
+    if (files === null) return null;
+    else files = this.sortByName(files);
 
-      files = this.sortByName(files);
-
-      const contents: RecieveChat[] = [];
-      const promises = files.map(async (file) => {
-        if (this.idExtractor(file.name) > lastId) {
-          const content = await this.fileApi.getFileAsync(file.name);
-          contents.push(this.parseChatJson(content));
-        }
-      });
-      await Promise.all(promises);
-      return contents;
+    const contents: RecieveChat[] = [];
+    const promises = files.map(async (file) => {
+      if (this.idExtractor(file.name) > lastId) {
+        const content = await this.fileApi.getFileAsync(file.name);
+        contents.push(this.parseChatJson(JSON.parse(content).content));
+      }
     });
-    return from(asyncChats());
+    await Promise.all(promises);
+    return contents;
   }
 
   async checkForUpdatedMessage(id: number): Promise<RecieveChat> {
     let file = await this.fileApi.getFileAsync(`id_${id}.json`);
     if (!file) return null;
-    return this.parseChatJson(file);
+    return this.parseChatJson(JSON.parse(file).content);
   }
 
   async postMessage(message: SendChat): Promise<RecieveChat> {
@@ -80,7 +74,7 @@ export class ChatRepo {
 
     const rawCommitBody = JSON.stringify({
       "message": `Api commit by ${message.Who} at ${new Date().toLocaleString()}`,
-      "content": btoa(btoa(JSON.stringify(newMessage)))
+      "content": JSON.stringify(newMessage)
     })
 
     const result = await this.fileApi.newFileAsync(`id_${message.Id}.json`, rawCommitBody);
@@ -90,35 +84,29 @@ export class ChatRepo {
     return newMessage;
   }
 
-  softDeleteMessage(message: RecieveChat, deleteFlag: boolean): Observable<RecieveChat> {
-    const asyncChats = async () => {
+  async softDeleteMessage(message: RecieveChat, deleteFlag: boolean): Promise<RecieveChat> {
       const newMessage = <SendChat>message;
       newMessage.Deleted = deleteFlag ? 'true' : 'false';
 
       const rawCommitBody = JSON.stringify({
         'message': `Api commit by ${newMessage.Who} at ${new Date().toLocaleString()}`,
-        'content': btoa(btoa(JSON.stringify(newMessage))),
+        'content': JSON.stringify(newMessage),
         'sha': message.Sha
       });
 
       const result = await this.fileApi.editFileAsync(`id_${message.Id}.json`, rawCommitBody);
       message.Sha = result.sha;
       return message;
-    }
-    return from(asyncChats());
   }
 
-  hardDeleteMessage(message: RecieveChat): Observable<Boolean> {
-    const asyncChats = async () => {
+  async hardDeleteMessage(message: RecieveChat): Promise<Boolean> {
       const result = await this.fileApi.deleteFileAsync(`id_${message.Id}.json`);
       return result;
-    }
-    return from(asyncChats());
   }
 
   // helpers
   parseChatJson(content: string): RecieveChat {
-    const chatObject = JSON.parse(atob(content));
+    const chatObject = JSON.parse(content);
     const recieveChat = new RecieveChat();
     recieveChat.Content = chatObject.Content;
     recieveChat.Deleted = chatObject.Deleted;

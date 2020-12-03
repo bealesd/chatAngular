@@ -67,7 +67,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.chatService.getChatMessages()
 
     this.subscriptions.push(interval(this.secsToMilliSecs(20)).subscribe(x => this.chatService.getNewChatMessages()));
-    this.subscriptions.push(interval(this.minsToMilliSecs(1)).subscribe(x => this.chatService.checkForUpdatedMessages()));
+    this.subscriptions.push(interval(this.minsToMilliSecs(0.5)).subscribe(x => this.chatService.checkForUpdatedMessages()));
 
     this.registerTabSwitch();
 
