@@ -127,7 +127,7 @@ export class FileApi {
     this.messageService.add(`FileApi: Getting file ${name}.`, 'info');
     return new Promise(async (res, rej) => {
       let files = await this.listFilesAndFoldersAsync();
-      if (!files) res(null);
+      if (!files || files.length == 0) res(null);
 
       let file = files.find((f) => f.name === name);
       if (!file) rej(null);

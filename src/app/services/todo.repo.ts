@@ -1,148 +1,93 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 
-import { GitHubMetaData } from '../models/gitHubMetaData'
-import { RestHelper } from '../helpers/rest-helper';
 import { MessageService } from '../services/message.service';
+import { FileApi, FileApiFactory } from './file-api';
+import { NotepadMetadata } from '../models/notepad-models';
+import { Todo } from '../models/todo.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TodoRepo {
-  private baseMessagesUrl = 'https://api.github.com/repos/bealesd/todoStore/contents';
-  public todoList = [];
-  public sha = '';
+  public todoList: Todo[] = [];
+  fileApi: FileApi;
 
   constructor(
-    private http: HttpClient,
-    private restHelper: RestHelper,
-    private messageService: MessageService) {
+    private messageService: MessageService,
+    private fileApiFactory: FileApiFactory) {
+    this.fileApi = this.fileApiFactory.create();
+    this.fileApi.dir = '/todoStore';
   }
 
-  postTodoItemRest(todoItemList: {}[]): Observable<any> {
-    const postUrl = `${this.baseMessagesUrl}/todo.json`;
-
-    const rawCommitBody = JSON.stringify({
-      "message": `Api commit by todo list wesbite at ${new Date().toLocaleString()}`,
-      "content": btoa(btoa(JSON.stringify(todoItemList))),
-      'sha': this.sha
-    });
-
-    return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.restHelper.options());
+  async postTodoItemRest(todoItemList: {}[]): Promise<NotepadMetadata> {
+    return await this.fileApi.editFileAsync('todo.json', JSON.stringify(todoItemList))
   }
 
-  deleteItem(id): void {
+  async deleteItem(id): Promise<void> {
     this.messageService.add(`Deleting todo item: ${id}.`);
 
-    let todoList = this.todoList;
+    const todoList = this.todoList.filter(t => t.id !== id);
 
-    todoList = todoList.filter(t => t.id !== id);
-
-    this.postTodoItemRest(todoList).subscribe(
-      {
-        next: (calendarRecordsResult: any[]) => {
-          this.sha = (<any>calendarRecordsResult).content.sha;
-          this.todoList = todoList;
-
-          this.messageService.add(` • Deleted todo item for ${id}.`);
-        },
-        error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, `deleting todo item for ${id}.`, 'TodoRepo');
-        }
-      }
-    );
+    const result = await this.postTodoItemRest(todoList)
+    if (!result)
+      this.messageService.add(`TodoRepo: Failed to delete todo item for ${id}.`, 'error');
+    else {
+      this.todoList = todoList;
+      this.messageService.add(`TodoRepo: Deleted todo item for ${id}.`);
+    }
   }
 
-  updateItem(id, text, complete): void {
+  async updateItem(id, text, complete): Promise<void> {
     this.messageService.add(`Updating todo item: ${id}.`);
 
-    let todoList = this.todoList;
-
-    let item = this.todoList.find(t => t.id === id);
+    const item = this.todoList.find(t => t.id === id);
+    const oldText = item.text;
+    const oldComplete = item.complete;
     item.text = text;
     item.complete = complete;
 
-    this.postTodoItemRest(todoList).subscribe(
-      {
-        next: (calendarRecordsResult: any[]) => {
-          this.sha = (<any>calendarRecordsResult).content.sha;
-          this.todoList = todoList;
-
-          this.messageService.add(` • Updated todo item for ${id}.`);
-        },
-        error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, `updating todo item for ${id}.`, 'TodoRepo');
-        }
-      }
-    );
+    const result = await this.postTodoItemRest(this.todoList)
+    if (!result) {
+      item.text = oldText;
+      item.complete = oldComplete;
+      this.messageService.add(`TodoRepo: Failed to update todo item for ${id}.`, 'error');
+    }
+    else
+      this.messageService.add(`TodoRepo: Updated todo item for ${id}.`);
   }
 
-  postNewItem(text): void {
+  async postNewItem(text): Promise<void> {
     this.messageService.add(`Posting todo item: ${text}.`);
 
-    let todoList = this.todoList;
-
-    const ids = todoList.map(t => t.id)
+    const ids = this.todoList.map(t => t.id);
     let id = 1
     if (ids.length > 0)
-      id = Math.max(...Object.values(todoList.map(t => t.id))) + 1;
+      id = Math.max(...Object.values(this.todoList.map(t => t.id))) + 1;
 
-    todoList.push({ id: id, text: text, complete: false });
+    this.todoList.push({ id: id, text: text, complete: false, datetime: new Date()});
 
-    this.postTodoItemRest(todoList).subscribe(
-      {
-        next: (calendarRecordsResult: any[]) => {
-          this.sha = (<any>calendarRecordsResult).content.sha;
-          this.todoList = todoList;
-
-          this.messageService.add(` • Posted todo item for ${id} with text ${text}.`);
-        },
-        error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, `posting todo item for ${id} with text ${text}.`, 'TodoRepo');
-        }
-      }
-    );
+    let isPosted = await this.postTodoItemRest(this.todoList);
+    if (!isPosted) {
+      this.todoList = this.todoList.filter(item => item.id !== id);
+      this.messageService.add(`TodoRepo: Failed to post todo item for ${id}.`, 'error');
+    }
+    else
+      this.messageService.add(`TodoRepo: Posted todo item for ${id} with text ${text}.`);
   }
 
-  getTodoList(): void {
+  async getTodoList(): Promise<void> {
     this.messageService.add(`Getting todo list.`);
 
-    const getUrl = `${this.baseMessagesUrl}/todo.json`;
-
-    let todoList = [];
-    this.http.get<[]>(this.restHelper.removeUrlParams(getUrl), this.restHelper.options())
-      .subscribe(
-        {
-          next: (todoGitHub: any) => {
-            JSON.parse(atob(atob(todoGitHub.content))).forEach(item => todoList.push(item));
-            this.todoList = todoList;
-            this.sha = todoGitHub.sha;
-
-            this.messageService.add(` • Got ${todoList.length} todo items.`);
-          },
-          error: (err: any) => {
-            this.todoList = todoList;
-
-            if (err.status === 404 && err.statusText.toLowerCase() === 'not found' && err.error.message === 'This repository is empty.') {
-              this.messageService.add(` • Creating file: todo.json.`);
-              this.postTodoItemRest([]).subscribe(
-                {
-                  next: (calendarRecordsResult: any[]) => {
-                    this.sha = (<any>calendarRecordsResult).content.sha;
-                    this.messageService.add(` • Created todo.json.`);
-                  },
-                  error: (err: any) => {
-                    this.restHelper.errorMessageHandler(err, `creating todo.json.`, 'TodoRepo');
-                  }
-                }
-              );
-            }
-            else
-              this.restHelper.errorMessageHandler(err, 'getting todo list', 'TodoRepo');
-          }
-        }
-      );
+    let file = await this.fileApi.getFileAsync('todo.json');
+    if (file) {
+      const todoList: Todo[] = [];
+      JSON.parse(file).forEach(item => todoList.push(item));
+      this.todoList = todoList;
+      this.messageService.add(`TodoRepo: Got ${todoList.length} todo items.`);
+    }
+    else {
+      this.messageService.add(`TodoRepo: failed to get todo items.`, 'error');
+    }
   }
 
 }

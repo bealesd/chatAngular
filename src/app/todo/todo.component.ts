@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Todo } from '../models/todo.model';
 import { MenuService } from '../services/menu.service';
 import { TodoRepo } from '../services/todo.repo'
 
@@ -10,7 +11,8 @@ import { TodoRepo } from '../services/todo.repo'
 
 export class TodoComponent implements OnInit {
   get sortedTodoList() {
-    return this.todoRepo.todoList.sort((a, b) => {
+    //TODO sought by date
+    return this.todoRepo.todoList.sort((a:Todo, b:Todo) => {
       return a.id - b.id;
     });
   }
