@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { MessageService } from '../services/message.service';
 import { ChatRepo } from '../services/chat.repo';
 
-import { Chat } from '../models/send-chat.model';
+import { Chat } from '../models/chat.model';
 import { CryptoService } from './crypto.service';
 
 @Injectable({

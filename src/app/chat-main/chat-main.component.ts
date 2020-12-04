@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { interval, Subscription } from 'rxjs';
 
-import { Chat } from '../models/send-chat.model';
+import { Chat } from '../models/chat.model';
 
 import { ChatService } from '../services/chat.service';
 import { MessageService } from '../services/message.service';
@@ -50,6 +50,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    //TODO remove behaviour subject
     this.chatService.chatMessages.subscribe(chatMessages => {
       this.chatMessages = chatMessages;
     })
@@ -60,10 +61,10 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.newChatMessagesCount = 0;
 
-    this.chatService.getChatMessages()
+    this.chatService.getChatMessages();
 
     this.subscriptions.push(interval(this.secsToMilliSecs(20)).subscribe(x => this.chatService.getNewChatMessages()));
-    this.subscriptions.push(interval(this.minsToMilliSecs(0.5)).subscribe(x => this.chatService.checkForUpdatedMessages()));
+    this.subscriptions.push(interval(this.minsToMilliSecs(5)).subscribe(x => this.chatService.checkForUpdatedMessages()));
 
     this.registerTabSwitch();
 

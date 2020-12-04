@@ -1,8 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-import { Chat } from '../models/send-chat.model';
+import { Chat } from '../models/chat.model';
 import { ChatService } from '../services/chat.service';
-import { EventService } from '../services/event.service';
 import { DialogBoxService } from '../services/dialog-box.service';
 
 @Component({
@@ -13,17 +12,11 @@ import { DialogBoxService } from '../services/dialog-box.service';
 export class ChatDetailComponent implements OnInit {
   @Input() recieveChat: Chat;
   date: Date;
-  chatMessages: Chat[];
   deleted: boolean;
   content: string;
-  eventService: EventService;
   dialogBoxService: DialogBoxService;
 
-  constructor(private chatService: ChatService) {
-    this.chatService.chatMessages.subscribe(val => {
-      this.chatMessages = val;
-    });
-  }
+  constructor(private chatService: ChatService) {  }
 
   public parseDateTime() {
     this.date = new Date(this.recieveChat.Datetime);
@@ -32,16 +25,11 @@ export class ChatDetailComponent implements OnInit {
   ngOnInit(): void {
     this.parseDateTime();
     this.deleted = this.recieveChat.Deleted === 'true';
-    this.eventService = EventService.Instance;
     this.dialogBoxService = new DialogBoxService();
   }
 
   ngDoCheck(): void {
     this.deleted = this.recieveChat.Deleted === 'true';
-  }
-
-  callback() {
-    alert('hi');
   }
 
   deleteMessage(recieveChat: Chat) {

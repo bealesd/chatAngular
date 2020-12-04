@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, } from 'rxjs';
 
-import { Chat } from '../models/send-chat.model';
+import { Chat } from '../models/chat.model';
 
 import { FileApiFactory, FileApi } from './file-api';
 import { NotepadMetadata } from '../models/notepad-models';
