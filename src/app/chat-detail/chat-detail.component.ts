@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-import { RecieveChat } from '../models/recieve-chat.model';
+import { Chat } from '../models/send-chat.model';
 import { ChatService } from '../services/chat.service';
 import { EventService } from '../services/event.service';
 import { DialogBoxService } from '../services/dialog-box.service';
@@ -11,9 +11,9 @@ import { DialogBoxService } from '../services/dialog-box.service';
   styleUrls: ['./chat-detail.component.css']
 })
 export class ChatDetailComponent implements OnInit {
-  @Input() recieveChat: RecieveChat;
+  @Input() recieveChat: Chat;
   date: Date;
-  chatMessages: RecieveChat[];
+  chatMessages: Chat[];
   deleted: boolean;
   content: string;
   eventService: EventService;
@@ -44,7 +44,7 @@ export class ChatDetailComponent implements OnInit {
     alert('hi');
   }
 
-  deleteMessage(recieveChat: RecieveChat) {
+  deleteMessage(recieveChat: Chat) {
     this.dialogBoxService.register(
       `Delete Id ${recieveChat.Id}?`,
       'Soft',
@@ -55,7 +55,7 @@ export class ChatDetailComponent implements OnInit {
       this.dialogBoxService.open();
   }
 
-  undoDeleteMessage(recieveChat: RecieveChat) {
+  undoDeleteMessage(recieveChat: Chat) {
     if (confirm('Undo soft delete?')) {
       this.chatService.softDeleteChatMessage(recieveChat.Id, false);
     }

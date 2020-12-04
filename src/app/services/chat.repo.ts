@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, } from 'rxjs';
 
-import { RecieveChat } from '../models/recieve-chat.model';
-import { SendChat } from '../models/send-chat.model';
+import { Chat } from '../models/send-chat.model';
 
 import { FileApiFactory, FileApi } from './file-api';
 import { NotepadMetadata } from '../models/notepad-models';
@@ -23,22 +22,22 @@ export class ChatRepo {
     return from(this.fileApi.listFilesAndFoldersAsync());
   }
 
-  async getLastTen(): Promise<RecieveChat[]> {
+  async getLastTen(): Promise<Chat[]> {
     let files = await this.fileApi.listFilesAndFoldersAsync();
     if (files === null) return null;
 
     files = this.getChatsFromEnd(this.sortByName(files), 10);
 
-    const contents: RecieveChat[] = [];
+    const contents: Chat[] = [];
     const promises = files.map(async (file) => {
       const content = await this.fileApi.getFileAsync(file.name);
-      contents.push(this.parseChatJson(JSON.parse(content).content));
+      contents.push(this.parseChatJson(content));
     });
     await Promise.all(promises);
     return contents;
   }
 
-  async getNewChatMessages(lastId: number): Promise<RecieveChat[]> {
+  async getNewChatMessages(lastId: number): Promise<Chat[]> {
     if (lastId === null)
       return await this.getLastTen();
 
@@ -46,74 +45,45 @@ export class ChatRepo {
     if (files === null) return null;
     else files = this.sortByName(files);
 
-    const contents: RecieveChat[] = [];
+    const contents: Chat[] = [];
     const promises = files.map(async (file) => {
       if (this.idExtractor(file.name) > lastId) {
         const content = await this.fileApi.getFileAsync(file.name);
-        contents.push(this.parseChatJson(JSON.parse(content).content));
+        contents.push(this.parseChatJson(content));
       }
     });
     await Promise.all(promises);
     return contents;
   }
 
-  async checkForUpdatedMessage(id: number): Promise<RecieveChat> {
+  async checkForUpdatedMessage(id: number): Promise<Chat> {
     let file = await this.fileApi.getFileAsync(`id_${id}.json`);
     if (!file) return null;
-    return this.parseChatJson(JSON.parse(file).content);
+    return this.parseChatJson(file);
   }
 
-  async postMessage(message: SendChat): Promise<RecieveChat> {
-    const newMessage: RecieveChat = {
-      Who: message.Who,
-      Content: message.Content,
-      Deleted: 'false',
-      Id: message.Id,
-      Datetime: new Date().getTime()
-    }
-
-    const rawCommitBody = JSON.stringify({
-      "message": `Api commit by ${message.Who} at ${new Date().toLocaleString()}`,
-      "content": JSON.stringify(newMessage)
-    })
-
-    const result = await this.fileApi.newFileAsync(`id_${message.Id}.json`, rawCommitBody);
-    if (!result) return null;
-
-    newMessage.Sha = result.sha;
-    return newMessage;
+  async postMessage(message: Chat): Promise<NotepadMetadata> {
+    return await this.fileApi.newFileAsync(`id_${message.Id}.json`, JSON.stringify(message));
   }
 
-  async softDeleteMessage(message: RecieveChat, deleteFlag: boolean): Promise<RecieveChat> {
-      const newMessage = <SendChat>message;
-      newMessage.Deleted = deleteFlag ? 'true' : 'false';
-
-      const rawCommitBody = JSON.stringify({
-        'message': `Api commit by ${newMessage.Who} at ${new Date().toLocaleString()}`,
-        'content': JSON.stringify(newMessage),
-        'sha': message.Sha
-      });
-
-      const result = await this.fileApi.editFileAsync(`id_${message.Id}.json`, rawCommitBody);
-      message.Sha = result.sha;
-      return message;
+  async softDeleteMessage(message: Chat): Promise<NotepadMetadata> {
+    return await this.fileApi.editFileAsync(`id_${message.Id}.json`, JSON.stringify(message));
   }
 
-  async hardDeleteMessage(message: RecieveChat): Promise<Boolean> {
-      const result = await this.fileApi.deleteFileAsync(`id_${message.Id}.json`);
-      return result;
+  async hardDeleteMessage(message: Chat): Promise<Boolean> {
+    return await this.fileApi.deleteFileAsync(`id_${message.Id}.json`);
   }
 
   // helpers
-  parseChatJson(content: string): RecieveChat {
+  parseChatJson(content: string): Chat {
     const chatObject = JSON.parse(content);
-    const recieveChat = new RecieveChat();
-    recieveChat.Content = chatObject.Content;
-    recieveChat.Deleted = chatObject.Deleted;
-    recieveChat.Who = chatObject.Who;
-    recieveChat.Datetime = chatObject.Datetime;
-    recieveChat.Id = chatObject.Id;
-    return recieveChat;
+    const chat = new Chat();
+    chat.Content = chatObject.Content;
+    chat.Deleted = chatObject.Deleted;
+    chat.Who = chatObject.Who;
+    chat.Datetime = chatObject.Datetime;
+    chat.Id = chatObject.Id;
+    return chat;
   }
 
   idExtractor = (fileName: string): number =>

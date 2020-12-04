@@ -9,6 +9,7 @@ import { NotepadRepo, State } from '../services/notepad.repo'
   templateUrl: './notepad.component.html',
   styleUrls: ['./notepad.component.css']
 })
+//TODO when leaving page in a pad, it will mess up
 export class NotepadComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   disablePage = false;

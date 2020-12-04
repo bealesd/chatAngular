@@ -1,4 +1,4 @@
-export class SendChat{
+export class Chat{
   public Id : number;
   public Who : string;
   public Datetime : number;

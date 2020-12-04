@@ -2,14 +2,12 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { interval, Subscription } from 'rxjs';
 
-import { RecieveChat } from '../models/recieve-chat.model';
-import { SendChat } from '../models/send-chat.model';
+import { Chat } from '../models/send-chat.model';
 
 import { ChatService } from '../services/chat.service';
 import { MessageService } from '../services/message.service';
 
 import { MenuService } from '../services/menu.service';
-import { CryptoService } from '../services/crypto.service';
 
 @Component({
   selector: 'app-chat',
@@ -19,8 +17,8 @@ import { CryptoService } from '../services/crypto.service';
 export class ChatComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
 
-  chatMessages: RecieveChat[];
-  chatForm: SendChat;
+  chatMessages: Chat[];
+  chatForm: Chat;
   content: string;
   rows: number;
   messageContainer: string;
@@ -40,11 +38,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   ]
   set = 'twitter';
 
-
   constructor(
     private chatService: ChatService,
     private messageService: MessageService,
-    private cryptoService: CryptoService,
     private menuService: MenuService
   ) {
     this.content = '';
@@ -96,15 +92,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   postMessage(event) {
     event.srcElement.parentElement.querySelector('input').value = "";
 
-    if (this.content === "" || this.content === null || this.content === undefined) {
-      this.messageService.add(`Please enter a message before posting.`);
-      return;
-    }
-
-    const newMessage = <SendChat>{ Who: this.cryptoService.username, Content: this.content }
-
-    this.chatService.sendChatMessage(newMessage);
-
+    if (this.content === "" || this.content === null || this.content === undefined) 
+      return this.messageService.add(`Please enter a message before posting.`);
+    
+    this.chatService.sendChatMessage(this.content);
     this.content = "";
     event.srcElement.parentElement.querySelector('input').focus();
   }
