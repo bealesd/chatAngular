@@ -1,68 +1,45 @@
 import { CalendarRecord } from './../models/calendar-record.model';
 import { CalendarRecordRest } from './../models/calendar-record-rest.model';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 
-import { GitHubMetaData } from '../models/gitHubMetaData'
-import { RestHelper } from '../helpers/rest-helper';
 import { MessageService } from '../services/message.service';
+import { FileApi, FileApiFactory } from './file-api';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CalendarRepo {
-  private baseMessagesUrl = 'https://api.github.com/repos/bealesd/calendarStore/contents';
   public calendarRecordRest: CalendarRecordRest = new CalendarRecordRest();
+  fileApi: FileApi;
 
   constructor(
-    private http: HttpClient,
-    private restHelper: RestHelper,
-    private messageService: MessageService) {
+    private messageService: MessageService,
+    private fileApiFactory: FileApiFactory) {
+    this.fileApi = this.fileApiFactory.create();
+    this.fileApi.dir = '/calendarStore';
   }
 
-  getCalendarRecordsForMonthRest(year: number, month: number): Observable<any> {
-    const getUrl = `${this.baseMessagesUrl}/${year}-${month}.json`;
-    return this.http.get<[]>(this.restHelper.removeUrlParams(getUrl), this.restHelper.options());
-  }
-
-  postCalendarRecordsRest(calendarRecords: CalendarRecordRest): Observable<any> {
-    const postUrl = `${this.baseMessagesUrl}/${calendarRecords.year}-${calendarRecords.month}.json`;
-
-    const rawCommitBody = JSON.stringify({
-      "message": `Api commit by calendar record wesbite at ${new Date().toLocaleString()}`,
-      "content": btoa(btoa(calendarRecords.toJsonString())),
-      'sha': calendarRecords.sha
-    });
-
-    return this.http.put<{ content: GitHubMetaData }>(postUrl, rawCommitBody, this.restHelper.options());
-  }
-
-  deleteCalendarRecord(id: string): void {
-    this.messageService.add(`Deleting calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}, ${id}.`);
-
+  async deleteCalendarRecord(id: string): Promise<void> {
+    this.messageService.add(`CalendarRepo: Deleting calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}, ${id}.`);
+    const deepCopyRecords = JSON.parse(JSON.stringify(this.calendarRecordRest.records));
     const recordsToKeep = this.calendarRecordRest.records.filter(r => r.id !== id);
-    const deepCopyRecords = JSON.parse(JSON.stringify(recordsToKeep));
     this.calendarRecordRest.records = recordsToKeep;
+    const name = `${this.calendarRecordRest.year}-${this.calendarRecordRest.month}.json`;
 
-    this.postCalendarRecordsRest(this.calendarRecordRest).subscribe(
-      {
-        next: (calendarRecordsResult) => {
-          this.calendarRecordRest.sha = (<any>calendarRecordsResult).content.sha;
-          this.messageService.add(` • Deleted calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}, ${id}.`);
-        },
-        error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, `deleting calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}, ${id}.`, 'CalendarRepo');
-          this.calendarRecordRest.records = deepCopyRecords;
-        }
-      }
-    );
+    const result = await this.fileApi.editFileAsync(name, btoa(this.calendarRecordRest.toJsonString()));
+    if (!result) {
+      this.calendarRecordRest.records = deepCopyRecords;
+      this.messageService.add(`CalendarRepo: Deleted calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}, ${id}.`, 'error');
+    }
+    else 
+      this.messageService.add(`CalendarRepo: Deleted calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}, ${id}.`);
   }
 
-  postCalendarRecord(record: CalendarRecord): void {
+  async postCalendarRecord(record: CalendarRecord): Promise<void> {
     const isUpdate = this.calendarRecordRest.records.find(r => r.id === record.id) !== undefined;
+    let recordTopdate;
     if (isUpdate) {
-      let recordTopdate = this.calendarRecordRest.records.find(r => r.id === record.id);
+      recordTopdate = this.calendarRecordRest.records.find(r => r.id === record.id);
       recordTopdate.what = record.what;
       recordTopdate.day = record.day;
       recordTopdate.hour = record.hour;
@@ -72,44 +49,43 @@ export class CalendarRepo {
       this.calendarRecordRest.records.push(record);
 
     this.messageService.add(`Posting calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}.`);
-    this.postCalendarRecordsRest(this.calendarRecordRest).subscribe(
-      {
-        next: (calendarRecordsResult: any[]) => {
-          this.calendarRecordRest.sha = (<any>calendarRecordsResult).content.sha;
 
-          this.messageService.add(` • Posted calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}.`);
-        },
-        error: (err: any) => {
-          this.restHelper.errorMessageHandler(err, `posting calendar records for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}. Record: ${JSON.stringify(record)}.`, 'CalendarRepo');
-        }
-      }
-    );
+    const name = `${this.calendarRecordRest.year}-${this.calendarRecordRest.month}.json`;
+    if (isUpdate) {
+      let result = await this.fileApi.editFileAsync(name, btoa(this.calendarRecordRest.toJsonString()));
+      if (!result) 
+        this.messageService.add(`CalendarRepo: posting calendar records for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}. Record: ${JSON.stringify(record)}.`, 'error');
+      else
+        this.messageService.add(` • Posted calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}.`);
+    }
+    else {
+      let result = await this.fileApi.newFileAsync(name, btoa(this.calendarRecordRest.toJsonString()));
+      if (!result) 
+        this.messageService.add(`CalendarRepo: posting calendar records for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}. Record: ${JSON.stringify(record)}.`, 'error');
+      else 
+        this.messageService.add(` • Posted calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}.`);
+    }
   }
 
-  getCalendarRecords(year: number, month: number): void {
-    this.messageService.add(`Getting calendar record for ${year}-${month + 1}.`);
+  async getCalendarRecords(year: number, month: number): Promise<void> {
+    this.messageService.add(`CalendarRepo: Getting calendar record for ${year}-${month + 1}.`);
     this.calendarRecordRest.year = year;
     this.calendarRecordRest.month = month;
     this.calendarRecordRest.records = [];
 
-    this.getCalendarRecordsForMonthRest(year, month).subscribe(
-      {
-        next: (calendarRecordGitHub: any) => {
-          JSON.parse(atob(atob(calendarRecordGitHub.content))).forEach(rec => {
-            this.calendarRecordRest.records.push(new CalendarRecord(rec.id, rec.what, rec.day, rec.hour, rec.minute));
-          });
+    const calendarRecordGitHub = await this.fileApi.getFileAsync(`${year}-${month}.json`);
 
-          this.calendarRecordRest.sha = calendarRecordGitHub.sha;
+    if (!calendarRecordGitHub) {
+      this.calendarRecordRest.records = [];
+      this.messageService.add('CalendarRepo: getting calendar records', 'error');
+    }
+    else {
+      JSON.parse(atob(calendarRecordGitHub)).forEach(rec => {
+        this.calendarRecordRest.records.push(new CalendarRecord(rec.id, rec.what, rec.day, rec.hour, rec.minute));
+      });
 
-          this.messageService.add(` • Got ${this.calendarRecordRest.records.length} calendar records.`);
-        },
-        error: (err: any) => {
-          this.calendarRecordRest.records = [];
-
-          this.restHelper.errorMessageHandler(err, 'getting calendar records', 'CalendarRepo');
-        }
-      }
-    );
+      this.messageService.add(`CalendarRepo: Got ${this.calendarRecordRest.records.length} calendar records.`);
+    }
   }
 
 }

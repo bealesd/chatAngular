@@ -3,13 +3,14 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MenuService } from '../services/menu.service';
 import { NotepadRepo, State } from '../services/notepad.repo'
+import { ɵINTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS } from '@angular/platform-browser-dynamic';
 
 @Component({
   selector: 'app-notepad',
   templateUrl: './notepad.component.html',
   styleUrls: ['./notepad.component.css']
 })
-//TODO when leaving page in a pad, it will mess up
+
 export class NotepadComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   disablePage = false;
@@ -42,39 +43,37 @@ export class NotepadComponent implements OnInit, OnDestroy {
       this.disablePage = false;
       this.highlightedRow = null;
 
-      //TODO this should only be done on state.get or state.save
-
-      if(lastState === State.GotNotepadListing){
+      if (lastState === State.GotNotepadListing) {
         this.notepadIsOpen = false;
         this.disableNotebookMenus();
         this.notepadRepo.currentNotepadKey = '';
       }
-      else if(lastState === State.Error){
+      else if (lastState === State.Error) {
         this.notepadIsOpen = false;
         this.disableNotebookMenus();
         this.notepadRepo.currentNotepadKey = '';
       }
-      else if(lastState === State.DeletedNotepad){
+      else if (lastState === State.DeletedNotepad) {
         this.notepadIsOpen = false;
         this.disableNotebookMenus();
         this.notepadRepo.currentNotepadKey = '';
       }
-      else if(lastState === State.RenamedNotepad){
+      else if (lastState === State.RenamedNotepad) {
         this.notepadIsOpen = false;
         this.disableNotebookMenus();
         this.notepadRepo.currentNotepadKey = '';
       }
-      else if(lastState === State.CreatedNotepad){
+      else if (lastState === State.CreatedNotepad) {
         this.notepadIsOpen = false;
         this.disableNotebookMenus();
         this.notepadRepo.currentNotepadKey = '';
       }
-      else if(lastState === undefined){
+      else if (lastState === undefined) {
         this.notepadIsOpen = false;
         this.disableNotebookMenus();
         this.notepadRepo.currentNotepadKey = '';
       }
-      else if(lastState === State.GotNotepad){
+      else if (lastState === State.GotNotepad) {
         this.notepadIsOpen = true;
         this.originalNotepadText = this.currentNotepad.content;
         this.resetNotepadInput();
@@ -83,7 +82,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
         this.menuService.enableMenuItem('delete-click', () => { this.deleteNotepad(); this.menuService.hideMenu(); });
         this.menuService.enableMenuItem('undo-click', () => { this.undoNotepadChanges(); this.menuService.hideMenu(); });
       }
-      else if(lastState === State.UpdatedNotepad){
+      else if (lastState === State.UpdatedNotepad) {
         this.notepadIsOpen = true;
         this.originalNotepadText = this.currentNotepad.content;
         this.resetNotepadInput();
@@ -101,6 +100,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe());
     this.disableNotebookMenus();
+    if (this.notepadIsOpen) this.exitNotepad();
   }
 
   getFileType(name) {
@@ -195,9 +195,9 @@ export class NotepadComponent implements OnInit, OnDestroy {
   }
 
   saveNotepad() {
-    if(!this.notepadTextHasChanged){
-       alert('No changes!');
-       return;
+    if (!this.notepadTextHasChanged) {
+      alert('No changes!');
+      return;
     }
     this.disablePage = true;
     this.notepadRepo.updateNotepad(this.currentNotepad.metadata.name);

@@ -1,6 +1,7 @@
 import { Component, isDevMode } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Utilities } from './helpers/utilities-helper';
+import { SwUpdate } from '@angular/service-worker';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,8 @@ export class AppComponent {
 
   constructor(
     private router: Router,
-    private utilities: Utilities
+    private utilities: Utilities,
+    private readonly updates: SwUpdate
   ) {
     this.router.events.subscribe((ev) => {
       if (ev instanceof NavigationEnd) {
@@ -24,6 +26,19 @@ export class AppComponent {
         }
       }
     });
+
+    this.updates.available.subscribe(event => {
+      this.showAppUpdateAlert();
+    });
+  }
+
+  showAppUpdateAlert() {
+    if (confirm('App Update available')) {
+      this.doAppUpdate;
+    };
+  }
+  doAppUpdate() {
+    this.updates.activateUpdate().then(() => document.location.reload());
   }
 
 }

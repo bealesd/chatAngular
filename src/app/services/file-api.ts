@@ -130,7 +130,7 @@ export class FileApi {
       if (!files || files.length == 0) res(null);
 
       let file = files.find((f) => f.name === name);
-      if (!file) rej(null);
+      if (!file) res(null);
 
       this.http.get<any>(file.git_url, this.restHelper.options()).subscribe(
         {
@@ -208,7 +208,7 @@ export class FileApi {
       if (!files) res(null);
 
       let file = files.find((f) => f.name === name);
-      if (!file) rej(null);
+      if (!file) res(null);
 
       const rawCommitBody = JSON.stringify({
         'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
@@ -240,7 +240,7 @@ export class FileApi {
       if (!files) res(false);
 
       let file = files.find((f) => f.name === name);
-      if (!file) rej(null);
+      if (!file) res(null);
 
       const commit = JSON.stringify({
         "message": `Api delete commit by notepad repo at ${new Date().toLocaleString()}`,

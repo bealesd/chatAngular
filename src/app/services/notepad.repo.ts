@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { from } from 'rxjs';
 
 import { MessageService } from './message.service';
 import { Notepad, NotepadMetadata } from '../models/notepad-models';
@@ -50,112 +49,98 @@ export class NotepadRepo {
     return notepad;
   }
 
-  getAllNotepads(): void {
+  async getAllNotepads(): Promise<void> {
     this.messageService.add(`NotepadRepo: Getting all notepads.`);
-    from(this.fileAPi.listFilesAndFoldersAsync())
-      .subscribe((notepads: NotepadMetadata[]) => {
-        if (!notepads) {
-          this.messageService.add('NotepadRepo: Getting notepads.', 'error');
-          this.addState(State.Error);
-        }
-        else {
-          this.notepads = [];
-          notepads.forEach((notepadMetadata: NotepadMetadata) => {
-            const notepad = new Notepad();
-            notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
-            notepad.content = '';
-            this.notepads.push(notepad);
-          });
-          this.messageService.add(`NotepadRepo: Got all notepads.`);
-          this.addState(State.GotNotepadListing);
-        }
+    const notepads = await this.fileAPi.listFilesAndFoldersAsync();
+    if (!notepads) {
+      this.messageService.add('NotepadRepo: Getting notepads.', 'error');
+      this.addState(State.Error);
+    }
+    else {
+      this.notepads = [];
+      notepads.forEach((notepadMetadata: NotepadMetadata) => {
+        const notepad = new Notepad();
+        notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+        notepad.content = '';
+        this.notepads.push(notepad);
       });
+      this.messageService.add(`NotepadRepo: Got all notepads.`);
+      this.addState(State.GotNotepadListing);
+    }
   }
 
-  getNotepad(name: string) {
-    from(this.fileAPi.getFileAsync(name))
-      .subscribe((content: any) => {
-        if (content === null) {
-          this.messageService.add('NotepadRepo: Getting notepad.', 'error');
-          this.addState(State.Error);
-        }
-        else {
-          this.notepads.find(v => v.metadata.name === name).content = content;
-          this.currentNotepadKey = this.notepads.find(v => v.metadata.name === name).metadata.key;
-          this.currentNotepadName = this.notepads.find(v => v.metadata.name === name).metadata.name;
+  async getNotepad(name: string): Promise<void> {
+    const content = await this.fileAPi.getFileAsync(name)
+    if (content === null) {
+      this.messageService.add('NotepadRepo: Getting notepad.', 'error');
+      this.addState(State.Error);
+    }
+    else {
+      this.notepads.find(v => v.metadata.name === name).content = content;
+      this.currentNotepadKey = this.notepads.find(v => v.metadata.name === name).metadata.key;
+      this.currentNotepadName = this.notepads.find(v => v.metadata.name === name).metadata.name;
 
-          this.messageService.add(`NotepadRepo: Got notepad.`);
-          this.addState(State.GotNotepad);
-        }
-      });
+      this.messageService.add(`NotepadRepo: Got notepad.`);
+      this.addState(State.GotNotepad);
+    }
   }
 
-  updateNotepad(name: string): void {
+  async updateNotepad(name: string): Promise<void> {
     const notepad = this.findNotepad(name);
-    from(this.fileAPi.editFileAsync(name, notepad.content))
-      .subscribe((result: NotepadMetadata) => {
-        if (!result) {
-          this.messageService.add(`NotepadRepo: Posting notepad sha: ${notepad.metadata.sha}.`, 'error');
-          this.addState(State.Error);
-        }
-        else {
-          notepad.metadata.sha = result.sha;
-          this.currentNotepadKey = notepad.metadata.key;
+    const result = await this.fileAPi.editFileAsync(name, notepad.content)
+    if (!result) {
+      this.messageService.add(`NotepadRepo: Posting notepad sha: ${notepad.metadata.sha}.`, 'error');
+      this.addState(State.Error);
+    }
+    else {
+      notepad.metadata.sha = result.sha;
+      this.currentNotepadKey = notepad.metadata.key;
 
-          this.messageService.add(`NotepadRepo: Posted notepad sha: ${notepad.metadata.sha}.`);
-          this.addState(State.UpdatedNotepad);
-        }
-      });
+      this.messageService.add(`NotepadRepo: Posted notepad sha: ${notepad.metadata.sha}.`);
+      this.addState(State.UpdatedNotepad);
+    }
   }
 
-  postNotepad(text: string, name: string): void {
-    from(this.fileAPi.newFileAsync(name, text))
-      .subscribe(
-        (notepadMetadata: NotepadMetadata) => {
-          if (!notepadMetadata) {
-            this.messageService.add(`NotepadRepo: Posting notepad name: ${name}.`, 'error');
-            this.addState(State.Error);
-          }
-          else {
-            const notepad = new Notepad();
-            notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
-            notepad.content = text;
-            this.notepads.push(notepad);
+  async postNotepad(text: string, name: string): Promise<void> {
+    const notepadMetadata = await this.fileAPi.newFileAsync(name, text)
+    if (!notepadMetadata) {
+      this.messageService.add(`NotepadRepo: Posting notepad name: ${name}.`, 'error');
+      this.addState(State.Error);
+    }
+    else {
+      const notepad = new Notepad();
+      notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+      notepad.content = text;
+      this.notepads.push(notepad);
 
-            this.messageService.add(`NotepadRepo: Posted notepad name: ${notepad.metadata.name}.`);
-            this.addState(State.CreatedNotepad);
-          }
-        });
+      this.messageService.add(`NotepadRepo: Posted notepad name: ${notepad.metadata.name}.`);
+      this.addState(State.CreatedNotepad);
+    }
   }
 
-  deleteNotepad(name: string): void {
-    from(this.fileAPi.deleteFileAsync(name))
-      .subscribe((result: any) => {
-        if (!result) {
-          this.messageService.add(`NotepadRepo: Deleting notepad ${name}.`, 'error');
-          this.addState(State.Error);
-        }
-        else {
-          this.notepads = this.notepads.filter(n => n.metadata.name !== name);
-          this.messageService.add(`NotepadRepo: Notepad ${name} deleted.`);
-          this.addState(State.DeletedNotepad);
-        }
-      });
+  async deleteNotepad(name: string): Promise<void> {
+    const result = await this.fileAPi.deleteFileAsync(name);
+    if (!result) {
+      this.messageService.add(`NotepadRepo: Deleting notepad ${name}.`, 'error');
+      this.addState(State.Error);
+    }
+    else {
+      this.notepads = this.notepads.filter(n => n.metadata.name !== name);
+      this.messageService.add(`NotepadRepo: Notepad ${name} deleted.`);
+      this.addState(State.DeletedNotepad);
+    }
   }
 
-  renameNotepad(oldName: string, newName: string) {
-    from(this.fileAPi.renameFileAsync(oldName, newName))
-      .subscribe((notepadMetadata: NotepadMetadata) => {
-        if (!notepadMetadata) {
-          this.messageService.add('NotepadRepo: Getting notepads.', 'error');
-          this.addState(State.Error);
-        }
-        else {
-          const notepad = this.findNotepad(oldName);
-          notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
-          this.addState(State.RenamedNotepad);
-        }
-      });
+  async renameNotepad(oldName: string, newName: string): Promise<void> {
+    const notepadMetadata = await this.fileAPi.renameFileAsync(oldName, newName);
+    if (!notepadMetadata) {
+      this.messageService.add('NotepadRepo: Getting notepads.', 'error');
+      this.addState(State.Error);
+    }
+    else {
+      const notepad = this.findNotepad(oldName);
+      notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+      this.addState(State.RenamedNotepad);
+    }
   }
-
 }

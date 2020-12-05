@@ -168,13 +168,14 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
       parseInt(`${this.profileForm.value.hour}`),
       parseInt(`${this.profileForm.value.minute}`)
     );
-
+    //todo await
     this.calendarRepo.postCalendarRecord(record);
     this.closeAddOrUpdateEventForm();
   }
 
   deleteEvent() {
     if (window.confirm(`Are you sure you want to delete this record?`)) {
+      //todo await
       this.calendarRepo.deleteCalendarRecord(this.profileForm.value.id);
       this.closeAddOrUpdateEventForm();
     }

@@ -15,7 +15,6 @@ export class CalendarService implements OnDestroy {
   public openAddEventForm = new BehaviorSubject<any>({});
 
   get years() {
-
     const years: number[] = [];
     for (let i = this.today.year - 5; i <= this.today.year + 10; i++) years.push(i);
     return years;
@@ -112,7 +111,7 @@ export class CalendarService implements OnDestroy {
   constructor(private calendarRepo: CalendarRepo) {
     this.records = this.calendarRepo.calendarRecordRest;
 
-    let date = new Date();
+    const date = new Date();
     this.year = date.getFullYear();
     this.zeroIndexedMonth = date.getMonth();
 
@@ -178,7 +177,7 @@ export class CalendarService implements OnDestroy {
     else if (nextOrPrevious === 'previous' && --this.week < 1) this.changeMonth('previous');
   }
 
-  changeMonth(nextOrPrevious: string) {
+  async changeMonth(nextOrPrevious: string) {
     const oneIndexedMonth = this.zeroIndexedMonth + 1;
     let tempDate = new Date(`${this.year} ${oneIndexedMonth}`);
 
@@ -197,24 +196,24 @@ export class CalendarService implements OnDestroy {
       this.day = this.daysInMonth;
     }
 
-    this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
+    await this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
 
     this.closeAddOrUpdateEventForm.next(true);
   }
 
-  updateRecords() {
+  async updateRecords() {
     this.calendarRepo.calendarRecordRest.records = [];
-    this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
+    await this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
     this.day = 1;
     this.closeAddOrUpdateEventForm.next(true);
   }
 
-  changeToToday() {
+  async changeToToday() {
     this.year = this.today.year;
     this.zeroIndexedMonth = this.today.month;
     this.week = this.today.week;
     this.day = this.today.day;
-    this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
+    await this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
   }
 
   public addOridnalIndictor(day: number): string {

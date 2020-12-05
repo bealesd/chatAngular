@@ -1,19 +1,19 @@
 {
   "configVersion": 1,
-  "timestamp": 1606067094288,
+  "timestamp": 1607201365295,
   "index": "/chatAngular/index.html",
   "assetGroups": [
     {
       "name": "app",
       "installMode": "prefetch",
-      "updateMode": "prefetch",
+      "updateMode": "lazy",
       "cacheQueryOptions": {
         "ignoreVary": true
       },
       "urls": [
         "/chatAngular/favicon.ico",
         "/chatAngular/index.html",
-        "/chatAngular/main.fbc78e8a6a30556527ea.js",
+        "/chatAngular/main.7ac22acba64c1987372c.js",
         "/chatAngular/manifest.webmanifest",
         "/chatAngular/polyfills.90a1af69ea786e34948d.js",
         "/chatAngular/runtime.8ecdda52456b6dc944a4.js",
@@ -25,7 +25,7 @@
     {
       "name": "assets",
       "installMode": "lazy",
-      "updateMode": "prefetch",
+      "updateMode": "lazy",
       "cacheQueryOptions": {
         "ignoreVary": true
       },
@@ -78,8 +78,8 @@
     "/chatAngular/icomoon.5e3150e3e4baf2213737.woff": "5dbbe049a3fa4d09c46d9afb42e82f672bf931a9",
     "/chatAngular/icomoon.837a0b425d034036fb4a.svg": "4bd78f35ee3e029a9f8b0d51b1ac6cee451d68c0",
     "/chatAngular/icomoon.d21c50f54cc796a5dc19.ttf": "e19ee1a99d235d4237bdf1d3d64b7e16c9b7818c",
-    "/chatAngular/index.html": "b311e414fc50aeaa52ee956bda9684b05755649d",
-    "/chatAngular/main.fbc78e8a6a30556527ea.js": "09c99e15eede5cb12734c7ba9a9fc3bd78ab10b5",
+    "/chatAngular/index.html": "f6f5af9e7c8494f7bd8a49d7c56953b183b540d2",
+    "/chatAngular/main.7ac22acba64c1987372c.js": "a822a4b1ec14e4aa7bc8e7fd05332c39ec5b44f4",
     "/chatAngular/manifest.webmanifest": "3686af5616528363ac7e719b05e9ad7a39404619",
     "/chatAngular/polyfills.90a1af69ea786e34948d.js": "5d073ab1808d400ada31a564ec984eb4453647de",
     "/chatAngular/ringOnBlack.1fb718d920a4bb1f94d4.jpg": "a8cf25e06e2520df5efe567f28613cdabcd93029",
