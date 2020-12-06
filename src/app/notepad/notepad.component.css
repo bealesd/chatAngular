@@ -172,7 +172,7 @@ div[class*="notepad-item-control-"] > span:hover {
     padding-right: 5px;
 }
 
-.notepad-item-name-box > .icon-folder{
+.notepad-item-name-box > .icon-file-text2{
     display: var(--notepad-item-name-img-display);
     padding-right: 5px;
 }
@@ -205,7 +205,7 @@ div[class*="notepad-item-control-"] > span:hover {
 
 .notepad-item-container .notepad-item-size {
     min-height: 48px;
-    grid-column: 3;
+    grid-column: 3/5;
 }
 
 .notepad-item-container .notepad-item-add {
@@ -229,7 +229,7 @@ div[class*="notepad-item-control-"] > span:hover {
     border-left: 5px red solid;
 }
 
-.new-file {
+.new-item {
     position: fixed;
     top: 0;
     right: 0;
@@ -240,7 +240,79 @@ div[class*="notepad-item-control-"] > span:hover {
     font-family: 'ps-regular'
 }
 
-.new-file>div {
+.new-item>div {
+    display: grid;
+    grid-template-columns: repeat(12, 30px);
+    grid-template-rows: 15px 32px 15px 32px 15px 32px 15px 32px 15px;
+    position: fixed;
+    z-index: 9999;
+    top: 50%;
+    width: var(--width);
+    left: 50%;
+    margin-top: calc(-0.5 * calc(15px + 32px + 15px + 32px + 15px + 32px + 15px));
+    margin-left: calc(-0.5 * calc(12 * 30px));
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, .32), 0 8px 40px rgba(0, 0, 0, .4);
+    border-radius: 8px;
+}
+
+.new-item .new-notepad-title {
+    font-size: 20px;
+    color: var(--main-font-color);
+    grid-row: 2;
+    grid-column: 2/10;
+}
+
+.new-item .new-notepad-cancel {
+    grid-row: 2;
+    grid-column: 11/12;
+    cursor: pointer;
+}
+
+.new-item .new-notepad-name-input {
+    grid-row: 4;
+    grid-column: 2/12;
+    border: 1px solid lightgrey;
+    padding-left: 4px;
+}
+
+.new-item .new-notepad-isFolder{
+    grid-row: 6;
+    grid-column: 2/9;
+    margin: auto 0px ;
+}
+
+.new-item .new-notepad-cancel-button {
+    grid-row: 8;
+    grid-column: 7/9;
+}
+
+.new-item .new-notepad-create-button {
+    grid-row: 8;
+    grid-column: 10/12;
+}
+
+.new-item .new-notepad-file-type {
+    font-size: 12px;
+    color: var(--main-font-color);
+    grid-row: 8;
+    grid-column: 2/5;
+    display: flex;
+    align-items: center;
+}
+
+.update-item {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(200, 200, 200, 0.75);
+    z-index: 9999999;
+    font-family: 'ps-regular'
+}
+
+.update-item>div {
     display: grid;
     grid-template-columns: repeat(12, 30px);
     grid-template-rows: 15px 32px 15px 32px 15px 32px 15px;
@@ -256,37 +328,37 @@ div[class*="notepad-item-control-"] > span:hover {
     border-radius: 8px;
 }
 
-.new-notepad-title {
+.update-item .new-notepad-title {
     font-size: 20px;
     color: var(--main-font-color);
     grid-row: 2;
     grid-column: 2/10;
 }
 
-.new-notepad-cancel {
+.update-item .new-notepad-cancel {
     grid-row: 2;
     grid-column: 11/12;
     cursor: pointer;
 }
 
-.new-notepad-name-input {
+.update-item .new-notepad-name-input {
     grid-row: 4;
     grid-column: 2/12;
     border: 1px solid lightgrey;
     padding-left: 4px;
 }
 
-.new-notepad-cancel-button {
+.update-item .new-notepad-cancel-button {
     grid-row: 6;
     grid-column: 7/9;
 }
 
-.new-notepad-create-button {
+.update-item .new-notepad-create-button {
     grid-row: 6;
     grid-column: 10/12;
 }
 
-.new-notepad-file-type {
+.update-item .new-notepad-file-type {
     font-size: 12px;
     color: var(--main-font-color);
     grid-row: 6;

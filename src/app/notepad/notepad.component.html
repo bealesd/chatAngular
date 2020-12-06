@@ -34,7 +34,7 @@
                 <div class="notepad-item notepad-item-name {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}"
                     (click)="highlightRow(item)" (dblclick)="openNotepad()">
                     <div class="notepad-item-name-box">
-                        <span class="icon-folder"></span>
+                        <span class="icon-file-text2"></span>
                         <span class="notepad-item-name-value"> {{item.metadata.fileName}}</span>
                     </div>
                 </div>
@@ -67,30 +67,34 @@
 
 </div>
 
-<div *ngIf="createNotepadFormIsOpen" class="new-file">
+<div *ngIf="createNotepadFormIsOpen" class="new-item">
     <div>
-        <div class="new-notepad-title">New Pad</div>
+        <div class="new-notepad-title">New {{createNotepadItemTypeIsFolder ? "Folder" : "File"}}</div>
         <div class="new-notepad-cancel" (click)="cancelNewNotepad()">&#10005;</div>
         <input class="new-notepad-name-input" type="text" placeholder="My Notepad" id="value" #name
             (keyup)="getFileType(name.value)">
-        <div class="new-notepad-file-type">
+        <div class="new-notepad-isFolder">
+            Folder
+            <input type="checkbox" id="isFolder" #isFolder (click)="updateItemType(isFolder.value)">
+        </div>
+        <div *ngIf="!createNotepadItemTypeIsFolder" class="new-notepad-file-type">
             <div>File Type: {{fileType}}</div>
         </div>
         <button class="white-button new-notepad-cancel-button" (click)="cancelNewNotepad()">CANCEL</button>
-        <button class="blue-button new-notepad-create-button" (click)="newNotepad(name.value)">CREATE</button>
+        <button class="blue-button new-notepad-create-button" (click)="newItem(name.value)">CREATE</button>
     </div>
 </div>
 
-<div *ngIf="renameNotepadFormIsOpen" class="new-file">
+<div *ngIf="renameNotepadFormIsOpen" class="update-item">
     <div>
-        <div class="new-notepad-title">Rename Pad</div>
+        <div class="new-notepad-title">Rename {{createNotepadItemTypeIsFolder ? "Folder" : "File"}}</div>
         <div class="new-notepad-cancel" (click)="cancelRenameNotepad()">&#10005;</div>
-        <input class="new-notepad-name-input" type="text" value="{{currentNotepad.name}}" id="value" #name
+        <input class="new-notepad-name-input" type="text" value="{{currentNotepad.metadata.name}}" id="value" #name
             (keyup)="getFileType(name.value)">
-        <div class="new-notepad-file-type">
+        <div *ngIf="!createNotepadItemTypeIsFolder" class="new-notepad-file-type">
             <div>File Type: {{fileType}}</div>
         </div>
         <button class="white-button new-notepad-cancel-button" (click)="cancelRenameNotepad()">CANCEL</button>
-        <button class="blue-button new-notepad-create-button" (click)="renameNotepad(name.value)">RENAME</button>
+        <button class="blue-button new-notepad-create-button" (click)="renameItem(name.value)">RENAME</button>
     </div>
 </div>

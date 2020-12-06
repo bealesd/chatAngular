@@ -176,7 +176,7 @@ export class FileApi {
     });
   }
 
-  newFolderAsync(folderName: string): Promise<boolean> {
+  newFolderAsync(folderName: string): Promise<NotepadMetadata> {
     this.messageService.add(`FileApi: Creating new folder ${folderName}.`, 'info');
     const postUrl = `${this.dirUrl}/${folderName}/dummy.txt`;
 
@@ -188,13 +188,14 @@ export class FileApi {
       this.http.put(postUrl, rawCommitBody, this.restHelper.options()).subscribe(
         {
           next: (contentAndCommit: any) => {
-            console.log(contentAndCommit);
-            this.messageService.add(`FileApi: Created new folder.`, 'info');
-            res(true);
+            const notepadMetadata = contentAndCommit.content as NotepadMetadata;
+            const metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+            this.messageService.add(`FileApi: Created new folder ${name}.`, 'info');
+            res(metadata);
           },
           error: (err: any) => {
             this.restHelper.errorMessageHandler(err, `creating folder: ${folderName}`, 'FileApi');
-            res(false);
+            res(null);
           }
         }
       );
@@ -306,4 +307,20 @@ export class FileApi {
       res(newFile)
     });
   }
+
+  renameFolderAsync(oldName: string, newName:string): Promise<NotepadMetadata> {
+    this.messageService.add(`FileApi: Renaming folder: ${oldName} to ${newName}.`, 'info');
+    return new Promise(async (res, rej) => {
+      let newFile = await this.newFolderAsync(newName);
+      if (!newFile) res(null);
+
+      let deleted = await this.deleteFolderAsync(oldName);
+      if (!deleted) res(null);
+
+      this.messageService.add(`FileApi: • Renamed folder.`, 'info');
+
+      res(newFile)
+    });
+  }
+
 }

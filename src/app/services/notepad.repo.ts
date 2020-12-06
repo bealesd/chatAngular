@@ -1,19 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 
 import { MessageService } from './message.service';
 import { Notepad, NotepadMetadata } from '../models/notepad-models';
 import { FileApiFactory, FileApi } from './file-api';
-
-export enum State {
-  GotNotepad = "GotNotepad",
-  GotNotepadListing = "GotNotepadListing",
-  DeletedNotepad = "DeletedNotepad",
-  CreatedNotepad = "CreatedNotepad",
-  UpdatedNotepad = "UpdatedNotepad",
-  RenamedNotepad = 'RenamedNotepad',
-  Error = "Error",
-}
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +11,6 @@ export class NotepadRepo {
   public notepads: Notepad[] = [];
   public currentNotepadKey: string = '';
 
-  public state: BehaviorSubject<State[]> = new BehaviorSubject([]);
   fileAPi: FileApi;
   currentNotepadName: string;
 
@@ -34,27 +22,20 @@ export class NotepadRepo {
     this.fileAPi.dir = '/notepadStore';
   }
 
-  addState(state: State) {
-    const currentState = this.state.getValue();
-    currentState.push(state);
-    this.state.next(currentState);
-  }
-
   findNotepad(name) {
     const notepad = this.notepads.find(np => np.metadata.name === name);
     if (!notepad) {
-      this.addState(State.Error);
       return null;
     }
     return notepad;
   }
 
-  async getAllNotepads(): Promise<void> {
+  async getAllNotepads(): Promise<boolean> {
     this.messageService.add(`NotepadRepo: Getting all notepads.`);
     const notepads = await this.fileAPi.listFilesAndFoldersAsync();
     if (!notepads) {
       this.messageService.add('NotepadRepo: Getting notepads.', 'error');
-      this.addState(State.Error);
+      return false;
     }
     else {
       this.notepads = [];
@@ -65,15 +46,15 @@ export class NotepadRepo {
         this.notepads.push(notepad);
       });
       this.messageService.add(`NotepadRepo: Got all notepads.`);
-      this.addState(State.GotNotepadListing);
+      return true
     }
   }
 
-  async getNotepad(name: string): Promise<void> {
+  async getNotepad(name: string): Promise<boolean> {
     const content = await this.fileAPi.getFileAsync(name)
     if (content === null) {
       this.messageService.add('NotepadRepo: Getting notepad.', 'error');
-      this.addState(State.Error);
+      return false;
     }
     else {
       this.notepads.find(v => v.metadata.name === name).content = content;
@@ -81,31 +62,31 @@ export class NotepadRepo {
       this.currentNotepadName = this.notepads.find(v => v.metadata.name === name).metadata.name;
 
       this.messageService.add(`NotepadRepo: Got notepad.`);
-      this.addState(State.GotNotepad);
+      return true;
     }
   }
 
-  async updateNotepad(name: string): Promise<void> {
+  async updateNotepad(name: string): Promise<boolean> {
     const notepad = this.findNotepad(name);
     const result = await this.fileAPi.editFileAsync(name, notepad.content)
     if (!result) {
       this.messageService.add(`NotepadRepo: Posting notepad sha: ${notepad.metadata.sha}.`, 'error');
-      this.addState(State.Error);
+      return false;
     }
     else {
       notepad.metadata.sha = result.sha;
       this.currentNotepadKey = notepad.metadata.key;
 
       this.messageService.add(`NotepadRepo: Posted notepad sha: ${notepad.metadata.sha}.`);
-      this.addState(State.UpdatedNotepad);
+      return true;
     }
   }
 
-  async postNotepad(text: string, name: string): Promise<void> {
+  async postNotepad(text: string, name: string): Promise<boolean> {
     const notepadMetadata = await this.fileAPi.newFileAsync(name, text)
     if (!notepadMetadata) {
-      this.messageService.add(`NotepadRepo: Posting notepad name: ${name}.`, 'error');
-      this.addState(State.Error);
+      this.messageService.add(`NotepadRepo: Posting notepad name: ${name}.`, 'error');;
+      return false;
     }
     else {
       const notepad = new Notepad();
@@ -114,33 +95,63 @@ export class NotepadRepo {
       this.notepads.push(notepad);
 
       this.messageService.add(`NotepadRepo: Posted notepad name: ${notepad.metadata.name}.`);
-      this.addState(State.CreatedNotepad);
+      return true;
     }
   }
 
-  async deleteNotepad(name: string): Promise<void> {
+  async postFolder(name: string): Promise<boolean> {
+    const notepadMetadata = await this.fileAPi.newFolderAsync(name)
+    if (!notepadMetadata) {
+      this.messageService.add(`NotepadRepo: Posting notepad name: ${name}.`, 'error');;
+      return false;
+    }
+    else {
+      const notepad = new Notepad();
+      notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+      // notepad.content = text;
+      this.notepads.push(notepad);
+
+      this.messageService.add(`NotepadRepo: Posted notepad name: ${notepad.metadata.name}.`);
+      return true;
+    }
+  }
+
+  async deleteNotepad(name: string): Promise<boolean> {
     const result = await this.fileAPi.deleteFileAsync(name);
     if (!result) {
       this.messageService.add(`NotepadRepo: Deleting notepad ${name}.`, 'error');
-      this.addState(State.Error);
+      return false;
     }
     else {
       this.notepads = this.notepads.filter(n => n.metadata.name !== name);
       this.messageService.add(`NotepadRepo: Notepad ${name} deleted.`);
-      this.addState(State.DeletedNotepad);
+      return true;
     }
   }
 
-  async renameNotepad(oldName: string, newName: string): Promise<void> {
+  async renameNotepad(oldName: string, newName: string): Promise<boolean> {
     const notepadMetadata = await this.fileAPi.renameFileAsync(oldName, newName);
     if (!notepadMetadata) {
       this.messageService.add('NotepadRepo: Getting notepads.', 'error');
-      this.addState(State.Error);
+      return false;
     }
     else {
       const notepad = this.findNotepad(oldName);
       notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
-      this.addState(State.RenamedNotepad);
+      return true;
     }
   }
+
+  async renameFolder(oldName: string, newName: string): Promise<boolean> {
+    const notepadMetadata = await this.fileAPi.renameFolderAsync(oldName, newName);
+    if (!notepadMetadata) {
+      this.messageService.add('NotepadRepo: Getting notepads.', 'error');
+      return false;
+    }
+    else {
+      const notepad = this.findNotepad(oldName);
+      notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+      return true;
+    }
+  } 
 }
