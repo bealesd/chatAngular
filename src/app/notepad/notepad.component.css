@@ -35,7 +35,7 @@
        --notepad-item-header-font-weight: medium;
        --notepad-item-font-family: Arial Narrow;
        --notepad-item-font-size: 12px;
-       --notepad-item-name-img-display: none;
+       --notepad-item-name-img-display: inline;
        --notepad-item-name-img-height: 15px;
        --notepad-title-font-size: 20px;
    }

@@ -44,15 +44,34 @@ export class NotepadComponent implements OnInit, OnDestroy {
     if (this.notepadIsOpen) this.exitNotepad();
   }
 
+  sortByItemName(a, b) {
+    let aName = a.metadata.name.toLowerCase();
+    let bName = b.metadata.name.toLowerCase();
+    if (aName < bName) {
+      return -1;
+    }
+    if (aName > bName) {
+      return 1;
+    }
+    return 0;
+  }
+
+  sortByItemType(a, b) {
+    if (a.metadata.type === 'dir' || b.metadata.type === 'dir') {
+      if (a.metadata.type === 'dir' && b.metadata.type === 'file')
+        return -1;
+      else if (a.metadata.type === 'file' && b.metadata.type === 'dir')
+        return 1;
+    }
+    return 0;
+  }
+
   get sortedItems() {
     let items = this.notepadRepo.notepads;
 
-    items.sort((a: Notepad, b: Notepad,) => {
-      if (a.metadata.type === 'file' && b.metadata.type === 'dir') {
-        return 1;
-      }
-      return 0;
-    })
+    items.sort(this.sortByItemName);
+    items.sort(this.sortByItemType);
+
     return items;
   }
 
@@ -139,6 +158,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
 
     if (this.createNotepadItemTypeIsFolder) {
       const result = await this.notepadRepo.postFolder(name);
+      const result2 = await this.notepadRepo.getAllNotepads();
       this.closeFile();
     }
     else {
@@ -242,8 +262,18 @@ export class NotepadComponent implements OnInit, OnDestroy {
 
     if (window.confirm('Delete notepad?')) {
       this.disablePage = true;
-      const result = await this.notepadRepo.deleteNotepad(this.currentNotepad.metadata.name);
-      this.closeFile();
+
+
+      if (this.currentNotepad.metadata.type === 'dir') {
+        const result = await this.notepadRepo.deleteFolder(this.currentNotepad.metadata.name);
+        this.closeFile();
+      }
+      else {
+        const result = await this.notepadRepo.deleteNotepad(this.currentNotepad.metadata.name);
+        this.closeFile();
+      }
+
+
     }
   }
 }

@@ -41,7 +41,27 @@ export class FileApi {
     return `https://api.github.com/repos/bealesd/${parts.join('/')}${noCache}`;
   }
 
-  dirPostUrl(fileName):string {
+  changeDir(isUp: boolean, relPath: string): boolean {
+    //TODO, SHOULD BE 2 FuNCITONS
+    const dirPaths = this.dir.split('/');
+    if (isUp) {
+      if (dirPaths.length === 1) {
+        this.dir = '/notepadStore';
+        return false;
+      }
+      else {
+        dirPaths.pop();
+        this.dir = dirPaths.join('/');
+      }
+    }
+    else {
+      dirPaths.push(relPath);
+      this.dir = dirPaths.join('/');
+    }
+    return true;
+  }
+
+  dirPostUrl(fileName): string {
     const noCache = `?cachebust=${Math.floor(Math.random() * (9999999999999 - 1000000000000 + 1) + 1000000000000)}`;
     const parts = this.dir.split('/');
     parts.splice(1, 0, 'contents');
@@ -149,7 +169,7 @@ export class FileApi {
 
   newFileAsync(name: string, text: string): Promise<NotepadMetadata> {
     this.messageService.add(`FileApi: Creating new file ${name}.`, 'info');
-    return new Promise((res, rej) => {   
+    return new Promise((res, rej) => {
       const postUrl = this.dirPostUrl(name);
       const rawCommitBody = JSON.stringify({
         'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
@@ -239,7 +259,9 @@ export class FileApi {
       if (!files) res(false);
 
       let file = files.find((f) => f.name === name);
-      if (!file) res(null);
+      if (!file) res(false);
+
+      if (file.type !== 'file') res(false);
 
       const commit = JSON.stringify({
         "message": `Api delete commit by notepad repo at ${new Date().toLocaleString()}`,
@@ -266,9 +288,23 @@ export class FileApi {
     const currentPath = this.dir;
     return new Promise(async (res, rej) => {
       try {
-        this.dir = this.dirPostUrl(`${folder}`);
-        const files = await this.listFilesAndFoldersAsync();
+        this.changeDir(false, folder);
+        const items = await this.listFilesAndFoldersAsync();
+        //only work one level deep
+        const files = [];
+        const folders = [];
+        items.forEach((item) => {
+          if (item.type === 'file') files.push(item);
+          if (item.type === 'dir') folders.push(item.name);
+        });
         await this.deleteFilesAsync(files);
+
+        if (folders.length > 0) {
+          folders.forEach(async (folder) => {
+            await this.deleteFolderAsync(folder);
+          })
+        }
+
         this.dir = currentPath;
         this.messageService.add(`FileApi: • Deleted folder.`, 'info');
         res(true);
@@ -288,7 +324,7 @@ export class FileApi {
     await Promise.all(promises);
   }
 
-  renameFileAsync(oldName: string, newName:string): Promise<NotepadMetadata> {
+  renameFileAsync(oldName: string, newName: string): Promise<NotepadMetadata> {
     this.messageService.add(`FileApi: Renaming file: ${oldName} to ${newName}.`, 'info');
     return new Promise(async (res, rej) => {
       let fileContent = await this.getFileAsync(oldName);
@@ -306,7 +342,7 @@ export class FileApi {
     });
   }
 
-  renameFolderAsync(oldName: string, newName:string): Promise<NotepadMetadata> {
+  renameFolderAsync(oldName: string, newName: string): Promise<NotepadMetadata> {
     this.messageService.add(`FileApi: Renaming folder: ${oldName} to ${newName}.`, 'info');
     return new Promise(async (res, rej) => {
       let newFile = await this.newFolderAsync(newName);

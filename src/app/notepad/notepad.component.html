@@ -37,8 +37,6 @@
                 title="Add File">
                 &#43;</div>
 
-
-            <!-- folders first -->
             <ng-container *ngFor="let item of sortedItems; let i = index">
                 <div class="notepad-item notepad-item-name {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}"
                     (click)="highlightRow(item)" (dblclick)="openNotepad()">
@@ -47,21 +45,21 @@
                         <span *ngIf="item.metadata.type === 'file'" class="notepad-item-name-value">
                             {{item.metadata.fileName}}</span>
 
-                        <span *ngIf="item.metadata.type === 'dir'" class="icon-folder"></span>
+                        <span *ngIf="item.metadata.type === 'dir'" class="icon-folder"> </span>
                         <span *ngIf="item.metadata.type === 'dir'" class="notepad-item-name-value">
                             {{item.metadata.name}}</span>
                     </div>
                 </div>
                 <div class="notepad-item  notepad-item-type {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}"
                     (click)="highlightRow(item)" (dblclick)="openNotepad()">
-                    <div>{{item.metadata.fileType}}</div>
+                    <div *ngIf="item.metadata.type === 'file'">{{item.metadata.fileType}}</div>
+                    <div *ngIf="item.metadata.type === 'dir'">Folder</div>
                 </div>
                 <div class="notepad-item  notepad-item-size {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}"
                     (click)="highlightRow(item)" (dblclick)="openNotepad()">
                     <div *ngIf="item.metadata.type === 'file'">{{item.metadata.size}}</div>
                 </div>
             </ng-container>
-
 
         </div>
 

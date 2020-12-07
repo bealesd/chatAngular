@@ -23,22 +23,7 @@ export class NotepadRepo {
   }
 
   changeDir(isUp: boolean, relPath: string): boolean {
-    const dirPaths = this.fileAPi.dir.split('/');
-    if (isUp) {
-      if (dirPaths.length === 1) {
-        this.fileAPi.dir = '/notepadStore';
-        return false;
-      }
-      else {
-        dirPaths.pop();
-        this.fileAPi.dir = dirPaths.join('/');
-      }
-    }
-    else {
-      dirPaths.push(relPath);
-      this.fileAPi.dir = dirPaths.join('/');
-    }
-    return true;
+    return this.fileAPi.changeDir(isUp, relPath);
   }
 
   findNotepad(name) {
@@ -129,8 +114,6 @@ export class NotepadRepo {
     else {
       const notepad = new Notepad();
       notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
-      // notepad.content = text;
-      this.notepads.push(notepad);
 
       this.messageService.add(`NotepadRepo: Posted notepad name: ${notepad.metadata.name}.`);
       return true;
@@ -146,6 +129,19 @@ export class NotepadRepo {
     else {
       this.notepads = this.notepads.filter(n => n.metadata.name !== name);
       this.messageService.add(`NotepadRepo: Notepad ${name} deleted.`);
+      return true;
+    }
+  }
+
+  async deleteFolder(name: string): Promise<boolean> {
+    const result = await this.fileAPi.deleteFolderAsync(name);
+    if (!result) {
+      this.messageService.add(`NotepadRepo: Deleting folder ${name}.`, 'error');
+      return false;
+    }
+    else {
+      this.notepads = this.notepads.filter(n => n.metadata.name !== name);
+      this.messageService.add(`NotepadRepo: Folder ${name} deleted.`);
       return true;
     }
   }
