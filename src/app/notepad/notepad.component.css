@@ -172,7 +172,8 @@ div[class*="notepad-item-control-"] > span:hover {
     padding-right: 5px;
 }
 
-.notepad-item-name-box > .icon-file-text2{
+.notepad-item-name-box > .icon-file-text2,
+.notepad-item-name-box > .icon-folder{
     display: var(--notepad-item-name-img-display);
     padding-right: 5px;
 }

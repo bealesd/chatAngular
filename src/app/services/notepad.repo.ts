@@ -22,6 +22,23 @@ export class NotepadRepo {
     this.fileAPi.dir = '/notepadStore';
   }
 
+  changeDir(isUp: boolean, relPath: string) {
+    const dirPaths = this.fileAPi.dir.split('/');
+    if (isUp) {
+      if (dirPaths.length === 0) {
+        this.fileAPi.dir = '/notepadStore';
+      }
+      else {
+        dirPaths.pop();
+        this.fileAPi.dir = dirPaths.join('/');
+      }
+    }
+    else {
+      dirPaths.push(relPath);
+      this.fileAPi.dir = dirPaths.join('/');
+    }
+  }
+
   findNotepad(name) {
     const notepad = this.notepads.find(np => np.metadata.name === name);
     if (!notepad) {
@@ -40,10 +57,12 @@ export class NotepadRepo {
     else {
       this.notepads = [];
       notepads.forEach((notepadMetadata: NotepadMetadata) => {
-        const notepad = new Notepad();
-        notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
-        notepad.content = '';
-        this.notepads.push(notepad);
+        if (notepadMetadata.name !== 'dummy.txt') {
+          const notepad = new Notepad();
+          notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+          notepad.content = '';
+          this.notepads.push(notepad);
+        }
       });
       this.messageService.add(`NotepadRepo: Got all notepads.`);
       return true
@@ -153,5 +172,5 @@ export class NotepadRepo {
       notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
       return true;
     }
-  } 
+  }
 }

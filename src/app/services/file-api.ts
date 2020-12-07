@@ -106,7 +106,7 @@ export class FileApi {
         {
           next: (notepads: NotepadMetadata[]) => {
             notepads.forEach((notepadMetadata: NotepadMetadata) => {
-              if (notepadMetadata.type === 'file' || notepadMetadata.type === 'folder') {
+              if (notepadMetadata.type === 'file' || notepadMetadata.type === 'dir') {
                 const metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
                 files.push(metadata);
               }
@@ -178,7 +178,7 @@ export class FileApi {
 
   newFolderAsync(folderName: string): Promise<NotepadMetadata> {
     this.messageService.add(`FileApi: Creating new folder ${folderName}.`, 'info');
-    const postUrl = `${this.dirUrl}/${folderName}/dummy.txt`;
+    const postUrl = this.dirPostUrl(`${folderName}/dummy.txt`);
 
     const rawCommitBody = JSON.stringify({
       'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
@@ -268,7 +268,7 @@ export class FileApi {
     const currentPath = this.dir;
     return new Promise(async (res, rej) => {
       try {
-        this.dir = `${this.dir}/${folder}`;
+        this.dir = this.dirPostUrl(`${folder}`);
         const files = await this.listFilesAndFoldersAsync();
         await this.deleteFilesAsync(files);
         this.dir = currentPath;

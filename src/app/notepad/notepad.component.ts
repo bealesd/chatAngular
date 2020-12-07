@@ -141,9 +141,16 @@ export class NotepadComponent implements OnInit, OnDestroy {
 
     this.disablePage = true;
 
-    const result = await this.notepadRepo.getNotepad(this.currentNotepad.metadata.name);
-    if (result) this.openFile();
-    else this.closeFile();
+    if (this.currentNotepad.metadata.type === 'file') {
+      const result = await this.notepadRepo.getNotepad(this.currentNotepad.metadata.name);
+      if (result) this.openFile();
+      else this.closeFile();
+    }
+    else if(this.currentNotepad.metadata.type === 'dir'){
+      this.notepadRepo.changeDir(false, this.currentNotepad.metadata.name);
+      const result = await this.notepadRepo.getAllNotepads();
+      this.closeFile();
+    }
   }
 
   highlightRow(item: Notepad): void {

@@ -34,8 +34,11 @@
                 <div class="notepad-item notepad-item-name {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}"
                     (click)="highlightRow(item)" (dblclick)="openNotepad()">
                     <div class="notepad-item-name-box">
-                        <span class="icon-file-text2"></span>
-                        <span class="notepad-item-name-value"> {{item.metadata.fileName}}</span>
+                        <span *ngIf="item.metadata.type === 'file'" class="icon-file-text2"></span>
+                        <span *ngIf="item.metadata.type === 'file'"  class="notepad-item-name-value"> {{item.metadata.fileName}}</span>
+
+                        <span *ngIf="item.metadata.type === 'dir'" class="icon-folder"></span>
+                        <span *ngIf="item.metadata.type === 'dir'"  class="notepad-item-name-value"> {{item.metadata.name}}</span>
                     </div>
                 </div>
                 <div class="notepad-item  notepad-item-type {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}"
@@ -44,7 +47,7 @@
                 </div>
                 <div class="notepad-item  notepad-item-size {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}"
                     (click)="highlightRow(item)" (dblclick)="openNotepad()">
-                    <div>{{item.metadata.size}}</div>
+                    <div *ngIf="item.metadata.type === 'file'">{{item.metadata.size}}</div>
                 </div>
             </ng-container>
 
