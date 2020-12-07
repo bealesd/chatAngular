@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Notepad } from './../models/notepad-models';
+import { Notepad, NotepadMetadata } from './../models/notepad-models';
 import { MenuService } from '../services/menu.service';
 import { NotepadRepo } from '../services/notepad.repo'
 
@@ -42,6 +42,18 @@ export class NotepadComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.disableNotebookMenus();
     if (this.notepadIsOpen) this.exitNotepad();
+  }
+
+  get sortedItems() {
+    let items = this.notepadRepo.notepads;
+
+    items.sort((a: Notepad, b: Notepad,) => {
+      if (a.metadata.type === 'file' && b.metadata.type === 'dir') {
+        return 1;
+      }
+      return 0;
+    })
+    return items;
   }
 
   getFileType(name) {
@@ -106,6 +118,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.notepadIsOpen = false;
     this.disableNotebookMenus();
     this.notepadRepo.currentNotepadKey = '';
+    this.createNotepadFormIsOpen = false;
     this.disablePage = false;
   }
 
@@ -146,11 +159,21 @@ export class NotepadComponent implements OnInit, OnDestroy {
       if (result) this.openFile();
       else this.closeFile();
     }
-    else if(this.currentNotepad.metadata.type === 'dir'){
+    else if (this.currentNotepad.metadata.type === 'dir') {
       this.notepadRepo.changeDir(false, this.currentNotepad.metadata.name);
       const result = await this.notepadRepo.getAllNotepads();
       this.closeFile();
     }
+  }
+
+  async upLevel() {
+    this.disablePage = true;
+    const dirChanged = this.notepadRepo.changeDir(true, null);
+    if (dirChanged) {
+      const result = await this.notepadRepo.getAllNotepads();
+    }
+
+    this.closeFile();
   }
 
   highlightRow(item: Notepad): void {

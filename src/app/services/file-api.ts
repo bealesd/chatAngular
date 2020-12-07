@@ -149,9 +149,7 @@ export class FileApi {
 
   newFileAsync(name: string, text: string): Promise<NotepadMetadata> {
     this.messageService.add(`FileApi: Creating new file ${name}.`, 'info');
-    return new Promise((res, rej) => {
-      if (this.fileType(name) === '') res(null);
-     
+    return new Promise((res, rej) => {   
       const postUrl = this.dirPostUrl(name);
       const rawCommitBody = JSON.stringify({
         'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,

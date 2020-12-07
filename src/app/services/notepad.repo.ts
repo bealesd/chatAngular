@@ -22,11 +22,12 @@ export class NotepadRepo {
     this.fileAPi.dir = '/notepadStore';
   }
 
-  changeDir(isUp: boolean, relPath: string) {
+  changeDir(isUp: boolean, relPath: string): boolean {
     const dirPaths = this.fileAPi.dir.split('/');
     if (isUp) {
-      if (dirPaths.length === 0) {
+      if (dirPaths.length === 1) {
         this.fileAPi.dir = '/notepadStore';
+        return false;
       }
       else {
         dirPaths.pop();
@@ -37,6 +38,7 @@ export class NotepadRepo {
       dirPaths.push(relPath);
       this.fileAPi.dir = dirPaths.join('/');
     }
+    return true;
   }
 
   findNotepad(name) {
@@ -102,9 +104,9 @@ export class NotepadRepo {
   }
 
   async postNotepad(text: string, name: string): Promise<boolean> {
-    const notepadMetadata = await this.fileAPi.newFileAsync(name, text)
+    const notepadMetadata = await this.fileAPi.newFileAsync(name, text);
     if (!notepadMetadata) {
-      this.messageService.add(`NotepadRepo: Posting notepad name: ${name}.`, 'error');;
+      this.messageService.add(`NotepadRepo: Posting notepad name: ${name}.`, 'error');
       return false;
     }
     else {
