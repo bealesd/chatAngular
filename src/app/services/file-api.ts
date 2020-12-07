@@ -23,6 +23,7 @@ export class FileApiFactory {
 export class FileApi {
   private rootFolders = ['calendarStore', 'chatStore', 'notepadStore', 'todoStore']
   private _dir: string = '';
+  rootDir: string;
 
   get dir() {
     return this._dir;
@@ -41,14 +42,18 @@ export class FileApi {
     return `https://api.github.com/repos/bealesd/${parts.join('/')}${noCache}`;
   }
 
+  appendPathToDir(folder: string) {
+    const dirPaths = this.dir.split('/');
+    dirPaths.push(folder);
+    return dirPaths.join('/');
+  }
+
   changeDir(isUp: boolean, relPath: string): boolean {
-    //TODO, SHOULD BE 2 FuNCITONS
+    //TODO, SHOULD BE 2 FUNCITONS
     const dirPaths = this.dir.split('/');
     if (isUp) {
-      if (dirPaths.length === 1) {
-        this.dir = '/notepadStore';
+      if (dirPaths.length === 1)
         return false;
-      }
       else {
         dirPaths.pop();
         this.dir = dirPaths.join('/');
@@ -81,9 +86,20 @@ export class FileApi {
   parseDirectory(dir: string): string {
     const cleanDirectory = dir.split('/').filter(part => part.trim() !== "");
 
-    if (cleanDirectory.length === 0) return '';
-    else if (!this.rootFolders.includes(cleanDirectory[0])) return null;
-    else return cleanDirectory.join('/');
+    if (cleanDirectory.length === 0)
+      return '';
+    else if (!this.rootFolders.includes(cleanDirectory[0])) {
+      if (this.rootDir) {
+        cleanDirectory.unshift(this.rootDir);
+        return cleanDirectory.join('/');
+      }
+      else
+        return null;
+    }
+    else {
+      this.rootDir = cleanDirectory[0];
+      return cleanDirectory.join('/');
+    }
   }
 
   doesDirectoryExistAsync(dir: string): Promise<boolean> {
@@ -259,7 +275,7 @@ export class FileApi {
       if (!files) res(false);
 
       let file = files.find((f) => f.name === name);
-      if (!file) res(false);
+      if (file === undefined || file == null) res(false);
 
       if (file.type !== 'file') res(false);
 
@@ -281,33 +297,41 @@ export class FileApi {
         }
       );
     });
+  } 
+  
+  async deleteFolderRecursivelyAsync(folder: string) {
+    // Dir will need to be changed before each operation, else you could delete a file of folder and be in wrong directory.
+    return
   }
 
   async deleteFolderAsync(folder: string): Promise<boolean> {
     this.messageService.add(`FileApi: Deleting folder ${folder}.`, 'info');
     const currentPath = this.dir;
+
     return new Promise(async (res, rej) => {
       try {
         this.changeDir(false, folder);
+
         const items = await this.listFilesAndFoldersAsync();
-        //only work one level deep
+
         const files = [];
         const folders = [];
         items.forEach((item) => {
           if (item.type === 'file') files.push(item);
-          if (item.type === 'dir') folders.push(item.name);
+          if (item.type === 'dir') folders.push(item);
         });
-        await this.deleteFilesAsync(files);
 
         if (folders.length > 0) {
-          folders.forEach(async (folder) => {
-            await this.deleteFolderAsync(folder);
-          })
+          alert('Failed to delete folder. It has sub folders.');
+          this.dir = currentPath;
+          res(false);
         }
-
-        this.dir = currentPath;
-        this.messageService.add(`FileApi: • Deleted folder.`, 'info');
-        res(true);
+        else {
+          await this.deleteFilesAsync(files);
+          this.dir = currentPath;
+          this.messageService.add(`FileApi: • Deleted folder.`, 'info');
+          res(true);
+        }
       } catch (error) {
         this.dir = currentPath;
         res(false);

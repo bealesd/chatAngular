@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Notepad, NotepadMetadata } from './../models/notepad-models';
+import { Notepad } from './../models/notepad-models';
 import { MenuService } from '../services/menu.service';
 import { NotepadRepo } from '../services/notepad.repo'
 
@@ -31,7 +31,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
     public notepadRepo: NotepadRepo,
     public menuService: MenuService,
   ) { }
-
+  //TODO fix highligh still being on issue
   ngOnInit(): void {
     this.disablePage = false;
 

@@ -26,6 +26,10 @@ export class NotepadRepo {
     return this.fileAPi.changeDir(isUp, relPath);
   }
 
+  get currentDir(){
+    return this.fileAPi.dir;
+  }
+
   findNotepad(name) {
     const notepad = this.notepads.find(np => np.metadata.name === name);
     if (!notepad) {

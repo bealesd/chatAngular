@@ -159,7 +159,6 @@ div[class*="notepad-item-control-"] > span:hover {
 }
 
 .notepad-item-header {
-    grid-row: 2;
     height: 48px;
     font-family: inherit;
     font-size: var(--notepad-item-header-font-size);
@@ -204,6 +203,13 @@ div[class*="notepad-item-control-"] > span:hover {
     border-bottom: 1px solid #dadce0;
 }
 
+.notepad-item-container .notepad-item-dir {
+    min-height: 48px;
+    grid-column: 1;
+    grid-row: 2;
+    grid-column: 1/5;
+}
+
 .notepad-item-container .notepad-item-name {
     min-height: 48px;
     grid-column: 1;
@@ -224,8 +230,12 @@ div[class*="notepad-item-control-"] > span:hover {
     font-size: 26px;
     grid-column: 4;
     cursor: pointer;
+    
 }
 
+.row3{
+   grid-row: 3; 
+}
 .notepad-item-container .notepad-item-name span {
     transition: 300ms;
     border-bottom: transparent solid 1px;

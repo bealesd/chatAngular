@@ -21,19 +21,23 @@
                 </div>
             </div>
 
-            <div class="notepad-item-name notepad-item-header notepad-item">
+            <div class="notepad-item-dir notepad-item-header notepad-item">
+                <div>Path: /{{notepadRepo.currentDir}}</div>
+            </div>
+
+            <div class="notepad-item-name notepad-item-header notepad-item row3">
                 <div>Name</div>
             </div>
 
-            <div class="notepad-item-type notepad-item-header notepad-item">
+            <div class="notepad-item-type notepad-item-header notepad-item row3">
                 <div>Type</div>
             </div>
 
-            <div class="notepad-item-size notepad-item-header notepad-item">
+            <div class="notepad-item-size notepad-item-header notepad-item row3">
                 <div>Size</div>
             </div>
 
-            <div class="notepad-item-add notepad-item-header notepad-item" (click)="createNotepadForm()"
+            <div class="notepad-item-add notepad-item-header notepad-item row3" (click)="createNotepadForm()"
                 title="Add File">
                 &#43;</div>
 
@@ -63,6 +67,7 @@
 
         </div>
 
+        <!-- Move to own compenent called notepad, and rename current component to file explorer -->
         <div>
             <div class="{{notepadIsOpen ? '' : 'hide'}}">
                 <div class="notepad-title">{{currentNotepad?.metadata?.name}}</div>
@@ -73,7 +78,6 @@
                         contenteditable="true" (keyup)="updateText(textArea.value)">{{originalNotepadText}}</textarea>
                 </div>
             </div>
-
         </div>
 
     </div>
