@@ -150,8 +150,20 @@ div[class*="notepad-item-control-"] {
     padding-left: 20px;
 }
 
-div[class*="notepad-item-control-"] > span:hover {
+div[class*="notepad-item-control-"] > span:hover,
+.notepad-item-add > span:hover
+{
     cursor: pointer;
+    color: blue;
+}
+
+.notepad-item:not(.notepad-item-header):hover
+{
+    cursor: pointer;
+}
+
+.notepad-item-header>div:hover {
+    cursor: default;
 }
 
 [class^="icon-"], [class*=" icon-"] {
@@ -191,10 +203,6 @@ div[class*="notepad-item-control-"] > span:hover {
     display: inline;
 }
 
-.notepad-item>div:hover {
-    cursor: default;
-}
-
 .notepad-item-container .notepad-item-name:not(.notepad-item-header),
 .notepad-item-container .notepad-item-size:not(.notepad-item-header),
 .notepad-item-container .notepad-item-type:not(.notepad-item-header) {
@@ -229,8 +237,7 @@ div[class*="notepad-item-control-"] > span:hover {
     min-height: 48px;
     font-size: 26px;
     grid-column: 4;
-    cursor: pointer;
-    
+    cursor: pointer;  
 }
 
 .row3{

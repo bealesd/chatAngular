@@ -31,7 +31,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
     public notepadRepo: NotepadRepo,
     public menuService: MenuService,
   ) { }
-  //TODO fix highligh still being on issue
+
   ngOnInit(): void {
     this.disablePage = false;
 
@@ -147,6 +147,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.notepadRepo.currentNotepadKey = '';
     this.createNotepadFormIsOpen = false;
     this.disablePage = false;
+    this.highlightedRow = '';
   }
 
   openFile() {
