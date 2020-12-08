@@ -79,8 +79,20 @@ export class FileApi {
     this.http = http;
   }
 
-  private fileType(name): string {
-    return !name.includes('.') ? '' : name.split('.').slice(-1)[0];
+  // private fileType(name): string {
+  //   return !name.includes('.') ? '' : name.split('.').slice(-1)[0];
+  // }
+
+  async findItem(key: string): Promise<NotepadMetadata> {
+    return new Promise(async (res, rej) => {
+      let files = await this.listFilesAndFoldersAsync();
+      if (!files) res(null);
+
+      let file = files.find((f) => f.key === key);
+      if (file === undefined || file == null) res(null);
+
+      res(file);
+    });
   }
 
   parseDirectory(dir: string): string {
@@ -159,20 +171,17 @@ export class FileApi {
     });
   }
 
-  getFileAsync(name: string): Promise<string> {
+  getFileAsync(key: string): Promise<string> {
     this.messageService.add(`FileApi: Getting file ${name}.`, 'info');
     return new Promise(async (res, rej) => {
-      let files = await this.listFilesAndFoldersAsync();
-      if (!files || files.length == 0) res(null);
-
-      let file = files.find((f) => f.name === name);
-      if (!file) res(null);
+      let file = await this.findItem(key);
+      if (file === undefined || file === null) res(null);
 
       this.http.get<any>(file.git_url, this.restHelper.options()).subscribe(
         {
           next: (value: any) => {
             const content = atob(value.content);
-            this.messageService.add(`FileApi: Got file ${name}.`, 'info');
+            this.messageService.add(`FileApi: Got file ${file.name}.`, 'info');
             res(content);
           },
           error: (err: any) => {
@@ -236,14 +245,11 @@ export class FileApi {
     });
   }
 
-  editFileAsync(name: string, text: string): Promise<NotepadMetadata> {
-    this.messageService.add(`FileApi: Editing file: ${name}.`, 'info');
+  editFileAsync(key: string, text: string): Promise<NotepadMetadata> {
+    // file content update
+    this.messageService.add(`FileApi: Editing file: ${key}.`, 'info');
     return new Promise(async (res, rej) => {
-      let files = await this.listFilesAndFoldersAsync();
-      if (!files) res(null);
-
-      let file = files.find((f) => f.name === name);
-      if (!file) res(null);
+      let file = await this.findItem(key);
 
       const rawCommitBody = JSON.stringify({
         'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
@@ -260,7 +266,7 @@ export class FileApi {
             res(metadata);
           },
           error: (err: any) => {
-            this.restHelper.errorMessageHandler(err, `editing file: ${name}`, 'FileApi');
+            this.restHelper.errorMessageHandler(err, `editing file: ${key}`, 'FileApi');
             res(null);
           }
         }
@@ -268,16 +274,12 @@ export class FileApi {
     });
   }
 
-  deleteFileAsync(name: string): Promise<boolean> {
-    this.messageService.add(`FileApi: Deleting file: ${name}.`, 'info');
+  deleteFileAsync(key: string): Promise<boolean> {
+    this.messageService.add(`FileApi: Deleting file: ${key}.`, 'info');
     return new Promise(async (res, rej) => {
-      let files = await this.listFilesAndFoldersAsync();
-      if (!files) res(false);
-
-      let file = files.find((f) => f.name === name);
-      if (file === undefined || file == null) res(false);
-
-      if (file.type !== 'file') res(false);
+      const file = await this.findItem(key);
+      console.log(file);
+      if (file === null || file.type !== 'file') res(false);
 
       const commit = JSON.stringify({
         "message": `Api delete commit by notepad repo at ${new Date().toLocaleString()}`,
@@ -291,43 +293,45 @@ export class FileApi {
             res(true);
           },
           error: (err: any) => {
-            this.restHelper.errorMessageHandler(err, `deleting file: ${name}`, 'FileApi');
+            this.restHelper.errorMessageHandler(err, `deleting file: ${file.key}`, 'FileApi');
             res(false);
           }
         }
       );
     });
-  } 
-  
+  }
+
   async deleteFolderRecursivelyAsync(folder: string) {
     // Dir will need to be changed before each operation, else you could delete a file of folder and be in wrong directory.
     return
   }
 
-  async deleteFolderAsync(folder: string): Promise<boolean> {
-    this.messageService.add(`FileApi: Deleting folder ${folder}.`, 'info');
+  async deleteFolderAsync(key: string): Promise<boolean> {
+    this.messageService.add(`FileApi: Deleting folder ${key}.`, 'info');
     const currentPath = this.dir;
 
     return new Promise(async (res, rej) => {
       try {
-        this.changeDir(false, folder);
+        let folder = await this.findItem(key);
+
+        this.changeDir(false, folder.name);
 
         const items = await this.listFilesAndFoldersAsync();
 
-        const files = [];
-        const folders = [];
+        const subFiles = [];
+        const subFolders = [];
         items.forEach((item) => {
-          if (item.type === 'file') files.push(item);
-          if (item.type === 'dir') folders.push(item);
+          if (item.type === 'file') subFiles.push(item);
+          if (item.type === 'dir') subFolders.push(item);
         });
 
-        if (folders.length > 0) {
+        if (subFolders.length > 0) {
           alert('Failed to delete folder. It has sub folders.');
           this.dir = currentPath;
           res(false);
         }
         else {
-          await this.deleteFilesAsync(files);
+          await this.deleteFilesAsync(subFiles);
           this.dir = currentPath;
           this.messageService.add(`FileApi: • Deleted folder.`, 'info');
           res(true);
@@ -341,23 +345,26 @@ export class FileApi {
 
   async deleteFilesAsync(files: NotepadMetadata[]) {
     this.messageService.add(`FileApi: Deleting files.`, 'info');
-    const promises = files.map((file) => {
-      this.deleteFileAsync(file.name);
+
+    // never change this to Promise.all(), each request must be done one at a time for the github api to work
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      await this.deleteFileAsync(file.key);
       this.messageService.add(`FileApi: • Deleted files.`, 'info');
-    });
-    await Promise.all(promises);
+
+    }
   }
 
-  renameFileAsync(oldName: string, newName: string): Promise<NotepadMetadata> {
-    this.messageService.add(`FileApi: Renaming file: ${oldName} to ${newName}.`, 'info');
+  renameFileAsync(key: string, newName: string): Promise<NotepadMetadata> {
+    this.messageService.add(`FileApi: Renaming file: ${key} to ${newName}.`, 'info');
     return new Promise(async (res, rej) => {
-      let fileContent = await this.getFileAsync(oldName);
+      let fileContent = await this.getFileAsync(key);
       if (fileContent === null) res(null);
 
       let newFile = await this.newFileAsync(newName, fileContent);
       if (!newFile) res(null);
 
-      let deleted = await this.deleteFileAsync(oldName);
+      let deleted = await this.deleteFileAsync(key);
       if (!deleted) res(null);
 
       this.messageService.add(`FileApi: • Renamed file.`, 'info');
@@ -366,13 +373,13 @@ export class FileApi {
     });
   }
 
-  renameFolderAsync(oldName: string, newName: string): Promise<NotepadMetadata> {
-    this.messageService.add(`FileApi: Renaming folder: ${oldName} to ${newName}.`, 'info');
+  renameFolderAsync(key: string, newName: string): Promise<NotepadMetadata> {
+    this.messageService.add(`FileApi: Renaming folder: ${key} to ${newName}.`, 'info');
     return new Promise(async (res, rej) => {
       let newFile = await this.newFolderAsync(newName);
       if (!newFile) res(null);
 
-      let deleted = await this.deleteFolderAsync(oldName);
+      let deleted = await this.deleteFolderAsync(key);
       if (!deleted) res(null);
 
       this.messageService.add(`FileApi: • Renamed folder.`, 'info');
@@ -382,3 +389,10 @@ export class FileApi {
   }
 
 }
+
+// key: sha, name, url
+// get files with key
+// delete file by key
+// --get files, match on key, delete
+// delete folder
+// --get files, match on key, delete

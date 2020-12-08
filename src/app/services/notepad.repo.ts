@@ -30,8 +30,8 @@ export class NotepadRepo {
     return this.fileAPi.dir;
   }
 
-  findNotepad(name) {
-    const notepad = this.notepads.find(np => np.metadata.name === name);
+  findNotepad(key) {
+    const notepad = this.notepads.find(np => np.metadata.key === key);
     if (!notepad) {
       return null;
     }
@@ -60,25 +60,25 @@ export class NotepadRepo {
     }
   }
 
-  async getNotepad(name: string): Promise<boolean> {
-    const content = await this.fileAPi.getFileAsync(name);
+  async getNotepad(key: string): Promise<boolean> {
+    const content = await this.fileAPi.getFileAsync(key);
     if (content === null) {
       this.messageService.add('NotepadRepo: Getting notepad.', 'error');
       return false;
     }
     else {
-      this.notepads.find(v => v.metadata.name === name).content = content;
-      this.currentNotepadKey = this.notepads.find(v => v.metadata.name === name).metadata.key;
-      this.currentNotepadName = this.notepads.find(v => v.metadata.name === name).metadata.name;
+      this.notepads.find(v => v.metadata.key === key).content = content;
+      this.currentNotepadKey = this.notepads.find(v => v.metadata.key === key).metadata.key;
+      this.currentNotepadName = this.notepads.find(v => v.metadata.key === key).metadata.name;
 
       this.messageService.add(`NotepadRepo: Got notepad.`);
       return true;
     }
   }
 
-  async updateNotepad(name: string): Promise<boolean> {
-    const notepad = this.findNotepad(name);
-    const result = await this.fileAPi.editFileAsync(name, notepad.content)
+  async updateNotepad(key: string): Promise<boolean> {
+    const notepad = this.findNotepad(key);
+    const result = await this.fileAPi.editFileAsync(key, notepad.content)
     if (!result) {
       this.messageService.add(`NotepadRepo: Posting notepad sha: ${notepad.metadata.sha}.`, 'error');
       return false;
@@ -124,54 +124,54 @@ export class NotepadRepo {
     }
   }
 
-  async deleteNotepad(name: string): Promise<boolean> {
-    const result = await this.fileAPi.deleteFileAsync(name);
+  async deleteNotepad(key: string): Promise<boolean> {
+    const result = await this.fileAPi.deleteFileAsync(key);
     if (!result) {
-      this.messageService.add(`NotepadRepo: Deleting notepad ${name}.`, 'error');
+      this.messageService.add(`NotepadRepo: Deleting notepad ${key}.`, 'error');
       return false;
     }
     else {
-      this.notepads = this.notepads.filter(n => n.metadata.name !== name);
-      this.messageService.add(`NotepadRepo: Notepad ${name} deleted.`);
+      this.notepads = this.notepads.filter(n => n.metadata.key !== key);
+      this.messageService.add(`NotepadRepo: Notepad ${key} deleted.`);
       return true;
     }
   }
 
-  async deleteFolder(name: string): Promise<boolean> {
-    const result = await this.fileAPi.deleteFolderAsync(name);
+  async deleteFolder(key: string): Promise<boolean> {
+    const result = await this.fileAPi.deleteFolderAsync(key);
     if (!result) {
-      this.messageService.add(`NotepadRepo: Deleting folder ${name}.`, 'error');
+      this.messageService.add(`NotepadRepo: Deleting folder ${key}.`, 'error');
       return false;
     }
     else {
-      this.notepads = this.notepads.filter(n => n.metadata.name !== name);
-      this.messageService.add(`NotepadRepo: Folder ${name} deleted.`);
+      this.notepads = this.notepads.filter(n => n.metadata.key !== key);
+      this.messageService.add(`NotepadRepo: Folder ${key} deleted.`);
       return true;
     }
   }
 
-  async renameNotepad(oldName: string, newName: string): Promise<boolean> {
-    const content = await this.fileAPi.getFileAsync(oldName);
-    const notepadMetadata = await this.fileAPi.renameFileAsync(oldName, newName);
+  async renameNotepad(key: string, newName: string): Promise<boolean> {
+    const content = await this.fileAPi.getFileAsync(key);
+    const notepadMetadata = await this.fileAPi.renameFileAsync(key, newName);
     if (!notepadMetadata) {
       this.messageService.add('NotepadRepo: Getting notepads.', 'error');
       return false;
     }
     else {
-      const notepad = this.findNotepad(oldName);
+      const notepad = this.findNotepad(key);
       notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
       return true;
     }
   }
 
-  async renameFolder(oldName: string, newName: string): Promise<boolean> {
-    const notepadMetadata = await this.fileAPi.renameFolderAsync(oldName, newName);
+  async renameFolder(key: string, newName: string): Promise<boolean> {
+    const notepadMetadata = await this.fileAPi.renameFolderAsync(key, newName);
     if (!notepadMetadata) {
       this.messageService.add('NotepadRepo: Getting notepads.', 'error');
       return false;
     }
     else {
-      const notepad = this.findNotepad(oldName);
+      const notepad = this.findNotepad(key);
        notepad.metadata.name = newName;
        //TODO sha and key will now be wrong for the folder, but i dont use them. Get rid of key and sha possibly, but doing so will remove any file or folder having same name
       return true;
