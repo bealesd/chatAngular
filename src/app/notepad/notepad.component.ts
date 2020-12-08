@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Notepad } from './../models/notepad-models';
+import { Notepad, NotepadMetadata } from './../models/notepad-models';
 import { MenuService } from '../services/menu.service';
 import { NotepadRepo } from '../services/notepad.repo'
 
@@ -113,7 +113,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
     if (!this.isNotepadItemSelected) return;
     this.renameNotepadFormIsOpen = true;
 
-    if (this.stringIsNull(this.currentNotepad.metadata.fileType))
+    if (this.currentNotepad.metadata.type === 'dir')
       this.createNotepadItemTypeIsFolder = true;
     else {
       this.createNotepadItemTypeIsFolder = false;
@@ -127,6 +127,14 @@ export class NotepadComponent implements OnInit, OnDestroy {
 
   isUniqueName(name) {
     if (this.notepadRepo.notepads.find(np => np.metadata.name === name) !== undefined) {
+      alert('name is not unique');
+      return false;
+    }
+    return true;
+  }
+
+  isUnique(notepad: NotepadMetadata): boolean {
+    if (this.notepadRepo.notepads.find(np => np.metadata.name === notepad.name && np.metadata.sha !== notepad.sha) !== undefined) {
       alert('name is not unique');
       return false;
     }
@@ -221,10 +229,12 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.createNotepadItemTypeIsFolder = !this.createNotepadItemTypeIsFolder;
   }
 
-  async renameItem(name) {
-    if (!this.isUniqueName(name)) return;
-    this.disablePage = true;
+  async renameItem(name: string) {
 
+    if (!this.isUniqueName(name)) return;
+
+    this.disablePage = true;
+    this.renameNotepadFormIsOpen = false;
     if (this.createNotepadItemTypeIsFolder) {
       const result = await this.notepadRepo.renameFolder(this.currentNotepad.metadata.name, name);
       this.closeFile();

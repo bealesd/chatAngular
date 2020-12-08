@@ -352,7 +352,7 @@ export class FileApi {
     this.messageService.add(`FileApi: Renaming file: ${oldName} to ${newName}.`, 'info');
     return new Promise(async (res, rej) => {
       let fileContent = await this.getFileAsync(oldName);
-      if (!fileContent) res(null);
+      if (fileContent === null) res(null);
 
       let newFile = await this.newFileAsync(newName, fileContent);
       if (!newFile) res(null);

@@ -61,7 +61,7 @@ export class NotepadRepo {
   }
 
   async getNotepad(name: string): Promise<boolean> {
-    const content = await this.fileAPi.getFileAsync(name)
+    const content = await this.fileAPi.getFileAsync(name);
     if (content === null) {
       this.messageService.add('NotepadRepo: Getting notepad.', 'error');
       return false;
@@ -151,6 +151,7 @@ export class NotepadRepo {
   }
 
   async renameNotepad(oldName: string, newName: string): Promise<boolean> {
+    const content = await this.fileAPi.getFileAsync(oldName);
     const notepadMetadata = await this.fileAPi.renameFileAsync(oldName, newName);
     if (!notepadMetadata) {
       this.messageService.add('NotepadRepo: Getting notepads.', 'error');
@@ -171,7 +172,8 @@ export class NotepadRepo {
     }
     else {
       const notepad = this.findNotepad(oldName);
-      notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+       notepad.metadata.name = newName;
+       //TODO sha and key will now be wrong for the folder, but i dont use them. Get rid of key and sha possibly, but doing so will remove any file or folder having same name
       return true;
     }
   }
