@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1607428850012,
+  "timestamp": 1607506873881,
   "index": "/chatAngular/index.html",
   "assetGroups": [
     {
@@ -13,7 +13,7 @@
       "urls": [
         "/chatAngular/favicon.ico",
         "/chatAngular/index.html",
-        "/chatAngular/main.0f9ee4e1fb046469b81b.js",
+        "/chatAngular/main.0c537dc8e4f7eb4739b3.js",
         "/chatAngular/manifest.webmanifest",
         "/chatAngular/polyfills.35a5ca1855eb057f016a.js",
         "/chatAngular/runtime.e7df24b5d39b2102df5c.js",
@@ -70,8 +70,8 @@
     "/chatAngular/assets/js/grid-menu.js": "8c3b0a92feef1aae2845a4a9899f27ca32768ebd",
     "/chatAngular/favicon.ico": "fcbcf16ac9d543f785ec36346161838334fdce13",
     "/chatAngular/icomoon.95a00167d5ba7a268542.woff": "cb9cddc0125d6f2a03892efd903d641302be4650",
-    "/chatAngular/index.html": "4cafb0be2a22b01382e48707d175ab5bbec3c8d0",
-    "/chatAngular/main.0f9ee4e1fb046469b81b.js": "3fcfd608aaf0071bf4320034f1242f4c9e65fab8",
+    "/chatAngular/index.html": "5fe73f3c5e547635708856baaac2f1049d5f942f",
+    "/chatAngular/main.0c537dc8e4f7eb4739b3.js": "b6cf8948104a95b89bd8fe9baa086636d21d7b73",
     "/chatAngular/manifest.webmanifest": "42045d6273e4477375e0a7d4c344bd46cbc3a064",
     "/chatAngular/polyfills.35a5ca1855eb057f016a.js": "578360d24ce37383f261c7ef63b1f822d28e8dde",
     "/chatAngular/ringOnBlack.1fb718d920a4bb1f94d4.jpg": "a8cf25e06e2520df5efe567f28613cdabcd93029",

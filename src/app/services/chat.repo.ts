@@ -22,6 +22,20 @@ export class ChatRepo {
     return from(this.fileApi.listFilesAndFoldersAsync());
   }
 
+  async getFile(name: string): Promise<NotepadMetadata> {
+    const files = await this.fileApi.listFilesAndFoldersAsync();
+    if (files === [] || files === null) {
+      return null;
+    }
+
+    const file = files.find((file) => file.name === name);
+    if (file === null || file === undefined) {
+      return null;
+    }
+
+    return file;
+  }
+
   async getLastTen(): Promise<Chat[]> {
     let files = await this.fileApi.listFilesAndFoldersAsync();
     if (files === null) return null;
@@ -30,7 +44,7 @@ export class ChatRepo {
 
     const contents: Chat[] = [];
     const promises = files.map(async (file) => {
-      const content = await this.fileApi.getFileAsync(file.name);
+      const content = await this.fileApi.getFileAsync(file.key);
       contents.push(this.parseChatJson(content));
     });
     await Promise.all(promises);
@@ -48,7 +62,7 @@ export class ChatRepo {
     const contents: Chat[] = [];
     const promises = files.map(async (file) => {
       if (this.idExtractor(file.name) > lastId) {
-        const content = await this.fileApi.getFileAsync(file.name);
+        const content = await this.fileApi.getFileAsync(file.key);
         contents.push(this.parseChatJson(content));
       }
     });
@@ -57,9 +71,10 @@ export class ChatRepo {
   }
 
   async checkForUpdatedMessage(id: number): Promise<Chat> {
-    let file = await this.fileApi.getFileAsync(`id_${id}.json`);
-    if (!file) return null;
-    return this.parseChatJson(file);
+    let file = await this.getFile(`id_${id}.json`);
+    let content = await this.fileApi.getFileAsync(file.key);
+    if (!content) return null;
+    return this.parseChatJson(content);
   }
 
   async postMessage(message: Chat): Promise<NotepadMetadata> {
@@ -67,11 +82,13 @@ export class ChatRepo {
   }
 
   async softDeleteMessage(message: Chat): Promise<NotepadMetadata> {
-    return await this.fileApi.editFileAsync(`id_${message.Id}.json`, JSON.stringify(message));
+    let file = await this.getFile(`id_${message.Id}.json`);
+    return await this.fileApi.editFileAsync(file.key, JSON.stringify(message));
   }
 
   async hardDeleteMessage(message: Chat): Promise<Boolean> {
-    return await this.fileApi.deleteFileAsync(`id_${message.Id}.json`);
+    let file = await this.getFile(`id_${message.Id}.json`);
+    return await this.fileApi.deleteFileAsync(file.key);
   }
 
   // helpers

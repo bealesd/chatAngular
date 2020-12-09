@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { MenuService } from '../services/menu.service';
 import { CalendarService } from '../services/calendar.service';
+import { CalendarRecord } from '../models/calendar-record.model';
 
 @Component({
   selector: 'app-calendar-month',
@@ -49,7 +50,7 @@ export class CalendarMonthComponent implements OnInit, OnDestroy {
     this.calendarService.openAddEventForm.next({ 'dayData': {}, 'open': false });
   }
 
-  openUpdateEventForm(record) {
+  openUpdateEventForm(record: CalendarRecord) {
     this.calendarService.openUpdateEventForm.next({ 'record': record, 'open': true });
   }
 

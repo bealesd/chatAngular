@@ -19,8 +19,23 @@ export class TodoRepo {
     this.fileApi.dir = '/todoStore';
   }
 
+  async getFile(name: string): Promise<NotepadMetadata> {
+    const files = await this.fileApi.listFilesAndFoldersAsync();
+    if (files === [] || files === null) {
+      return null;
+    }
+
+    const file = files.find((file) => file.name === name);
+    if (file === null || file === undefined) {
+      return null;
+    }
+
+    return file;
+  }
+
   async postTodoItemRest(todoItemList: {}[]): Promise<NotepadMetadata> {
-    return await this.fileApi.editFileAsync('todo.json', JSON.stringify(todoItemList))
+    let file = await this.getFile('todo.json');
+    return await this.fileApi.editFileAsync(file.key, JSON.stringify(todoItemList))
   }
 
   async deleteItem(id): Promise<void> {
@@ -77,11 +92,11 @@ export class TodoRepo {
 
   async getTodoList(): Promise<void> {
     this.messageService.add(`Getting todo list.`);
-
-    let file = await this.fileApi.getFileAsync('todo.json');
-    if (file) {
+    let file = await this.getFile('todo.json');
+    let content = await this.fileApi.getFileAsync(file.key);
+    if (content) {
       const todoList: Todo[] = [];
-      JSON.parse(file).forEach(item => todoList.push(item));
+      JSON.parse(content).forEach(item => todoList.push(item));
       this.todoList = todoList;
       this.messageService.add(`TodoRepo: Got ${todoList.length} todo items.`);
     }

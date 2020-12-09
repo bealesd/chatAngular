@@ -350,9 +350,8 @@ export class FileApi {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       await this.deleteFileAsync(file.key);
-      this.messageService.add(`FileApi: • Deleted files.`, 'info');
-
     }
+    this.messageService.add(`FileApi: • Deleted files.`, 'info');
   }
 
   renameFileAsync(key: string, newName: string): Promise<NotepadMetadata> {

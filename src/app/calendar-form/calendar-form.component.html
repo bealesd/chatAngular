@@ -2,7 +2,7 @@
 
     <form [formGroup]="profileForm" (ngSubmit)="addingEvent ? addEventClick() : updateEventClick()">
 
-        <h3 class="form-heading">{{ this.calendarService.getDayNameLongForMonth(profileForm.value.day)}} {{profileForm.value.day}}<sup>{{calendarService.addOridnalIndictor(profileForm.value.day)}}</sup></h3>
+        <h3 class="form-heading">{{ calendarService.getDayNameLongForMonth(profileForm.value.day)}} {{profileForm.value.day}}<sup>{{calendarService.addOridnalIndictor(profileForm.value.day)}}</sup></h3>
 
         <button class="undo red-button" *ngIf="undoEnabled" (click)="undoChanges()" type="button">Undo</button>
 
