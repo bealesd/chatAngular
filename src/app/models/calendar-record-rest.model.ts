@@ -1,9 +1,9 @@
 import { CalendarRecord } from './calendar-record.model';
+import { ItemMetadata } from './item-models';
 
 export class CalendarRecordRest {
   records: CalendarRecord[] = [];
-  // sha: string = '';
-  // todo store notepad metadata here
+  metadata: ItemMetadata = null;
   year: number;
   month: number;
 

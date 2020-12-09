@@ -26,7 +26,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     fromEvent(window, 'resize').pipe(debounceTime(1000)).subscribe(() => { this.width; });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.menuService.enableMenuItem('day-click',
       () => {
         this.menuService.hideMenu();
@@ -45,7 +45,8 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
         this.monthOrWeek = 'month';
       });
 
-    this.calendarRepo.getCalendarRecords(parseInt(`${this.calendarService.year}`), parseInt(`${this.calendarService.zeroIndexedMonth}`));
+    await this.calendarRepo.getAllRecords();
+    await this.calendarRepo.getCalendarRecords(parseInt(`${this.calendarService.year}`), parseInt(`${this.calendarService.zeroIndexedMonth}`));
 
     this.menuService.activateRoute('calendar-click');
   }

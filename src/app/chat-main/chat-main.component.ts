@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { interval, Subscription } from 'rxjs';
 
-import { Chat } from '../models/chat.model';
+import { Chat, ChatContainer } from '../models/chat.model';
 
 import { ChatService } from '../services/chat.service';
 import { MessageService } from '../services/message.service';
@@ -17,7 +17,7 @@ import { MenuService } from '../services/menu.service';
 export class ChatComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
 
-  chatMessages: Chat[];
+  chatMessages: ChatContainer[];
   chatForm: Chat;
   content: string;
   rows: number;

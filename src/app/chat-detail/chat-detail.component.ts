@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-import { Chat } from '../models/chat.model';
+import { Chat, ChatContainer } from '../models/chat.model';
 import { ChatService } from '../services/chat.service';
 import { DialogBoxService } from '../services/dialog-box.service';
 
@@ -10,7 +10,7 @@ import { DialogBoxService } from '../services/dialog-box.service';
   styleUrls: ['./chat-detail.component.css']
 })
 export class ChatDetailComponent implements OnInit {
-  @Input() recieveChat: Chat;
+  @Input() recieveChat: ChatContainer;
   date: Date;
   deleted: boolean;
   content: string;
@@ -19,33 +19,33 @@ export class ChatDetailComponent implements OnInit {
   constructor(private chatService: ChatService) {  }
 
   public parseDateTime() {
-    this.date = new Date(this.recieveChat.Datetime);
+    this.date = new Date(this.recieveChat.chat.Datetime);
   }
 
   ngOnInit(): void {
     this.parseDateTime();
-    this.deleted = this.recieveChat.Deleted === 'true';
+    this.deleted = this.recieveChat.chat.Deleted === 'true';
     this.dialogBoxService = new DialogBoxService();
   }
 
   ngDoCheck(): void {
-    this.deleted = this.recieveChat.Deleted === 'true';
+    this.deleted = this.recieveChat.chat.Deleted === 'true';
   }
 
-  deleteMessage(recieveChat: Chat) {
+  deleteMessage(recieveChat: ChatContainer) {
     this.dialogBoxService.register(
-      `Delete Id ${recieveChat.Id}?`,
+      `Delete Id ${recieveChat.chat.Id}?`,
       'Soft',
       'Hard',
-      () => { this.chatService.softDeleteChatMessage(recieveChat.Id, true) },
-      () => { this.chatService.hardDeleteChatMessage(recieveChat.Id); });
+      () => { this.chatService.softDeleteChatMessage(recieveChat, true) },
+      () => { this.chatService.hardDeleteChatMessage(recieveChat); });
 
       this.dialogBoxService.open();
   }
 
-  undoDeleteMessage(recieveChat: Chat) {
+  undoDeleteMessage(recieveChat: ChatContainer) {
     if (confirm('Undo soft delete?')) {
-      this.chatService.softDeleteChatMessage(recieveChat.Id, false);
+      this.chatService.softDeleteChatMessage(recieveChat, false);
     }
   }
 }

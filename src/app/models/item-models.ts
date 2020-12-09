@@ -1,4 +1,4 @@
-export class NotepadMetadata {
+export class ItemMetadata {
   name: string
   path: string
   sha: string
@@ -35,11 +35,11 @@ export class NotepadMetadata {
   }
 
   get key() {
-    return `${this.name}-${this.sha}-${this.git_url}`;
+    return `${this.name}-^-${this.sha}-^-${this.git_url}`;
   }
 }
 
-export class Notepad {
+export class Item {
   content: string
-  metadata: NotepadMetadata
+  metadata: ItemMetadata
 }

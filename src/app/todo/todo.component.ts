@@ -12,7 +12,7 @@ import { TodoRepo } from '../services/todo.repo'
 export class TodoComponent implements OnInit {
   get sortedTodoList() {
     //TODO sought by date
-    return this.todoRepo.todoList.sort((a:Todo, b:Todo) => {
+    return this.todoRepo.todo.todos.sort((a:Todo, b:Todo) => {
       return a.id - b.id;
     });
   }
@@ -22,8 +22,8 @@ export class TodoComponent implements OnInit {
     public menuService: MenuService
   ) { }
 
-  ngOnInit(): void {
-    this.todoRepo.getTodoList();
+  async ngOnInit() {
+    await this.todoRepo.getTodoList();
     this.menuService.activateRoute('todo-click');
   }
 

@@ -3,7 +3,7 @@ import { HttpClient, } from '@angular/common/http';
 
 import { RestHelper } from '../helpers/rest-helper';
 import { MessageService } from './message.service';
-import { NotepadMetadata } from '../models/notepad-models';
+import { ItemMetadata } from '../models/item-models';
 
 @Injectable({
   providedIn: 'root',
@@ -79,11 +79,7 @@ export class FileApi {
     this.http = http;
   }
 
-  // private fileType(name): string {
-  //   return !name.includes('.') ? '' : name.split('.').slice(-1)[0];
-  // }
-
-  async findItem(key: string): Promise<NotepadMetadata> {
+  async findItem(key: string): Promise<ItemMetadata> {
     return new Promise(async (res, rej) => {
       let files = await this.listFilesAndFoldersAsync();
       if (!files) res(null);
@@ -122,9 +118,9 @@ export class FileApi {
       if (dir === null) res(false);
       else this.dir = dir;
 
-      this.http.get<NotepadMetadata[]>(this.dirUrl, this.restHelper.options()).subscribe(
+      this.http.get<ItemMetadata[]>(this.dirUrl, this.restHelper.options()).subscribe(
         {
-          next: (notepads: NotepadMetadata[]) => {
+          next: (notepads: ItemMetadata[]) => {
             this.messageService.add(`FileApi: Checked dir exists: ${dir}.`, 'info');
             res(true);
           },
@@ -146,16 +142,16 @@ export class FileApi {
     });
   }
 
-  listFilesAndFoldersAsync(): Promise<NotepadMetadata[]> {
+  listFilesAndFoldersAsync(): Promise<ItemMetadata[]> {
     this.messageService.add(`FileApi: Listing files in: ${this.dir}.`, 'info');
     return new Promise((res, rej) => {
-      const files: NotepadMetadata[] = [];
-      this.http.get<NotepadMetadata[]>(this.dirUrl, this.restHelper.options()).subscribe(
+      const files: ItemMetadata[] = [];
+      this.http.get<ItemMetadata[]>(this.dirUrl, this.restHelper.options()).subscribe(
         {
-          next: (notepads: NotepadMetadata[]) => {
-            notepads.forEach((notepadMetadata: NotepadMetadata) => {
+          next: (notepads: ItemMetadata[]) => {
+            notepads.forEach((notepadMetadata: ItemMetadata) => {
               if (notepadMetadata.type === 'file' || notepadMetadata.type === 'dir') {
-                const metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+                const metadata = new ItemMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
                 files.push(metadata);
               }
             });
@@ -174,25 +170,23 @@ export class FileApi {
   getFileAsync(key: string): Promise<string> {
     this.messageService.add(`FileApi: Getting file ${name}.`, 'info');
     return new Promise(async (res, rej) => {
-      let file = await this.findItem(key);
-      if (file === undefined || file === null) res(null);
-
-      this.http.get<any>(file.git_url, this.restHelper.options()).subscribe(
+      const git_url = key.split('-^-')[2];
+      this.http.get<any>(git_url, this.restHelper.options()).subscribe(
         {
           next: (value: any) => {
             const content = atob(value.content);
-            this.messageService.add(`FileApi: Got file ${file.name}.`, 'info');
+            this.messageService.add(`FileApi: Got file ${git_url}.`, 'info');
             res(content);
           },
           error: (err: any) => {
-            this.restHelper.errorMessageHandler(err, `getting file: ${file.git_url}`, 'FileApi');
+            this.restHelper.errorMessageHandler(err, `getting file: ${git_url}`, 'FileApi');
             res(null);
           }
         });
     });
   }
 
-  newFileAsync(name: string, text: string): Promise<NotepadMetadata> {
+  newFileAsync(name: string, text: string): Promise<ItemMetadata> {
     this.messageService.add(`FileApi: Creating new file ${name}.`, 'info');
     return new Promise((res, rej) => {
       const postUrl = this.dirPostUrl(name);
@@ -205,8 +199,8 @@ export class FileApi {
       this.http.put(postUrl, rawCommitBody, this.restHelper.options()).subscribe(
         {
           next: (contentAndCommit: any) => {
-            const notepadMetadata = contentAndCommit.content as NotepadMetadata;
-            const metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+            const notepadMetadata = contentAndCommit.content as ItemMetadata;
+            const metadata = new ItemMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
             this.messageService.add(`FileApi: Created new file ${name}.`, 'info');
             res(metadata);
           },
@@ -219,7 +213,7 @@ export class FileApi {
     });
   }
 
-  newFolderAsync(folderName: string): Promise<NotepadMetadata> {
+  newFolderAsync(folderName: string): Promise<ItemMetadata> {
     this.messageService.add(`FileApi: Creating new folder ${folderName}.`, 'info');
     const postUrl = this.dirPostUrl(`${folderName}/dummy.txt`);
 
@@ -231,8 +225,8 @@ export class FileApi {
       this.http.put(postUrl, rawCommitBody, this.restHelper.options()).subscribe(
         {
           next: (contentAndCommit: any) => {
-            const notepadMetadata = contentAndCommit.content as NotepadMetadata;
-            const metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+            const notepadMetadata = contentAndCommit.content as ItemMetadata;
+            const metadata = new ItemMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
             this.messageService.add(`FileApi: Created new folder ${name}.`, 'info');
             res(metadata);
           },
@@ -245,8 +239,7 @@ export class FileApi {
     });
   }
 
-  editFileAsync(key: string, text: string): Promise<NotepadMetadata> {
-    // file content update
+  editFileAsync(key: string, text: string): Promise<ItemMetadata> {
     this.messageService.add(`FileApi: Editing file: ${key}.`, 'info');
     return new Promise(async (res, rej) => {
       let file = await this.findItem(key);
@@ -260,8 +253,8 @@ export class FileApi {
       this.http.put(file.url, rawCommitBody, this.restHelper.options()).subscribe(
         {
           next: (contentAndCommit: any) => {
-            const notepadMetadata = contentAndCommit.content as NotepadMetadata;
-            const metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+            const notepadMetadata = contentAndCommit.content as ItemMetadata;
+            const metadata = new ItemMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
             this.messageService.add(`FileApi: Edited file.`, 'info');
             res(metadata);
           },
@@ -278,7 +271,6 @@ export class FileApi {
     this.messageService.add(`FileApi: Deleting file: ${key}.`, 'info');
     return new Promise(async (res, rej) => {
       const file = await this.findItem(key);
-      console.log(file);
       if (file === null || file.type !== 'file') res(false);
 
       const commit = JSON.stringify({
@@ -302,7 +294,7 @@ export class FileApi {
   }
 
   async deleteFolderRecursivelyAsync(folder: string) {
-    // Dir will need to be changed before each operation, else you could delete a file of folder and be in wrong directory.
+    // dir will need to be changed before each operation, else you could delete a file of folder and be in wrong directory.
     return
   }
 
@@ -343,7 +335,7 @@ export class FileApi {
     })
   }
 
-  async deleteFilesAsync(files: NotepadMetadata[]) {
+  async deleteFilesAsync(files: ItemMetadata[]) {
     this.messageService.add(`FileApi: Deleting files.`, 'info');
 
     // never change this to Promise.all(), each request must be done one at a time for the github api to work
@@ -354,7 +346,7 @@ export class FileApi {
     this.messageService.add(`FileApi: • Deleted files.`, 'info');
   }
 
-  renameFileAsync(key: string, newName: string): Promise<NotepadMetadata> {
+  renameFileAsync(key: string, newName: string): Promise<ItemMetadata> {
     this.messageService.add(`FileApi: Renaming file: ${key} to ${newName}.`, 'info');
     return new Promise(async (res, rej) => {
       let fileContent = await this.getFileAsync(key);
@@ -372,7 +364,7 @@ export class FileApi {
     });
   }
 
-  renameFolderAsync(key: string, newName: string): Promise<NotepadMetadata> {
+  renameFolderAsync(key: string, newName: string): Promise<ItemMetadata> {
     this.messageService.add(`FileApi: Renaming folder: ${key} to ${newName}.`, 'info');
     return new Promise(async (res, rej) => {
       let newFile = await this.newFolderAsync(newName);
@@ -386,12 +378,4 @@ export class FileApi {
       res(newFile)
     });
   }
-
 }
-
-// key: sha, name, url
-// get files with key
-// delete file by key
-// --get files, match on key, delete
-// delete folder
-// --get files, match on key, delete

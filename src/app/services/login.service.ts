@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { GitHubMetaData } from '../models/gitHubMetaData';
 import { MessageService } from '../services/message.service';
 import { CryptoService } from './crypto.service';
 
@@ -28,7 +26,7 @@ export class LoginService {
   login() {
     this.messageService.add(`LoginService: Login attempt.`, 'info');
 
-    this.http.get<GitHubMetaData[]>(this.githubApiUrl, this.options()).subscribe({
+    this.http.get<any>(this.githubApiUrl, this.options()).subscribe({
       next: (result) => {
         this.messageService.add('LoginService: Login complete.', 'info');
         this.loggedIn.next(true);

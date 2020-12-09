@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 
 import { MessageService } from './message.service';
-import { Notepad, NotepadMetadata } from '../models/notepad-models';
+import { Item, ItemMetadata } from '../models/item-models';
 import { FileApiFactory, FileApi } from './file-api';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotepadRepo {
-  public notepads: Notepad[] = [];
+  public notepads: Item[] = [];
   public currentNotepadKey: string = '';
 
   fileAPi: FileApi;
@@ -47,10 +47,10 @@ export class NotepadRepo {
     }
     else {
       this.notepads = [];
-      notepads.forEach((notepadMetadata: NotepadMetadata) => {
+      notepads.forEach((notepadMetadata: ItemMetadata) => {
         if (notepadMetadata.name !== 'dummy.txt') {
-          const notepad = new Notepad();
-          notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+          const notepad = new Item();
+          notepad.metadata = new ItemMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
           notepad.content = '';
           this.notepads.push(notepad);
         }
@@ -78,6 +78,7 @@ export class NotepadRepo {
 
   async updateNotepad(key: string): Promise<boolean> {
     const notepad = this.findNotepad(key);
+    
     const result = await this.fileAPi.editFileAsync(key, notepad.content)
     if (!result) {
       this.messageService.add(`NotepadRepo: Posting notepad sha: ${notepad.metadata.sha}.`, 'error');
@@ -99,8 +100,8 @@ export class NotepadRepo {
       return false;
     }
     else {
-      const notepad = new Notepad();
-      notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+      const notepad = new Item();
+      notepad.metadata = new ItemMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
       notepad.content = text;
       this.notepads.push(notepad);
 
@@ -116,8 +117,8 @@ export class NotepadRepo {
       return false;
     }
     else {
-      const notepad = new Notepad();
-      notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+      const notepad = new Item();
+      notepad.metadata = new ItemMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
 
       this.messageService.add(`NotepadRepo: Posted notepad name: ${notepad.metadata.name}.`);
       return true;
@@ -151,7 +152,6 @@ export class NotepadRepo {
   }
 
   async renameNotepad(key: string, newName: string): Promise<boolean> {
-    const content = await this.fileAPi.getFileAsync(key);
     const notepadMetadata = await this.fileAPi.renameFileAsync(key, newName);
     if (!notepadMetadata) {
       this.messageService.add('NotepadRepo: Getting notepads.', 'error');
@@ -159,7 +159,7 @@ export class NotepadRepo {
     }
     else {
       const notepad = this.findNotepad(key);
-      notepad.metadata = new NotepadMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
+      notepad.metadata = new ItemMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
       return true;
     }
   }

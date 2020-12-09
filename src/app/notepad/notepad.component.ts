@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Notepad, NotepadMetadata } from './../models/notepad-models';
+import { Item, ItemMetadata } from '../models/item-models';
 import { MenuService } from '../services/menu.service';
 import { NotepadRepo } from '../services/notepad.repo'
 
@@ -81,7 +81,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
   }
 
   undoNotepadChanges() {
-    (this.currentNotepad as Notepad).content = this.originalNotepadText;
+    (this.currentNotepad as Item).content = this.originalNotepadText;
     this.resetNotepadInput();
   }
 
@@ -192,7 +192,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.closeFile();
   }
 
-  highlightRow(item: Notepad): void {
+  highlightRow(item: Item): void {
     this.timer = null;
     this.preventSimpleClick = false;
     let delay = 200;
