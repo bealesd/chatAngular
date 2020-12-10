@@ -7,7 +7,7 @@ import { Chat, ChatContainer } from '../models/chat.model';
 import { ChatService } from '../services/chat.service';
 import { MessageService } from '../services/message.service';
 
-import { MenuService } from '../services/menu.service';
+// import { MenuService } from '../services/menu.service';
 
 @Component({
   selector: 'app-chat',
@@ -41,7 +41,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   constructor(
     private chatService: ChatService,
     private messageService: MessageService,
-    private menuService: MenuService
+    // private menuService: MenuService
   ) {
     this.content = '';
     this.rows = 1;
@@ -68,7 +68,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.registerTabSwitch();
 
-    this.menuService.activateRoute('chat-click');
+    // this.menuService.activateRoute('chat-click');
   }
 
   ngOnDestroy() {

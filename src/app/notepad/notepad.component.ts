@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Item, ItemMetadata } from '../models/item-models';
-import { MenuService } from '../services/menu.service';
+// import { MenuService } from '../services/menu.service';
 import { NotepadRepo } from '../services/notepad.repo'
 
 @Component({
@@ -36,14 +36,14 @@ export class NotepadComponent implements OnInit, OnDestroy {
 
   constructor(
     public notepadRepo: NotepadRepo,
-    public menuService: MenuService,
+    // public menuService: MenuService,
   ) { }
 
   ngOnInit(): void {
     this.disablePage = false;
 
     this.notepadRepo.getAllNotepads();
-    this.menuService.activateRoute('notepad-click');
+    // this.menuService.activateRoute('notepad-click');
   }
 
   ngOnDestroy() {
@@ -74,10 +74,10 @@ export class NotepadComponent implements OnInit, OnDestroy {
   }
 
   disableNotebookMenus() {
-    this.menuService.disableMenuItem('close-click');
-    this.menuService.disableMenuItem('save-click');
-    this.menuService.disableMenuItem('delete-click');
-    this.menuService.disableMenuItem('undo-click');
+    // this.menuService.disableMenuItem('close-click');
+    // this.menuService.disableMenuItem('save-click');
+    // this.menuService.disableMenuItem('delete-click');
+    // this.menuService.disableMenuItem('undo-click');
   }
 
   undoNotepadChanges() {
@@ -141,10 +141,10 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.notepadIsOpen = true;
     this.originalNotepadText = this.currentNotepad.content;
     this.resetNotepadInput();
-    this.menuService.enableMenuItem('save-click', () => { this.saveNotepad(); this.menuService.hideMenu(); });
-    this.menuService.enableMenuItem('close-click', () => { this.exitNotepad(); this.menuService.hideMenu(); });
-    this.menuService.enableMenuItem('delete-click', () => { this.deleteNotepad(); this.menuService.hideMenu(); });
-    this.menuService.enableMenuItem('undo-click', () => { this.undoNotepadChanges(); this.menuService.hideMenu(); });
+    // this.menuService.enableMenuItem('save-click', () => { this.saveNotepad(); this.menuService.hideMenu(); });
+    // this.menuService.enableMenuItem('close-click', () => { this.exitNotepad(); this.menuService.hideMenu(); });
+    // this.menuService.enableMenuItem('delete-click', () => { this.deleteNotepad(); this.menuService.hideMenu(); });
+    // this.menuService.enableMenuItem('undo-click', () => { this.undoNotepadChanges(); this.menuService.hideMenu(); });
     this.disablePage = false;
   }
 

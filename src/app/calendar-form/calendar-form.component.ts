@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { Utilities } from '../helpers/utilities-helper';
 
 import { CalendarRepo } from './../services/calendar.repo';
-import { MenuService } from '../services/menu.service';
+// import { MenuService } from '../services/menu.service';
 import { CalendarService } from '../services/calendar.service';
 
 @Component({
@@ -36,7 +36,7 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
   constructor(
     private calendarRepo: CalendarRepo,
     private fb: FormBuilder,
-    private menuService: MenuService,
+    // private menuService: MenuService,
     private calendarService: CalendarService,
     private utilities: Utilities) {
   }
@@ -46,25 +46,26 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
       this.profileForm.valueChanges.subscribe(() => {
         this.undoEnabled = this.checkEnableUndo();
 
-        if (this.undoEnabled)
-          this.menuService.enableMenuItem('undo-click', () => { this.undoChanges(); this.menuService.hideMenu(); });
-        else
-          this.menuService.disableMenuItem('undo-click');
+        // if (this.undoEnabled)
+        //   this.menuService.enableMenuItem('undo-click', () => { this.undoChanges(); this.menuService.hideMenu(); });
+        // else
+        //   this.menuService.disableMenuItem('undo-click');
 
-        if (this.profileForm.valid && this.addingEvent)
-          this.menuService.enableMenuItem('save-click', () => { this.addEventClick(); this.menuService.hideMenu(); });
-        else if (this.profileForm.valid && this.updatingEvent)
-          this.menuService.enableMenuItem('save-click', () => { this.updateEventClick(); this.menuService.hideMenu(); });
-        else
-          this.menuService.disableMenuItem('save-click');
+        // if (this.profileForm.valid && this.addingEvent)
+        //   this.menuService.enableMenuItem('save-click', () => { this.addEventClick(); this.menuService.hideMenu(); });
+        // else if (this.profileForm.valid && this.updatingEvent)
+        //   this.menuService.enableMenuItem('save-click', () => { this.updateEventClick(); this.menuService.hideMenu(); });
+        // else
+        //   this.menuService.disableMenuItem('save-click');
 
-        if (this.addingEvent)
-          this.menuService.enableMenuItem('close-click', () => { this.closeClickAddEventForm(); this.menuService.hideMenu(); });
-        else if (this.updatingEvent)
-          this.menuService.enableMenuItem('close-click', () => { this.closeClickUpdateEventForm(); this.menuService.hideMenu(); });
+        // if (this.addingEvent)
+        //   this.menuService.enableMenuItem('close-click', () => { this.closeClickAddEventForm(); this.menuService.hideMenu(); });
+        // else if (this.updatingEvent)
+        //   this.menuService.enableMenuItem('close-click', () => { this.closeClickUpdateEventForm(); this.menuService.hideMenu(); });
 
-        if (this.updatingEvent)
-          this.menuService.enableMenuItem('delete-click', () => { this.deleteEvent(); this.menuService.hideMenu(); });
+        // if (this.updatingEvent)
+        //   this.menuService.enableMenuItem('delete-click', () => { this.deleteEvent(); this.menuService.hideMenu(); });
+
       })
     );
 
@@ -100,11 +101,11 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
     this.calendarService.openAddEventForm.observers.forEach(element => { element.complete(); });
     this.calendarService.openAddEventForm.next({});
 
-    this.menuService.disableMenuItem('close-click');
-    this.menuService.disableMenuItem('delete-click');
-    this.menuService.disableMenuItem('undo-click');
+    // this.menuService.disableMenuItem('close-click');
+    // this.menuService.disableMenuItem('delete-click');
+    // this.menuService.disableMenuItem('undo-click');
 
-    this.menuService.disableMenuItem('save-click');
+    // this.menuService.disableMenuItem('save-click');
   }
 
   checkEnableUndo() {
@@ -182,11 +183,11 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
   }
 
   closeAddOrUpdateEventForm() {
-    this.menuService.disableMenuItem('close-click');
-    this.menuService.disableMenuItem('delete-click');
-    this.menuService.disableMenuItem('save-click');
+    // this.menuService.disableMenuItem('close-click');
+    // this.menuService.disableMenuItem('delete-click');
+    // this.menuService.disableMenuItem('save-click');
 
-    this.menuService.disableMenuItem('undo-click');
+    // this.menuService.disableMenuItem('undo-click');
 
     this.addingEvent = false;
     this.updatingEvent = false;

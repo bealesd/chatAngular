@@ -1,21 +1,27 @@
-﻿﻿body {
-    background-color: white;
+﻿﻿.page-container {
+    /* min-height: 100%; */
+    /* position: relative; */
 }
 
-.page-container {
-    min-height: 100%;
-    position: relative;
+.menu-bar{
+    background-color: red;
+    height: 50px;
+}
+
+.page-content{
+    background-color: blueviolet;
+    height: calc(100vh - 50px);
 }
 
 .main-container {
-    /* padding-bottom: 100px; */
+    /* height: calc(100vh - 200px); */
 }
 
-h4 {
+/* h4 {
     color: gray;
     margin: 10px;
-}
+} */
 
-input {
+/* input {
     color: gray;
-}
+} */

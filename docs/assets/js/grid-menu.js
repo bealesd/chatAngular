@@ -16,9 +16,6 @@ GridMenu = function () {
             this.childMenuItems = [];
             this.subMenuContainers = [];
             this.menuBorder = '1px solid black';
-
-            // const href = 'src/asset/css/grid-menu.css';
-            // this.loadCss(href);
         }
 
         loadCss(href) {

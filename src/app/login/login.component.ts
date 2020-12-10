@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 import { LoginService } from '../services/login.service';
 import { CryptoService } from '../services/crypto.service';
-import { MenuService } from '../services/menu.service';
+// import { MenuService } from '../services/menu.service';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
     private cryptoService: CryptoService,
     private loginService: LoginService,
     private router: Router,
-    private menuSerivce: MenuService
+    // private menuSerivce: MenuService
   ) {
     this.show = false;
 
@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.menuSerivce.activateRoute('login-click');
+    // this.menuSerivce.activateRoute('login-click');
   }
 
   login(username: string, password: string) {

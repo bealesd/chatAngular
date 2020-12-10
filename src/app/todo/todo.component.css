@@ -59,7 +59,6 @@
 .grid-container {
     display: grid;
     grid-template-columns: auto calc(var(--col-one) + var(--col-two) + var(--col-three) + var(--col-four)) auto;
-    padding-top: 10px;
 }
 
 h1{

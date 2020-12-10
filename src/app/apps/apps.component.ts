@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuService } from '../services/menu.service';
+// import { MenuService } from '../services/menu.service';
 
 @Component({
   selector: 'app-component',
@@ -7,10 +7,13 @@ import { MenuService } from '../services/menu.service';
   styleUrls: ['./apps.component.css']
 })
 export class AppsComponent implements OnInit {
-  constructor(private menuSerivce: MenuService) { }
+  constructor(
+    // private menuSerivce: MenuService
+    )
+   { }
 
   ngOnInit(): void {
-    this.menuSerivce.activateRoute('home-click');
+    // this.menuSerivce.activateRoute('home-click');
   }
 
   customAlert(message) {

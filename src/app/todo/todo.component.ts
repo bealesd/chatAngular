@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Todo } from '../models/todo.model';
-import { MenuService } from '../services/menu.service';
+// import { MenuService } from '../services/menu.service';
 import { TodoRepo } from '../services/todo.repo'
 
 @Component({
@@ -19,12 +19,12 @@ export class TodoComponent implements OnInit {
 
   constructor(
     public todoRepo: TodoRepo,
-    public menuService: MenuService
+    // public menuService: MenuService
   ) { }
 
   async ngOnInit() {
     await this.todoRepo.getTodoList();
-    this.menuService.activateRoute('todo-click');
+    // this.menuService.activateRoute('todo-click');
   }
 
   deleteTodo(todo) {

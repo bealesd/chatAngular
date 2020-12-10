@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CalendarRecord } from '../models/calendar-record.model';
 import { CalendarService } from '../services/calendar.service';
-import { MenuService } from '../services/menu.service';
+// import { MenuService } from '../services/menu.service';
 
 @Component({
   selector: 'app-calendar-day',
@@ -11,12 +11,12 @@ import { MenuService } from '../services/menu.service';
 export class CalendarDayComponent implements OnInit, OnDestroy {
 
   constructor(
-    private menuService: MenuService,
+    // private menuService: MenuService,
     public calendarService: CalendarService
   ) { }
 
   ngOnInit(): void {
-    this.menuService.disableMenuItem('undo-click');
+    // this.menuService.disableMenuItem('undo-click');
   }
 
   ngOnDestroy() {
