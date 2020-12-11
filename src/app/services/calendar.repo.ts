@@ -142,7 +142,7 @@ export class CalendarRepo {
     const metadata = this.calendarRecordsMetadata.find((metadata) => metadata.name === name);
     let content;
     if (metadata !== null || metadata !== undefined)
-      content = await this.fileApi.getFileAsync(metadata.key);
+      content = await this.fileApi.getFileAsync(metadata.git_url);
 
     if (!content || content === '') {
       this.calendarRecordRest.records = [];

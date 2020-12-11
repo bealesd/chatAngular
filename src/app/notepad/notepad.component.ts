@@ -159,7 +159,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.disablePage = true;
 
     if (this.currentNotepad.metadata.type === 'file') {
-      const result = await this.notepadRepo.getNotepad(this.currentNotepad.metadata.key);
+      const result = await this.notepadRepo.getNotepad(this.currentNotepad.metadata.key, this.currentNotepad.metadata.git_url);
       if (result) this.openFile();
       else this.closeFile();
     }
@@ -216,7 +216,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
       this.closeFile();
     }
     else {
-      const result = await this.notepadRepo.renameNotepad(this.currentNotepad.metadata.key, name);
+      const result = await this.notepadRepo.renameNotepad(this.currentNotepad.metadata.key, name, this.currentNotepad.metadata.git_url);
       this.closeFile();
     }
   }

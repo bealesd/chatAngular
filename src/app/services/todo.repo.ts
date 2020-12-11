@@ -95,7 +95,7 @@ export class TodoRepo {
     if(file === null || file === undefined) return null
     
     this.todo.metadata = file;
-    const content = await this.fileApi.getFileAsync(file.key);
+    const content = await this.fileApi.getFileAsync(file.git_url);
 
     if (content) {
       const todoList: Todo[] = [];

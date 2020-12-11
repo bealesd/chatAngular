@@ -36,7 +36,7 @@ export class ChatRepo {
     const chatContainers: ChatContainer[] = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const content = await this.fileApi.getFileAsync(file.key);
+      const content = await this.fileApi.getFileAsync(file.git_url);
       const chatContainer = new ChatContainer();
       chatContainer.metadata = file;
       chatContainer.chat = this.parseChatJson(content);
@@ -58,7 +58,7 @@ export class ChatRepo {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (this.idExtractor(file.name) > lastId) {
-        const content = await this.fileApi.getFileAsync(file.key);
+        const content = await this.fileApi.getFileAsync(file.git_url);
         const chatContainer = new ChatContainer();
         chatContainer.metadata = file;
         chatContainer.chat = this.parseChatJson(content);
@@ -69,7 +69,7 @@ export class ChatRepo {
   }
 
   async checkForUpdatedMessage(chat: ChatContainer): Promise<Chat> {
-    let content = await this.fileApi.getFileAsync(chat.metadata.key);
+    let content = await this.fileApi.getFileAsync(chat.metadata.git_url);
     if (!content) return null;
     return this.parseChatJson(content);
   }

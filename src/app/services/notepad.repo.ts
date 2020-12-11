@@ -60,8 +60,8 @@ export class NotepadRepo {
     }
   }
 
-  async getNotepad(key: string): Promise<boolean> {
-    const content = await this.fileAPi.getFileAsync(key);
+  async getNotepad(key:string, git_url: string): Promise<boolean> {
+    const content = await this.fileAPi.getFileAsync(git_url);
     if (content === null) {
       this.messageService.add('NotepadRepo: Getting notepad.', 'error');
       return false;
@@ -151,8 +151,8 @@ export class NotepadRepo {
     }
   }
 
-  async renameNotepad(key: string, newName: string): Promise<boolean> {
-    const notepadMetadata = await this.fileAPi.renameFileAsync(key, newName);
+  async renameNotepad(key: string, newName: string, git_url:string): Promise<boolean> {
+    const notepadMetadata = await this.fileAPi.renameFileAsync(key, newName, git_url);
     if (!notepadMetadata) {
       this.messageService.add('NotepadRepo: Getting notepads.', 'error');
       return false;

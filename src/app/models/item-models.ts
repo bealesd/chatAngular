@@ -35,6 +35,7 @@ export class ItemMetadata {
   }
 
   get key() {
+    return `${this.name}-^-${this.type}`;
     return `${this.name}-^-${this.sha}-^-${this.git_url}`;
   }
 }

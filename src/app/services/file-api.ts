@@ -167,10 +167,10 @@ export class FileApi {
     });
   }
 
-  getFileAsync(key: string): Promise<string> {
+  getFileAsync(git_url: string): Promise<string> {
     this.messageService.add(`FileApi: Getting file ${name}.`, 'info');
     return new Promise(async (res, rej) => {
-      const git_url = key.split('-^-')[2];
+      // const git_url = key.split('-^-')[2];
       this.http.get<any>(git_url, this.restHelper.options()).subscribe(
         {
           next: (value: any) => {
@@ -346,10 +346,10 @@ export class FileApi {
     this.messageService.add(`FileApi: • Deleted files.`, 'info');
   }
 
-  renameFileAsync(key: string, newName: string): Promise<ItemMetadata> {
+  renameFileAsync(key: string, newName: string, git_url: string): Promise<ItemMetadata> {
     this.messageService.add(`FileApi: Renaming file: ${key} to ${newName}.`, 'info');
     return new Promise(async (res, rej) => {
-      let fileContent = await this.getFileAsync(key);
+      let fileContent = await this.getFileAsync(git_url);
       if (fileContent === null) res(null);
 
       let newFile = await this.newFileAsync(newName, fileContent);
