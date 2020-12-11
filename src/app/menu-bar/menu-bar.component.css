@@ -1,0 +1,48 @@
+:host {
+    --icon-router-link-font-size: 40px;
+}
+
+@media screen and (max-width: 800px) and (min-width: 500px) {
+    :host {
+        --icon-router-link-font-size: 40px;
+   }
+}
+
+@media screen and (max-width: 500px) {
+     :host {
+        --icon-router-link-font-size: 40px;
+    }
+}
+
+.app-container {
+    display: flex;
+    align-content: center;
+    flex-flow: row wrap;
+    height:100%;
+    background-color: rgba(38, 38, 38);
+}
+
+.app-container > div{
+    padding: 0px 10px 0px 10px;
+    display: inline-block;
+}
+
+.app-container > div:last-child{
+    margin-left: auto
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    color: hotpink;
+    font-size: var(--icon-router-link-font-size);
+}
+
+[class*=" icon-"]:hover, [class^="icon-"]:hover {
+    color: blue;
+    cursor: pointer;
+}
+
+[class^="icon-"]:active,
+[class*=" icon-"]:focus {
+    outline: 0;
+    border: none;
+}

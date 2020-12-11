@@ -1,40 +1,43 @@
 <div class="changePageContainer">
 
-    <div class="green-button" (click)="monthOrWeek === 'month' ?
+  <div class="green-button-container">
+    <div class="green-button icon-arrow-left" (click)="monthOrWeek === 'month' ?
       calendarService.changeMonth('previous') :
       monthOrWeek === 'week' ?
       calendarService.changeWeek('previous') :
       calendarService.changeDay('previous')
       ">
-        <span>&#60;</span>
     </div>
-    <div class="green-button" (click)="monthOrWeek === 'month' ?
+  </div>
+
+  <div class="green-button-container">
+    <div class="green-button icon-arrow-right" (click)="monthOrWeek === 'month' ?
       calendarService.changeMonth('next') :
       monthOrWeek === 'week' ?
       calendarService.changeWeek('next') :
       calendarService.changeDay('next')">
-        <span>&#62;</span>
     </div>
+  </div>
 
+  <div class="today-button-container">
     <div class="today-button" (click)="calendarService.changeToToday()">Today</div>
+  </div>
 
-    <select class="dropdown" (change)="updateMonth(titleMonth.value)" #titleMonth id="titleMonth">
-      <option *ngFor='let month of calendarService.monthNames; let i = index;' [value]="i"
-        [selected]="getSelectedMonth(month)">
-        {{(width < 800 ? calendarService.monthNamesShort[i]:month)}}
-      </option>
-    </select>
+  <select class="dropdown" (change)="updateMonth(titleMonth.value)" #titleMonth id="titleMonth">
+    <option *ngFor='let month of calendarService.monthNames; let i = index;' [value]="i"
+      [selected]="getSelectedMonth(month)">
+      {{(width < 800 ? calendarService.monthNamesShort[i]:month)}}
+    </option>
+  </select>
 
-    <select class="dropdown" (change)="updateYear(titleYear.value)" #titleYear id="titleYear">
-      <option *ngFor='let year of calendarService.years;' [value]="year"
-        [selected]="getSelectedYear(year)">
-       {{year}}
-      </option>
-    </select>
+  <select class="dropdown" (change)="updateYear(titleYear.value)" #titleYear id="titleYear">
+    <option *ngFor='let year of calendarService.years;' [value]="year" [selected]="getSelectedYear(year)">
+      {{year}}
+    </option>
+  </select>
 
-    <select class="dropdown" (change)="updateCalendarView(calendarView.value)" #calendarView id="calendarView">
-    <option *ngFor='let view of calendarViews' [value]="view"
-      [selected]="monthOrWeek === view.toLowerCase()">
+  <select class="dropdown" (change)="updateCalendarView(calendarView.value)" #calendarView id="calendarView">
+    <option *ngFor='let view of calendarViews' [value]="view" [selected]="monthOrWeek === view.toLowerCase()">
       {{view}}
     </option>
   </select>

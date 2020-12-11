@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CryptoService } from '../services/crypto.service';
-// import { MenuService } from '../services/menu.service';
 
 @Component({
   selector: 'app-new-user',
@@ -12,12 +11,9 @@ export class NewUserComponent implements OnInit {
 
   constructor(
     private cryptoService: CryptoService,
-    // private menuSerivce: MenuService
   ) { }
 
-  ngOnInit(): void {
-    // this.menuSerivce.activateRoute('new-user-click');
-  }
+  ngOnInit(): void {  }
 
   createNewUser(username: string, password: string) {
     this.cryptoService.createNewUser(username, password);

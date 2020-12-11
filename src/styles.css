@@ -836,8 +836,8 @@ body {
     height: 100%;
     margin: 0px;
     font-family: 'Space Mono';
-    /* background: var(--main-background-image), var(--main-background); */
-    /* background-size: cover; */
+    background: var(--main-background-image), var(--main-background); 
+    background-size: cover; 
 }
 
 h1,
@@ -846,7 +846,7 @@ h3,
 h4,
 h5,
 h6 {
-  display:inline;
+  /* display:inline; */
   color: var(--main-header-font-color);
 }
 

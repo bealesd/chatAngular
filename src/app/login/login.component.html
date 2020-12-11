@@ -1,13 +1,11 @@
-  <!-- *ngIf='loggedIn === false' -->
-
-<div class="login" style="background-color: blue;">
+<div class="login">
   
-<h1>Login</h1>
+<div class="title">Login</div>
     <form>
         <label for="username">Username</label>
         <input type="text" #username name="username" autocomplete="username">
         <label for="password">Password</label>
-        <input type="show ? 'text' : 'password'" #password name="password" placeholder="key" autocomplete="current-password">
+        <input type="{{show ? 'text' : 'password'}}" #password name="password" placeholder="key" autocomplete="current-password">
         <button (click)="showPassword()">{{show ? 'Hide' : 'Show'}}</button>
         <input class="submit" (click)='login(username.value, password.value)' type="submit" value="Submit">
     </form>

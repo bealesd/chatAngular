@@ -1,3 +1,9 @@
+.title{
+    font-size: 30px;
+    color: var(--main-header-font-color);
+    font-weight: bold;
+}
+
 .login{
     padding-left:5px;
 }

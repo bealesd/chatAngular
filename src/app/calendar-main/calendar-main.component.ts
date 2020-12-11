@@ -4,7 +4,6 @@ import { debounceTime } from 'rxjs/operators';
 
 import { CalendarRepo } from '../services/calendar.repo';
 import { CalendarService } from '../services/calendar.service';
-// import { MenuService } from '../services/menu.service';
 
 @Component({
   selector: 'app-calendar-main',
@@ -21,41 +20,16 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   constructor(
     private calendarRepo: CalendarRepo,
     public calendarService: CalendarService,
-    // public menuService: MenuService
   ) {
     fromEvent(window, 'resize').pipe(debounceTime(1000)).subscribe(() => { this.width; });
   }
 
   async ngOnInit() {
-    // this.menuService.enableMenuItem('day-click',
-    //   () => {
-    //     this.menuService.hideMenu();
-    //     this.monthOrWeek = 'day';
-    //   });
-
-    // this.menuService.enableMenuItem('week-click',
-    //   () => {
-    //     this.menuService.hideMenu();
-    //     this.monthOrWeek = 'week';
-    //   });
-
-    // this.menuService.enableMenuItem('month-click',
-    //   () => {
-    //     this.menuService.hideMenu();
-    //     this.monthOrWeek = 'month';
-    //   });
-
     await this.calendarRepo.getAllRecords();
     await this.calendarRepo.getCalendarRecords(parseInt(`${this.calendarService.year}`), parseInt(`${this.calendarService.zeroIndexedMonth}`));
-
-    // this.menuService.activateRoute('calendar-click');
   }
 
-  ngOnDestroy() {
-    // this.menuService.disableMenuItem('day-click');
-    // this.menuService.disableMenuItem('week-click');
-    // this.menuService.disableMenuItem('month-click');
-  }
+  ngOnDestroy() { }
 
   updateCalendarView(value: string) {
     if (this.calendarViews.includes(value))

@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-// import { MenuService } from '../services/menu.service';
 import { CalendarService } from '../services/calendar.service';
 import { CalendarRecord } from '../models/calendar-record.model';
 
@@ -53,13 +52,10 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    // private menuService: MenuService,
     public calendarService: CalendarService
   ) { }
 
-  ngOnInit() {
-    // this.menuService.disableMenuItem('undo-click');
-  }
+  ngOnInit() { }
 
   ngOnDestroy() {
     this.calendarService.openUpdateEventForm.next({ 'record': {}, 'open': false });

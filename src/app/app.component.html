@@ -1,18 +1,14 @@
-<!-- <div class="page-container"> -->
-    <!-- <div class="main-container"> -->
-        <div class="menu-bar">
-           <app-menu-bar></app-menu-bar> 
-        </div>
-        
+<div class="menu-bar">
+    <app-menu-bar></app-menu-bar>
+</div>
 
-        <div class="page-content">
-             <router-outlet></router-outlet>
-        </div>
-       
 
-        <app-dialog-box></app-dialog-box>
-    <!-- </div> -->
+<div class="page-content">
+    <router-outlet></router-outlet>
+</div>
 
-    <!-- <app-messages *ngIf="isDevMode"></app-messages> -->
 
-<!-- </div> -->
+<app-dialog-box></app-dialog-box>
+
+
+<app-messages *ngIf="isDevMode"></app-messages>

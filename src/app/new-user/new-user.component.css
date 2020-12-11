@@ -35,9 +35,9 @@ label {
     display: block;
 }
 
-/* .login > h1{
+.login > h1{
     padding-top: 5px;
-} */
+} 
 
 #usernameContainer h4{
      padding-top: 5px;

@@ -1,6 +1,7 @@
 :host {
     --main-margin: 5px;
     --record-text-and-heading-color: white;
+    --sub-menu-background-color: purple;
     --heading-font-size: 16px;
     --heading-font-family: inherit;
     --heading-font-weight: normal;
@@ -55,10 +56,11 @@
     display: grid;
     grid-template-columns: var(--change-page-container-template-columns);
     color: var(--record-text-and-heading-color);
-    grid-template-rows: repeat(1, var(--column-width));
-    background-color: var(--mask-background-color);
+    grid-template-rows: repeat(1, 40px);
+    background-color: var(--sub-menu-background-color);
     font-size: var(--heading-font-size);
     font-style: var(--heading-font-family);
+    height: 40px;
 }
 
 .changePageContainer button:first-of-type {
@@ -69,7 +71,7 @@
     grid-column: var(--change-page-last-grid-column);
 }
 
-.today-button {
+.today-button-container {
     grid-column: var(--today-button-grid-column);
 }
 
@@ -88,7 +90,7 @@
 .dropdown {
     border: 0px;
     outline: 0;
-    background-color: var(--mask-background-color);
+    background-color: var(--sub-menu-background-color);
     color: var(--record-text-and-heading-color);
     font: inherit;
     margin-right: 10px;
@@ -113,6 +115,20 @@
     cursor: pointer;
 }
 
+.green-button-container{
+    height:40px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.today-button-container{
+    height:40px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
 .green-button,
 .today-button {
     background-color: transparent;
@@ -124,7 +140,7 @@
 }
 
 .dropdown:hover,
-.green-button:hover,
-.today-button:hover {
+.green-button-container:hover,
+.today-button-container:hover {
     background-color: black;
 }

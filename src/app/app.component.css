@@ -1,27 +1,8 @@
-﻿﻿.page-container {
-    /* min-height: 100%; */
-    /* position: relative; */
-}
-
-.menu-bar{
-    background-color: red;
+﻿﻿.menu-bar{
     height: 50px;
 }
 
 .page-content{
-    background-color: blueviolet;
+    /* background-color: blueviolet; */
     height: calc(100vh - 50px);
 }
-
-.main-container {
-    /* height: calc(100vh - 200px); */
-}
-
-/* h4 {
-    color: gray;
-    margin: 10px;
-} */
-
-/* input {
-    color: gray;
-} */

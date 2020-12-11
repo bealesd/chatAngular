@@ -7,8 +7,6 @@ import { Chat, ChatContainer } from '../models/chat.model';
 import { ChatService } from '../services/chat.service';
 import { MessageService } from '../services/message.service';
 
-// import { MenuService } from '../services/menu.service';
-
 @Component({
   selector: 'app-chat',
   templateUrl: './chat-main.component.html',
@@ -41,7 +39,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   constructor(
     private chatService: ChatService,
     private messageService: MessageService,
-    // private menuService: MenuService
   ) {
     this.content = '';
     this.rows = 1;
@@ -67,8 +64,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.subscriptions.push(interval(this.minsToMilliSecs(5)).subscribe(x => this.chatService.checkForUpdatedMessages()));
 
     this.registerTabSwitch();
-
-    // this.menuService.activateRoute('chat-click');
   }
 
   ngOnDestroy() {

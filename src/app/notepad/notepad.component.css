@@ -68,14 +68,11 @@
     z-index: 9999999;
 }
 
-.notepad-container {
-    padding: 20px 20px 0px 20px;
-}
-
 .notepad-editor-container {
     display: grid;
     grid-template-columns: auto;
     align-content: center;
+    margin: 20px 20px 0px 20px;
 }
 
 .notepad-title {
@@ -101,6 +98,7 @@
 }
 
 .notepad-item-container {
+    margin: 20px 20px 0px 20px;
     display: grid;
     grid-template-columns: auto auto auto 20px;
     padding: 0px 20px;
@@ -166,7 +164,7 @@ div[class*="notepad-item-control-"] > span:hover,
     cursor: default;
 }
 
-[class^="icon-"], [class*=" icon-"] {
+.notepad-item-container [class^="icon-"] {
     color: #555555;
 }
 
@@ -429,4 +427,33 @@ button {
 
 .white-button:hover {
     box-shadow: 0 0 5px rgba(33, 33, 33, .7);
+}
+
+.changePageContainer {
+    display: flex;
+    align-content: center;
+    flex-flow: row wrap;
+    font-size: var(--notepad-item-controls-font-size);
+    height: 40px;
+    background-color: purple;
+}
+
+.changePageContainer  > div{
+    padding: 0px 10px 0px 10px;
+    display: inline-block;
+}
+
+.changePageContainer [class^="icon-"] {
+    color: white;
+}
+
+.changePageContainer [class^="icon-"]:hover {
+    color: blue;
+    cursor: pointer;
+}
+
+.changePageContainer [class^="icon-"]:active,
+.changePageContainer [class^="icon-"]:focus {
+    outline: 0;
+    border: none;
 }

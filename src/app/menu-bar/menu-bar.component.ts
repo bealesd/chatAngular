@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { CryptoService } from '../services/crypto.service';
 
 import { LoginService } from '../services/login.service';
-// import { MenuService } from '../services/menu.service';
+import { MessageService } from '../services/message.service';
 
 @Component({
   selector: 'app-menu-bar',
@@ -13,7 +15,9 @@ export class MenuBarComponent implements OnInit {
 
   constructor(
     private loginService: LoginService,
-    // private menuService: MenuService,
+    public cryptoService: CryptoService,
+    private messageService: MessageService,
+    private router: Router
   ) {
 
     this.loginService.loggedIn.subscribe(loggedIn => {
@@ -25,6 +29,17 @@ export class MenuBarComponent implements OnInit {
   }
 
   async ngAfterViewInit(): Promise<void> {
+  }
+
+  logout() {
+    this.cryptoService.logout();
+    this.loginService.loggedIn.next(false);
+
+    this.messageService.add('Logged out.');
+
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+    this.router.onSameUrlNavigation = 'reload';
+    this.router.navigate(['login']);
   }
 
 }
