@@ -5,13 +5,13 @@
     <div class="todo-list-container">
 
         <div class="todo-header-container">
-            <input type="text" class="todo-input" maxlength="20" />
+            <input type="text" class="todo-input" maxlength="30" />
             <div class="icon-plus add-btn" title="add" type="submit" (click)="addTodo()"> </div>
         </div>
 
 
         <div class="todo-item-container" *ngFor="let item of sortedTodoList; let i = index">
-            <div class="todo-date">{{item.datetime | date:'short' }}</div>
+            <div class="todo-date">{{item.datetime | date:'d/M/yy, H:mm' }}</div>
             <div class="todo-text {{item.complete ? 'strikethrough' : ''}}">{{item.text}}</div>
             <div class="icon-bin delete-btn" title="bin" type="submit" (click)="deleteTodo(item)">
             </div>
