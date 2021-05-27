@@ -1,13 +1,27 @@
-#logout {
-    padding-top: 10px;
-    padding-left: 5px;
-    padding-bottom: 5px;
+:host {
+    --message-container-width: 300px;
+    --message-container-padding: 5px;
+    --message-container-width-total: calc(300px + 2px * 2 + var(--message-container-padding) * 2); 
+    --message-container-height: 500px;
+
+    --input-width: 250px;
+    --input-height: 22px;
+    --input-border-left: 5px;
+    --input-border-width: 1px;
+    --input-padding-width: 2px;
+    --input-width-total: calc(var(--input-width) + var(--input-border-left) + var(--input-border-width) + var(--input-padding-width) * 2);
+
+    --button-width: calc(var(--message-container-width-total) - var(--input-width-total));
+    --button-height: calc(var(--input-height) + var(--input-border-width));
+
+    --message-count-width: 200px;
+    --message-count-margin: calc((var(--message-container-width-total) - var(--message-count-width)) / 2);
 }
 
 .grid-container {
     display: grid;
-    grid-template-rows: 1;
-    grid-template-columns: 3;
+    grid-template-rows: repeat(1, 1fr);
+    grid-template-columns: auto var(--message-container-width-total) auto;
     padding-top: 10px;
 }
 
@@ -19,12 +33,11 @@
 .messagesContainer {
     display: inline-block;
     font-size: 14px;
-    margin: 5px;
-    padding: 5px;
-    border: var(--message-continer-border);
+    padding: var(--message-container-padding);
+    border: var(--message-container-border);
     border-radius: 5px;
-    width: 300px;
-    height: 500px;
+    width: var(--message-container-width);
+    height: var(--message-container-height);
     overflow-y: auto;
 }
 
@@ -32,58 +45,40 @@
     display: none;
 }
 
-.messageCount {
-    display: inline-block;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: 50px;
-    border: 1px solid pink;
-    border-radius: 5px;
-    width: 200px;
-    text-align: center;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    color: white;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
 .valid {
-    border-left: 5px solid #42A948;
+    border-left: var(--input-border-left) solid #42A948;
 }
 
 .invalid {
-    border-left: 5px solid #a94442;
+    border-left: var(--input-border-left) solid #a94442;
 }
 
-.btn-disable {
-    cursor: no-drop !important;
-    /* pointer-events: none; */
-    background-color: #a94442;
-    border: 1px solid green;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
+textarea, button{
+    vertical-align: bottom;
 }
 
-input {
-    resize: none;
-    width: 215px;
-    margin-left: 5px;
+textarea {
+    width: var(--input-width);
+    /* height: var(--input-height); */
     font-size: 16px;
-    border: 1px solid green;
-    padding: 2px
+    border: var(--input-border-width) solid green;
+    padding: 0px var(--input-padding-width);
+
+}
+
+textarea:focus{
+    outline: none;
 }
 
 button {
     background-color: #4CAF50;
-    border: 1px solid green;
+    border: var(--input-border-width) solid green;
+    width: var(--button-width);
+    height: var(--button-height);
     color: white;
     padding: 2px 7px;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
     font-size: 16px;
     cursor: pointer;
 }
@@ -92,27 +87,27 @@ button:hover {
     background-color: #3e8e41;
 }
 
-.modal {
-    z-index: 50;
-    position: fixed;
-    padding: 0;
-    margin: 0;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.5);
+.btn-disable {
+    cursor: no-drop !important;
+    background-color: #a94442;
+    border-color: green;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
 }
 
-.modal button {
-    position: fixed;
-    z-index: 50;
-}
-
-.emoji-mart {
-    background: #e1e1e1;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.messageCount {
+    display: inline-block;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: var(--message-count-margin);
+    border: 1px solid pink;
+    border-radius: 5px;
+    width: var(--message-count-width);
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
 }

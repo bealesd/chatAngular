@@ -13,36 +13,27 @@ import { MessageService } from '../services/message.service';
   styleUrls: ['./chat-main.component.css']
 })
 export class ChatComponent implements OnInit, OnDestroy {
+  limitRows = 10;
+  messageLastScrollHeight: number;
+
   subscriptions: Subscription[] = [];
 
   chatMessages: ChatContainer[];
   chatForm: Chat;
-  content: string;
+  messageInput: string;
   rows: number;
-  messageContainer: string;
+  messagesContainer: string;
   getNewChatMessagesInterval: Subscription;
   checkForUpdatedMessagesInterval: Subscription;
   newChatMessagesCount: number;
-
-  showEmojiPicker = false;
-  sets = [
-    'native',
-    'google',
-    'twitter',
-    'facebook',
-    'emojione',
-    'apple',
-    'messenger'
-  ]
-  set = 'twitter';
 
   constructor(
     private chatService: ChatService,
     private messageService: MessageService,
   ) {
-    this.content = '';
+    this.messageInput = '';
     this.rows = 1;
-    this.messageContainer = '.messagesContainer';
+    this.messagesContainer = '.messagesContainer';
     this.chatMessages = [];
   }
 
@@ -64,6 +55,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.subscriptions.push(interval(this.minsToMilliSecs(5)).subscribe(x => this.chatService.checkForUpdatedMessages()));
 
     this.registerTabSwitch();
+
+    this.messageLastScrollHeight = document.querySelector('textarea').scrollHeight;
   }
 
   ngOnDestroy() {
@@ -74,8 +67,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngDoCheck() {
-    const messageContainer = document.querySelector(this.messageContainer);
-    if (messageContainer && messageContainer.children.length > 0)
+    const messagesContainer = document.querySelector(this.messagesContainer);
+    if (messagesContainer && messagesContainer.children.length > 0)
       this.scrollToBottom();
   }
 
@@ -86,37 +79,49 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   postMessage(event) {
-    event.srcElement.parentElement.querySelector('input').value = "";
+    event.srcElement.parentElement.querySelector('textarea').value = "";
 
-    if (this.content === "" || this.content === null || this.content === undefined) 
+    if (this.messageInput === "" || this.messageInput === null || this.messageInput === undefined) 
       return this.messageService.add(`Please enter a message before posting.`);
     
-    this.chatService.sendChatMessage(this.content);
-    this.content = "";
-    event.srcElement.parentElement.querySelector('input').focus();
+    this.chatService.sendChatMessage(this.messageInput);
+    this.messageInput = "";
+    event.srcElement.parentElement.querySelector('textarea').focus();
   }
 
   onMessageTyping(event) {
-    this.content = event.srcElement.parentElement.querySelector('input').value;
+    const textArea = event.srcElement.parentElement.querySelector('textarea');
+    this.messageInput = textArea.value;
+
+    // const carriageReturns = this.messageInput.split('\n').length;
+    // const lineHeight = 22;
+    // const expectedHeight = lineHeight * carriageReturns;
+
+    // if (textArea.offsetHeight > expectedHeight + 2 || textArea.offsetHeight < expectedHeight -2){
+    //   // textArea.style.height = `${expectedHeight}px`;
+    // }
+    // //expands, does not shrink
+    // // textArea.style.height = Math.min(textArea.scrollHeight, 500) + "px";
+    
+    
+    var rows = parseInt(textArea.getAttribute("rows"));
+
+    textArea.setAttribute("rows", "1");
+    
+    if (rows < this.limitRows && textArea.scrollHeight > this.messageLastScrollHeight) {
+        rows++;
+    } else if (rows > 1 && textArea.scrollHeight < this.messageLastScrollHeight) {
+        rows--;
+    }
+    
+    this.messageLastScrollHeight = textArea.scrollHeight;
+    textArea.setAttribute("rows", rows);
   }
 
   scrollToBottom(): void {
     let messagesContainer = document.querySelector('.messagesContainer');
-    if (messagesContainer.scrollHeight - messagesContainer.clientHeight > 0) {
+    if (messagesContainer.scrollHeight - messagesContainer.clientHeight > 0)
       messagesContainer.scrollTop = messagesContainer.scrollHeight - messagesContainer.clientHeight;
-    }
-  }
-
-  toggleEmojiPicker() {
-    this.showEmojiPicker = !this.showEmojiPicker;
-  }
-
-  addEmoji(event) {
-    const emoji = `${event.emoji.native}`;
-    const chatMessage = <HTMLInputElement>document.querySelector('#chatMessage');
-    chatMessage.value = chatMessage.value + emoji;
-    this.content = chatMessage.value;
-    this.showEmojiPicker = false;
   }
 
   //helpers

@@ -91,10 +91,11 @@ export class ChatService {
     const chatContainer = new ChatContainer();
     chatContainer.chat = chat;
 
-    const chatMessageResult = await this.chatRepo.postMessage(chatContainer.chat);
-    if (!chatMessageResult)
+    const metadata = await this.chatRepo.postMessage(chatContainer.chat);
+    if (!metadata)
       this.messageService.add(`ChatService: Failed to post chat message id ${chat.Id}.`, 'error');
     else {
+      chatContainer.metadata = metadata;
       chatMessages.push(chatContainer);
       this.chatMessages.next(chatMessages);
       this.messageService.add(`ChatService: Posted chat message id ${chat.Id}.`);

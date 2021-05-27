@@ -7,9 +7,6 @@ import { MessagesComponent } from './messages/messages.component';
 import { ChatComponent } from './chat-main/chat-main.component';
 import { ChatDetailComponent } from './chat-detail/chat-detail.component';
 
-//emoji issue?
-import { PickerModule } from '@ctrl/ngx-emoji-mart';
-
 import { LoginComponent } from './login/login.component';
 import { AppRoutingModule } from './app-routing.module';
 import { DialogBoxComponent } from './dialog-box/dialog-box.component';
@@ -52,7 +49,6 @@ import { NotepadComponent } from './notepad/notepad.component';
     BrowserModule,
     HttpClientModule,
     FormsModule,
-    PickerModule,
     AppRoutingModule,
     FormsModule,
 

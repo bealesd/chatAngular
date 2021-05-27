@@ -1,5 +1,3 @@
-@import '~@ctrl/ngx-emoji-mart/picker';
-
 @font-face {
     font-family: 'icomoon';
     src: url('assets/fonts/icomoon.woff?h3jxio') format('woff');
@@ -821,7 +819,7 @@
     --main-background-color: none;
     --main-header-font-color: none;
     /* message-styles */
-    --message-continer-border: none;
+    --message-container-border: none;
     --message-padding: none;
     --esther-message-color: none;
     --esther-message-border: none;
@@ -854,7 +852,7 @@ h6 {
      --main-background: rgba(0, 0, 0, 1); 
     --main-background-image: url(assets/images/ringOnBlack.jpg);
     --main-header-font-color: rgb(248, 248, 248);
-    --message-continer-border: 2px solid rgb(255, 0, 0);
+    --message-container-border: 2px solid rgb(255, 0, 0);
     --message-padding: 5px 10px 5px 10px;
     --esther-message-color: deeppink;
     --esther-message-border: 2px solid purple;
@@ -868,7 +866,7 @@ h6 {
     --main-background: rgba(248, 248, 248, 1);
     --main-background: url(https://raw.githubusercontent.com/bealesd/chatAngular/master/src/assets/images/spaceRed.jpg);
     --main-header-font-color: rgb(0, 0, 0);
-    --message-continer-border: 2px solid rgb(252, 113, 113);
+    --message-container-border: 2px solid rgb(252, 113, 113);
     --message-padding: 5px 10px 5px 10px;
     --esther-message-color: rgb(252, 97, 180);
     --esther-message-border: 2px solid rgb(238, 137, 238);
