@@ -1268,13 +1268,6 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@ctrl/ngx-emoji-mart@^4.0.2":
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/@ctrl/ngx-emoji-mart/-/ngx-emoji-mart-4.0.2.tgz#ecaba2c2d291776d9c266d0844e634fa889f2cd0"
-  integrity sha512-CbacuMN838El0NoScQbcr6IqDsOaW/8PCuPIhe71/M9hqcd2Mc7wigK06PIKPSl6JCYMKow4ZgPaga0OU0lfVQ==
-  dependencies:
-    tslib "^2.0.0"
-
 "@istanbuljs/schema@^0.1.2":
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
