@@ -5,14 +5,14 @@
     --message-container-height: 500px;
 
     --input-width: 250px;
-    --input-height: 22px;
+    --input-height: 24px;
     --input-border-left: 5px;
     --input-border-width: 1px;
     --input-padding-width: 2px;
     --input-width-total: calc(var(--input-width) + var(--input-border-left) + var(--input-border-width) + var(--input-padding-width) * 2);
 
     --button-width: calc(var(--message-container-width-total) - var(--input-width-total));
-    --button-height: calc(var(--input-height) + var(--input-border-width));
+    --button-height: calc(var(--input-height) + var(--input-border-width) * 2);
 
     --message-count-width: 200px;
     --message-count-margin: calc((var(--message-container-width-total) - var(--message-count-width)) / 2);
@@ -53,20 +53,21 @@
     border-left: var(--input-border-left) solid #a94442;
 }
 
-textarea, button{
+.input, button{
     vertical-align: bottom;
 }
 
-textarea {
+.input {
+    display: inline-block;
     width: var(--input-width);
-    /* height: var(--input-height); */
-    font-size: 16px;
-    border: var(--input-border-width) solid green;
     padding: 0px var(--input-padding-width);
-
+    border: var(--input-border-width) solid green;
+    
+    font-size: 16px;
+    background-color: white;
 }
 
-textarea:focus{
+.input:focus{
     outline: none;
 }
 

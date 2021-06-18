@@ -8,6 +8,10 @@
     word-wrap: break-word;
 }
 
+.message{
+    white-space: pre-wrap;
+}
+
 .esther {
     padding: var(--message-padding);
     border: var(--esther-message-border);

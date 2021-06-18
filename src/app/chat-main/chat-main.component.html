@@ -7,11 +7,12 @@
         </div>
 
         <div id="sendChatForm">
+            <div (keyup)="onMessageTyping($event)"
+                class="input {{messageInput.trim().length > 0 ? 'valid' : 'invalid'}}" role="textbox" contenteditable>
+            </div>
 
-            <textarea (keyup)="onMessageTyping($event)" class="{{messageInput.trim().length > 0 ? 'valid' : 'invalid'}}"
-               rows="1" id="chatMessage" minlength="1" maxlength="500" placeholder="type a message" autocomplete="off"></textarea>
-
-            <button class="btn btn-success {{messageInput.length > 0 ? '' : 'btn-disable'}}" (click)="postMessage($event)">
+            <button class="btn btn-success {{messageInput.length > 0 ? '' : 'btn-disable'}}"
+                (click)="postMessage($event)">
                 Post
             </button>
         </div>

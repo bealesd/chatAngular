@@ -13,9 +13,6 @@ import { MessageService } from '../services/message.service';
   styleUrls: ['./chat-main.component.css']
 })
 export class ChatComponent implements OnInit, OnDestroy {
-  limitRows = 10;
-  messageLastScrollHeight: number;
-
   subscriptions: Subscription[] = [];
 
   chatMessages: ChatContainer[];
@@ -26,6 +23,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   getNewChatMessagesInterval: Subscription;
   checkForUpdatedMessagesInterval: Subscription;
   newChatMessagesCount: number;
+
+  chatInputClass = 'input';
 
   constructor(
     private chatService: ChatService,
@@ -55,8 +54,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.subscriptions.push(interval(this.minsToMilliSecs(5)).subscribe(x => this.chatService.checkForUpdatedMessages()));
 
     this.registerTabSwitch();
-
-    this.messageLastScrollHeight = document.querySelector('textarea').scrollHeight;
   }
 
   ngOnDestroy() {
@@ -79,43 +76,24 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   postMessage(event) {
-    event.srcElement.parentElement.querySelector('textarea').value = "";
+    event.srcElement.parentElement.querySelector(`.${this.chatInputClass}`).innerText = "";
 
-    if (this.messageInput === "" || this.messageInput === null || this.messageInput === undefined) 
+    if (this.messageInput === "" || this.messageInput === null || this.messageInput === undefined)
       return this.messageService.add(`Please enter a message before posting.`);
-    
+
     this.chatService.sendChatMessage(this.messageInput);
     this.messageInput = "";
-    event.srcElement.parentElement.querySelector('textarea').focus();
+    event.srcElement.parentElement.querySelector(`.${this.chatInputClass}`).focus();
   }
 
   onMessageTyping(event) {
-    const textArea = event.srcElement.parentElement.querySelector('textarea');
-    this.messageInput = textArea.value;
+    const divInput = event.srcElement.parentElement.querySelector(`.${this.chatInputClass}`);
+    const oldMessageInput = this.messageInput;
+    this.messageInput = divInput.innerText;
 
-    // const carriageReturns = this.messageInput.split('\n').length;
-    // const lineHeight = 22;
-    // const expectedHeight = lineHeight * carriageReturns;
-
-    // if (textArea.offsetHeight > expectedHeight + 2 || textArea.offsetHeight < expectedHeight -2){
-    //   // textArea.style.height = `${expectedHeight}px`;
-    // }
-    // //expands, does not shrink
-    // // textArea.style.height = Math.min(textArea.scrollHeight, 500) + "px";
-    
-    
-    var rows = parseInt(textArea.getAttribute("rows"));
-
-    textArea.setAttribute("rows", "1");
-    
-    if (rows < this.limitRows && textArea.scrollHeight > this.messageLastScrollHeight) {
-        rows++;
-    } else if (rows > 1 && textArea.scrollHeight < this.messageLastScrollHeight) {
-        rows--;
+    while (divInput.offsetHeight > (124 - (1 * 2))) {
+      divInput.innerText = oldMessageInput;
     }
-    
-    this.messageLastScrollHeight = textArea.scrollHeight;
-    textArea.setAttribute("rows", rows);
   }
 
   scrollToBottom(): void {
