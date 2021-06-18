@@ -9,8 +9,4 @@ export class AppsComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void { }
-
-  customAlert(message) {
-    alert(message);
-  }
 }

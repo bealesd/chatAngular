@@ -196,12 +196,16 @@ export class CalendarService implements OnDestroy {
       this.day = this.daysInMonth;
     }
 
+    await this.calendarRepo.getAllRecords();
+    
     await this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
 
     this.closeAddOrUpdateEventForm.next(true);
   }
 
   async updateRecords() {
+    await this.calendarRepo.getAllRecords();
+
     this.calendarRepo.calendarRecordRest.records = [];
     await this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
     this.day = 1;
@@ -216,18 +220,18 @@ export class CalendarService implements OnDestroy {
     await this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
   }
 
-  public addOridnalIndictor(day: number): string {
+  public addOrdinalIndictor(day: number): string {
     const j = day % 10;
     const k = day % 100;
-    let oridnalIndictor;
+    let ordinalIndictor;
     if (j == 1 && k != 11)
-      oridnalIndictor = "st";
+      ordinalIndictor = "st";
     else if (j == 2 && k != 12)
-      oridnalIndictor = "nd";
+      ordinalIndictor = "nd";
     else if (j == 3 && k != 13)
-      oridnalIndictor = "rd";
+      ordinalIndictor = "rd";
     else
-      oridnalIndictor = "th";
-    return oridnalIndictor;
+      ordinalIndictor = "th";
+    return ordinalIndictor;
   }
 }

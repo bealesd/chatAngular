@@ -36,10 +36,9 @@ export class FileApi {
   }
 
   get dirUrl() {
-    const noCache = `?cachebust=${Math.floor(Math.random() * (9999999999999 - 1000000000000 + 1) + 1000000000000)}`;
     const parts = this.dir.split('/');
     parts.splice(1, 0, 'contents');
-    return `https://api.github.com/repos/bealesd/${parts.join('/')}${noCache}`;
+    return `https://api.github.com/repos/bealesd/${parts.join('/')}`;
   }
 
   appendPathToDir(folder: string) {
@@ -66,11 +65,14 @@ export class FileApi {
     return true;
   }
 
+  cacheBust(url: string){
+    return `${url.split('/').join('/')}?cachebust=${Math.floor(Math.random() * (9999999999999 - 1000000000000 + 1) + 1000000000000)}`;
+  }
+
   dirPostUrl(fileName): string {
-    const noCache = `?cachebust=${Math.floor(Math.random() * (9999999999999 - 1000000000000 + 1) + 1000000000000)}`;
     const parts = this.dir.split('/');
     parts.splice(1, 0, 'contents');
-    return `https://api.github.com/repos/bealesd/${parts.join('/')}/${fileName}${noCache}`;
+    return `https://api.github.com/repos/bealesd/${parts.join('/')}/${fileName}`;
   }
 
   constructor(private http: HttpClient,
@@ -118,7 +120,8 @@ export class FileApi {
       if (dir === null) res(false);
       else this.dir = dir;
 
-      this.http.get<ItemMetadata[]>(this.dirUrl, this.restHelper.options()).subscribe(
+      const url = this.cacheBust(this.dirUrl);
+      this.http.get<ItemMetadata[]>(url, this.restHelper.options()).subscribe(
         {
           next: (notepads: ItemMetadata[]) => {
             this.messageService.add(`FileApi: Checked dir exists: ${dir}.`, 'info');
@@ -126,7 +129,7 @@ export class FileApi {
           },
           error: (err: any) => {
             this.dir = oldDir;
-            this.restHelper.errorMessageHandler(err, `checking path at: ${this.dirUrl}`, 'FileApi');
+            this.restHelper.errorMessageHandler(err, `checking path at: ${url}`, 'FileApi');
             res(false);
           }
         }
@@ -146,7 +149,9 @@ export class FileApi {
     this.messageService.add(`FileApi: Listing files in: ${this.dir}.`, 'info');
     return new Promise((res, rej) => {
       const files: ItemMetadata[] = [];
-      this.http.get<ItemMetadata[]>(this.dirUrl, this.restHelper.options()).subscribe(
+
+      const url = this.cacheBust(this.dirUrl);
+      this.http.get<ItemMetadata[]>(url, this.restHelper.options()).subscribe(
         {
           next: (notepads: ItemMetadata[]) => {
             notepads.forEach((notepadMetadata: ItemMetadata) => {
@@ -159,7 +164,7 @@ export class FileApi {
             res(files);
           },
           error: (err: any) => {
-            this.restHelper.errorMessageHandler(err, `listing files at: ${this.dirUrl}`, 'FileApi');
+            this.restHelper.errorMessageHandler(err, `listing files at: ${url}`, 'FileApi');
             res(null);
           }
         }
@@ -171,6 +176,7 @@ export class FileApi {
     this.messageService.add(`FileApi: Getting file ${name}.`, 'info');
     return new Promise(async (res, rej) => {
       // const git_url = key.split('-^-')[2];
+      git_url = this.cacheBust(git_url);
       this.http.get<any>(git_url, this.restHelper.options()).subscribe(
         {
           next: (value: any) => {
@@ -189,7 +195,7 @@ export class FileApi {
   newFileAsync(name: string, text: string): Promise<ItemMetadata> {
     this.messageService.add(`FileApi: Creating new file ${name}.`, 'info');
     return new Promise((res, rej) => {
-      const postUrl = this.dirPostUrl(name);
+      const postUrl = this.cacheBust(this.dirPostUrl(name));
       const rawCommitBody = JSON.stringify({
         'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,
         'content': btoa(text),
@@ -215,7 +221,7 @@ export class FileApi {
 
   newFolderAsync(folderName: string): Promise<ItemMetadata> {
     this.messageService.add(`FileApi: Creating new folder ${folderName}.`, 'info');
-    const postUrl = this.dirPostUrl(`${folderName}/dummy.txt`);
+    const postUrl = this.cacheBust(this.dirPostUrl(`${folderName}/dummy.txt`));
 
     const rawCommitBody = JSON.stringify({
       'message': `Api commit by notepad repo at ${new Date().toLocaleString()}`,

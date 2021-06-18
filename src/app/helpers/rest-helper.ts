@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { CryptoService } from '../services/crypto.service';
 
 import { MessageService } from '../services/message.service';
@@ -12,7 +13,10 @@ export class RestHelper {
         private cryptoService: CryptoService,
         private messageService: MessageService,
         private http: HttpClient,
+        public router: Router
     ) { }
+
+
 
     options = (): { headers: HttpHeaders } => {
         const options = { headers: new HttpHeaders() };
@@ -24,6 +28,7 @@ export class RestHelper {
         }
         catch (error) {
             this.messageService.add(`RestHelper: Getting token failed.`, 'error');
+            this.router.navigate(['login']);
         }
         return options;
     }

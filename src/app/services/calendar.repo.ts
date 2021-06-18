@@ -69,10 +69,6 @@ export class CalendarRepo {
     const isNewFile = metadata === null;
 
     const isUpdate = this.calendarRecordRest.records.find(r => r.id === record.id) !== undefined;
-    if (isNewFile && isUpdate) {
-      this.messageService.add(`CalendarRepo: posting calendar records for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}. Record: ${JSON.stringify(record)}.`, 'error');
-      return;
-    }
 
     let recordTopdate: CalendarRecord;
     if (isUpdate) {
@@ -87,38 +83,27 @@ export class CalendarRepo {
 
     this.messageService.add(`Posting calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}.`);
 
-    if (!isNewFile) {
-      if (isUpdate) {
-        let result = await this.fileApi.editFileAsync(metadata.key, this.calendarRecordRest.toJsonString());
-        if (!result)
-          this.messageService.add(`CalendarRepo: posting calendar records for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}. Record: ${JSON.stringify(record)}.`, 'error');
-        else
-          this.messageService.add(` • Posted calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}.`);
-      }
-      else {
-        let result = await this.fileApi.editFileAsync(metadata.key, this.calendarRecordRest.toJsonString());
-        if (!result)
-          this.messageService.add(`CalendarRepo: posting calendar records for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}. Record: ${JSON.stringify(record)}.`, 'error');
-        else
-          this.messageService.add(` • Posted calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}.`);
-      }
-    }
-
     if (isNewFile) {
       let result = await this.fileApi.newFileAsync(name, this.calendarRecordRest.toJsonString());
       if (!result)
         this.messageService.add(`CalendarRepo: posting calendar records for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}. Record: ${JSON.stringify(record)}.`, 'error');
       else
         this.messageService.add(` • Posted calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}.`);
-
+    }
+    else {
+        let result = await this.fileApi.editFileAsync(metadata.key, this.calendarRecordRest.toJsonString());
+        if (!result)
+          this.messageService.add(`CalendarRepo: posting calendar records for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}. Record: ${JSON.stringify(record)}.`, 'error');
+        else
+          this.messageService.add(` • Posted calendar record for ${this.calendarRecordRest.year}-${this.calendarRecordRest.month + 1}.`);
     }
   }
 
   async getAllRecords(): Promise<boolean> {
-    this.messageService.add(`CalendarRepo: Getting metdata for all records.`);
+    this.messageService.add(`CalendarRepo: Getting metadata for all records.`);
     const calendarRecordsMetadata = await this.fileApi.listFilesAndFoldersAsync();
     if (!calendarRecordsMetadata) {
-      this.messageService.add('CalendarRepo: Getting metdata for all records.', 'error');
+      this.messageService.add('CalendarRepo: Getting metadata for all records.', 'error');
       return false;
     }
     else {
@@ -127,7 +112,7 @@ export class CalendarRepo {
         let metadata = new ItemMetadata(value.name, value.path, value.sha, value.size, value.git_url, value.type, value.url);
         this.calendarRecordsMetadata.push(metadata);
       });
-      this.messageService.add(`CalendarRepo: Got metdata for all records.`);
+      this.messageService.add(`CalendarRepo: Got metadata for all records.`);
       return true
     }
   }
@@ -141,7 +126,7 @@ export class CalendarRepo {
     const name = `${year}-${month}.json`;
     const metadata = this.calendarRecordsMetadata.find((metadata) => metadata.name === name);
     let content;
-    if (metadata !== null || metadata !== undefined)
+    if (metadata !== null && metadata !== undefined)
       content = await this.fileApi.getFileAsync(metadata.git_url);
 
     if (!content || content === '') {

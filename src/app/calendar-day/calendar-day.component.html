@@ -3,7 +3,7 @@
     <div class="date-box day {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.zeroIndexedMonth && calendarService.today.day === (calendarService.day) ? 'today' : '' }}" (click)="openAddEventForm({'dayInMonthArrayIndex': calendarService.day})"
         [attr.data-row]="1" [attr.data-col]="2">
         {{calendarService.getDayNameLongForMonth(calendarService.day)}} {{calendarService.day}}
-        <sup>{{calendarService.addOridnalIndictor(calendarService.day)}}</sup>
+        <sup>{{calendarService.addOrdinalIndictor(calendarService.day)}}</sup>
     </div>
 
     <div class="date-box mask {{getBorderClass(result.hour + 2)}}" *ngFor="let result of dateTimeRecords; " (click)="openAddEventForm({'dayInMonthArrayIndex': result.day, 'hour': result.hour})" [style.gridRow]="result.hour + 2 "
