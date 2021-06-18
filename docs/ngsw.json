@@ -1,0 +1,95 @@
+{
+  "configVersion": 1,
+  "timestamp": 1624032605122,
+  "index": "/chatAngular/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "lazy",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/chatAngular/favicon.ico",
+        "/chatAngular/index.html",
+        "/chatAngular/main.a7c68228d2c94874cab1.js",
+        "/chatAngular/manifest.webmanifest",
+        "/chatAngular/polyfills.c2629444d2427ccec805.js",
+        "/chatAngular/runtime.cad733cf18c74cfef638.js",
+        "/chatAngular/styles.b2da291ce126fa25fa8a.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "lazy",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/chatAngular/PS-Regular.0a489488ab3cb2eb11f9.woff",
+        "/chatAngular/assets/fonts/PS-Regular.woff",
+        "/chatAngular/assets/fonts/icomoon.woff",
+        "/chatAngular/assets/icons/icon-128x128.png",
+        "/chatAngular/assets/icons/icon-144x144.png",
+        "/chatAngular/assets/icons/icon-152x152.png",
+        "/chatAngular/assets/icons/icon-192x192.png",
+        "/chatAngular/assets/icons/icon-384x384.png",
+        "/chatAngular/assets/icons/icon-512x512.png",
+        "/chatAngular/assets/icons/icon-72x72.png",
+        "/chatAngular/assets/icons/icon-96x96.png",
+        "/chatAngular/assets/images/ringOnBlack.jpg",
+        "/chatAngular/assets/images/spaceRed.jpg",
+        "/chatAngular/icomoon.95a00167d5ba7a268542.woff",
+        "/chatAngular/ringOnBlack.1fb718d920a4bb1f94d4.jpg"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "/chatAngular/PS-Regular.0a489488ab3cb2eb11f9.woff": "e4e316c0be44950eccd081a791ec01ea5e0b7499",
+    "/chatAngular/assets/fonts/PS-Regular.woff": "e4e316c0be44950eccd081a791ec01ea5e0b7499",
+    "/chatAngular/assets/fonts/icomoon.woff": "cb9cddc0125d6f2a03892efd903d641302be4650",
+    "/chatAngular/assets/icons/icon-128x128.png": "5f7bb0d9a5603152afd303aeac1eef05fc8192d0",
+    "/chatAngular/assets/icons/icon-144x144.png": "07b96acc4b218e1897eb8418a578bf412676b872",
+    "/chatAngular/assets/icons/icon-152x152.png": "acd0ec5e5c150830367b679a7af3b7e8a03c0db6",
+    "/chatAngular/assets/icons/icon-192x192.png": "7d11c2e594e39f1d5b2ca088c4dcef22aa5dd267",
+    "/chatAngular/assets/icons/icon-384x384.png": "9790d7e5e41cca0cc2fe39ba5f2359a3237e5956",
+    "/chatAngular/assets/icons/icon-512x512.png": "616bf9515d6e4085863d90d469a0833bccd2a723",
+    "/chatAngular/assets/icons/icon-72x72.png": "0b40a911b72c83616cfa270c890845569001fe0e",
+    "/chatAngular/assets/icons/icon-96x96.png": "1c1158264a4cc29a63278b988b75f0a369eb9b49",
+    "/chatAngular/assets/images/ringOnBlack.jpg": "a8cf25e06e2520df5efe567f28613cdabcd93029",
+    "/chatAngular/assets/images/spaceRed.jpg": "f557e8d9ee49938d20c04e8066137944a443104f",
+    "/chatAngular/favicon.ico": "fcbcf16ac9d543f785ec36346161838334fdce13",
+    "/chatAngular/icomoon.95a00167d5ba7a268542.woff": "cb9cddc0125d6f2a03892efd903d641302be4650",
+    "/chatAngular/index.html": "89c1350a9950982dd3d82989b356e04c25d9dd54",
+    "/chatAngular/main.a7c68228d2c94874cab1.js": "022bc5141b32b6150115bb963c32707b0ac9a4f6",
+    "/chatAngular/manifest.webmanifest": "42045d6273e4477375e0a7d4c344bd46cbc3a064",
+    "/chatAngular/polyfills.c2629444d2427ccec805.js": "763cd3b34dfa4600ebb9d9588ec7116988e98920",
+    "/chatAngular/ringOnBlack.1fb718d920a4bb1f94d4.jpg": "a8cf25e06e2520df5efe567f28613cdabcd93029",
+    "/chatAngular/runtime.cad733cf18c74cfef638.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
+    "/chatAngular/styles.b2da291ce126fa25fa8a.css": "525b56f2cf3197a963bb19743078f9804ac4b8b0"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}
