@@ -28,16 +28,6 @@ jobs:
     - name: Install packages
       run: yarn;
 
-    - name: Checkout branch
-      env:
-        ACTOR: ${{ github.actor }}
-        AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
-      run: |
-        git status; \
-        git config --global user.email $AUTHOR_EMAIL; \
-        git config --global user.name $ACTOR; \
-        git pull && git checkout gh-pages;
-
     - name: Build
       run: node build.js
 
@@ -53,7 +43,7 @@ jobs:
         git config --global user.email $AUTHOR_EMAIL; \
         git config --global user.name $ACTOR; \
         if [[ `git status --porcelain` ]]; \
-        then git pull && git checkout gh-pages && git add . && git commit -m"Auto update deployment folder" && echo "changes committed" && git push; \
+        then git add . && git commit -m"Auto update deployment folder" && echo "changes committed" && git push origin gh-pages -f; \
         else echo "no changes to commit"; \
         fi
 
