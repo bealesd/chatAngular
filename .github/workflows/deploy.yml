@@ -34,22 +34,22 @@ jobs:
     # - name: Build
     #   run: ng build --prod --output-path docs --base-href "/chatAngular/"
 
-    - name: Update deployment for GitHub Pages
-      env:
-        ACTOR: ${{ github.actor }}
-        AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
-      run: |
-        git status; \
-        git config --global user.email $AUTHOR_EMAIL; \
-        git config --global user.name $ACTOR; \
-        if [[ `git status --porcelain` ]]; \
-        then git add . && git commit -m"Auto update deployment folder" && echo "changes committed" && git push origin gh-pages -f; \
-        else echo "no changes to commit"; \
-        fi
+    # - name: Update deployment for GitHub Pages
+    #   env:
+    #     ACTOR: ${{ github.actor }}
+    #     AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
+    #   run: |
+    #     git status; \
+    #     git config --global user.email $AUTHOR_EMAIL; \
+    #     git config --global user.name $ACTOR; \
+    #     if [[ `git status --porcelain` ]]; \
+    #     then git add . && git commit -m"Auto update deployment folder" && echo "changes committed" && git push origin gh-pages -f; \
+    #     else echo "no changes to commit"; \
+    #     fi
 
-    # - name: Deploy
-    #   uses: JamesIves/github-pages-deploy-action@4.1.4
-    #   with:
-    #     branch: gh-pages
-    #     folder: docs
-    #     target-folder: docs
+    - name: Deploy
+      uses: JamesIves/github-pages-deploy-action@4.1.4
+      with:
+        branch: gh-pages
+        folder: docs
+        target-folder: docs
