@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { CryptoService } from '../services/crypto.service';
@@ -12,7 +12,6 @@ export class RestHelper {
     constructor(
         private cryptoService: CryptoService,
         private messageService: MessageService,
-        private http: HttpClient,
         public router: Router
     ) { }
 
@@ -44,28 +43,7 @@ export class RestHelper {
             this.messageService.add(`${caller}: Authentication error, 401 when '${message}'.`, 'error');
         }
         else {
-            this.messageService.add(`${caller}: Rest failiure when '${message}'.`, 'error');
+            this.messageService.add(`${caller}: Rest failure when '${message}'.`, 'error');
         }
-    }
-
-    createRepo(name: string, description: string) {
-        const postUrl = 'https://api.github.com/users/bealesd/repos';
-
-        const rawCommitBody = {
-            "name": name,
-            "description": description,
-            "private": false
-        };
-
-        this.http.post<{ content: any }>(postUrl, rawCommitBody, this.options()).subscribe(
-            {
-                next: (result: any) => {
-                    this.messageService.add(` • Created repo: ${name}.`);
-                },
-                error: (err: any) => {
-                    this.errorMessageHandler(err, `failed to create repo: ${name}`, 'CreateRepo');
-                }
-            }
-        );
     }
 }
