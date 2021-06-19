@@ -66,7 +66,7 @@ export class CalendarRepo {
     const name = `${this.calendarRecordRest.year}-${this.calendarRecordRest.month}.json`;
 
     const metadata = this.calendarRecordsMetadata.find((metadata) => metadata.name === name);
-    const isNewFile = metadata === null;
+    const isNewFile = metadata ? false : true 
 
     const isUpdate = this.calendarRecordRest.records.find(r => r.id === record.id) !== undefined;
 
