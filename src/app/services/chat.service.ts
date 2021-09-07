@@ -15,7 +15,7 @@ export class ChatService {
 
   public newChatMessagesCount = new BehaviorSubject<number>(0);
 
-  constructor(private messageService: MessageService, private chatRepo: ChatRepo, private cryptoService: CryptoService) {}
+  constructor(private messageService: MessageService, private chatRepo: ChatRepo, private cryptoService: CryptoService) { }
 
   async getChatMessages(): Promise<void> {
     this.messageService.add('ChatService: Getting last 10 chat messages.');
@@ -32,17 +32,24 @@ export class ChatService {
     this.messageService.add('ChatService: Fetching new messages.');
 
     const chatMessages = this.chatMessages.getValue();
-    
+
     let lastId = null;
     if (!chatMessages || chatMessages.length === 0) lastId = null;
     else lastId = chatMessages[chatMessages.length - 1].chat.Id;
 
     let newChatMessages = await this.chatRepo.getNewChatMessages(lastId);
-    if (newChatMessages === null) 
+    if (newChatMessages === null)
       return this.messageService.add(`ChatService: Failed to get new chat messages.`, 'error');
-    else if (newChatMessages.length === 0) 
+    else if (newChatMessages.length === 0)
       return this.messageService.add(`ChatService: No new messages.`);
     else {
+      for (const msg of newChatMessages) {
+        const chat = msg.chat;
+        const newMsgNotification = new Notification('New chat message', {
+          body: `${chat.Who}: ${chat.Content}`,
+        });
+      };
+
       const currentMessagesCount = this.newChatMessagesCount.getValue();
       const newMessageCount = newChatMessages.length;
       this.newChatMessagesCount.next(currentMessagesCount + newMessageCount);
@@ -72,17 +79,17 @@ export class ChatService {
   }
 
   async sendChatMessage(message: string): Promise<void> {
-    if (!message) 
+    if (!message)
       return this.messageService.add(`ChatService: Please enter a message before posting.`, 'error');
-    
+
     this.messageService.add('ChatService: Posting chat message.');
 
     const chatMessages = this.chatMessages.getValue();
     const newId = chatMessages.length === 0 ? 1 : Math.max(...chatMessages.map(msg => msg.chat.Id)) + 1;
-    
-    const chat = <Chat>{ 
-      Who: this.cryptoService.username, 
-      Content: message ,
+
+    const chat = <Chat>{
+      Who: this.cryptoService.username,
+      Content: message,
       Id: newId,
       Deleted: 'false',
       Datetime: new Date().getTime()
