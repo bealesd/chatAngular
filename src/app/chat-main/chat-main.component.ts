@@ -15,7 +15,7 @@ import { MessageService } from '../services/message.service';
 export class ChatComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
 
-  chatMessages: ChatContainer[];
+  chatMessages: Chat[];
   chatForm: Chat;
   messageInput: string;
   rows: number;
@@ -51,7 +51,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.chatService.getChatMessages();
 
     this.subscriptions.push(interval(this.secsToMilliSecs(20)).subscribe(x => this.chatService.getNewChatMessages()));
-    this.subscriptions.push(interval(this.minsToMilliSecs(5)).subscribe(x => this.chatService.checkForUpdatedMessages()));
 
     this.registerTabSwitch();
   }

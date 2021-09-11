@@ -1,11 +1,10 @@
-<div data-id="{{recieveChat.chat.Id}}" class="{{recieveChat.chat.Who}} messageNode" *ngIf="recieveChat.chat">
+<div data-id="{{recieveChat.Id}}" class="{{recieveChat.Who}} messageNode" *ngIf="recieveChat">
 
     <div class="dateTime">{{date | date:'medium'}}</div>
-    <div class="chatId">{{recieveChat.chat.Who}}</div>
+    <div class="chatId">{{recieveChat.Who}}</div>
 
-    <div *ngIf="!deleted" class="deleteMessage" (click)="deleteMessage(recieveChat)">&#10005;</div>
-    <div *ngIf="deleted" class="undoDeleteMessage" (click)="undoDeleteMessage(recieveChat)">&#8630;</div>
+    <!-- <div *ngIf="!deleted" class="deleteMessage" (click)="deleteMessage(recieveChat)">&#10005;</div> -->
 
-    <div class="message {{deleted ? 'deleted' : ''}}">{{recieveChat.chat.Content}}</div>
+    <div class="message">{{recieveChat.Content}}</div>
 
 </div>

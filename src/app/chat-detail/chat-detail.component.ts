@@ -10,7 +10,7 @@ import { DialogBoxService } from '../services/dialog-box.service';
   styleUrls: ['./chat-detail.component.css']
 })
 export class ChatDetailComponent implements OnInit {
-  @Input() recieveChat: ChatContainer;
+  @Input() recieveChat: Chat;
   date: Date;
   deleted: boolean;
   content: string;
@@ -19,33 +19,16 @@ export class ChatDetailComponent implements OnInit {
   constructor(private chatService: ChatService) {  }
 
   public parseDateTime() {
-    this.date = new Date(this.recieveChat.chat.Datetime);
+    this.date = new Date(this.recieveChat.Datetime);
   }
 
   ngOnInit(): void {
     this.parseDateTime();
-    this.deleted = this.recieveChat.chat.Deleted === 'true';
+    this.deleted = this.recieveChat.Deleted === 'true';
     this.dialogBoxService = new DialogBoxService();
   }
 
   ngDoCheck(): void {
-    this.deleted = this.recieveChat.chat.Deleted === 'true';
-  }
-
-  deleteMessage(recieveChat: ChatContainer) {
-    this.dialogBoxService.register(
-      `Delete Id ${recieveChat.chat.Id}?`,
-      'Soft',
-      'Hard',
-      () => { this.chatService.softDeleteChatMessage(recieveChat, true) },
-      () => { this.chatService.hardDeleteChatMessage(recieveChat); });
-
-      this.dialogBoxService.open();
-  }
-
-  undoDeleteMessage(recieveChat: ChatContainer) {
-    if (confirm('Undo soft delete?')) {
-      this.chatService.softDeleteChatMessage(recieveChat, false);
-    }
+    this.deleted = this.recieveChat.Deleted === 'true';
   }
 }
