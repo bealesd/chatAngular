@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1631358028420,
+  "timestamp": 1631886424684,
   "index": "/chatAngular/index.html",
   "assetGroups": [
     {
@@ -13,10 +13,10 @@
       "urls": [
         "/chatAngular/favicon.ico",
         "/chatAngular/index.html",
-        "/chatAngular/main.a2d73ab18a2e558cbe11.js",
+        "/chatAngular/main.990dd2ab51e4e2f6cf25.js",
         "/chatAngular/manifest.webmanifest",
-        "/chatAngular/polyfills.c2629444d2427ccec805.js",
-        "/chatAngular/runtime.cad733cf18c74cfef638.js",
+        "/chatAngular/polyfills.06a4b057b77a8415154e.js",
+        "/chatAngular/runtime.606b39dfb72edd63b83c.js",
         "/chatAngular/styles.b2da291ce126fa25fa8a.css"
       ],
       "patterns": []
@@ -65,12 +65,12 @@
     "/chatAngular/assets/images/spaceRed.jpg": "f557e8d9ee49938d20c04e8066137944a443104f",
     "/chatAngular/favicon.ico": "fcbcf16ac9d543f785ec36346161838334fdce13",
     "/chatAngular/icomoon.95a00167d5ba7a268542.woff": "cb9cddc0125d6f2a03892efd903d641302be4650",
-    "/chatAngular/index.html": "a24607d234f703f8638870ee9c06ca313c157cea",
-    "/chatAngular/main.a2d73ab18a2e558cbe11.js": "c5ccfe16b0a0f60e3af1b103362c6eb59a442b63",
+    "/chatAngular/index.html": "bf583ffaec28c8e4e861c7d8d74f6e6434bbdc88",
+    "/chatAngular/main.990dd2ab51e4e2f6cf25.js": "7f1047d3c43602b3c8457b224103757c21a446f5",
     "/chatAngular/manifest.webmanifest": "42045d6273e4477375e0a7d4c344bd46cbc3a064",
-    "/chatAngular/polyfills.c2629444d2427ccec805.js": "763cd3b34dfa4600ebb9d9588ec7116988e98920",
+    "/chatAngular/polyfills.06a4b057b77a8415154e.js": "e3e5c98972246637ffa5e589aa584363a16421f6",
     "/chatAngular/ringOnBlack.1fb718d920a4bb1f94d4.jpg": "a8cf25e06e2520df5efe567f28613cdabcd93029",
-    "/chatAngular/runtime.cad733cf18c74cfef638.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
+    "/chatAngular/runtime.606b39dfb72edd63b83c.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
     "/chatAngular/styles.b2da291ce126fa25fa8a.css": "525b56f2cf3197a963bb19743078f9804ac4b8b0"
   },
   "navigationUrls": [
