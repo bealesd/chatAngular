@@ -7,8 +7,3 @@ export class Chat {
   public Content: string;
   public Deleted: string;
 }
-
-export class ChatContainer {
-  chat: Chat
-  metadata: ItemMetadata
-}

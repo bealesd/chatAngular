@@ -1,7 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-import { Chat, ChatContainer } from '../models/chat.model';
-import { ChatService } from '../services/chat.service';
+import { Chat } from '../models/chat.model';
 import { DialogBoxService } from '../services/dialog-box.service';
 
 @Component({
@@ -16,7 +15,7 @@ export class ChatDetailComponent implements OnInit {
   content: string;
   dialogBoxService: DialogBoxService;
 
-  constructor(private chatService: ChatService) {  }
+  constructor() {}
 
   public parseDateTime() {
     this.date = new Date(this.recieveChat.Datetime);

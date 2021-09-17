@@ -825,6 +825,7 @@
     --esther-message-border: none;
     --david-message-color: none;
     --david-message-border: none;
+    --unkown-message-border: none;
     --message-size: none;
     --message-weight: none;
 }
@@ -858,6 +859,7 @@ h6 {
     --esther-message-border: 2px solid purple;
     --david-message-color: rgb(0, 119, 255);
     --david-message-border: 2px solid blue;
+    --unknown-message-border: 2px solid green;
     --message-size: 14px;
     --message-weight: 200;
 }
@@ -872,6 +874,7 @@ h6 {
     --esther-message-border: 2px solid rgb(238, 137, 238);
     --david-message-color: rgb(97, 97, 248);
     --david-message-border: 2px solid rgb(126, 126, 240);
+    --unknown-message-border: 2px solid green;
     --message-size: 14px;
     --message-weight: 600;
 }

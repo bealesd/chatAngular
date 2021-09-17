@@ -16,72 +16,60 @@ export class ChatService {
 
   private baseUrl = 'https://corechatapi.azurewebsites.net/chat';
 
-  constructor(private messageService: MessageService, private cryptoService: CryptoService, private httpClient: HttpClient) { }
-
-  async getChatMessages(): Promise<void> {
-
-    let chats = await this.GetChats();
-    chats.sort((a, b) => a.id - b.id);
-
-    const chatMessages: Chat[] = [];
-    for (let i = 0; i < chats.length; i++) {
-
-      const chatObject = chats[i];
-      const chat = new Chat();
-      chat.Content = chatObject.message;
-      chat.Who = chatObject.name;
-      chat.Datetime = chatObject.dateTime;
-      chat.Id = chatObject.id;
-
-      chatMessages.push(chat);
-    }
-
-    this.chatMessages.next(chatMessages);
-    this.messageService.add(`ChatService: Got last 10 chat messages.`);
+  constructor(private messageService: MessageService, private cryptoService: CryptoService, private httpClient: HttpClient) {
   }
 
-  async getNewChatMessages(): Promise<void> {
-    this.messageService.add('ChatService: Fetching new messages.');
+  updateChats(chatMessages) {
+    this.chatMessages.next(chatMessages);
+    this.updateStoreChats(chatMessages);
+  }
 
-    const currentChatMessages = this.chatMessages.getValue();
+  updateChatsSingle(chat) {
+    const chatMessages = this.chatMessages.getValue();
+    chatMessages.push(chat)
+    this.chatMessages.next(chatMessages);
+    this.updateStoreChats(chatMessages);
+  }
 
-    let lastId = null;
-    if (!currentChatMessages || currentChatMessages.length === 0) lastId = null;
-    else lastId = currentChatMessages[currentChatMessages.length - 1].Id;
+  updateStoreChats(chatMessages) {
+    window.localStorage.setItem('chatStore', JSON.stringify(chatMessages));
+  }
 
-    let chats = await this.GetChatsAfterId(lastId);
-    chats.sort((a, b) => a.id - b.id);
-    
-    const chatMessages: Chat[] = [];
-    for (let i = 0; i < chats.length; i++) {
-      const chatObject = chats[i];
-      const chat = new Chat();
-      chat.Content = chatObject.message;
-      chat.Who = chatObject.name;
-      chat.Datetime = chatObject.dateTime;
-      chat.Id = chatObject.id;
+  getStoreChats() {
+    return JSON.parse(window.localStorage.getItem('chatStore'));
+  }
 
-      chatMessages.push(chat);
+  async getChats() {
+    let chats = JSON.parse(window.localStorage.getItem('chatStore'));
+    if (chats && chats.length > 0) {
+      chats.sort((a, b) => a.id - b.id);
+      const lastStoredChatId = chats[chats.length - 1].Id;
+      const newChats = await this.GetChatsAfterId(lastStoredChatId);
+      if (newChats && newChats.length > 0) {
+        chats.push(newChats);
+        chats = [...chats];
+        for (const newChat of newChats) {
+          const newMsgNotification = new Notification('New chat message', {
+            body: `${newChat.Who}: ${newChat.Content}`,
+          });
+        };
+        const currentMessagesCount = this.newChatMessagesCount.getValue();
+        const newMessageCount = newChats.length;
+        this.newChatMessagesCount.next(currentMessagesCount + newMessageCount);
+        this.messageService.add(`ChatService: ${newMessageCount} new message${newMessageCount > 1 ? 's' : ''}.`);
+      }
     }
-
-
-    if (chatMessages.length === 0)
-      return this.messageService.add(`ChatService: No new messages.`);
     else {
-      for (const chat of chatMessages) {
-        const newMsgNotification = new Notification('New chat message', {
-          body: `${chat.Who}: ${chat.Content}`,
-        });
-      };
-
-      const currentMessagesCount = this.newChatMessagesCount.getValue();
-      const newMessageCount = chats.length;
-      this.newChatMessagesCount.next(currentMessagesCount + newMessageCount);
-      this.messageService.add(`ChatService: ${newMessageCount} new message${newMessageCount > 1 ? 's' : ''}.`);
-
-      currentChatMessages.push(...chatMessages);
-      this.chatMessages.next(currentChatMessages);
+      chats = await this.GetChats();
     }
+    chats.sort((a, b) => a.id - b.id);
+    return chats;
+  }
+
+  async getChatMessages(): Promise<void> {
+    let chats = await this.getChats();
+    this.updateChats(chats);
+    this.messageService.add(`ChatService: Got all chat messages.`);
   }
 
   async sendChatMessage(message: string): Promise<void> {
@@ -89,21 +77,12 @@ export class ChatService {
       return this.messageService.add(`ChatService: Please enter a message before posting.`, 'error');
     this.messageService.add('ChatService: Posting chat message.');
 
-    const chatMessages = this.chatMessages.getValue();
-
-    const chatObject = (await this.PostChat({
-      name: this.cryptoService.username,
+    const chat = (await this.PostChat({
+      name: !this.cryptoService.username ? 'unknown' : this.cryptoService.username,
       message: message
     }));
 
-    const chat = new Chat();
-    chat.Content = chatObject.message;
-    chat.Who = chatObject.name;
-    chat.Datetime = chatObject.dateTime;
-    chat.Id = chatObject.id;
-
-    chatMessages.push(chat);
-    this.chatMessages.next(chatMessages);
+    this.updateChatsSingle(chat);
     this.messageService.add(`ChatService: Posted chat message id ${chat.Id}.`);
   }
 
@@ -113,7 +92,21 @@ export class ChatService {
       this.httpClient.get<any[]>(url).subscribe(
         {
           next: (chats: any[]) => {
-            res(chats);
+            const chatMessages: Chat[] = [];
+            if (chats && chats.length > 0) {
+              chats.sort((a, b) => a.id - b.id);
+              for (let i = 0; i < chats.length; i++) {
+                const chatObject = chats[i];
+                const chat = new Chat();
+                chat.Content = chatObject.message;
+                chat.Who = chatObject.name;
+                chat.Datetime = chatObject.dateTime;
+                chat.Id = chatObject.id;
+
+                chatMessages.push(chat);
+              }
+            }
+            res(chatMessages);
           },
           error: (err: any) => {
             res(null);
@@ -128,7 +121,13 @@ export class ChatService {
       const url = `${this.baseUrl}/AddChat`;
       this.httpClient.post<any>(url, chat).subscribe(
         {
-          next: (chat: any) => {
+          next: (chatObject: any) => {
+            const chat = new Chat();
+            chat.Content = chatObject.message;
+            chat.Who = chatObject.name;
+            chat.Datetime = chatObject.dateTime;
+            chat.Id = chatObject.id;
+
             res(chat);
           },
           error: (err: any) => {
@@ -145,7 +144,18 @@ export class ChatService {
       this.httpClient.get<any[]>(url).subscribe(
         {
           next: (chats: any[]) => {
-            res(chats);
+            chats.sort((a, b) => a.id - b.id);
+            const chatMessages: Chat[] = [];
+            for (let i = 0; i < chats.length; i++) {
+              const chatObject = chats[i];
+              const chat = new Chat();
+              chat.Content = chatObject.message;
+              chat.Who = chatObject.name;
+              chat.Datetime = chatObject.dateTime;
+              chat.Id = chatObject.id;
+              chatMessages.push(chat);
+            }
+            res(chatMessages);
           },
           error: (err: any) => {
             res(null);
