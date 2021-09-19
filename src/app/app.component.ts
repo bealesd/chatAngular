@@ -3,18 +3,22 @@ import { NavigationEnd, Router } from '@angular/router';
 import { Utilities } from './helpers/utilities-helper';
 import { SwUpdate } from '@angular/service-worker';
 
+import { MessageService } from './services/message.service';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  isDevMode: boolean = isDevMode();
+  // isDevMode: boolean = isDevMode();
+  isLoggingOn: boolean = false;
 
   constructor(
     private router: Router,
     private utilities: Utilities,
-    private readonly updates: SwUpdate
+    private readonly updates: SwUpdate,
+    private messageService: MessageService,
   ) {
     this.router.events.subscribe((ev) => {
       if (ev instanceof NavigationEnd) {
@@ -30,6 +34,11 @@ export class AppComponent {
     this.updates.available.subscribe(event => {
       this.showAppUpdateAlert();
     });
+
+    this.messageService.isLoggingOn
+    .subscribe(isLoggingOn => {
+      this.isLoggingOn = isLoggingOn;
+    })
   }
 
   showAppUpdateAlert() {

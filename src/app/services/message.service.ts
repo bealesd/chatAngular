@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { LoggerService } from './logger.service';
 
 @Injectable({
@@ -7,7 +8,8 @@ import { LoggerService } from './logger.service';
 export class MessageService {
   messages: any = [];
   types = ['error', 'info', 'warning']
-
+  public isLoggingOn = new BehaviorSubject<boolean>(false);
+  
   constructor(
     private loggerService: LoggerService
   ){}

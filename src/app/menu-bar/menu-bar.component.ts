@@ -42,4 +42,9 @@ export class MenuBarComponent implements OnInit {
     this.router.navigate(['login']);
   }
 
+  toggleLogs(){
+    const value = !this.messageService.isLoggingOn.value;
+    this.messageService.isLoggingOn.next(value);
+  }
+
 }
