@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-
+import { BehaviorSubject } from 'rxjs';
 import { MessageService } from '../services/message.service';
 import { Chat } from '../models/chat.model';
 import { CryptoService } from './crypto.service';
@@ -16,8 +15,7 @@ export class ChatService {
 
   private baseUrl = 'https://corechatapi.azurewebsites.net/chat';
 
-  constructor(private messageService: MessageService, private cryptoService: CryptoService, private httpClient: HttpClient) {
-  }
+  constructor(private messageService: MessageService, private cryptoService: CryptoService, private httpClient: HttpClient) {}
 
   updateChats(chatMessages) {
     this.chatMessages.next(chatMessages);
@@ -32,11 +30,11 @@ export class ChatService {
   }
 
   updateStoreChats(chatMessages) {
-    window.localStorage.setItem('chatStore', JSON.stringify(chatMessages));
+    window.localStorage.setItem('chatStore', JSON.stringify(chatMessages.flat()));
   }
 
   getStoreChats() {
-    return JSON.parse(window.localStorage.getItem('chatStore'));
+    return JSON.parse(window.localStorage.getItem('chatStore')).flat();
   }
 
   async getChats() {
