@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
+import { DatePipe } from '@angular/common';
 import { MessageService } from '../services/message.service';
 import { Chat } from '../models/chat.model';
 import { CryptoService } from './crypto.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
+
 export class ChatService {
   public chatMessages = new BehaviorSubject<Chat[]>([]);
 
@@ -15,26 +17,39 @@ export class ChatService {
 
   private baseUrl = 'https://corechatapi.azurewebsites.net/chat';
 
-  constructor(private messageService: MessageService, private cryptoService: CryptoService, private httpClient: HttpClient) {}
+  constructor(private datePipe: DatePipe, private messageService: MessageService, private cryptoService: CryptoService, private httpClient: HttpClient) { }
 
-  updateChats(chatMessages) {
+  updateLocalChats(chatMessages) {
     this.chatMessages.next(chatMessages);
     this.updateStoreChats(chatMessages);
   }
 
-  updateChatsSingle(chat) {
+  addLocalChat(chatMessage) {
     const chatMessages = this.chatMessages.getValue();
-    chatMessages.push(chat)
+    chatMessages.push(chatMessage)
     this.chatMessages.next(chatMessages);
     this.updateStoreChats(chatMessages);
   }
 
   updateStoreChats(chatMessages) {
+    chatMessages = this.filterInvalidChats(chatMessages);
     window.localStorage.setItem('chatStore', JSON.stringify(chatMessages.flat()));
   }
 
+  filterInvalidChats(chatMessages){
+    return chatMessages.filter((chat) => {
+      try {
+        this.datePipe.transform(new Date(chat.Datetime), 'MM/dd/yyyy');
+        return chat;
+      }
+      catch {
+        this.messageService.add(`ChatService: Could not parse chat.`, 'error');
+      }
+    })
+  }
+
   getStoreChats() {
-    return JSON.parse(window.localStorage.getItem('chatStore')).flat();
+    return this.filterInvalidChats(JSON.parse(window.localStorage.getItem('chatStore')).flat());
   }
 
   async getChats() {
@@ -66,7 +81,7 @@ export class ChatService {
 
   async getChatMessages(): Promise<void> {
     let chats = await this.getChats();
-    this.updateChats(chats);
+    this.updateLocalChats(chats);
     this.messageService.add(`ChatService: Got all chat messages.`);
   }
 
@@ -80,7 +95,7 @@ export class ChatService {
       message: message
     }));
 
-    this.updateChatsSingle(chat);
+    this.addLocalChat(chat);
     this.messageService.add(`ChatService: Posted chat message id ${chat.Id}.`);
   }
 

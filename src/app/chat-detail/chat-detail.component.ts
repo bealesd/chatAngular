@@ -23,11 +23,9 @@ export class ChatDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.parseDateTime();
-    this.deleted = this.recieveChat.Deleted === 'true';
     this.dialogBoxService = new DialogBoxService();
   }
 
   ngDoCheck(): void {
-    this.deleted = this.recieveChat.Deleted === 'true';
   }
 }
