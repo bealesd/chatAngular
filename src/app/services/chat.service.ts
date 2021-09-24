@@ -19,24 +19,28 @@ export class ChatService {
 
   constructor(private datePipe: DatePipe, private messageService: MessageService, private cryptoService: CryptoService, private httpClient: HttpClient) { }
 
-  updateLocalChats(chatMessages) {
-    this.chatMessages.next(chatMessages);
-    this.updateStoreChats(chatMessages);
+  getStoreChats() {
+    const chats = this.filterInvalidChats(JSON.parse(window.localStorage.getItem('chatStore')).flat());
+    chats.sort((a, b) => a.id - b.id);
+    return chats;
   }
 
-  addLocalChat(chatMessage) {
-    const chatMessages = this.chatMessages.getValue();
-    chatMessages.push(chatMessage)
-    this.chatMessages.next(chatMessages);
-    this.updateStoreChats(chatMessages);
+  addStoreChat(chat) {
+    let chats = this.getStoreChats();
+    chats.push(chat);
+
+    this.updateStoreChats(chats);
   }
 
-  updateStoreChats(chatMessages) {
-    chatMessages = this.filterInvalidChats(chatMessages);
-    window.localStorage.setItem('chatStore', JSON.stringify(chatMessages.flat()));
+  updateStoreChats(chats) {
+    chats = this.filterInvalidChats(chats);
+    chats.sort((a, b) => a.id - b.id);
+    window.localStorage.setItem('chatStore', JSON.stringify(chats.flat()));
+
+    this.chatMessages.next(chats)
   }
 
-  filterInvalidChats(chatMessages){
+  filterInvalidChats(chatMessages) {
     return chatMessages.filter((chat) => {
       try {
         this.datePipe.transform(new Date(chat.Datetime), 'MM/dd/yyyy');
@@ -48,19 +52,20 @@ export class ChatService {
     })
   }
 
-  getStoreChats() {
-    return this.filterInvalidChats(JSON.parse(window.localStorage.getItem('chatStore')).flat());
+  async getChatMessages(): Promise<void> {
+    let chats = await this.getChats();
+    this.updateStoreChats(chats);
+    this.messageService.add(`ChatService: Got all chat messages.`);
   }
 
   async getChats() {
-    let chats = JSON.parse(window.localStorage.getItem('chatStore'));
+    let chats = this.getStoreChats();
+
     if (chats && chats.length > 0) {
-      chats.sort((a, b) => a.id - b.id);
       const lastStoredChatId = chats[chats.length - 1].Id;
       const newChats = await this.GetChatsAfterId(lastStoredChatId);
       if (newChats && newChats.length > 0) {
         chats.push(newChats);
-        chats = [...chats];
         for (const newChat of newChats) {
           const newMsgNotification = new Notification('New chat message', {
             body: `${newChat.Who}: ${newChat.Content}`,
@@ -75,14 +80,7 @@ export class ChatService {
     else {
       chats = await this.GetChats();
     }
-    chats.sort((a, b) => a.id - b.id);
     return chats;
-  }
-
-  async getChatMessages(): Promise<void> {
-    let chats = await this.getChats();
-    this.updateLocalChats(chats);
-    this.messageService.add(`ChatService: Got all chat messages.`);
   }
 
   async sendChatMessage(message: string): Promise<void> {
@@ -95,7 +93,7 @@ export class ChatService {
       message: message
     }));
 
-    this.addLocalChat(chat);
+    this.addStoreChat(chat);
     this.messageService.add(`ChatService: Posted chat message id ${chat.Id}.`);
   }
 
