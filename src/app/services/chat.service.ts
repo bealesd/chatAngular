@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 import { DatePipe } from '@angular/common';
+import { DeviceDetectorService } from 'ngx-device-detector';
+
 import { MessageService } from '../services/message.service';
 import { Chat } from '../models/chat.model';
 import { CryptoService } from './crypto.service';
@@ -21,7 +23,8 @@ export class ChatService {
     private datePipe: DatePipe,
     private messageService: MessageService,
     private cryptoService: CryptoService,
-    private httpClient: HttpClient) { }
+    private httpClient: HttpClient,
+    private deviceService: DeviceDetectorService) { }
 
   getStoreChats() {
     let chats = [];
@@ -77,9 +80,11 @@ export class ChatService {
       if (newChats && newChats.length > 0) {
         chats.push(newChats);
         for (const newChat of newChats) {
-          const newMsgNotification = new Notification('New chat message', {
-            body: `${newChat.Who}: ${newChat.Content}`,
-          });
+          if (this.deviceService.isDesktop()) {
+            const newMsgNotification = new Notification('New chat message', {
+              body: `${newChat.Who}: ${newChat.Content}`,
+            });
+          }
         };
         const currentMessagesCount = this.newChatMessagesCount.getValue();
         const newMessageCount = newChats.length;

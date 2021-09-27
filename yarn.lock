@@ -5502,6 +5502,13 @@ next-tick@~1.0.0:
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.0.0.tgz#ca86d1fe8828169b0120208e3dc8424b9db8342c"
   integrity sha1-yobR/ogoFpsBICCOPchCS524NCw=
 
+ngx-device-detector@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/ngx-device-detector/-/ngx-device-detector-2.1.1.tgz#a22a9477f382d02edf28786c5609878a57d2834f"
+  integrity sha512-eTuQLAmc2XRRbxDnO9h1QVV0piSyPjstXT5G8fo1rvXy7Ly3MAiniEM2WvTiN7FjtY/VdhEeuBmu/ErSm5cLJg==
+  dependencies:
+    tslib "^2.0.0"
+
 nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
