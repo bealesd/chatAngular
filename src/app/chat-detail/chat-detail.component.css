@@ -6,10 +6,23 @@
     font-size: var(--message-size);
     font-weight: var(--message-weight);
     word-wrap: break-word;
+
+    padding: var(--message-padding);
+    border: var(--unknown-message-border);
+    border-radius: 10px;
+    margin-bottom: 5px;
 }
 
 .message{
     white-space: pre-wrap;
+    
+    grid-column-start: 1;
+    grid-column-end: 4;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    margin-top: 0px;
+    color: green;
+    text-align: left;
 }
 
 .esther {
@@ -43,23 +56,6 @@
     grid-row-end: 3;
     margin-top: 0px;
     color: var(--david-message-color);
-    text-align: left;
-}
-
-.unknown {
-    padding: var(--message-padding);
-    border: var(--unknown-message-border);
-    border-radius: 10px;
-    margin-bottom: 5px;
-}
-
-.unknown>.message{
-    grid-column-start: 1;
-    grid-column-end: 4;
-    grid-row-start: 2;
-    grid-row-end: 3;
-    margin-top: 0px;
-    color: green;
     text-align: left;
 }
 

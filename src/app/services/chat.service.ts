@@ -20,8 +20,14 @@ export class ChatService {
   constructor(private datePipe: DatePipe, private messageService: MessageService, private cryptoService: CryptoService, private httpClient: HttpClient) { }
 
   getStoreChats() {
-    const chats = this.filterInvalidChats(JSON.parse(window.localStorage.getItem('chatStore')).flat());
-    chats.sort((a, b) => a.id - b.id);
+    let chats = [];
+    try {
+      const localChats = JSON.parse(window.localStorage.getItem('chatStore'));
+      if (Array.isArray(localChats))
+        chats = this.filterInvalidChats(localChats.flat());
+        chats.sort((a, b) => a.id - b.id);
+    } catch { }
+
     return chats;
   }
 
@@ -80,7 +86,7 @@ export class ChatService {
     else {
       chats = await this.GetChats();
     }
-    return chats;
+    return chats.flat();
   }
 
   async sendChatMessage(message: string): Promise<void> {

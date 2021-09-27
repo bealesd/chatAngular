@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MessageService {
-  private baseUrl = 'https://corechatapi.azurewebsites.net/log';
+  private baseUrl = `${environment.chatCoreUrl}/log`;
   messages: any = [];
   types = ['error', 'info', 'warning']
   public isLoggingOn = new BehaviorSubject<boolean>(false);
