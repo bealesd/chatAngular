@@ -155,6 +155,4 @@ export class CalendarRecordRest {
 
     return is_a_before_b ? -1 : (is_a_same_as_b ? 1 : 0);
   }
-
-  // [...Array(size).keys()].map(i => i + startAt);
 }

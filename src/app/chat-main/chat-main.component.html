@@ -3,7 +3,7 @@
     <div class="middle-column">
 
         <div class="messagesContainer">
-            <app-chat-detail *ngFor="let message of chatMessages" [recieveChat]="message"></app-chat-detail>
+            <app-chat-detail *ngFor="let message of chatService.chatMessages" [recieveChat]="message"></app-chat-detail>
         </div>
 
         <div id="sendChatForm">

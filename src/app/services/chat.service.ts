@@ -13,7 +13,7 @@ import { CryptoService } from './crypto.service';
 })
 
 export class ChatService {
-  public chatMessages = new BehaviorSubject<Chat[]>([]);
+  public chatMessages: Chat[] = [];
 
   public newChatMessagesCount = new BehaviorSubject<number>(0);
 
@@ -50,7 +50,7 @@ export class ChatService {
     chats.sort((a, b) => a.id - b.id);
     window.localStorage.setItem('chatStore', JSON.stringify(chats.flat()));
 
-    this.chatMessages.next(chats)
+    this.chatMessages = chats;
   }
 
   filterInvalidChats(chatMessages) {
@@ -81,7 +81,7 @@ export class ChatService {
         chats.push(newChats);
         for (const newChat of newChats) {
           if (this.deviceService.isDesktop()) {
-            const newMsgNotification = new Notification('New chat message', {
+            new Notification('New chat message', {
               body: `${newChat.Who}: ${newChat.Content}`,
             });
           }

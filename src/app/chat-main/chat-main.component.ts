@@ -27,7 +27,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   chatInputClass = 'input';
 
   constructor(
-    private chatService: ChatService,
+    public chatService: ChatService,
     private messageService: MessageService,
   ) {
     this.messageInput = '';
@@ -37,13 +37,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    //TODO remove behaviour subject
-    this.chatService.chatMessages
-      .subscribe(chatMessages => {
-        this.chatMessages = chatMessages;
-      })
-
-    this.chatService.newChatMessagesCount
+     this.chatService.newChatMessagesCount
       .subscribe(newChatMessagesCount => {
         this.newChatMessagesCount = newChatMessagesCount;
       });
@@ -60,7 +54,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.chatService.chatMessages.observers.forEach(element => { element.complete(); });
     this.chatService.newChatMessagesCount.observers.forEach(element => { element.complete(); });
 
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
