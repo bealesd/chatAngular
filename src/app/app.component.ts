@@ -1,4 +1,4 @@
-import { Component, isDevMode } from '@angular/core';
+import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Utilities } from './helpers/utilities-helper';
 import { SwUpdate } from '@angular/service-worker';
@@ -11,7 +11,6 @@ import { MessageService } from './services/message.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  // isDevMode: boolean = isDevMode();
   isLoggingOn: boolean = false;
 
   constructor(
@@ -36,16 +35,9 @@ export class AppComponent {
     });
 
     this.messageService.isLoggingOn
-    .subscribe(isLoggingOn => {
-      this.isLoggingOn = isLoggingOn;
-    });
-
-    window.onerror = function (message, url, lineNumber) {
-      //save error and send to server for example.
-      this.messageService.log(`${message}, ${url}, ${lineNumber}`, 'error');
-    
-      return false;
-    };
+      .subscribe(isLoggingOn => {
+        this.isLoggingOn = isLoggingOn;
+      });
   }
 
   showAppUpdateAlert() {

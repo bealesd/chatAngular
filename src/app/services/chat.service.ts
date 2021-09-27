@@ -17,7 +17,11 @@ export class ChatService {
 
   private baseUrl = 'https://corechatapi.azurewebsites.net/chat';
 
-  constructor(private datePipe: DatePipe, private messageService: MessageService, private cryptoService: CryptoService, private httpClient: HttpClient) { }
+  constructor(
+    private datePipe: DatePipe,
+    private messageService: MessageService,
+    private cryptoService: CryptoService,
+    private httpClient: HttpClient) { }
 
   getStoreChats() {
     let chats = [];
@@ -25,7 +29,7 @@ export class ChatService {
       const localChats = JSON.parse(window.localStorage.getItem('chatStore'));
       if (Array.isArray(localChats))
         chats = this.filterInvalidChats(localChats.flat());
-        chats.sort((a, b) => a.id - b.id);
+      chats.sort((a, b) => a.id - b.id);
     } catch { }
 
     return chats;
