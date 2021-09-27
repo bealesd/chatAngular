@@ -38,7 +38,14 @@ export class AppComponent {
     this.messageService.isLoggingOn
     .subscribe(isLoggingOn => {
       this.isLoggingOn = isLoggingOn;
-    })
+    });
+
+    window.onerror = function (message, url, lineNumber) {
+      //save error and send to server for example.
+      this.messageService.log(`${message}, ${url}, ${lineNumber}`, 'error');
+    
+      return false;
+    };
   }
 
   showAppUpdateAlert() {
