@@ -1,31 +1,22 @@
 export class CalendarRecord {
-  id: string;
-  what: string;
-
-  private _hour: number;
-  get hour() { return this._hour; }
-  set hour(hour: number) { if (!isNaN(hour)) this._hour = parseInt(`${hour}`); }
-
-  private _minute: number;
-  get minute() { return this._minute; }
-  set minute(minute: number) { if (!isNaN(minute)) this._minute = parseInt(`${minute}`); }
-
-  private _day: number;
-  get day() { return this._day; }
-  set day(day: number) { if (!isNaN(day)) this._day = parseInt(`${day}`); }
+  public id?: number;
+  public what: string;
+  public year: number;
+  public month: number;
+  public day: number;
+  public hour: number;
+  public minute: number;
 
   toJsonString(): string {
-    let json = JSON.stringify(this);
-    const keysToUpdate = Object.keys(this).filter(key => key[0] === "_");
-    keysToUpdate.forEach(key => {
-      json = json.replace(key, key.substring(1));
-    });
+    const json = JSON.stringify(this);
     return json;
   }
 
-  constructor(id, what, day, hour, minute) {
+  constructor(id: number, what:string, year:number, month:number, day:number, hour:number, minute:number) {
     this.id = id;
     this.what = what;
+    this.year = year;
+    this.month = month;
     this.day = day;
     this.hour = hour;
     this.minute = minute;

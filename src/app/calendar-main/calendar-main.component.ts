@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { fromEvent } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { CalendarHelper } from '../helpers/calendar-helper';
 
-import { CalendarRepo } from '../services/calendar.repo';
 import { CalendarService } from '../services/calendar.service';
 
 @Component({
@@ -18,15 +18,14 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   get width() { return window.innerWidth; }
 
   constructor(
-    private calendarRepo: CalendarRepo,
     public calendarService: CalendarService,
+    public calendarHelper: CalendarHelper
   ) {
     fromEvent(window, 'resize').pipe(debounceTime(1000)).subscribe(() => { this.width; });
   }
 
   async ngOnInit() {
-    await this.calendarRepo.getAllRecords();
-    await this.calendarRepo.getCalendarRecords(parseInt(`${this.calendarService.year}`), parseInt(`${this.calendarService.zeroIndexedMonth}`));
+    await this.calendarService.getCalendarRecords(parseInt(`${this.calendarService.year}`), parseInt(`${this.calendarService.month}`));
   }
 
   ngOnDestroy() { }
@@ -41,7 +40,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   }
 
   updateMonth(value: number) {
-    this.calendarService.zeroIndexedMonth = value;
+    this.calendarService.month = value;
     this.calendarService.updateRecords();
   }
 
@@ -51,7 +50,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   }
 
   getSelectedMonth(month: string) {
-    return this.calendarService.monthNames[parseInt(`${this.calendarService.zeroIndexedMonth}`)].toLowerCase() === month.toLowerCase();
+    return this.calendarHelper.monthNames()[parseInt(`${this.calendarService.month}`)].toLowerCase() === month.toLowerCase();
   }
 
   getSelectedYear(year: number) {

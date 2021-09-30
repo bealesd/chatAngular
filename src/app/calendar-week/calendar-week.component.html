@@ -1,11 +1,11 @@
 <div class="date-box-contianer">
 
-    <div class="date-box day {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.zeroIndexedMonth && calendarService.today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}" (click)="openAddEventForm(dayData)"
+    <div class="date-box day {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.month && calendarService.today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}" (click)="openAddEventForm(dayData)"
         *ngFor="let dayData of daysForWeek; " [style.gridRow]="1 " [attr.data-row]="1 " [style.gridColumn]="dayData.col + 1 " [attr.data-col]="dayData.col + 1 ">
-        {{calendarService.getDayNameShortForMonth(dayData.dayInMonthArrayIndex)}} {{dayData.dayInMonthArrayIndex}}<sup>{{calendarService.addOrdinalIndictor(dayData.dayInMonthArrayIndex)}}</sup>
+        {{calendarHelper.getDayNameShortForMonth(calendarService.year, calendarService.month, dayData.dayInMonthArrayIndex)}} {{dayData.dayInMonthArrayIndex}}<sup>{{calendarHelper.addOrdinalIndictor(dayData.dayInMonthArrayIndex)}}</sup>
     </div>
     <div class="date-box day invalid" *ngFor="let dayData of emptyDaysForWeek;" [style.gridRow]="1 " [attr.data-row]="1 " [style.gridColumn]="dayData.col + 1 " [attr.data-col]="dayData.col + 1 ">
-        {{calendarService.getDayNameShortForMonth(dayData.dayInMonthArrayIndex)}} {{dayData.dayInMonthArrayIndex}}<sup>{{calendarService.addOrdinalIndictor(dayData.dayInMonthArrayIndex)}}</sup>
+        {{calendarHelper.getDayNameShortForMonth(calendarService.year, calendarService.month, dayData.dayInMonthArrayIndex)}} {{dayData.dayInMonthArrayIndex}}<sup>{{calendarHelper.addOrdinalIndictor(dayData.dayInMonthArrayIndex)}}</sup>
     </div>
 
     <div class="date-box mask" *ngFor="let result of dateTimeRecords; " (click)="openAddEventForm({'dayInMonthArrayIndex': result.day, 'hour': result.hour})" [style.gridRow]="result.hour + 2 " [attr.data-row]="result.hour + 2 " [style.gridColumn]="result.col + 1 "
@@ -22,7 +22,7 @@
     <div class="date-box invalid" *ngFor="let result of dateTimeInvalidEmptyRecords; " [style.gridRow]="result.hour + 2 " [attr.data-row]="result.hour + 2 " [style.gridColumn]="result.col + 1 " [attr.data-col]="result.col + 1 ">
     </div>
 
-    <div class="date-box " *ngFor="let hour of calendarService.records.hoursOfDay; " [style.gridRow]="hour.value + 2 " [attr.data-row]="hour.value + 2 " [style.gridColumn]="1 " [attr.data-col]="1 ">
+    <div class="date-box " *ngFor="let hour of calendarHelper.hoursOfDay(); " [style.gridRow]="hour.value + 2 " [attr.data-row]="hour.value + 2 " [style.gridColumn]="1 " [attr.data-col]="1 ">
 
         <div class="time-div ">
             <div>{{hour.toString()}}</div>

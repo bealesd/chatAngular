@@ -1,8 +1,10 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
-import { CalendarRepo } from './calendar.repo'
-import { CalendarRecordRest } from '../models/calendar-record-rest.model';
+import { CalendarHelper } from '../helpers/calendar-helper';
+import { CalendarRecord } from '../models/calendar-record.model';
+import { MessageService } from './message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,113 +16,32 @@ export class CalendarService implements OnDestroy {
   public openUpdateEventForm = new BehaviorSubject<any>({});
   public openAddEventForm = new BehaviorSubject<any>({});
 
-  get years() {
-    const years: number[] = [];
-    for (let i = this.today.year - 5; i <= this.today.year + 10; i++) years.push(i);
-    return years;
-  }
-
-  get monthNames(): string[] {
-    return Object.keys(this.monthsEnum);
-  }
-
-  get monthNamesShort(): string[] {
-    return Object.keys(this.monthsShortEnum);
-  }
-
-  get daysInMonth(): number {
-    // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
-    return new Date(this.year, this.zeroIndexedMonth + 1, 0).getDate();
-  }
-
-  get daysInMonthArray(): number[] {
-    const days: number[] = [];
-    for (let i = 1; i <= (this.daysInMonth); i++) days.push(i);
-    return days;
-  }
-
-  year: number;
-
-  _zeroIndexedMonth: number;
-  get zeroIndexedMonth() { return this._zeroIndexedMonth; }
-  set zeroIndexedMonth(value: number) {
-    if (isNaN(value)) console.error('zeroIndexedMonth is not a number.');
-    else this._zeroIndexedMonth = parseInt(`${value}`);
-  }
-
-  public week = 1;
-  day: number;
   today: { year: number; month: number; week: number; day: number; };
-  monthName: string;
+  calendarRecords: CalendarRecord[] = [];
 
-  records: CalendarRecordRest;
-  daysEnum = {
-    'Sun': 0,
-    'Mon': 1,
-    'Tue': 2,
-    'Wed': 3,
-    'Thu': 4,
-    'Fri': 5,
-    'Sat': 6
-  };
+  public year: number;
+  public month: number;
+  public monthName: string;
+  public week: number;
+  public day: number;
+  private baseUrl = 'https://corechatapi.azurewebsites.net/calendar';
 
-  daysLongEnum = {
-    'Sunday': 0,
-    'Monday': 1,
-    'Tuesday': 2,
-    'Wednesday': 3,
-    'Thursday': 4,
-    'Friday': 5,
-    'Saturday': 6
-  };
-
-  get weekdayNames(): string[] {
-    return Object.keys(this.daysEnum);
-  }
-
-  monthsEnum = {
-    "January": 0,
-    "February": 1,
-    "March": 2,
-    "April": 3,
-    "May": 4,
-    "June": 5,
-    "July": 6,
-    "August": 7,
-    "September": 8,
-    "October": 9,
-    "November": 10,
-    "December": 11
-  }
-
-  monthsShortEnum = {
-    "Jan": 0,
-    "Feb": 1,
-    "Mar": 2,
-    "Apr": 3,
-    "May": 4,
-    "Jun": 5,
-    "Jul": 6,
-    "Aug": 7,
-    "Sep": 8,
-    "Oct": 9,
-    "Nov": 10,
-    "Dec": 11
-  }
-
-  constructor(private calendarRepo: CalendarRepo) {
-    this.records = this.calendarRepo.calendarRecordRest;
-
+  constructor(
+    private messageService: MessageService,
+    private httpClient: HttpClient,
+    private calendarHelper: CalendarHelper) {
     const date = new Date();
-    this.year = date.getFullYear();
-    this.zeroIndexedMonth = date.getMonth();
+    const year = date.getFullYear();
+    const zeroIndexedMonth = date.getMonth();
 
-    const firstOfMonth = new Date(this.year, this.zeroIndexedMonth, 1);
-    this.week = Math.ceil((firstOfMonth.getDay() + date.getDate()) / 7);
-    this.day = date.getDate();
+    const firstOfMonth = new Date(year, zeroIndexedMonth, 1);
+    const week = Math.ceil((firstOfMonth.getDay() + date.getDate()) / 7);
+    const day = date.getDate();
 
-    this.records.month = this.zeroIndexedMonth;
-    this.records.year = this.year;
+    this.month = zeroIndexedMonth;
+    this.year = year;
+    this.week = week;
+    this.day = day;
 
     this.setTodaysDate();
     this.subscriptions.push(interval(1000 * 60 * 5).subscribe(() => this.setTodaysDate()));
@@ -131,10 +52,184 @@ export class CalendarService implements OnDestroy {
     this.subscriptions = [];
   }
 
-  get weeksInMonth(): number {
-    const firstOfMonth: Date = new Date(this.year, this.zeroIndexedMonth, 1);
-    const daysIntoWeek: number = firstOfMonth.getDay();
-    return Math.ceil((daysIntoWeek + this.daysInMonth) / 7);
+  async deleteCalendarRecord(id: number): Promise<void> {
+    this.messageService.add(`CalendarRepo: Deleting calendar record for ${this.year}-${this.month + 1}, ${id}.`);
+
+    const result = await this.DeleteChat(id);
+    if (result) {
+      const recordsToKeep = this.calendarRecords.filter(r => r.id !== id);
+      this.calendarRecords = recordsToKeep
+    }
+  }
+
+  DeleteChat(id): Promise<any> {
+    return new Promise((res, rej) => {
+      const url = `${this.baseUrl}/DeleteRecord?id=${id}`;
+      this.httpClient.delete(url).subscribe(
+        {
+          next: (recordObject: any) => {
+            res(true);
+          },
+          error: (err: any) => {
+            res(null);
+          }
+        }
+      );
+    });
+  }
+
+  async postCalendarRecord(record: CalendarRecord): Promise<void> {
+    let result = await this.PostRecord(record);
+    this.calendarRecords.push(result);
+  }
+
+  async updateCalendarRecord(record: CalendarRecord): Promise<void> {
+    let localRecord: CalendarRecord;
+    localRecord = this.calendarRecords.find(r => r.id === record.id);
+    localRecord.what = record.what;
+    localRecord.day = record.day;
+    localRecord.hour = record.hour;
+    localRecord.minute = record.minute;
+    localRecord.id = record.id;
+    localRecord.month = record.month;
+    localRecord.year = record.year;
+
+    const result = await this.UpdateRecord(record);
+    if (!result) {
+      this.messageService.add(`CalendarRepo: updated calendar records for ${this.year}-${this.month + 1}. Record: ${JSON.stringify(record)}.`, 'error');
+    }
+    else
+      this.messageService.add(` • Updated calendar record for ${this.year}-${this.month + 1}.`);
+  }
+
+  UpdateRecord(record: any): Promise<any> {
+    return new Promise((res, rej) => {
+      const url = `${this.baseUrl}/UpdateRecord`;
+      this.httpClient.put(url, record).subscribe(
+        {
+          next: (result: any) => {
+            res(true);
+          },
+          error: (err: any) => {
+            res(false);
+          }
+        }
+      );
+    });
+  }
+
+  PostRecord(record: any): Promise<any> {
+    return new Promise((res, rej) => {
+      const url = `${this.baseUrl}/AddRecord`;
+      this.httpClient.post(url, record).subscribe(
+        {
+          next: (recordObject: CalendarRecord) => {
+            const record = new CalendarRecord(
+              recordObject.id,
+              recordObject.what,
+              recordObject.year,
+              recordObject.month,
+              recordObject.day,
+              recordObject.hour,
+              recordObject.minute
+            );
+            res(record);
+          },
+          error: (err: any) => {
+            res(null);
+          }
+        }
+      );
+    });
+  }
+
+  async getAllRecords(): Promise<boolean> {
+    this.messageService.add(`CalendarRepo: Getting all records.`);
+
+    const calendarRecords = await this.GetRecords();
+
+    if (calendarRecords === null) {
+      this.calendarRecords = [];
+      this.messageService.add(`CalendarRepo: Could not get all records.`);
+    }
+    else {
+      this.calendarRecords = calendarRecords;
+      this.messageService.add(`CalendarRepo: Got all records.`);
+    }
+
+    return true
+
+  }
+
+  GetRecords(): Promise<any[]> {
+    return new Promise((res, rej) => {
+      const url = `${this.baseUrl}/GetAllRecords`;
+      this.httpClient.get<any[]>(url).subscribe(
+        {
+          next: (records: any[]) => {
+            const calendarRecords: CalendarRecord[] = [];
+            for (let i = 0; i < records.length; i++) {
+              const recordObject = records[i];
+              const record = new CalendarRecord(
+                recordObject.id,
+                recordObject.what,
+                recordObject.year,
+                recordObject.month,
+                recordObject.day,
+                recordObject.hour,
+                recordObject.minute
+              );
+              calendarRecords.push(record);
+            }
+            res(calendarRecords);
+          },
+          error: (err: any) => {
+            res(null);
+          }
+        }
+      );
+    });
+  }
+
+  GetRecordsByYearAndMonth(year: number, month: number): Promise<any[]> {
+    return new Promise((res, rej) => {
+      const url = `${this.baseUrl}/GetRecords?year=${year}&month=${month}`;
+      this.httpClient.get<any[]>(url).subscribe(
+        {
+          next: (records: any[]) => {
+            const calendarRecords: CalendarRecord[] = [];
+            for (let i = 0; i < records.length; i++) {
+              const recordObject = records[i];
+              const record = new CalendarRecord(
+                recordObject.id,
+                recordObject.what,
+                recordObject.year,
+                recordObject.month,
+                recordObject.day,
+                recordObject.hour,
+                recordObject.minute
+              );
+              calendarRecords.push(record);
+            }
+            res(calendarRecords);
+          },
+          error: (err: any) => {
+            res(null);
+          }
+        }
+      );
+    });
+  }
+
+  async getCalendarRecords(year: number, month: number): Promise<void> {
+    this.messageService.add(`CalendarRepo: Getting calendar record for ${year}-${month + 1}.`);
+
+    const records = await this.GetRecordsByYearAndMonth(year, month);
+    this.calendarRecords = records;
+
+    //   this.messageService.add(`CalendarRepo: getting calendar records for ${year}-${month + 1}.`, 'error');
+
+    // this.messageService.add(`CalendarRepo: Got ${this.calendarRecordRest.records.length} calendar records for ${year}-${month + 1}.`);
   }
 
   setTodaysDate() {
@@ -147,91 +242,54 @@ export class CalendarService implements OnDestroy {
     this.today = { 'year': year, 'month': month, 'week': week, 'day': day };
   }
 
-  getDayName(dayNumber: number): string {
-    return Object.keys(this.daysEnum)[dayNumber];
-  }
-
-  getDayNameShortForMonth(day: number): string {
-    const date = new Date(this.year, this.zeroIndexedMonth, day);
-    return this.getDayName(date.getDay());
-  }
-
-  getDayNameLongForMonth(day: number): string {
-    const date = new Date(this.year, this.zeroIndexedMonth, day);
-    return this.getDayNameLong(date.getDay());
-  }
-
-  getDayNameLong(dayNumber: number): string {
-    return Object.keys(this.daysLongEnum)[dayNumber];
-  }
-
   changeDay(nextOrPrevious: string) {
-    const maxDay = this.daysInMonthArray[this.daysInMonthArray.length - 1];
+    const maxDay = this.calendarHelper.daysInMonthArray(this.year, this.month)[this.calendarHelper.daysInMonthArray(this.year, this.month).length - 1];
     if (nextOrPrevious === 'next' && ++this.day > maxDay) this.changeMonth('next');
     else if (nextOrPrevious === 'previous' && --this.day < 1) this.changeMonth('previous')
   }
 
   changeWeek(nextOrPrevious: string) {
-    const maxWeek = this.weeksInMonth;
+    const maxWeek = this.calendarHelper.weeksInMonth(this.year, this.month);
     if (nextOrPrevious === 'next' && ++this.week > maxWeek) this.changeMonth('next');
     else if (nextOrPrevious === 'previous' && --this.week < 1) this.changeMonth('previous');
   }
 
   async changeMonth(nextOrPrevious: string) {
-    const oneIndexedMonth = this.zeroIndexedMonth + 1;
+    const oneIndexedMonth = this.month + 1;
     let tempDate = new Date(`${this.year} ${oneIndexedMonth}`);
 
     if (nextOrPrevious === 'next') {
-      tempDate.setMonth(this.zeroIndexedMonth + 1);
+      tempDate.setMonth(this.month + 1);
       this.year = tempDate.getFullYear();
-      this.zeroIndexedMonth = tempDate.getMonth();
+      this.month = tempDate.getMonth();
       this.week = 1;
       this.day = 1;
     }
     else if (nextOrPrevious === 'previous') {
-      tempDate.setMonth(this.zeroIndexedMonth - 1);
+      tempDate.setMonth(this.month - 1);
       this.year = tempDate.getFullYear();
-      this.zeroIndexedMonth = tempDate.getMonth();
-      this.week = this.weeksInMonth;
-      this.day = this.daysInMonth;
+      this.month = tempDate.getMonth();
+      this.week = this.calendarHelper.weeksInMonth(this.year, this.month);
+      this.day = this.calendarHelper.daysInMonth(this.year, this.month);
     }
-
-    await this.calendarRepo.getAllRecords();
     
-    await this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
+    await this.getCalendarRecords(this.year, this.month);
 
     this.closeAddOrUpdateEventForm.next(true);
   }
 
   async updateRecords() {
-    await this.calendarRepo.getAllRecords();
-
-    this.calendarRepo.calendarRecordRest.records = [];
-    await this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
+    this.calendarRecords = [];
+    await this.getCalendarRecords(this.year, this.month);
     this.day = 1;
     this.closeAddOrUpdateEventForm.next(true);
   }
 
   async changeToToday() {
     this.year = this.today.year;
-    this.zeroIndexedMonth = this.today.month;
+    this.month = this.today.month;
     this.week = this.today.week;
     this.day = this.today.day;
-    await this.calendarRepo.getCalendarRecords(this.year, this.zeroIndexedMonth);
-  }
-
-  public addOrdinalIndictor(day: number): string {
-    const j = day % 10;
-    const k = day % 100;
-    let ordinalIndictor;
-    if (j == 1 && k != 11)
-      ordinalIndictor = "st";
-    else if (j == 2 && k != 12)
-      ordinalIndictor = "nd";
-    else if (j == 3 && k != 13)
-      ordinalIndictor = "rd";
-    else
-      ordinalIndictor = "th";
-    return ordinalIndictor;
+    await this.getCalendarRecords(this.year, this.month);
   }
 }

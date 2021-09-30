@@ -3,10 +3,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import { Utilities } from '../helpers/utilities-helper';
-
-import { CalendarRepo } from './../services/calendar.repo';
 import { CalendarService } from '../services/calendar.service';
+import { CalendarHelper } from '../helpers/calendar-helper';
 
 @Component({
   selector: 'app-calendar-form',
@@ -33,11 +31,10 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
 
   constructor(
-    private calendarRepo: CalendarRepo,
     private fb: FormBuilder,
     private calendarService: CalendarService,
-    private utilities: Utilities) {
-  }
+    public calendarHelper: CalendarHelper
+  ) { }
 
   ngOnInit() {
     this.subscriptions.push(
@@ -102,9 +99,9 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
       hour: parseInt(dayData.hour ?? 0),
       minute: parseInt(dayData.minute ?? 0),
       day: parseInt(`${dayData.dayInMonthArrayIndex}`),
-      month: parseInt(`${this.calendarService.zeroIndexedMonth}`),
+      month: parseInt(`${this.calendarService.month}`),
       year: parseInt(`${this.calendarService.year}`),
-      id: this.utilities.uuidv4()
+      id: null
     });
   }
 
@@ -117,7 +114,7 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
       hour: parseInt(`${record.hour}`),
       minute: parseInt(`${record.minute}`),
       day: parseInt(`${record.day}`),
-      month: parseInt(`${this.calendarService.zeroIndexedMonth}`),
+      month: parseInt(`${this.calendarService.month}`),
       year: parseInt(`${this.calendarService.year}`),
       id: record.id
     };
@@ -136,19 +133,27 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
     const record: CalendarRecord = new CalendarRecord(
       this.profileForm.value.id,
       this.profileForm.value.what,
+      parseInt(`${this.calendarService.year}`),
+      parseInt(`${this.calendarService.month}`),
       parseInt(`${this.profileForm.value.day}`),
       parseInt(`${this.profileForm.value.hour}`),
       parseInt(`${this.profileForm.value.minute}`)
     );
     //todo await
-    this.calendarRepo.postCalendarRecord(record);
+    if(this.profileForm.value.id === null){
+      this.calendarService.postCalendarRecord(record);
+    }
+    else{
+      this.calendarService.updateCalendarRecord(record);
+    }
+    
     this.closeAddOrUpdateEventForm();
   }
 
   deleteEvent() {
     if (window.confirm(`Are you sure you want to delete this record?`)) {
       //todo await
-      this.calendarRepo.deleteCalendarRecord(this.profileForm.value.id);
+      this.calendarService.deleteCalendarRecord(this.profileForm.value.id);
       this.closeAddOrUpdateEventForm();
     }
   }

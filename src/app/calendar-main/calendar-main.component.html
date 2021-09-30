@@ -24,14 +24,14 @@
   </div>
 
   <select class="dropdown" (change)="updateMonth(titleMonth.value)" #titleMonth id="titleMonth">
-    <option *ngFor='let month of calendarService.monthNames; let i = index;' [value]="i"
+    <option *ngFor='let month of calendarHelper.monthNames(); let i = index;' [value]="i"
       [selected]="getSelectedMonth(month)">
-      {{(width < 800 ? calendarService.monthNamesShort[i]:month)}}
+      {{(width < 800 ? calendarHelper.monthNamesShort()[i]:month)}}
     </option>
   </select>
 
   <select class="dropdown" (change)="updateYear(titleYear.value)" #titleYear id="titleYear">
-    <option *ngFor='let year of calendarService.years;' [value]="year" [selected]="getSelectedYear(year)">
+    <option *ngFor='let year of calendarHelper.years();' [value]="year" [selected]="getSelectedYear(year)">
       {{year}}
     </option>
   </select>

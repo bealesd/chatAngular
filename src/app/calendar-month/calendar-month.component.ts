@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { CalendarService } from '../services/calendar.service';
 import { CalendarRecord } from '../models/calendar-record.model';
+import { CalendarHelper } from '../helpers/calendar-helper';
 
 @Component({
   selector: 'app-calendar-month',
@@ -17,12 +18,12 @@ export class CalendarMonthComponent implements OnInit, OnDestroy {
     const dayData = [];
 
     let gridRow = 1;
-    this.calendarService.daysInMonthArray.forEach((dayNumber, index) => {
-      const day = new Date(this.calendarService.year, this.calendarService.zeroIndexedMonth, dayNumber).getDay();
+    this.calendarHelper.daysInMonthArray(this.calendarService.year, this.calendarService.month).forEach((dayNumber, index) => {
+      const day = new Date(this.calendarService.year, this.calendarService.month, dayNumber).getDay();
       if (index !== 0 && day === 0) gridRow++;
 
       const col = (day % 7);
-      const dayName = this.calendarService.weekdayNames[col];
+      const dayName = this.calendarHelper.weekdayNames[col];
       const gridCol = col + 1;
       this.lastCol = gridCol;
 
@@ -36,7 +37,8 @@ export class CalendarMonthComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    public calendarService: CalendarService
+    public calendarService: CalendarService,
+    public calendarHelper: CalendarHelper
   ) { }
 
   ngOnInit() { }

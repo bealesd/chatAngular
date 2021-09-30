@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { CalendarHelper } from '../helpers/calendar-helper';
 import { CalendarRecord } from '../models/calendar-record.model';
 import { CalendarService } from '../services/calendar.service';
 
@@ -10,7 +11,8 @@ import { CalendarService } from '../services/calendar.service';
 export class CalendarDayComponent implements OnInit, OnDestroy {
 
   constructor(
-    public calendarService: CalendarService
+    public calendarService: CalendarService,
+    public calendarHelper: CalendarHelper
   ) { }
 
   ngOnInit(): void {  }
@@ -22,7 +24,7 @@ export class CalendarDayComponent implements OnInit, OnDestroy {
 
   get dateTimeRecords(): { hour: number; day: number; records: CalendarRecord[]; col: number; }[] {
     const allRecordsGroupedByHour: { hour: number, day: number, records: CalendarRecord[], col: number }[] = [];
-    for (let groupedRecord of this.calendarService.records.getRecordsGroupedByHourForDay(this.calendarService.day)) {
+    for (let groupedRecord of this.calendarHelper.getRecordsGroupedByHourForDay(this.calendarService.year, this.calendarService.month,this.calendarService.day, this.calendarService.calendarRecords)) {
       const recordsGroupedByHour = {
         hour: groupedRecord.hour,
         day: this.calendarService.day,
@@ -37,7 +39,7 @@ export class CalendarDayComponent implements OnInit, OnDestroy {
   get dateTimeEmptyRecords(): { hour: number, day: number, col: number }[] {
     const emptyHoursData: { hour: number, day: number, col: number }[] = [];
 
-    for (let emptyHour of this.calendarService.records.getEmptyHoursByDay(this.calendarService.day)) {
+    for (let emptyHour of this.calendarHelper.getEmptyHoursByDay(this.calendarService.day, this.calendarService.calendarRecords)) {
       const empytHourData = {
         hour: parseInt(emptyHour.value),
         day: this.calendarService.day,
