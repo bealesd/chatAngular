@@ -5,16 +5,6 @@ import { CalendarRecord } from '../models/calendar-record.model';
   providedIn: 'root',
 })
 export class CalendarHelper {
-   key(year: number, month: number): string {
-    if (year !== null && year !== undefined && month !== null && month !== undefined)
-      return `${year}-${month}`;
-    else return null;
-  }
-
-   toJsonString(records: CalendarRecord[]): string {
-    return JSON.stringify(records.map(record => JSON.parse(record.toJsonString())));
-  }
-
    getDayRangeForWeek(year: number, month: number, week: number) {
     if (week > this.weeksInMonth(year, month) || week < 1)
       return console.error(`Week is out of range for year and month: ${year} ${month}.`) === null ? [] : [];
@@ -29,11 +19,11 @@ export class CalendarHelper {
     return this.daysInMonthArray(year, month).slice(startDay, endDay);
   }
 
-   getDaysForWeek(year: number, month: number, week: number) {
+   getDaysForWeek(year: number, month: number, week: number): Date[] {
     return this.getDayRangeForWeek(year, month, week).map(day => new Date(year, month, day));
   }
 
-   getDaysForWeekOutsideOfMonth(year: number, month: number, week: number): any[] {
+   getDaysForWeekOutsideOfMonth(year: number, month: number, week: number): Date[] {
     const days = this.getDayRangeForWeek(year, month, week);
     if (days.length === 0)
       return [];
@@ -90,14 +80,14 @@ export class CalendarHelper {
   }
 
    getRecordsByDay(day: number, records: CalendarRecord[]): CalendarRecord[] {
-    const records2 = records.filter(r => r['day'] === day);
-    records2.sort(this.compareByTime);
-    return records2;
+    records = records.filter(r => r['day'] === day);
+    records.sort(this.compareByTime);
+    return records;
   }
 
    getRecordsGroupedByHourForDay(year: number, month: number, calendarDay, records: CalendarRecord[]): { hour: number, date: Date, records: CalendarRecord[] }[] {
-    const records2 = this.getRecordsByDay(calendarDay, records);
-    const grouped: { hour: CalendarRecord[] } = this.groupBy(records2, 'hour');
+    records = this.getRecordsByDay(calendarDay, records);
+    const grouped: { hour: CalendarRecord[] } = this.groupBy(records, 'hour');
 
     return Object.keys(grouped).map(hour => Object({
       'hour': parseInt(hour), 'records': grouped[hour], 'date': new Date(year, month, calendarDay)
@@ -116,8 +106,8 @@ export class CalendarHelper {
   }
 
    getEmptyHoursByDay(calendarDay, records: CalendarRecord[]): any[] {
-    const records2 = this.getRecordsByDay(calendarDay, records);
-    return this.hoursOfDay().filter(hour => !records2.map(rec => rec.hour).includes(hour.value));
+    records = this.getRecordsByDay(calendarDay, records);
+    return this.hoursOfDay().filter(hour => !records.map(rec => rec.hour).includes(hour.value));
   }
 
    hoursOfDay(): any[] {
@@ -154,9 +144,9 @@ export class CalendarHelper {
     return this.getDayName(date.getDay());
   }
 
-   getDayNameLongForMonth(year: number, month: number, day: number, daysLongEnum): string {
+   getDayNameLongForMonth(year: number, month: number, day: number): string {
     const date = new Date(year, month, day);
-    return this.getDayNameLong(date.getDay(), daysLongEnum);
+    return this.getDayNameLong(date.getDay(), this.daysLongEnum);
   }
 
    getDayNameLong(dayNumber: number, daysLongEnum): string {

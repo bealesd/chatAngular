@@ -124,15 +124,15 @@ export class CalendarService implements OnDestroy {
       this.httpClient.post(url, record).subscribe(
         {
           next: (recordObject: CalendarRecord) => {
-            const record = new CalendarRecord(
-              recordObject.id,
-              recordObject.what,
-              recordObject.year,
-              recordObject.month,
-              recordObject.day,
-              recordObject.hour,
-              recordObject.minute
-            );
+            const record = new CalendarRecord();
+            record.id = recordObject.id;
+            record.what = recordObject.what;
+            record.description = recordObject.description;
+            record.year = recordObject.year;
+            record.month = recordObject.month;
+            record.day = recordObject.day;
+            record.hour = recordObject.hour;
+            record.minute = recordObject.minute;
             res(record);
           },
           error: (err: any) => {
@@ -170,15 +170,17 @@ export class CalendarService implements OnDestroy {
             const calendarRecords: CalendarRecord[] = [];
             for (let i = 0; i < records.length; i++) {
               const recordObject = records[i];
-              const record = new CalendarRecord(
-                recordObject.id,
-                recordObject.what,
-                recordObject.year,
-                recordObject.month,
-                recordObject.day,
-                recordObject.hour,
-                recordObject.minute
-              );
+
+              const record = new CalendarRecord();
+              record.id = recordObject.id;
+              record.what = recordObject.what;
+              record.description = recordObject.description;
+              record.year = recordObject.year;
+              record.month = recordObject.month;
+              record.day = recordObject.day;
+              record.hour = recordObject.hour;
+              record.minute = recordObject.minute;
+
               calendarRecords.push(record);
             }
             res(calendarRecords);
@@ -200,15 +202,17 @@ export class CalendarService implements OnDestroy {
             const calendarRecords: CalendarRecord[] = [];
             for (let i = 0; i < records.length; i++) {
               const recordObject = records[i];
-              const record = new CalendarRecord(
-                recordObject.id,
-                recordObject.what,
-                recordObject.year,
-                recordObject.month,
-                recordObject.day,
-                recordObject.hour,
-                recordObject.minute
-              );
+
+              const record = new CalendarRecord();
+              record.id = recordObject.id;
+              record.what = recordObject.what;
+              record.description = recordObject.description;
+              record.year = recordObject.year;
+              record.month = recordObject.month;
+              record.day = recordObject.day;
+              record.hour = recordObject.hour;
+              record.minute = recordObject.minute;
+
               calendarRecords.push(record);
             }
             res(calendarRecords);
@@ -223,13 +227,9 @@ export class CalendarService implements OnDestroy {
 
   async getCalendarRecords(): Promise<void> {
     this.messageService.add(`CalendarRepo: Getting calendar record for ${this.year}-${this.month + 1}.`);
-
+    this.calendarRecords = [];
     const records = await this.GetRecordsByYearAndMonth(this.year, this.month);
     this.calendarRecords = records;
-
-    //   this.messageService.add(`CalendarRepo: getting calendar records for ${year}-${month + 1}.`, 'error');
-
-    // this.messageService.add(`CalendarRepo: Got ${this.calendarRecordRest.records.length} calendar records for ${year}-${month + 1}.`);
   }
 
   setTodaysDate() {
@@ -256,14 +256,12 @@ export class CalendarService implements OnDestroy {
 
   async changeMonth(nextOrPrevious: string) {
     const oneIndexedMonth = this.month + 1;
-    let tempDate = new Date(`${this.year} ${oneIndexedMonth}`);
+    const tempDate = new Date(`${this.year} ${oneIndexedMonth}`);
 
     if (nextOrPrevious === 'next') {
       tempDate.setMonth(this.month + 1);
       this.year = tempDate.getFullYear();
       this.month = tempDate.getMonth();
-      window['month'] = this.month;
-      console.log(window['month']);
       this.week = 1;
       this.day = 1;
     }
@@ -274,7 +272,7 @@ export class CalendarService implements OnDestroy {
       this.week = this.calendarHelper.weeksInMonth(this.year, this.month);
       this.day = this.calendarHelper.daysInMonth(this.year, this.month);
     }
-    
+
     await this.getCalendarRecords();
 
     this.closeAddOrUpdateEventForm.next(true);
@@ -301,5 +299,41 @@ export class CalendarService implements OnDestroy {
 
   isSelectedYear(year: number) {
     return this.year === year;
+  }
+
+  getDayNameLongForMonth(day: number) {
+    return this.calendarHelper.getDayNameLongForMonth(this.year, this.month, day);
+  }
+
+  getDayNameShortForMonth(day: number): string {
+    return this.calendarHelper.getDayNameShortForMonth(this.year, this.month, day);
+  }
+
+  filterRecordsByDay(day: number): CalendarRecord[] {
+    return this.calendarHelper.getRecordsByDay(day, this.calendarRecords);
+  }
+
+  getDaysForWeekOutsideOfMonth(): Date[] {
+    return this.calendarHelper.getDaysForWeekOutsideOfMonth(this.year, this.month, this.week);
+  }
+
+  getDaysForWeek(): Date[] {
+    return this.calendarHelper.getDaysForWeek(this.year, this.month, this.week);
+  }
+
+  getRecordsGroupedByHourAndDayForWeek(): { hour: number; date: Date; records: CalendarRecord[]; }[] {
+    return this.calendarHelper.getRecordsGroupedByHourAndDayForWeek(this.year, this.month, this.week, this.calendarRecords);
+  }
+
+  getEmptyRecordsGroupedByHourAndDayForWeek(): { hour: number; date: Date; }[] {
+    return this.calendarHelper.getEmptyRecordsGroupedByHourAndDayForWeek(this.year, this.month, this.week, this.calendarRecords);
+  }
+
+  getEmptyHoursByDay(): any[] {
+    return this.calendarHelper.getEmptyHoursByDay(this.day, this.calendarRecords);
+  }
+
+  getRecordsGroupedByHourForDay(): { hour: number, date: Date, records: CalendarRecord[] }[] {
+    return this.calendarHelper.getRecordsGroupedByHourForDay(this.year, this.month, this.day, this.calendarRecords);
   }
 }

@@ -52,7 +52,6 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   }
 
   changeWeekOrMonth(direction){
-    console.log('changeWeekOrMonth called');
     if (this.monthOrWeek === 'month')
       this.calendarService.changeMonth(direction);
     else if (this.monthOrWeek === 'week')

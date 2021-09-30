@@ -1,8 +1,8 @@
-import { CalendarRecord } from './../models/calendar-record.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
+import { CalendarRecord } from './../models/calendar-record.model';
 import { CalendarService } from '../services/calendar.service';
 import { CalendarHelper } from '../helpers/calendar-helper';
 
@@ -12,10 +12,11 @@ import { CalendarHelper } from '../helpers/calendar-helper';
   styleUrls: ['./calendar-form.component.css']
 })
 export class CalendarFormComponent implements OnInit, OnDestroy {
-  currentRecord: { what: string; hour: number; minute: number; day: number; month: number; year: number; id: string; };
+  currentRecord: { what: string; hour: number; minute: number; day: number; month: number; year: number; id: string; description: string};
 
   profileForm = this.fb.group({
     what: ['', Validators.required],
+    description: ['', Validators.required],
     hour: [0, [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-3])$")]],
     minute: [0, [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])$")]],
     month: [],
@@ -101,7 +102,8 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
       day: parseInt(`${dayData.dayInMonthArrayIndex}`),
       month: parseInt(`${this.calendarService.month}`),
       year: parseInt(`${this.calendarService.year}`),
-      id: null
+      id: null,
+      description: ''
     });
   }
 
@@ -116,7 +118,8 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
       day: parseInt(`${record.day}`),
       month: parseInt(`${this.calendarService.month}`),
       year: parseInt(`${this.calendarService.year}`),
-      id: record.id
+      id: record.id,
+      description: record.description
     };
 
     this.profileForm.patchValue(this.currentRecord);
@@ -124,29 +127,30 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
 
   addEventClick() { this.postEvent(); }
 
-  updateEventClick() {
+  async updateEventClick() {
     if (!this.undoEnabled) alert('No changes!');
-    else this.postEvent();
+    else await this.postEvent();
   }
 
-  postEvent() {
-    const record: CalendarRecord = new CalendarRecord(
-      this.profileForm.value.id,
-      this.profileForm.value.what,
-      parseInt(`${this.calendarService.year}`),
-      parseInt(`${this.calendarService.month}`),
-      parseInt(`${this.profileForm.value.day}`),
-      parseInt(`${this.profileForm.value.hour}`),
-      parseInt(`${this.profileForm.value.minute}`)
-    );
+  async postEvent() {
+    const record = new CalendarRecord();
+    record.id = this.profileForm.value.id;
+    record.what = this.profileForm.value.what;
+    record.description = this.profileForm.value.description;
+    record.year = this.calendarService.year;
+    record.month = this.calendarService.month;
+    record.day = this.profileForm.value.day;
+    record.hour = this.profileForm.value.hour;
+    record.minute = this.profileForm.value.minute;
+
     //todo await
-    if(this.profileForm.value.id === null){
-      this.calendarService.postCalendarRecord(record);
+    if (this.profileForm.value.id === null) {
+      await this.calendarService.postCalendarRecord(record);
     }
-    else{
-      this.calendarService.updateCalendarRecord(record);
+    else {
+      await this.calendarService.updateCalendarRecord(record);
     }
-    
+
     this.closeAddOrUpdateEventForm();
   }
 

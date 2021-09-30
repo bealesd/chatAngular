@@ -7,7 +7,7 @@
 <div class="date-box-contianer">
     
     <div *ngFor="let dayData of dayDataForMonth; let i = index"
-        class="date-box {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.zeroIndexedMonth && calendarService.today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}"
+        class="date-box {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.month && calendarService.today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}"
         [attr.data-col]="dayData.gridCol" 
         [attr.data-row]="dayData.gridRow" 
         [style.gridColumn]="dayData.gridCol" 
@@ -18,7 +18,7 @@
 
         <div class="day" (click)="openAddEventForm(dayData)">{{dayData.dayInMonthArrayIndex}}<sup>{{calendarHelper.addOrdinalIndictor(dayData.dayInMonthArrayIndex)}}</sup></div>
 
-        <div class="table" *ngFor="let record of calendarHelper.getRecordsByDay(dayData.dayInMonthArrayIndex, calendarService.calendarRecords);">
+        <div class="table" *ngFor="let record of calendarService.filterRecordsByDay(dayData.dayInMonthArrayIndex);">
 
             <div class="record" (click)="openUpdateEventForm(record)">
                 <div class="record-time">{{calendarHelper.padToTwo(record.hour)}}:{{calendarHelper.padToTwo(record.minute)}} -</div> {{record.what}}

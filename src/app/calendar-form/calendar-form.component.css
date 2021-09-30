@@ -3,28 +3,38 @@
     --form-width: 300px;
     --form-font-size: 20px;
     --form-heading-color: black;
-    --form-undo-button-col-start: 11;
+    --form-status-font-size: 20px;
+
     --form-input-hour-start-col: 2;
     --form-input-hour-end-col: 4;
     --form-input-minute-start-col: 4;
     --form-input-minute-end-col: 6;
-    --form-status-font-size: 20px;
-    --form-input-submit-start-row: 9;
-    --form-input-submit-end-row: 10;
-    --form-input-close-start-row: 11;
-    --form-input-close-end-row: 12;
-    --form-input-delete-start-row: 11;
-    --form-input-delete-end-row: 12;
-    --form-div-time-start-row: 6;
-    --form-div-time-end-row: 7;
-    --form-input-time-start-row: 7;
-    --form-input-time-end-row: 8;
+    --form-undo-button-col-start: 11;
+
+    --form-heading-start-row: 0;
+    --form-heading-end-row: 2;
+    --form-input-what-start-row: 3;
+    --form-input-what-end-row: 4;
+    --form-input-description-start-row: 5;
+    --form-input-description-end-row: 7;
+    --form-div-time-start-row: 8;
+    --form-div-time-end-row: 9;
+    --form-input-time-start-row: 9;
+    --form-input-time-end-row: 10;
+    --form-input-submit-start-row: 11;
+    --form-input-submit-end-row: 12;
+    --form-input-close-start-row: 13;
+    --form-input-close-end-row: 14;
+    --form-input-delete-start-row: 13;
+    --form-input-delete-end-row: 14;
+    --form-status-start-row: 14;
+    --form-status-end-row: 15;
 }
 
 
 /*small size wrapper*/
 
-@media screen and (max-width: 800px) {
+/* @media screen and (max-width: 8px) {
      :host {
         --form-font-size: 16px;
         --form-height: 250px;
@@ -36,17 +46,17 @@
         --form-input-minute-end-col: 8;
         --form-status-font-size: 12px;
         --form-input-submit-start-row: 8;
+        --form-div-time-start-row:6;
+        --form-div-time-end-row: 7;
+        --form-input-time-start-row: 7;
+        --form-input-time-end-row: 8;
         --form-input-submit-end-row: 10;
         --form-input-close-start-row: 11;
-        --form-input-close-end-row: 13;
         --form-input-delete-start-row: 11;
         --form-input-delete-end-row: 13;
-        --form-div-time-start-row: 5;
-        --form-div-time-end-row: 6;
-        --form-input-time-start-row: 6;
-        --form-input-time-end-row: 7;
+        --form-input-close-end-row: 13;
     }
-}
+} */
 
 .formContainer {
     --width: var(--form-width);
@@ -66,7 +76,7 @@
 form {
     display: grid;
     grid-template-columns: repeat(12, calc(var(--form-width)/12));
-    grid-template-rows: repeat(13, calc(var(--form-height)/13)) 10px;
+    grid-template-rows: repeat(14, calc(var(--form-height)/13)) 10px;
 }
 
 button {
@@ -125,19 +135,22 @@ button.undo {
 }
 
 .form-heading {
-    grid-row: 1 / 3;
+    grid-row-start: var(--form-heading-start-row);
+    grid-row-end: var(--form-heading-end-row);
     grid-column: 2 / 12;
     font-size: var(--form-font-size);
     color: var(--form-heading-color);
 }
 
-label.what {
-    grid-row: 3 / 4;
+input.what {
+    grid-row-start: var(--form-input-what-start-row);
+    grid-row-end: var(--form-input-what-end-row);
     grid-column: 2 / 12;
 }
 
-input.what {
-    grid-row: 4 / 5;
+textarea.description{
+    grid-row-start: var(--form-input-description-start-row);
+    grid-row-end: var(--form-input-description-end-row);
     grid-column: 2 / 12;
 }
 
@@ -180,7 +193,8 @@ input.minute {
 }
 
 .formStatus {
-    grid-row: 13 / 14;
+    grid-row-start: var(--form-status-start-row);
+    grid-row-end: var(--form-status-end-row);
     grid-column: 1 / 12;
     text-align: center;
     font-size: var(--form-status-font-size);
