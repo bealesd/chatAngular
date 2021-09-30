@@ -1,21 +1,12 @@
 <div class="changePageContainer">
 
-  <div class="green-button-container">
-    <div class="green-button icon-arrow-left" (click)="monthOrWeek === 'month' ?
-      calendarService.changeMonth('previous') :
-      monthOrWeek === 'week' ?
-      calendarService.changeWeek('previous') :
-      calendarService.changeDay('previous')
-      ">
+  <div class="green-button-container" (click)="changeWeekOrMonth('previous')">
+    <div class="green-button icon-arrow-left" >
     </div>
   </div>
 
-  <div class="green-button-container">
-    <div class="green-button icon-arrow-right" (click)="monthOrWeek === 'month' ?
-      calendarService.changeMonth('next') :
-      monthOrWeek === 'week' ?
-      calendarService.changeWeek('next') :
-      calendarService.changeDay('next')">
+  <div class="green-button-container" (click)="changeWeekOrMonth('next')">
+    <div class="green-button icon-arrow-right" >
     </div>
   </div>
 
@@ -25,13 +16,13 @@
 
   <select class="dropdown" (change)="updateMonth(titleMonth.value)" #titleMonth id="titleMonth">
     <option *ngFor='let month of calendarHelper.monthNames(); let i = index;' [value]="i"
-      [selected]="getSelectedMonth(month)">
+      [selected]="calendarService.isSelectedMonth(month)">
       {{(width < 800 ? calendarHelper.monthNamesShort()[i]:month)}}
     </option>
   </select>
 
   <select class="dropdown" (change)="updateYear(titleYear.value)" #titleYear id="titleYear">
-    <option *ngFor='let year of calendarHelper.years();' [value]="year" [selected]="getSelectedYear(year)">
+    <option *ngFor='let year of calendarHelper.years();' [value]="year" [selected]="calendarService.isSelectedYear(year)">
       {{year}}
     </option>
   </select>

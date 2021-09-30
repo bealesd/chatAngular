@@ -221,10 +221,10 @@ export class CalendarService implements OnDestroy {
     });
   }
 
-  async getCalendarRecords(year: number, month: number): Promise<void> {
-    this.messageService.add(`CalendarRepo: Getting calendar record for ${year}-${month + 1}.`);
+  async getCalendarRecords(): Promise<void> {
+    this.messageService.add(`CalendarRepo: Getting calendar record for ${this.year}-${this.month + 1}.`);
 
-    const records = await this.GetRecordsByYearAndMonth(year, month);
+    const records = await this.GetRecordsByYearAndMonth(this.year, this.month);
     this.calendarRecords = records;
 
     //   this.messageService.add(`CalendarRepo: getting calendar records for ${year}-${month + 1}.`, 'error');
@@ -262,6 +262,8 @@ export class CalendarService implements OnDestroy {
       tempDate.setMonth(this.month + 1);
       this.year = tempDate.getFullYear();
       this.month = tempDate.getMonth();
+      window['month'] = this.month;
+      console.log(window['month']);
       this.week = 1;
       this.day = 1;
     }
@@ -273,14 +275,14 @@ export class CalendarService implements OnDestroy {
       this.day = this.calendarHelper.daysInMonth(this.year, this.month);
     }
     
-    await this.getCalendarRecords(this.year, this.month);
+    await this.getCalendarRecords();
 
     this.closeAddOrUpdateEventForm.next(true);
   }
 
   async updateRecords() {
     this.calendarRecords = [];
-    await this.getCalendarRecords(this.year, this.month);
+    await this.getCalendarRecords();
     this.day = 1;
     this.closeAddOrUpdateEventForm.next(true);
   }
@@ -290,6 +292,14 @@ export class CalendarService implements OnDestroy {
     this.month = this.today.month;
     this.week = this.today.week;
     this.day = this.today.day;
-    await this.getCalendarRecords(this.year, this.month);
+    await this.getCalendarRecords();
+  }
+
+  isSelectedMonth(month: string) {
+    return this.calendarHelper.monthNames()[this.month].toLowerCase() === month.toLowerCase();
+  }
+
+  isSelectedYear(year: number) {
+    return this.year === year;
   }
 }

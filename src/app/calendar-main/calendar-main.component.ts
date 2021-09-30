@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { fromEvent } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { CalendarHelper } from '../helpers/calendar-helper';
 
+import { CalendarHelper } from '../helpers/calendar-helper';
 import { CalendarService } from '../services/calendar.service';
+import { MessageService } from '../services/message.service';
 
 @Component({
   selector: 'app-calendar-main',
@@ -19,13 +20,14 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
 
   constructor(
     public calendarService: CalendarService,
-    public calendarHelper: CalendarHelper
+    public calendarHelper: CalendarHelper,
+    public messageService: MessageService
   ) {
     fromEvent(window, 'resize').pipe(debounceTime(1000)).subscribe(() => { this.width; });
   }
 
   async ngOnInit() {
-    await this.calendarService.getCalendarRecords(parseInt(`${this.calendarService.year}`), parseInt(`${this.calendarService.month}`));
+    await this.calendarService.getCalendarRecords();
   }
 
   ngOnDestroy() { }
@@ -34,7 +36,7 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     if (this.calendarViews.includes(value))
       this.monthOrWeek = value.toLowerCase();
     else
-      console.error(`Invalid calendar view selected in dropdown: '${value}'.`);
+      this.messageService.add(`Invalid calendar view selected in dropdown: '${value}'.`, 'error');
 
     this.calendarService.closeAddOrUpdateEventForm.next(true);
   }
@@ -49,11 +51,13 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     this.calendarService.updateRecords();
   }
 
-  getSelectedMonth(month: string) {
-    return this.calendarHelper.monthNames()[parseInt(`${this.calendarService.month}`)].toLowerCase() === month.toLowerCase();
-  }
-
-  getSelectedYear(year: number) {
-    return this.calendarService.year === year;
+  changeWeekOrMonth(direction){
+    console.log('changeWeekOrMonth called');
+    if (this.monthOrWeek === 'month')
+      this.calendarService.changeMonth(direction);
+    else if (this.monthOrWeek === 'week')
+      this.calendarService.changeWeek(direction)
+    else
+      this.calendarService.changeDay(direction)
   }
 }
