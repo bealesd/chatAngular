@@ -53,12 +53,16 @@ export class CalendarService implements OnDestroy {
   }
 
   async deleteCalendarRecord(id: number): Promise<void> {
-    this.messageService.add(`CalendarRepo: Deleting calendar record for ${this.year}-${this.month + 1}, ${id}.`);
+    this.messageService.add(`CalendarRepo: Deleting calendar record id: ${id}.`, 'info');
 
     const result = await this.DeleteChat(id);
     if (result) {
       const recordsToKeep = this.calendarRecords.filter(r => r.id !== id);
       this.calendarRecords = recordsToKeep
+      this.messageService.add(`CalendarRepo: Deleted calendar record id: ${id}.`, 'info');
+    }
+    else {
+      this.messageService.add(`CalendarRepo: Deleting calendar record failed: ${id}.`, 'error');
     }
   }
 
@@ -80,26 +84,33 @@ export class CalendarService implements OnDestroy {
 
   async postCalendarRecord(record: CalendarRecord): Promise<void> {
     let result = await this.PostRecord(record);
-    this.calendarRecords.push(result);
+
+    if (!result) {
+      this.messageService.add(`CalendarRepo: failed to post calendar record: ${JSON.stringify(record)}.`, 'error');
+    }
+    else {
+      this.messageService.add(`Posted calendar record: ${JSON.stringify(record)}.`, 'info');
+      this.calendarRecords.push(result);
+    }
   }
 
   async updateCalendarRecord(record: CalendarRecord): Promise<void> {
-    let localRecord: CalendarRecord;
-    localRecord = this.calendarRecords.find(r => r.id === record.id);
-    localRecord.what = record.what;
-    localRecord.day = record.day;
-    localRecord.hour = record.hour;
-    localRecord.minute = record.minute;
-    localRecord.id = record.id;
-    localRecord.month = record.month;
-    localRecord.year = record.year;
-
     const result = await this.UpdateRecord(record);
-    if (!result) {
-      this.messageService.add(`CalendarRepo: updated calendar records for ${this.year}-${this.month + 1}. Record: ${JSON.stringify(record)}.`, 'error');
+    if (!result)
+      this.messageService.add(`CalendarRepo: failed to update calendar record: ${JSON.stringify(record)}.`, 'error');
+    else {
+      this.messageService.add(`Updated calendar record: ${JSON.stringify(record)}.`, 'info');
+
+      let localRecord: CalendarRecord;
+      localRecord = this.calendarRecords.find(r => r.id === record.id)
+      localRecord.what = record.what;
+      localRecord.day = record.day;
+      localRecord.hour = record.hour;
+      localRecord.minute = record.minute;
+      localRecord.id = record.id;
+      localRecord.month = record.month;
+      localRecord.year = record.year;
     }
-    else
-      this.messageService.add(` • Updated calendar record for ${this.year}-${this.month + 1}.`);
   }
 
   UpdateRecord(record: any): Promise<any> {
@@ -143,56 +154,6 @@ export class CalendarService implements OnDestroy {
     });
   }
 
-  async getAllRecords(): Promise<boolean> {
-    this.messageService.add(`CalendarRepo: Getting all records.`);
-
-    const calendarRecords = await this.GetRecords();
-
-    if (calendarRecords === null) {
-      this.calendarRecords = [];
-      this.messageService.add(`CalendarRepo: Could not get all records.`);
-    }
-    else {
-      this.calendarRecords = calendarRecords;
-      this.messageService.add(`CalendarRepo: Got all records.`);
-    }
-
-    return true
-
-  }
-
-  GetRecords(): Promise<any[]> {
-    return new Promise((res, rej) => {
-      const url = `${this.baseUrl}/GetAllRecords`;
-      this.httpClient.get<any[]>(url).subscribe(
-        {
-          next: (records: any[]) => {
-            const calendarRecords: CalendarRecord[] = [];
-            for (let i = 0; i < records.length; i++) {
-              const recordObject = records[i];
-
-              const record = new CalendarRecord();
-              record.id = recordObject.id;
-              record.what = recordObject.what;
-              record.description = recordObject.description;
-              record.year = recordObject.year;
-              record.month = recordObject.month;
-              record.day = recordObject.day;
-              record.hour = recordObject.hour;
-              record.minute = recordObject.minute;
-
-              calendarRecords.push(record);
-            }
-            res(calendarRecords);
-          },
-          error: (err: any) => {
-            res(null);
-          }
-        }
-      );
-    });
-  }
-
   GetRecordsByYearAndMonth(year: number, month: number): Promise<any[]> {
     return new Promise((res, rej) => {
       const url = `${this.baseUrl}/GetRecords?year=${year}&month=${month}`;
@@ -226,10 +187,18 @@ export class CalendarService implements OnDestroy {
   }
 
   async getCalendarRecords(): Promise<void> {
-    this.messageService.add(`CalendarRepo: Getting calendar record for ${this.year}-${this.month + 1}.`);
+    this.messageService.add(`CalendarRepo: Getting calendar record for: ${this.year}-${this.month + 1}.`);
     this.calendarRecords = [];
     const records = await this.GetRecordsByYearAndMonth(this.year, this.month);
-    this.calendarRecords = records;
+
+    if (records) {
+      this.calendarRecords = records;
+      this.messageService.add(`CalendarRepo: Got calendar records for: ${this.year}-${this.month + 1}.`);
+    }
+    else {
+      this.messageService.add(`CalendarRepo: Get calendar records failed for: ${this.year}-${this.month + 1}.`, 'error');
+      this.calendarRecords = [];
+    }
   }
 
   setTodaysDate() {
