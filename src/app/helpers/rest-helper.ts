@@ -15,8 +15,6 @@ export class RestHelper {
         public router: Router
     ) { }
 
-
-
     options = (): { headers: HttpHeaders } => {
         const options = { headers: new HttpHeaders() };
         try {
