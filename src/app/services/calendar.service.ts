@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { CalendarHelper } from '../helpers/calendar-helper';
 import { CalendarRecord } from '../models/calendar-record.model';
 import { MessageService } from './message.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,7 @@ export class CalendarService implements OnDestroy {
   public monthName: string;
   public week: number;
   public day: number;
-  private baseUrl = 'https://corechatapi.azurewebsites.net/calendar';
+  private baseUrl = `${environment.chatCoreUrl}/calendar`
 
   constructor(
     private messageService: MessageService,

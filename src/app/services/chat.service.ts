@@ -6,7 +6,8 @@ import { DeviceDetectorService } from 'ngx-device-detector';
 
 import { MessageService } from '../services/message.service';
 import { Chat } from '../models/chat.model';
-import { CryptoService } from './crypto.service';
+import { environment } from 'src/environments/environment';
+import { LoginService } from './login.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,13 +18,13 @@ export class ChatService {
 
   public newChatMessagesCount = new BehaviorSubject<number>(0);
 
-  private baseUrl = 'https://corechatapi.azurewebsites.net/chat';
+  private baseUrl = `${environment.chatCoreUrl}/chat`
 
   constructor(
     private datePipe: DatePipe,
     private messageService: MessageService,
-    private cryptoService: CryptoService,
     private httpClient: HttpClient,
+    private loginService: LoginService,
     private deviceService: DeviceDetectorService) { }
 
   getStoreChats() {
@@ -104,7 +105,7 @@ export class ChatService {
     this.messageService.add('ChatService: Posting chat message.');
 
     const chat = (await this.PostChat({
-      name: !this.cryptoService.username ? 'unknown' : this.cryptoService.username,
+      name: !this.loginService.username ? 'unknown' : this.loginService.username,
       message: message
     }));
 

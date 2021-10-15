@@ -6,27 +6,43 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { retry, catchError } from 'rxjs/operators';
 import { MessageService } from '../services/message.service';
+import { LoginService } from '../services/login.service';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class ServerErrorInterceptor implements HttpInterceptor {
-    constructor(private messageService: MessageService){
 
+    constructor(
+        private messageService: MessageService,
+        private loginService: LoginService,
+        public router: Router) {
     }
+
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        request = request.clone({
+            setHeaders: {
+                Authorization: `Bearer ${this.loginService.jwtToken}`
+            }
+        });
 
         return next.handle(request).pipe(
             retry(1),
-            catchError((error: HttpErrorResponse) => {
-
+            catchError((response: HttpErrorResponse) => {
                 const message = [
-                    'Message: ' + error.message,
-                    'Name: ' + error.name,
-                    'Status: ' + error.status,
-                    'Status Text: ' + error.statusText,
-                  ].join('\n');
+                    'Message: ' + response.message,
+                    'Name: ' + response.name,
+                    'Status: ' + response.status,
+                    'Status Text: ' + response.statusText,
+                ].join('\n');
 
-                this.messageService.add(message,'error');
-                return throwError(error);
+                if (response.status === 401) {
+                    this.messageService.addNoAuth(message, 'error');
+                    this.router.navigate(['login']);
+                }
+                else
+                    this.messageService.add(message, 'error');
+
+                return throwError(response);
             })
         );
     }

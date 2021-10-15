@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from '../services/message.service';
 import { Todo, TodoContainer } from '../models/todo.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ import { Todo, TodoContainer } from '../models/todo.model';
 export class TodoRepo {
   public todo: TodoContainer;
   public todos: Todo[] = [];
-  private baseUrl = 'https://corechatapi.azurewebsites.net/Todo';
+  private baseUrl = `${environment.chatCoreUrl}/todo`
 
   constructor(
     private messageService: MessageService,

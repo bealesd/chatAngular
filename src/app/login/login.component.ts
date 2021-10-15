@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { LoginService } from '../services/login.service';
-import { CryptoService } from '../services/crypto.service';
 
 @Component({
   selector: 'app-login',
@@ -16,13 +15,10 @@ export class LoginComponent implements OnInit {
   loggedIn: boolean;
 
   constructor(
-    private cryptoService: CryptoService,
     private loginService: LoginService,
     private router: Router,
   ) {
     this.show = false;
-
-    this.cryptoService.logout();
 
     this.loginService.loggedIn.subscribe(loggedIn => {
       this.loggedIn = loggedIn;
@@ -40,9 +36,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {  }
 
   login(username: string, password: string) {
-    this.cryptoService.encryptCredentials(username, password);
-
-    this.loginService.login();
+    this.loginService.login(username, password);
   }
 
   showPassword() {
@@ -55,7 +49,7 @@ export class LoginComponent implements OnInit {
   }
 
   setTheme() {
-    const username = this.cryptoService.username;
+    const username = 'esther'
     if (username.toLowerCase() === 'admin' || username.toLowerCase() === 'esther')
       document.body.classList.add('dark');
     else

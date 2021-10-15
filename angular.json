@@ -14,7 +14,6 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "allowedCommonJsDependencies": [
-              "crypto-js"
            ],
             "outputPath": "dist/chatAngular",
             "index": "src/index.html",

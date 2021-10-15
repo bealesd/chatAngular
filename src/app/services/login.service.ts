@@ -1,40 +1,54 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { MessageService } from '../services/message.service';
-import { CryptoService } from './crypto.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
   public loggedIn = new BehaviorSubject<boolean>(false);
-  private githubApiUrl = 'https://api.github.com';
+  public jwtToken = '';
+  private baseUrl = `${environment.chatCoreUrl}/auth`;
+  public username = '';
 
-  options = (): { headers: HttpHeaders } => {
-    return {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.cryptoService.getToken()}`
-      })
-    }
+  constructor(
+    private messageService: MessageService, 
+    private http: HttpClient) {  }
+
+  async login(username: string, password: string): Promise<void> {
+   this.messageService.add('LoginService: Getting jwt token.');
+
+    const token = (await this.GetToken({
+      username: username,
+      password: password
+    }));
+
+    this.username = username; 
+
+    this.jwtToken = token;
+
+    this.messageService.add(`LoginService: Got jwt token.`);
   }
 
-  constructor(private cryptoService: CryptoService, private messageService: MessageService, private http: HttpClient) {  }
-
-  login() {
-    this.messageService.add(`LoginService: Login attempt.`, 'info');
-
-    this.http.get<any>(this.githubApiUrl, this.options()).subscribe({
-      next: (result) => {
-        this.messageService.add('LoginService: Login complete.', 'info');
-        this.loggedIn.next(true);
-      }, error: (err: any) => {
-        this.messageService.add('LoginService: Login failure.', 'error');
-        this.loggedIn.next(false);
-      }
+  GetToken(user: any): Promise<any> {
+    return new Promise((res, rej) => {
+      const url = `${this.baseUrl}/Login`;
+      this.http.post<any>(url, user).subscribe(
+        {
+          next: (object: any) => {
+            this.loggedIn.next(true);
+            res(object);
+          },
+          error: (err: any) => {
+            this.loggedIn.next(false);
+            res(null);
+          }
+        }
+      );
     });
-
   }
+
 }

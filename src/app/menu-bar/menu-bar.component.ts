@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { CryptoService } from '../services/crypto.service';
 
 import { LoginService } from '../services/login.service';
 import { MessageService } from '../services/message.service';
@@ -14,8 +13,7 @@ export class MenuBarComponent implements OnInit {
   loggedIn: boolean;
 
   constructor(
-    private loginService: LoginService,
-    public cryptoService: CryptoService,
+    public loginService: LoginService,
     private messageService: MessageService,
     private router: Router
   ) {
@@ -32,7 +30,6 @@ export class MenuBarComponent implements OnInit {
   }
 
   logout() {
-    this.cryptoService.logout();
     this.loginService.loggedIn.next(false);
 
     this.messageService.add('Logged out.');

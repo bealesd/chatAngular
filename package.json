@@ -21,7 +21,6 @@
     "@angular/platform-browser-dynamic": "^11.0.2",
     "@angular/router": "^11.0.2",
     "@angular/service-worker": "^11.0.2",
-    "crypto-js": "^4.0.0",
     "ngx-device-detector": "^2.1.1",
     "rxjs": "~6.6.3",
     "tslib": "^2.0.0",

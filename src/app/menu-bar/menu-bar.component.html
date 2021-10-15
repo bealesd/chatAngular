@@ -1,7 +1,7 @@
 <div class="app-container">
   
     <div class="icon-home" title="home" routerLink="/apps"></div>
-    <div *ngIf="cryptoService.username === 'admin'" class="icon-user-plus" title="new user" routerLink="/newUser"></div>
+    <div *ngIf="loginService.username === 'admin'" class="icon-user-plus" title="new user" routerLink="/newUser"></div>
     <div class="icon-terminal" title="logs" (click)="toggleLogs()"></div>
     <div class="icon-exit" title="logout" (click)="logout()"></div>
     

@@ -15,6 +15,12 @@ export class MessageService {
   constructor(private httpClient: HttpClient) {   }
 
   add(message: string, type?: string) {
+    this.addNoAuth(message, type)
+
+    this.postLog({'message': message, 'level': type});
+  }
+
+  addNoAuth(message: string, type?: string) {
     if (!this.types.includes(type)) type = 'info';
 
     type = type.toLocaleLowerCase();
@@ -26,8 +32,6 @@ export class MessageService {
       console.info(`%c${timeMessage}`, "color: green; font-size: 12px");
     else if (type === 'error')
       console.error(`%c${timeMessage}`, "color: red; font-size: 12px");
-
-    this.postLog({'message': message, 'level': type});
   }
 
   clear() {

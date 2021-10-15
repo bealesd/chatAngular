@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from './message.service';
 import { Notepad } from '../models/notepad.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class NotepadRepo {
   public currentNotepad: Notepad = new Notepad();
   public currentPath = 'home';
 
-  private baseUrl = 'https://corechatapi.azurewebsites.net/Notepad';
+  private baseUrl = `${environment.chatCoreUrl}/notepad`
 
   constructor(
     private messageService: MessageService,
