@@ -15,9 +15,8 @@ export class NotepadRepo {
 
   constructor(
     private messageService: MessageService,
-    private httpClient: HttpClient,
-  ) {
-  }
+    private httpClient: HttpClient
+  ) { }
 
   GetNotepadsInPath(path: string): Promise<Notepad[]> {
     return new Promise((res, rej) => {
@@ -146,7 +145,7 @@ export class NotepadRepo {
   }
 
   async updateNotepad(np: Notepad): Promise<boolean> {
-    if(np.Text !== null)
+    if (np.Text !== null)
       np.Text = btoa(np.Text);
     const notepad = await this.UpdateNotepad(np);
 
@@ -157,7 +156,7 @@ export class NotepadRepo {
     else {
       if (np.Type !== 'dir' && np.Text !== null)
         np.Text = atob(np.Text);
-      
+
       this.messageService.add(`NotepadRepo: Updated notepad name: ${np.Name}.`);
       return true;
     }

@@ -11,7 +11,7 @@ import { TodoRepo } from '../services/todo.repo'
 export class TodoComponent implements OnInit {
   get sortedTodoList() {
     //TODO sought by date
-    return this.todoRepo.todo.todos.sort((a:Todo, b:Todo) => {
+    return this.todoRepo.todos.sort((a:Todo, b:Todo) => {
       return a.id - b.id;
     });
   }
@@ -25,18 +25,18 @@ export class TodoComponent implements OnInit {
   }
 
   deleteTodo(todo) {
-    this.todoRepo.deleteItem(todo.id);
+    this.todoRepo.deleteTodo(todo.id);
   }
 
   addTodo() {
     const text = (<HTMLInputElement>document.querySelector('.todo-input')).value;
     (<HTMLInputElement>document.querySelector('.todo-input')).value = '';
-    this.todoRepo.postNewItem(text);
+    this.todoRepo.postTodo(text);
   }
 
   markTodoAsDone(todo) {
-    todo.complete = !todo.complete;
-    this.todoRepo.updateItem(todo.id, todo.text, todo.complete);
+    todo.complete = todo.complete === 0 ? 1 : 0;
+    this.todoRepo.updatetodo(todo);
   }
 
 }
