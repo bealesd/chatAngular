@@ -15,15 +15,15 @@ export class MessageService {
   constructor(private httpClient: HttpClient) {   }
 
   add(message: string, type?: string) {
+    if (!this.types.includes(type)) type = 'info';
+    type = type.toLocaleLowerCase();
+
     this.addNoAuth(message, type)
 
     this.postLog({'message': message, 'level': type});
   }
 
   addNoAuth(message: string, type?: string) {
-    if (!this.types.includes(type)) type = 'info';
-
-    type = type.toLocaleLowerCase();
     const timeMessage = `${new Date().toLocaleString()} - ${message}`;
 
     this.messages.unshift({ 'type': type, 'message': timeMessage });
