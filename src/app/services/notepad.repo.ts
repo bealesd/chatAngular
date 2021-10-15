@@ -1,180 +1,211 @@
 import { Injectable } from '@angular/core';
-
+import { HttpClient } from '@angular/common/http';
 import { MessageService } from './message.service';
-import { Item, ItemMetadata } from '../models/item-models';
-import { FileApiFactory, FileApi } from './file-api';
+import { Notepad } from '../models/notepad.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotepadRepo {
-  public notepads: Item[] = [];
-  public currentNotepadKey: string = '';
+  public notepads: Notepad[] = [];
+  public currentNotepad: Notepad = new Notepad();
+  public currentPath = 'home';
 
-  fileAPi: FileApi;
-  currentNotepadName: string;
+  private baseUrl = 'https://corechatapi.azurewebsites.net/Notepad';
 
   constructor(
     private messageService: MessageService,
-    private fileApiFactory: FileApiFactory) {
-
-    this.fileAPi = this.fileApiFactory.create();
-    this.fileAPi.dir = '/notepadStore';
+    private httpClient: HttpClient,
+  ) {
   }
 
-  changeDir(isUp: boolean, relPath: string): boolean {
-    return this.fileAPi.changeDir(isUp, relPath);
+  GetNotepadsInPath(path: string): Promise<Notepad[]> {
+    return new Promise((res, rej) => {
+      const url = `${this.baseUrl}/GetNotepadDirectChildren?path=${path}`;
+      this.httpClient.get<any[]>(url).subscribe(
+        {
+          next: (notepadsDto: any[]) => {
+            const notepads: Notepad[] = [];
+            if (notepadsDto && notepadsDto.length > 0) {
+              for (let i = 0; i < notepadsDto.length; i++) {
+                const notepadObject = notepadsDto[i];
+                const notepad = new Notepad();
+                notepad.Created = notepadObject.created;
+                notepad.Path = notepadObject.path;
+                notepad.Type = notepadObject.type;
+                notepad.Id = notepadObject.id;
+                notepad.Name = notepadObject.name;
+                notepad.Text = null;
+
+                notepads.push(notepad);
+              }
+            }
+            res(notepads);
+          },
+          error: (err: any) => {
+            res(null);
+          }
+        }
+      );
+    });
   }
 
-  get currentDir(){
-    return this.fileAPi.dir;
+  GetNotepad(id: number): Promise<Notepad> {
+    return new Promise((res, rej) => {
+      const url = `${this.baseUrl}/GetNotepad?id=${id}`;
+      this.httpClient.get<any[]>(url).subscribe(
+        {
+          next: (notepadDto: any) => {
+            const notepad = new Notepad();
+            notepad.Created = notepadDto.created;
+            notepad.Path = notepadDto.path;
+            notepad.Type = notepadDto.type;
+            notepad.Id = notepadDto.id;
+            notepad.Name = notepadDto.name;
+            notepad.Text = atob(notepadDto.text);
+            res(notepad);
+          },
+          error: (err: any) => {
+            res(null);
+          }
+        }
+      );
+    });
   }
 
-  findNotepad(key) {
-    const notepad = this.notepads.find(np => np.metadata.key === key);
-    if (!notepad) {
-      return null;
-    }
-    return notepad;
-  }
-
-  async getAllNotepads(): Promise<boolean> {
+  async getAllNotepads(path = 'home'): Promise<boolean> {
     this.messageService.add(`NotepadRepo: Getting all notepads.`);
-    const notepads = await this.fileAPi.listFilesAndFoldersAsync();
+    const notepads = await this.GetNotepadsInPath(path);
     if (!notepads) {
       this.messageService.add('NotepadRepo: Getting notepads.', 'error');
       return false;
     }
     else {
-      this.notepads = [];
-      notepads.forEach((notepadMetadata: ItemMetadata) => {
-        if (notepadMetadata.name !== 'dummy.txt') {
-          const notepad = new Item();
-          notepad.metadata = new ItemMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
-          notepad.content = '';
-          this.notepads.push(notepad);
-        }
-      });
+      this.notepads = notepads;
+
       this.messageService.add(`NotepadRepo: Got all notepads.`);
       return true
     }
   }
 
-  async getNotepad(key:string, git_url: string): Promise<boolean> {
-    const content = await this.fileAPi.getFileAsync(git_url);
-    if (content === null) {
+  async getNotepad(id): Promise<boolean> {
+    const notepad = await this.GetNotepad(id);
+    if (notepad === null) {
       this.messageService.add('NotepadRepo: Getting notepad.', 'error');
       return false;
     }
     else {
-      this.notepads.find(v => v.metadata.key === key).content = content;
-      this.currentNotepadKey = this.notepads.find(v => v.metadata.key === key).metadata.key;
-      this.currentNotepadName = this.notepads.find(v => v.metadata.key === key).metadata.name;
-
+      this.currentNotepad = notepad;
       this.messageService.add(`NotepadRepo: Got notepad.`);
       return true;
     }
   }
 
-  async updateNotepad(key: string): Promise<boolean> {
-    const notepad = this.findNotepad(key);
-    
-    const result = await this.fileAPi.editFileAsync(key, notepad.content)
-    if (!result) {
-      this.messageService.add(`NotepadRepo: Posting notepad sha: ${notepad.metadata.sha}.`, 'error');
-      return false;
-    }
-    else {
-      notepad.metadata.sha = result.sha;
-      this.currentNotepadKey = notepad.metadata.key;
+  PostNotepad(notepad: Notepad): Promise<Notepad> {
+    return new Promise((res, rej) => {
+      const url = `${this.baseUrl}/AddNotepad`;
+      this.httpClient.post<any>(url, notepad).subscribe(
+        {
+          next: (notepadDto: any) => {
+            const notepad = new Notepad();
+            notepad.Name = notepadDto.name;
+            notepad.Path = notepadDto.path;
+            notepad.Text = atob(notepadDto.text);
+            notepad.Type = notepadDto.type;
+            notepad.Id = notepadDto.id;
+            notepad.Created = notepadDto.created;
 
-      this.messageService.add(`NotepadRepo: Posted notepad sha: ${notepad.metadata.sha}.`);
-      return true;
-    }
+            res(notepad);
+          },
+          error: (err: any) => {
+            res(null);
+          }
+        }
+      );
+    });
   }
 
-  async postNotepad(text: string, name: string): Promise<boolean> {
-    const notepadMetadata = await this.fileAPi.newFileAsync(name, text);
-    if (!notepadMetadata) {
-      this.messageService.add(`NotepadRepo: Posting notepad name: ${name}.`, 'error');
-      return false;
-    }
-    else {
-      const notepad = new Item();
-      notepad.metadata = new ItemMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
-      notepad.content = text;
-      this.notepads.push(notepad);
+  async postNotepad(name: string, path: string, type: string): Promise<boolean> {
+    var np = new Notepad();
+    np.Type = type;
+    np.Text = btoa('');
+    np.Name = name;
+    np.Path = path;
 
-      this.messageService.add(`NotepadRepo: Posted notepad name: ${notepad.metadata.name}.`);
-      return true;
-    }
-  }
+    const notepad = await this.PostNotepad(np);
 
-  async postFolder(name: string): Promise<boolean> {
-    const notepadMetadata = await this.fileAPi.newFolderAsync(name)
-    if (!notepadMetadata) {
+    if (!notepad) {
       this.messageService.add(`NotepadRepo: Posting notepad name: ${name}.`, 'error');;
       return false;
     }
     else {
-      const notepad = new Item();
-      notepad.metadata = new ItemMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
-
-      this.messageService.add(`NotepadRepo: Posted notepad name: ${notepad.metadata.name}.`);
+      this.notepads.push(notepad);
+      this.messageService.add(`NotepadRepo: Posted notepad name: ${notepad.Name}.`);
       return true;
     }
   }
 
-  async deleteNotepad(key: string): Promise<boolean> {
-    const result = await this.fileAPi.deleteFileAsync(key);
-    if (!result) {
-      this.messageService.add(`NotepadRepo: Deleting notepad ${key}.`, 'error');
+  async updateNotepad(np: Notepad): Promise<boolean> {
+    if(np.Text !== null)
+      np.Text = btoa(np.Text);
+    const notepad = await this.UpdateNotepad(np);
+
+    if (!notepad) {
+      this.messageService.add(`NotepadRepo: Updating notepad name: ${np.Name}.`, 'error');;
       return false;
     }
     else {
-      this.notepads = this.notepads.filter(n => n.metadata.key !== key);
-      this.messageService.add(`NotepadRepo: Notepad ${key} deleted.`);
+      if (np.Type !== 'dir' && np.Text !== null)
+        np.Text = atob(np.Text);
+      
+      this.messageService.add(`NotepadRepo: Updated notepad name: ${np.Name}.`);
       return true;
     }
   }
 
-  async deleteFolder(key: string): Promise<boolean> {
-    const result = await this.fileAPi.deleteFolderAsync(key);
-    if (!result) {
-      this.messageService.add(`NotepadRepo: Deleting folder ${key}.`, 'error');
-      return false;
+  UpdateNotepad(notepad: Notepad): Promise<boolean> {
+    return new Promise((res, rej) => {
+      const url = `${this.baseUrl}/UpdateNotepad`;
+      this.httpClient.put<any>(url, notepad).subscribe(
+        {
+          next: (notepadDto: any) => {
+            res(true);
+          },
+          error: (err: any) => {
+            res(false);
+          }
+        }
+      );
+    });
+  }
+
+  async deleteNotepad(id: number): Promise<void> {
+    this.messageService.add(`NotepadRepo: Deleting notepad id: ${id}.`, 'info');
+
+    const result = await this.DeleteNotepad(id);
+    if (result) {
+      const recordsToKeep = this.notepads.filter(r => r.Id !== id);
+      this.notepads = recordsToKeep;
+      this.messageService.add(`NotepadRepo: Deleted notepad id: ${id}.`, 'info');
     }
     else {
-      this.notepads = this.notepads.filter(n => n.metadata.key !== key);
-      this.messageService.add(`NotepadRepo: Folder ${key} deleted.`);
-      return true;
+      this.messageService.add(`NotepadRepo: Deleting notepad failed: ${id}.`, 'error');
     }
   }
 
-  async renameNotepad(key: string, newName: string, git_url:string): Promise<boolean> {
-    const notepadMetadata = await this.fileAPi.renameFileAsync(key, newName, git_url);
-    if (!notepadMetadata) {
-      this.messageService.add('NotepadRepo: Getting notepads.', 'error');
-      return false;
-    }
-    else {
-      const notepad = this.findNotepad(key);
-      notepad.metadata = new ItemMetadata(notepadMetadata.name, notepadMetadata.path, notepadMetadata.sha, notepadMetadata.size, notepadMetadata.git_url, notepadMetadata.type, notepadMetadata.url);
-      return true;
-    }
-  }
-
-  async renameFolder(key: string, newName: string): Promise<boolean> {
-    const notepadMetadata = await this.fileAPi.renameFolderAsync(key, newName);
-    if (!notepadMetadata) {
-      this.messageService.add('NotepadRepo: Getting notepads.', 'error');
-      return false;
-    }
-    else {
-      const notepad = this.findNotepad(key);
-       notepad.metadata.name = newName;
-       //TODO sha and key will now be wrong for the folder, but i dont use them. Get rid of key and sha possibly, but doing so will remove any file or folder having same name
-      return true;
-    }
+  DeleteNotepad(id): Promise<any> {
+    return new Promise((res, rej) => {
+      const url = `${this.baseUrl}/DeleteNotepad?id=${id}`;
+      this.httpClient.delete(url).subscribe(
+        {
+          next: (recordObject: any) => {
+            res(true);
+          },
+          error: (err: any) => {
+            res(null);
+          }
+        }
+      );
+    });
   }
 }

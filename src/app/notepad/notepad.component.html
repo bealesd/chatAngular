@@ -22,7 +22,7 @@
             </div>
 
             <div class="notepad-item-dir notepad-item-header notepad-item">
-                <div>Path: /{{notepadRepo.currentDir}}</div>
+                <div>Path: {{notepadRepo.currentPath}}</div>
             </div>
 
             <div class="notepad-item-name notepad-item-header notepad-item row3">
@@ -34,7 +34,7 @@
             </div>
 
             <div class="notepad-item-size notepad-item-header notepad-item row3">
-                <div>Size</div>
+                <div>Path</div>
             </div>
 
             <div class="notepad-item-add notepad-item-header notepad-item row3" (click)="createNotepadForm()"
@@ -44,29 +44,34 @@
 
             <ng-container *ngFor="let item of sortedItems; let i = index">
                 <div class="notepad-item notepad-item-name 
-                {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}" (click)="highlightRow(item)"
+                {{highlightedRow === item.Id ? 'highlighted-row' : ''}}" (click)="highlightRow(item)"
                     (dblclick)="openNotepad()">
                     <div class="notepad-item-name-box">
-                        <span *ngIf="item.metadata.type === 'file'" class="icon-file-text2"></span>
-                        <span *ngIf="item.metadata.type === 'file'" class="notepad-item-name-value">
-                            {{item.metadata.fileName}}</span>
+                        <span *ngIf="item.Type !== 'dir'" class="icon-file-text2"></span>
+                        <span *ngIf="item.Type !== 'dir'" class="notepad-item-name-value">
+                            {{item.Name}}</span>
 
-                        <span *ngIf="item.metadata.type === 'dir'" class="icon-folder"> </span>
-                        <span *ngIf="item.metadata.type === 'dir'" class="notepad-item-name-value">
-                            {{item.metadata.name}}</span>
+                        <span *ngIf="item.Type === 'dir'" class="icon-folder"> </span>
+                        <span *ngIf="item.Type === 'dir'" class="notepad-item-name-value">
+                            {{item.Name}}</span>
                     </div>
                 </div>
                 <div class="notepad-item  notepad-item-type 
-                {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}" (click)="highlightRow(item)"
+                {{highlightedRow === item.Id ? 'highlighted-row' : ''}}" (click)="highlightRow(item)"
                     (dblclick)="openNotepad()">
-                    <div *ngIf="item.metadata.type === 'file'">{{item.metadata.fileType}}</div>
-                    <div *ngIf="item.metadata.type === 'dir'">Folder</div>
+                    <div *ngIf="item.Type !== 'dir'">{{item.Type}}</div>
+                    <div *ngIf="item.Type === 'dir'">Folder</div>
                 </div>
                 <div class="notepad-item  notepad-item-size 
-                {{highlightedRow === item.metadata.key ? 'highlighted-row' : ''}}" (click)="highlightRow(item)"
+                {{highlightedRow === item.Id ? 'highlighted-row' : ''}}" (click)="highlightRow(item)"
                     (dblclick)="openNotepad()">
-                    <div *ngIf="item.metadata.type === 'file'">{{item.metadata.size}}</div>
+                    <div>{{item.Path}}</div>
                 </div>
+                <!-- <div class="notepad-item  notepad-item-created 
+                {{highlightedRow === item.Id ? 'highlighted-row' : ''}}" (click)="highlightRow(item)"
+                    (dblclick)="openNotepad()">
+                    <div>{{item.Created}}</div>
+                </div> -->
             </ng-container>
 
         </div>
@@ -85,7 +90,7 @@
                 </div>
 
                 <div class="notepad-editor-container">
-                    <div class="notepad-title">{{currentNotepad?.metadata?.name}}</div>
+                    <div class="notepad-title">{{currentNotepad?.Name}}</div>
                     <textarea #textArea
                         class="notepad-text-input {{notepadTextHasChanged ? 'notepad-unsaved-changes' : ''}}"
                         contenteditable="true" (keyup)="updateText(textArea.value)">{{originalNotepadText}}</textarea>
@@ -102,11 +107,11 @@
     <div>
         <div class="new-notepad-title">New {{createNotepadItemTypeIsFolder ? "Folder" : "File"}}</div>
         <div class="new-notepad-cancel" (click)="cancelNewNotepad()">&#10005;</div>
-        <input class="new-notepad-name-input" type="text" placeholder="My Notepad" id="value" #name
+        <input autofocus class="new-notepad-name-input" type="text" placeholder="My Notepad" id="value" #name
             (keyup)="getFileType(name.value)">
         <div class="new-notepad-isFolder">
             Folder
-            <input type="checkbox" id="isFolder" #isFolder (click)="updateItemType(isFolder.value)">
+            <input  type="checkbox" id="isFolder" #isFolder (click)="updateItemType(isFolder.value)">
         </div>
         <div *ngIf="!createNotepadItemTypeIsFolder" class="new-notepad-file-type">
             <div>File Type: {{fileType}}</div>
@@ -120,7 +125,7 @@
     <div>
         <div class="new-notepad-title">Rename {{createNotepadItemTypeIsFolder ? "Folder" : "File"}}</div>
         <div class="new-notepad-cancel" (click)="cancelRenameNotepad()">&#10005;</div>
-        <input class="new-notepad-name-input" type="text" value="{{currentNotepad.metadata.name}}" id="value" #name
+        <input autofocus class="new-notepad-name-input" type="text" value="{{currentNotepad.Name}}" id="value" #name
             (keyup)="getFileType(name.value)">
         <div *ngIf="!createNotepadItemTypeIsFolder" class="new-notepad-file-type">
             <div>File Type: {{fileType}}</div>

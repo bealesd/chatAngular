@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Item, ItemMetadata } from '../models/item-models';
+import { Notepad } from '../models/notepad.model';
 import { NotepadRepo } from '../services/notepad.repo'
 
 @Component({
@@ -18,14 +18,16 @@ export class NotepadComponent implements OnInit, OnDestroy {
   fileType = '';
 
   preventSimpleClick: boolean;
-  highlightedRow: string = null;
+  highlightedRow: number = null;
   timer: any;
   createNotepadItemTypeIsFolder: boolean = false;
 
-  get notepadTextHasChanged() { return this.currentNotepad?.content !== this.originalNotepadText; }
+  currentNotepadId: number = null;
 
-  get currentNotepad() { return this.notepadRepo.notepads.find(np => np.metadata.key === this.notepadRepo.currentNotepadKey); }
- 
+  get notepadTextHasChanged() { return this.currentNotepad?.Text !== this.originalNotepadText; }
+
+  get currentNotepad() { return this.notepadRepo.currentNotepad }
+
   get sortedItems() {
     let items = this.notepadRepo.notepads;
     items.sort(this.sortByItemName);
@@ -41,26 +43,25 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.disablePage = false;
 
     this.notepadRepo.getAllNotepads();
-    }
+  }
 
   ngOnDestroy() {
-    this.disableNotebookMenus();
     if (this.notepadIsOpen) this.exitNotepad();
   }
 
-  sortByItemName(a, b) {
-    let aName = a.metadata.name.toLowerCase();
-    let bName = b.metadata.name.toLowerCase();
+  sortByItemName(a:Notepad, b: Notepad) {
+    let aName = a.Name.toLowerCase();
+    let bName = b.Name.toLowerCase();
     if (aName < bName) return -1;
     else if (aName > bName) return 1;
     else return 0;
   }
 
-  sortByItemType(a, b) {
-    if (a.metadata.type === 'dir' || b.metadata.type === 'dir') {
-      if (a.metadata.type === 'dir' && b.metadata.type === 'file')
+  sortByItemType(a:Notepad, b: Notepad) {
+    if (a.Type === 'dir' || b.Type === 'dir') {
+      if (a.Type === 'dir' && b.Type !== 'dir')
         return -1;
-      else if (a.metadata.type === 'file' && b.metadata.type === 'dir')
+      else if (a.Type !== 'dir' && b.Type === 'dir')
         return 1;
     }
     return 0;
@@ -70,10 +71,8 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.fileType = !name.includes('.') ? '' : name.split('.').slice(-1)[0];
   }
 
-  disableNotebookMenus() { }
-
   undoNotepadChanges() {
-    (this.currentNotepad as Item).content = this.originalNotepadText;
+    (this.currentNotepad as Notepad).Text = this.originalNotepadText;
     this.resetNotepadInput();
   }
 
@@ -82,7 +81,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
   }
 
   updateText(value) {
-    this.currentNotepad.content = value;
+    this.currentNotepad.Text = value;
   }
 
   createNotepadForm() {
@@ -99,11 +98,11 @@ export class NotepadComponent implements OnInit, OnDestroy {
     if (!this.isNotepadItemSelected) return;
     this.renameNotepadFormIsOpen = true;
 
-    if (this.currentNotepad.metadata.type === 'dir')
+    if (this.currentNotepad.Type === 'dir')
       this.createNotepadItemTypeIsFolder = true;
     else {
       this.createNotepadItemTypeIsFolder = false;
-      this.fileType = this.currentNotepad.metadata.fileType;
+      this.fileType = this.currentNotepad.Type;
     }
   }
 
@@ -112,8 +111,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
   }
 
   isUniqueName(name) {
-    //todo: do on key
-    if (this.notepadRepo.notepads.find(np => np.metadata.name === name) !== undefined) {
+    if (this.notepadRepo.notepads.find(np => np.Name === name) !== undefined) {
       alert('name is not unique');
       return false;
     }
@@ -122,16 +120,14 @@ export class NotepadComponent implements OnInit, OnDestroy {
 
   closeFile() {
     this.notepadIsOpen = false;
-    this.disableNotebookMenus();
-    this.notepadRepo.currentNotepadKey = '';
     this.createNotepadFormIsOpen = false;
     this.disablePage = false;
-    this.highlightedRow = '';
+    this.highlightedRow = null;
   }
 
   openFile() {
     this.notepadIsOpen = true;
-    this.originalNotepadText = this.currentNotepad.content;
+    this.originalNotepadText = this.currentNotepad.Text;
     this.resetNotepadInput();
     this.disablePage = false;
   }
@@ -141,12 +137,11 @@ export class NotepadComponent implements OnInit, OnDestroy {
     this.disablePage = true;
 
     if (this.createNotepadItemTypeIsFolder) {
-      const result = await this.notepadRepo.postFolder(name);
-      const result2 = await this.notepadRepo.getAllNotepads();
+      const result = await this.notepadRepo.postNotepad(name, this.notepadRepo.currentPath, 'dir');
       this.closeFile();
     }
     else {
-      const result = await this.notepadRepo.postNotepad('', name);
+      const result = await this.notepadRepo.postNotepad(name, this.notepadRepo.currentPath, this.fileType);
       this.closeFile();
     }
   }
@@ -158,43 +153,47 @@ export class NotepadComponent implements OnInit, OnDestroy {
 
     this.disablePage = true;
 
-    if (this.currentNotepad.metadata.type === 'file') {
-      const result = await this.notepadRepo.getNotepad(this.currentNotepad.metadata.key, this.currentNotepad.metadata.git_url);
+    if (this.currentNotepad.Type !== 'dir') {
+      const result = await this.notepadRepo.getNotepad(this.currentNotepad.Id);
       if (result) this.openFile();
       else this.closeFile();
     }
-    else if (this.currentNotepad.metadata.type === 'dir') {
-      this.notepadRepo.changeDir(false, this.currentNotepad.metadata.name);
-      const result = await this.notepadRepo.getAllNotepads();
+    else if (this.currentNotepad.Type === 'dir') {
+      const result = await this.notepadRepo.getAllNotepads(this.currentNotepad.Path + '/' + this.currentNotepad.Name);
+      this.notepadRepo.currentPath = this.currentNotepad.Path + '/' + this.currentNotepad.Name;
       this.closeFile();
     }
   }
 
   async upLevel() {
     this.disablePage = true;
-    const dirChanged = this.notepadRepo.changeDir(true, null);
-    if (dirChanged) {
-      const result = await this.notepadRepo.getAllNotepads();
+    const path = this.notepadRepo.currentPath.split('/');
+    if (path.length > 1) {
+      path.pop();
+      const result = await this.notepadRepo.getAllNotepads(path.join('/'));
+      this.notepadRepo.currentPath = path.join('/');
     }
-
+    else 
+      alert('Cant go up');
+      
     this.closeFile();
   }
 
-  highlightRow(item: Item): void {
+  highlightRow(item: Notepad): void {
     this.timer = null;
     this.preventSimpleClick = false;
     let delay = 200;
 
     this.timer = setTimeout(() => {
       if (!this.preventSimpleClick) {
-        this.highlightedRow = item.metadata.key;
-        this.notepadRepo.currentNotepadKey = item.metadata.key;
+        this.highlightedRow = item.Id;
+        this.notepadRepo.currentNotepad = item;
       }
     }, delay);
   }
 
   get isNotepadItemSelected() {
-    if (this.stringIsNull(this.currentNotepad?.metadata?.key)) {
+    if (this.stringIsNull(this.notepadRepo.currentNotepad.Name)) {
       alert('No notepad selected!');
       return false;
     }
@@ -211,14 +210,11 @@ export class NotepadComponent implements OnInit, OnDestroy {
 
     this.disablePage = true;
     this.renameNotepadFormIsOpen = false;
-    if (this.createNotepadItemTypeIsFolder) {
-      const result = await this.notepadRepo.renameFolder(this.currentNotepad.metadata.key, name);
-      this.closeFile();
-    }
-    else {
-      const result = await this.notepadRepo.renameNotepad(this.currentNotepad.metadata.key, name, this.currentNotepad.metadata.git_url);
-      this.closeFile();
-    }
+
+    this.currentNotepad.Name = name;
+    const result = await this.notepadRepo.updateNotepad(this.currentNotepad);
+    this.closeFile();
+
   }
 
   async saveNotepad() {
@@ -227,7 +223,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
       return;
     }
     this.disablePage = true;
-    const result = await this.notepadRepo.updateNotepad(this.currentNotepad.metadata.key);
+    const result = await this.notepadRepo.updateNotepad(this.currentNotepad);
     if (result) this.openFile();
     else this.closeFile();
   }
@@ -237,7 +233,7 @@ export class NotepadComponent implements OnInit, OnDestroy {
       if (!window.confirm('Discard unsaved changes?')) return;
 
     this.disablePage = true;
-    const result = await this.notepadRepo.getAllNotepads();
+    const result = await this.notepadRepo.getAllNotepads(this.notepadRepo.currentPath);
     this.closeFile();
   }
 
@@ -249,17 +245,8 @@ export class NotepadComponent implements OnInit, OnDestroy {
     if (window.confirm('Delete notepad?')) {
       this.disablePage = true;
 
-
-      if (this.currentNotepad.metadata.type === 'dir') {
-        const result = await this.notepadRepo.deleteFolder(this.currentNotepad.metadata.key);
-        this.closeFile();
-      }
-      else {
-        const result = await this.notepadRepo.deleteNotepad(this.currentNotepad.metadata.key);
-        this.closeFile();
-      }
-
-
+      const result = await this.notepadRepo.deleteNotepad(this.currentNotepad.Id);
+      this.closeFile();
     }
   }
 }
