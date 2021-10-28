@@ -81,7 +81,8 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
     return this.updatingEvent
       && (parseInt(`${this.profileForm.value.hour}`) !== parseInt(`${this.currentRecord.hour}`)
         || parseInt(`${this.profileForm.value.minute}`) !== parseInt(`${this.currentRecord.minute}`)
-        || this.profileForm.value.what !== this.currentRecord.what);
+        || this.profileForm.value.what !== this.currentRecord.what
+        || this.profileForm.value.description !== this.currentRecord.description);
   }
 
   undoChanges() {
