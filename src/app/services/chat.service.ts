@@ -80,13 +80,15 @@ export class ChatService {
       const newChats = await this.GetChatsAfterId(lastStoredChatId);
       if (newChats && newChats.length > 0) {
         chats.push(newChats);
-        for (const newChat of newChats) {
-          if (this.deviceService.isDesktop()) {
+        const isDektop = this.deviceService.isDesktop();
+        for (let i = 0; i < newChats.length; i++) {
+          if (isDektop && i < 10 ){
+            const newChat = newChats[i];
             new Notification('New chat message', {
               body: `${newChat.Who}: ${newChat.Content}`,
             });
           }
-        };
+        }
         const currentMessagesCount = this.newChatMessagesCount.getValue();
         const newMessageCount = newChats.length;
         this.newChatMessagesCount.next(currentMessagesCount + newMessageCount);
