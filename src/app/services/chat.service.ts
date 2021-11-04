@@ -49,8 +49,12 @@ export class ChatService {
   updateStoreChats(chats) {
     chats = this.filterInvalidChats(chats);
     chats.sort((a, b) => a.id - b.id);
-    window.localStorage.setItem('chatStore', JSON.stringify(chats.flat()));
 
+    const oldChats = this.getStoreChats();
+    if (this.chatMessages.length !== 0 && oldChats.length === chats.length)
+      return;
+
+    window.localStorage.setItem('chatStore', JSON.stringify(chats.flat()));
     this.chatMessages = chats;
   }
 

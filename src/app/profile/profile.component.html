@@ -1,0 +1,9 @@
+<form enctype="multipart/form-data" (ngSubmit)="uploadImage(image.files[0])" id="imageUploadForm">
+    Select image to upload:
+    <input type="file" name="imageToUpload" id="imageToUpload" #image>
+    <button class="submit green-button" type="submit" >upload</button>
+  </form>
+
+  <button class="submit green-button" type="submit" (click)="getProfile()">getProfile</button>
+  
+  <img id='t4'  alt="" >

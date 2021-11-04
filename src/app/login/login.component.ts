@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
       this.loggedIn = loggedIn;
       if (loggedIn === true) {
         this.router.navigate(['/apps']);
-        this.setTheme();
+        this.loginService.setTheme();
       }
       else {
         this.resetTheme();
@@ -45,15 +45,16 @@ export class LoginComponent implements OnInit {
   }
 
   resetTheme() {
-    document.body.className = '';
+    document.body.className = 'dark';
   }
 
   setTheme() {
-    const username = 'esther'
-    if (username.toLowerCase() === 'admin' || username.toLowerCase() === 'esther')
+    if (this.loginService.username.toLowerCase() === 'esther')
       document.body.classList.add('dark');
+    else if(this.loginService.username.toLowerCase() === 'admin')
+      document.body.classList.add('dave');
     else
-      document.body.className = '';
+      document.body.className = 'light';
   }
 
 }

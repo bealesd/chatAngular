@@ -1,7 +1,6 @@
 <div data-id="{{recieveChat.Id}}" class="{{recieveChat.Who}} messageNode" *ngIf="recieveChat">
-
+    <img id="img-{{recieveChat.Id}}"  alt="{{recieveChat.Who}}" width=30 height=30>
     <div class="dateTime">{{date | date:'medium'}}</div>
     <div class="chatId">{{recieveChat.Who}}</div>
     <div class="message">{{recieveChat.Content}}</div>
-
 </div>

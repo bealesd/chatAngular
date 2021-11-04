@@ -42,6 +42,14 @@
     text-align: right;
 }
 
+.primary>.message{
+    color: var(--primary-message-color);
+}
+
+.secondary>.message{
+    color: var(--secondary-message-color);
+}
+
 .david, .admin {
     padding: var(--message-padding);
     border: var(--david-message-border);

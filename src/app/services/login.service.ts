@@ -19,7 +19,7 @@ export class LoginService {
     private http: HttpClient) {  }
 
   async login(username: string, password: string): Promise<void> {
-   this.messageService.add('LoginService: Getting jwt token.');
+   this.messageService.addNoAuth('LoginService: Getting jwt token.');
 
     const token = (await this.GetToken({
       username: username,
@@ -31,6 +31,15 @@ export class LoginService {
     this.jwtToken = token;
 
     this.messageService.add(`LoginService: Got jwt token.`);
+  }
+
+  setTheme() {
+    if (this.username.toLowerCase() === 'esther')
+      document.body.classList.add('dark');
+    else if(this.username.toLowerCase() === 'admin')
+      document.body.classList.add('dave');
+    else
+      document.body.className = 'dark';
   }
 
   GetToken(user: any): Promise<any> {

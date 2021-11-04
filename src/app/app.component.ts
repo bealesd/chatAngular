@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Utilities } from './helpers/utilities-helper';
 import { SwUpdate } from '@angular/service-worker';
 
 import { MessageService } from './services/message.service';
+import { LoginService } from './services/login.service';
 
 @Component({
   selector: 'app-root',
@@ -12,12 +13,14 @@ import { MessageService } from './services/message.service';
 })
 export class AppComponent {
   isLoggingOn: boolean = false;
+  theme: string = 'dark';
 
   constructor(
     private router: Router,
     private utilities: Utilities,
     private readonly updates: SwUpdate,
     private messageService: MessageService,
+    private loginService: LoginService
   ) {
     this.router.events.subscribe((ev) => {
       if (ev instanceof NavigationEnd) {
@@ -25,7 +28,8 @@ export class AppComponent {
           this.utilities.updateTheme('todo');
         }
         else {
-          this.utilities.defaultTheme();
+          this.loginService.setTheme();
+          // this.utilities.defaultTheme();
         }
       }
     });

@@ -825,9 +825,12 @@
     --esther-message-border: none;
     --david-message-color: none;
     --david-message-border: none;
-    --unkown-message-border: none;
-    --message-size: none;
-    --message-weight: none;
+    --unknown-message-border: 2px solid green;
+    --message-size: 14px;
+    --message-weight: 200;
+
+    --primary-message-color: none;
+    --secondary-message-color: none;
 }
 
 body {
@@ -854,14 +857,29 @@ h6 {
     --main-background-image: url(assets/images/ringOnBlack.jpg);
     --main-header-font-color: rgb(248, 248, 248);
     --message-container-border: 2px solid rgb(255, 0, 0);
-    --message-padding: 5px 10px 5px 10px;
+    --message-padding: 5px 10px 5px 10px;  
     --esther-message-color: deeppink;
     --esther-message-border: 2px solid purple;
     --david-message-color: rgb(0, 119, 255);
     --david-message-border: 2px solid blue;
-    --unknown-message-border: 2px solid green;
-    --message-size: 14px;
-    --message-weight: 200;
+
+    --primary-message-color: deeppink;
+    --secondary-message-color: rgb(0, 119, 255);
+}
+
+.dave{
+  --main-background: rgba(0, 0, 0, 1); 
+  --main-background-image: url(assets/images/spaceRed.jpg);
+  --main-header-font-color: rgb(248, 248, 248);
+  --message-container-border: 2px solid rgb(255, 0, 0);
+  --message-padding: 5px 10px 5px 10px;
+  --esther-message-color: deeppink;
+  --esther-message-border: 2px solid purple;
+  --david-message-color: rgb(0, 119, 255);
+  --david-message-border: 2px solid blue;
+
+  --primary-message-color: deeppink;
+  --secondary-message-color: rgb(0, 119, 255);
 }
 
 .light {
@@ -874,9 +892,9 @@ h6 {
     --esther-message-border: 2px solid rgb(238, 137, 238);
     --david-message-color: rgb(97, 97, 248);
     --david-message-border: 2px solid rgb(126, 126, 240);
-    --unknown-message-border: 2px solid green;
-    --message-size: 14px;
-    --message-weight: 600;
+
+    --primary-message-color: rgb(252, 97, 180);;
+    --secondary-message-color: rgb(97, 97, 248);
 }
 
 .todo {

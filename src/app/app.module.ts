@@ -26,6 +26,7 @@ import { CalendarFormComponent } from './calendar-form/calendar-form.component';
 import { CalendarDayComponent } from './calendar-day/calendar-day.component';
 import { NewUserComponent } from './new-user/new-user.component';
 import { NotepadComponent } from './notepad/notepad.component';
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { NotepadComponent } from './notepad/notepad.component';
     CalendarFormComponent,
     CalendarDayComponent,
     NewUserComponent,
-    NotepadComponent
+    NotepadComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,

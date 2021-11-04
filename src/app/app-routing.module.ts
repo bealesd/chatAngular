@@ -10,6 +10,7 @@ import { TodoComponent } from './todo/todo.component';
 import { AppsComponent } from './apps/apps.component';
 import { NewUserComponent } from './new-user/new-user.component';
 import { NotepadComponent } from './notepad/notepad.component';
+import { ProfileComponent } from './profile/profile.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'calendar', component: CalendarMainComponent },
   { path: 'todo', component: TodoComponent },
   { path: 'notepad', component: NotepadComponent },
+  { path: 'profile', component: ProfileComponent },
   { path: '**', component: LoginComponent }
 ];
 
