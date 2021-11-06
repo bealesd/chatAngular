@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1635432813340,
+  "timestamp": 1636233072502,
   "index": "/chatAngular/index.html",
   "assetGroups": [
     {
@@ -13,11 +13,11 @@
       "urls": [
         "/chatAngular/favicon.ico",
         "/chatAngular/index.html",
-        "/chatAngular/main.2cc4ff8ec5360ca66813.js",
+        "/chatAngular/main.4e569a1c231bfda4d59d.js",
         "/chatAngular/manifest.webmanifest",
         "/chatAngular/polyfills.dc934f6e37ebf13cf99b.js",
         "/chatAngular/runtime.606b39dfb72edd63b83c.js",
-        "/chatAngular/styles.1b6a1d6817699ffc2840.css"
+        "/chatAngular/styles.03727c3b0746c0d0e442.css"
       ],
       "patterns": []
     },
@@ -43,7 +43,8 @@
         "/chatAngular/assets/images/ringOnBlack.jpg",
         "/chatAngular/assets/images/spaceRed.jpg",
         "/chatAngular/icomoon.95a00167d5ba7a268542.woff",
-        "/chatAngular/ringOnBlack.1fb718d920a4bb1f94d4.jpg"
+        "/chatAngular/ringOnBlack.1fb718d920a4bb1f94d4.jpg",
+        "/chatAngular/spaceRed.580c5c1f251e6499b8c4.jpg"
       ],
       "patterns": []
     }
@@ -65,13 +66,14 @@
     "/chatAngular/assets/images/spaceRed.jpg": "f557e8d9ee49938d20c04e8066137944a443104f",
     "/chatAngular/favicon.ico": "fcbcf16ac9d543f785ec36346161838334fdce13",
     "/chatAngular/icomoon.95a00167d5ba7a268542.woff": "cb9cddc0125d6f2a03892efd903d641302be4650",
-    "/chatAngular/index.html": "fd4e0fe8b5ce102382635df66fc47a9a8bf69dc0",
-    "/chatAngular/main.2cc4ff8ec5360ca66813.js": "436c2c45d325bf27582697084686755c27b7e6cd",
+    "/chatAngular/index.html": "4e7ba875d4d8d1cd073c2377d7309c0261401354",
+    "/chatAngular/main.4e569a1c231bfda4d59d.js": "d66e04b7840c933f0edf21db04ac7dcd47247203",
     "/chatAngular/manifest.webmanifest": "42045d6273e4477375e0a7d4c344bd46cbc3a064",
     "/chatAngular/polyfills.dc934f6e37ebf13cf99b.js": "83c89b7a59b7ec2f7dd295ad222a9f01b4f99d74",
     "/chatAngular/ringOnBlack.1fb718d920a4bb1f94d4.jpg": "a8cf25e06e2520df5efe567f28613cdabcd93029",
     "/chatAngular/runtime.606b39dfb72edd63b83c.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
-    "/chatAngular/styles.1b6a1d6817699ffc2840.css": "f0381837d181085314c7d5c520288e29acda4772"
+    "/chatAngular/spaceRed.580c5c1f251e6499b8c4.jpg": "f557e8d9ee49938d20c04e8066137944a443104f",
+    "/chatAngular/styles.03727c3b0746c0d0e442.css": "50573310cb25ad8c5a558da483c505ba54c140b7"
   },
   "navigationUrls": [
     {
