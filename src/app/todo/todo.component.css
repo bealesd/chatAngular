@@ -66,11 +66,14 @@
       grid-row: 1;
       display: grid;
       grid-template-columns: calc(var(--col-one) + var(--col-two)) var(--col-three) var(--col-four);
-      background-color: white;
+      /* background-color: white; */
       padding-top: var(--plus-button-padding);
       padding-bottom: var(--plus-button-padding);
       margin-top: var(--plus-button-padding);
       margin-bottom: var(--plus-button-padding);
+
+      color: var(--main-font-color);
+      background-color: var(--sub-background-color);
   }
 
   .add-btn {
@@ -98,10 +101,13 @@
       grid-template-rows: auto auto;
       align-content: center;
       justify-content: center;
-      background-color: white;
+      /* background-color: white; */
       padding-top: var(--plus-button-padding);
       padding-bottom: var(--plus-button-padding);
       margin-top: var(--todo-item-vertical-spacing);
+
+      color: var(--main-font-color);
+      background-color: var(--sub-background-color);
   }
 
   .todo-input {
@@ -109,10 +115,10 @@
       grid-row: 1;
       font-size: var(--todo-text-font-size);
       font-family: var(--todo-text--font-family);
-      padding-left: var(--plus-button-padding);
+      margin-left: var(--plus-button-padding);
       border: none;
       outline: none;
-      background-color: white;
+      /* background-color: white; */
   }
 
   .todo-item-container .todo-date {
@@ -123,7 +129,7 @@
       padding-left: var(--plus-button-padding);
       border: none;
       outline: none;
-      background-color: white;
+      /* background-color: white; */
   }
 
   .todo-item-container .todo-text {
@@ -134,7 +140,7 @@
       padding-left: var(--plus-button-padding);
       border: none;
       outline: none;
-      background-color: white;
+      /* background-color: white; */
   }
 
   .strikethrough {

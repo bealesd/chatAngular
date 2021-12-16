@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { Utilities } from './helpers/utilities-helper';
+import { NavigationEnd, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 
 import { MessageService } from './services/message.service';
-import { LoginService } from './services/login.service';
+import { ProfileService } from './services/profile.service';
 
 @Component({
   selector: 'app-root',
@@ -13,25 +12,16 @@ import { LoginService } from './services/login.service';
 })
 export class AppComponent {
   isLoggingOn: boolean = false;
-  theme: string = 'dark';
 
   constructor(
     private router: Router,
-    private utilities: Utilities,
     private readonly updates: SwUpdate,
     private messageService: MessageService,
-    private loginService: LoginService
+    private profileService: ProfileService
   ) {
     this.router.events.subscribe((ev) => {
-      if (ev instanceof NavigationEnd) {
-        if (ev.url === "/todo") {
-          this.utilities.updateTheme('todo');
-        }
-        else {
-          this.loginService.setTheme();
-          // this.utilities.defaultTheme();
-        }
-      }
+      if (ev instanceof NavigationEnd)
+        this.profileService.loadTheme();
     });
 
     this.updates.available.subscribe(event => {

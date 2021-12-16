@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { LoginService } from '../services/login.service';
+import { ProfileService } from '../services/profile.service';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +17,7 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private loginService: LoginService,
+    private profileService: ProfileService,
     private router: Router,
   ) {
     this.show = false;
@@ -24,7 +26,7 @@ export class LoginComponent implements OnInit {
       this.loggedIn = loggedIn;
       if (loggedIn === true) {
         this.router.navigate(['/apps']);
-        this.loginService.setTheme();
+        this.profileService.loadTheme();
       }
       else {
         this.resetTheme();

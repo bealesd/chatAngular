@@ -33,15 +33,6 @@ export class LoginService {
     this.messageService.add(`LoginService: Got jwt token.`);
   }
 
-  setTheme() {
-    if (this.username.toLowerCase() === 'esther')
-      document.body.classList.add('dark');
-    else if(this.username.toLowerCase() === 'admin')
-      document.body.classList.add('dave');
-    else
-      document.body.className = 'dark';
-  }
-
   GetToken(user: any): Promise<any> {
     return new Promise((res, rej) => {
       const url = `${this.baseUrl}/Login`;

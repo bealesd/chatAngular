@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 
 import { Chat } from '../models/chat.model';
 import { DialogBoxService } from '../services/dialog-box.service';
+import { LoginService } from '../services/login.service';
 import { ProfileService } from '../services/profile.service';
 
 @Component({
@@ -11,18 +12,17 @@ import { ProfileService } from '../services/profile.service';
 })
 export class ChatDetailComponent implements OnInit {
   @Input() recieveChat: Chat;
-  date: Date;
+  date: string;
   deleted: boolean;
   content: string;
   dialogBoxService: DialogBoxService;
   interval: any;
 
-  constructor(private profileService: ProfileService) {
-
+  constructor(private profileService: ProfileService, public loginService: LoginService) {
   }
 
   public parseDateTime() {
-    this.date = new Date(this.recieveChat.Datetime);
+    this.date = (new Date(this.recieveChat.Datetime)).toLocaleTimeString();
   }
 
   ngOnInit(): void {
@@ -42,16 +42,16 @@ export class ChatDetailComponent implements OnInit {
         window[`profileImageUrl${this.recieveChat.Who}`].url = url;
       }
 
-      this.interval = setInterval(()=>{
-        if((window[`profileImageUrl${this.recieveChat.Who}`].url === null)){
-          let a = 1
-        }
-        else{
-          (document.querySelector(`#img-${this.recieveChat.Id}`) as any).src = window[`profileImageUrl${this.recieveChat.Who}`].url;
-          clearInterval(this.interval);
+      this.interval = setInterval(() => {
+        if ((window[`profileImageUrl${this.recieveChat.Who}`].url !== null)) {
+          try {
+            (document.querySelector(`#img-${this.recieveChat.Id}`) as any).src = window[`profileImageUrl${this.recieveChat.Who}`].url;
+            clearInterval(this.interval);
+          } catch (error) {
+          }
         }
       }, 1000)
-      
+
     }
   }
 

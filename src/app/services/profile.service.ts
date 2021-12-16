@@ -10,10 +10,14 @@ import { environment } from 'src/environments/environment';
 import { LoginService } from './login.service';
 import { Profile } from '../models/profile.model';
 
+enum Themes {
+  light,
+  dark
+}
+
 @Injectable({
   providedIn: 'root',
 })
-
 export class ProfileService {
   private baseUrl = `${environment.chatCoreUrl}/profile`
 
@@ -22,12 +26,26 @@ export class ProfileService {
     private httpClient: HttpClient,
     private loginService: LoginService) { }
 
+  loadTheme() {
+    const isDarkTheme = (new Boolean(JSON.parse(window.localStorage.getItem('isDarkTheme')))).valueOf();
+    const theme = isDarkTheme ? Themes.light : Themes.dark;
+    document.body.classList.add(Themes[theme]);
+  }
+
+  toggleTheme() {
+    const isDarkTheme = (new Boolean(JSON.parse(window.localStorage.getItem('isDarkTheme')))).valueOf();
+    const oldTheme = isDarkTheme ? Themes.light : Themes.dark;
+    const newTheme = !isDarkTheme ? Themes.light : Themes.dark;
+    document.body.classList.remove(Themes[oldTheme]);
+    document.body.classList.add(Themes[newTheme]);
+    window.localStorage.setItem('isDarkTheme', JSON.stringify(!isDarkTheme));
+  }
 
   async getProfilePicture(username): Promise<any> {
-      const imageBlob = await this.GetProfile(username);
-      var urlCreator = window.URL || window.webkitURL;
-      return urlCreator.createObjectURL(imageBlob);
-    }
+    const imageBlob = await this.GetProfile(username);
+    var urlCreator = window.URL || window.webkitURL;
+    return urlCreator.createObjectURL(imageBlob);
+  }
 
   async getProfile(): Promise<any> {
     const imageBlob = await this.GetProfile(this.loginService.username);
@@ -37,7 +55,7 @@ export class ProfileService {
 
   async updateProfile(file: File): Promise<void> {
     const formData = new FormData();
-    formData.append('Picture',file)
+    formData.append('Picture', file)
     formData.append('Username', this.loginService.username);
 
     await this.PostChat(formData);

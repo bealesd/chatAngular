@@ -1,118 +1,109 @@
 .messageNode {
+    position: relative;
+    width: -moz-fit-content;
+    width: fit-content;
+    max-width: 500px;
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 1px 0.5px rgb(0 0 0 / 13%);
+    margin-bottom: 10px;
+    
     background-color:rgba(0, 0, 0, 0.5);
-    display: grid;
-    grid-template-columns: 12fr 3fr 1fr;
-    grid-auto-rows: auto;
     font-size: var(--message-size);
     font-weight: var(--message-weight);
+    font-family: var(--message-font-family);
     word-wrap: break-word;
-
-    padding: var(--message-padding);
-    border: var(--unknown-message-border);
-    border-radius: 10px;
-    margin-bottom: 5px;
 }
 
-.message{
+.messageNode::before {
+    position: absolute;
+    left: -10px;
+    top: 0;
+    content: "";
+    display: block;
+    border: solid;
+    border-width: 0px 16px 16px 0px;
+    border-color: transparent;
+    border-right-color: var(--message-secondary-background-color);
+  }
+
+.primary {
+    --user-color-message:#cfe9ba;
+    align-self: flex-end;
+    background-color:  var(--message-primary-background-color);
+  }
+
+.primary::before {
+    left: auto;
+    right: -28px;
+    border-width: 0px 16px 16px 16px;
+    border-color: transparent;
+    border-left-color:  var(--message-primary-background-color);
+  }
+
+.primary + .primary::before {
+    display: none;
+  }
+
+.primary {
+    color: var(--main-font-color);
+    background-color: var(--message-primary-background-color);
+}
+
+.secondary {
+    background-color: var(--message-secondary-background-color);
+    color: var(--main-font-color);
+}
+
+.messageNode.is-other + .is-other::before {
+    display: none;
+  }
+
+.messageNode{
     white-space: pre-wrap;
-    
-    grid-column-start: 1;
-    grid-column-end: 4;
-    grid-row-start: 2;
-    grid-row-end: 3;
-    margin-top: 0px;
-    color: green;
-    text-align: left;
 }
 
-.esther {
-    padding: var(--message-padding);
-    border: var(--esther-message-border);
-    border-radius: 10px;
-    margin-bottom: 5px;
+.messageNode .dateTime {
+    font-size: calc(var(--message-size) - 4px);
+    color: rgb(100, 100, 100);
+    float: right;
+    margin-top: 8px;
 }
 
-.esther>.message {
-    grid-column-start: 1;
-    grid-column-end: 4;
-    grid-row-start: 2;
-    grid-row-end: 3;
-    margin-top: 0px;
-    color: var(--esther-message-color);
-    text-align: right;
+.messageNode img {
+    display: block;
 }
 
-.primary>.message{
-    color: var(--primary-message-color);
+.messageNode p {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline
 }
 
-.secondary>.message{
-    color: var(--secondary-message-color);
+.messageNode .who{
+    color:rgb(200, 0, 0);
+    font-size: calc(var(--message-size) - 2px);
 }
 
-.david, .admin {
-    padding: var(--message-padding);
-    border: var(--david-message-border);
-    border-radius: 10px;
-    margin-bottom: 5px;
+.primary .messageNode img {
+    float: right;
 }
 
-.david>.message, .admin>.message{
-    grid-column-start: 1;
-    grid-column-end: 4;
-    grid-row-start: 2;
-    grid-row-end: 3;
-    margin-top: 0px;
-    color: var(--david-message-color);
-    text-align: left;
+.secondary .messageNode img {
+    float: left;
 }
 
-.dateTime {
-    grid-column-start: 1;
-    grid-column-end: 2;
-    grid-row-start: 1;
-    grid-row-end: 2;
-    padding-top: 1px;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    font-size: 10px;
-    color: gray;
-}
+.messageNode.is-time {
+    align-self: center;
+    background-color: var(--message-secondary-background-color);
+    color: var(--main-font-color);
+    font-size: calc(var(--message-size) - 2px);
+    text-transform: uppercase;
+  }
 
-.chatId {
-    grid-column-start: 2;
-    grid-column-end: 3;
-    grid-row-start: 1;
-    grid-row-end: 2;
-    padding-top: 1px;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    font-size: 10px;
-    color: gray;
-}
-
-.deleteMessage {
-    grid-column-start: 3;
-    grid-column-end: 4;
-    grid-row-start: 1;
-    grid-row-end: 2;
-    color: red;
-    font-size: 12px;
-    cursor: pointer;
-}
-
-.undoDeleteMessage {
-    grid-column-start: 3;
-    grid-column-end: 4;
-    grid-row-start: 1;
-    grid-row-end: 2;
-    color: green;
-    font-size: 18px;
-    cursor: pointer;
-    font-weight: bolder;
-}
-
-.deleted {
-    font-style: italic;
-    text-decoration: line-through;
-}
+  .messageNode.is-time::before {
+    display: none;
+  }

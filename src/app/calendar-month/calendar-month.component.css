@@ -8,7 +8,7 @@
     --record-minimum-height: 150px;
     --record-font-family: inherit;
     --record-max-width: 250px;
-    --record-text-and-heading-color: white;
+    --record-text-and-heading-color: var(--main-font-color);
     --record-border-type: solid;
     --record-border-thickness: 2px;
     --record-border-red-color: rgb(255, 53, 94);
@@ -94,7 +94,7 @@
     font-weight: var(--weekday-name-font-weight);
     text-align: center;
     font-size: var(--weekday-name-and-number-font-size);
-    color: var(--weekday-name-and-number-text-color);
+    color: var(--main-font-color);
 }
 
 .today {
@@ -114,13 +114,13 @@
 }
 
 .date-box-contianer>.date-box {
-    background-color: var(--mask-background-color);
+    background-color: var(--sub-background-color);
     min-height: var(--record-minimum-height);
 }
 
 .date-box-contianer>.date-box>.day {
     font-size: var(--weekday-name-and-number-font-size);
-    color: var(--weekday-name-and-number-text-color);
+    color: var(--main-font-color);
     font-family: var(--weekday-name-font-family);
     font-weight: var(--weekday-name-font-weight);
 }

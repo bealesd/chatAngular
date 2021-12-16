@@ -24,11 +24,11 @@ export class ChatComponent implements OnInit, OnDestroy {
   checkForUpdatedMessagesInterval: Subscription;
   newChatMessagesCount: number;
 
-  chatInputClass = 'input';
+  chatInputClass = 'text-input';
 
   constructor(
     public chatService: ChatService,
-    private messageService: MessageService,
+    private messageService: MessageService
   ) {
     this.messageInput = '';
     this.rows = 1;
@@ -72,7 +72,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   postMessage(event) {
-    event.srcElement.parentElement.querySelector(`.${this.chatInputClass}`).innerText = "";
+    (<any>document.querySelector(`.${this.chatInputClass}`)).innerText = "";
 
     if (this.messageInput === "" || this.messageInput === null || this.messageInput === undefined)
       return this.messageService.add(`Please enter a message before posting.`);
@@ -83,13 +83,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   onMessageTyping(event) {
-    const divInput = event.srcElement.parentElement.querySelector(`.${this.chatInputClass}`);
-    const oldMessageInput = this.messageInput;
-    this.messageInput = divInput.innerText;
-
-    while (divInput.offsetHeight > (124 - (1 * 2))) {
-      divInput.innerText = oldMessageInput;
-    }
+    this.messageInput = (<any>document.querySelector(`.${this.chatInputClass}`)).innerText
   }
 
   scrollToBottom(): void {

@@ -1,14 +1,11 @@
 <div class="grid-container">
 
-    <h1>Todo List</h1>
-
     <div class="todo-list-container">
 
         <div class="todo-header-container">
             <input type="text" class="todo-input" maxlength="30" />
             <div class="icon-plus add-btn" title="add" type="submit" (click)="addTodo()"> </div>
         </div>
-
 
         <div class="todo-item-container" *ngFor="let item of sortedTodoList; let i = index">
             <div class="todo-date">{{ item.dateTime | date:'medium' }}</div>

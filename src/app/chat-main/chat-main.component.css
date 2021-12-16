@@ -1,7 +1,7 @@
 :host {
     --message-container-width: 300px;
-    --message-container-padding: 5px;
-    --message-container-width-total: calc(300px + 2px * 2 + var(--message-container-padding) * 2); 
+    /* --message-container-padding: 5px; */
+    /* --message-container-width-total: calc(var(--message-container-width) + 2px * 2 + var(--message-container-padding) * 2);  */
     --message-container-height: 500px;
 
     --input-width: 250px;
@@ -21,8 +21,23 @@
 .grid-container {
     display: grid;
     grid-template-rows: repeat(1, 1fr);
-    grid-template-columns: auto var(--message-container-width-total) auto;
+    grid-template-columns: auto minmax(var(--message-container-width), 70%) auto;
+    /* grid-template-columns: auto var(--message-container-width-total) auto; */
     padding-top: 10px;
+}
+
+.messages-list{
+    display: flex;
+    flex-direction: column;
+    padding: 20px 7%;
+}
+
+app-chat-detail{
+    display: contents;
+}
+
+ol, ul {
+    list-style: none;
 }
 
 .middle-column {
@@ -33,12 +48,15 @@
 .messagesContainer {
     display: inline-block;
     font-size: 14px;
-    padding: var(--message-container-padding);
-    border: var(--message-container-border);
-    border-radius: 5px;
-    width: var(--message-container-width);
-    height: var(--message-container-height);
+    width: 100%;
+    max-height: calc(100vh - 210px);
     overflow-y: auto;
+
+    background-image: var(--message-background-image);
+
+    scrollbar-width: thin;
+    flex: 1;
+    /* background-color: #e5ddd5;   */
 }
 
 .messagesContainer::-webkit-scrollbar {
@@ -53,62 +71,80 @@
     border-left: var(--input-border-left) solid #a94442;
 }
 
-.input, button{
-    vertical-align: bottom;
-}
 
-.input {
-    display: inline-block;
-    width: var(--input-width);
-    padding: 0px var(--input-padding-width);
-    border: var(--input-border-width) solid green;
-    
-    font-size: 16px;
+
+.message-box {
+    display: flex;
+    flex-shrink: 0;
+    /* background-color: var(--message-primary-background-color); */
+    background-color: #f0f0f0;
+    padding: 5px 10px;
+  }
+  .message-box .text-input {
+    flex: 1;
+  }
+  .message-box .text-input:empty::before {
+    content: "Type a message";
+    font-size: var(--message-size);
+    opacity: 0.5;
+  }
+  .text-input {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
     background-color: white;
-}
-
-.input:focus{
+    padding: 10px;
+    margin: 5px 10px;
+    border-radius: 20px;
+    border-width: 0;
+    font-size: var(--message-size);
+    font-family: var(--message-font-family);
+  }
+  .text-input:focus {
     outline: none;
-}
-
-button {
-    background-color: #4CAF50;
-    border: var(--input-border-width) solid green;
-    width: var(--button-width);
-    height: var(--button-height);
-    color: white;
-    padding: 2px 7px;
+  }
+  .common-button {
+    padding: 8px;
+  }
+  .common-button:hover, .common-button:focus {
+    outline: none;
+  }
+  .common-button:hover .icon, .common-button:focus .icon {
+    filter: grayscale(1) opacity(1);
+  }
+  .common-button .icon {
+    display: block;
+    width: 24px;
+    height: 24px;
+    font-size: 18px;
+    vertical-align: middle;
     text-align: center;
-    text-decoration: none;
-    font-size: 16px;
-    cursor: pointer;
-}
+    filter: grayscale(1) opacity(0.5);
+    transition: 0.2s;
+  }
 
-button:hover {
-    background-color: #3e8e41;
-}
+  button {
+    background-color: transparent;
+    color: inherit;
+    border-width: 0;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    text-align: inherit;
+  }
+
 
 .btn-disable {
     cursor: no-drop !important;
-    background-color: #a94442;
-    border-color: green;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    font-size: 16px;
 }
 
 .messageCount {
-    display: inline-block;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: var(--message-count-margin);
-    border: 1px solid pink;
+    margin: 20px auto;
     border-radius: 5px;
-    width: var(--message-count-width);
+    width: 200px;
     text-align: center;
     padding-top: 5px;
     padding-bottom: 5px;
-    color: white;
-    background-color: rgba(0, 0, 0, 0.5);
+    color: var(--main-font-color);
+    background-color: var(--message-count-bg-color);
 }

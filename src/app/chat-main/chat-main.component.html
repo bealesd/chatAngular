@@ -3,19 +3,19 @@
     <div class="middle-column">
 
         <div class="messagesContainer">
-            <app-chat-detail *ngFor="let message of chatService.chatMessages" [recieveChat]="message"></app-chat-detail>
+            <ol class="messages-list">
+                <app-chat-detail *ngFor="let message of chatService.chatMessagesByDate" [recieveChat]="message"></app-chat-detail>
+            </ol>
         </div>
 
-        <div id="sendChatForm">
-            <div (keyup)="onMessageTyping($event)"
-                class="input {{messageInput.trim().length > 0 ? 'valid' : 'invalid'}}" role="textbox" contenteditable>
-            </div>
-
-            <button class="btn btn-success {{messageInput.length > 0 ? '' : 'btn-disable'}}"
-                (click)="postMessage($event)">
-                Post
-            </button>
-        </div>
+        <div class="message-box">
+            <!-- <button class="common-button"><span class="icon">😃</span></button> -->
+            <div class="text-input {{messageInput.trim().length > 0 ? 'valid' : 'invalid'}}" 
+            id="message-box" placeholder="Type a message" contenteditable="" (keyup)="onMessageTyping($event)"></div>
+            <!-- <button id="voice-button" class="common-button"><span class="icon">🎤</span></button> -->
+            <button id="submit-button" class="common-button {{messageInput.length > 0 ? '' : 'btn-disable'}}" 
+                (click)="postMessage($event)"><span class="icon">➤</span></button>
+          </div>
 
         <div class="messageCount">
             New Messages: {{newChatMessagesCount}}

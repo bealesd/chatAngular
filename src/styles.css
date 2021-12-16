@@ -816,18 +816,25 @@
 
 :root {
     /* main-stlyes */
-    --main-background-color: none;
     --main-header-font-color: none;
+    --main-background: none; 
+    --main-font-color: none;
+    --sub-background-color: none;
     /* message-styles */
+    --message-primary-background-color: none;
+    --message-secondary-background-color: none;
     --message-container-border: none;
     --message-padding: none;
+    --message-font-family: Segoe UI,Helvetica Neue,Helvetica,Lucida Grande,Arial,Ubuntu,Cantarell,Fira Sans,sans-serif; 
+    --message-size: 16px;
+    --message-weight: 200;
+
     --esther-message-color: none;
     --esther-message-border: none;
     --david-message-color: none;
     --david-message-border: none;
     --unknown-message-border: 2px solid green;
-    --message-size: 14px;
-    --message-weight: 200;
+
 
     --primary-message-color: none;
     --secondary-message-color: none;
@@ -839,6 +846,7 @@ body {
     margin: 0px;
     font-family: 'Space Mono';
     background: var(--main-background-image), var(--main-background); 
+    background-color: var(--main-background);
     background-size: cover; 
 }
 
@@ -848,58 +856,39 @@ h3,
 h4,
 h5,
 h6 {
-  /* display:inline; */
   color: var(--main-header-font-color);
 }
 
 .dark {
-     --main-background: rgba(0, 0, 0, 1); 
-    --main-background-image: url(assets/images/ringOnBlack.jpg);
+    --main-background: rgba(0, 0, 0, 1); 
     --main-header-font-color: rgb(248, 248, 248);
-    --message-container-border: 2px solid rgb(255, 0, 0);
-    --message-padding: 5px 10px 5px 10px;  
-    --esther-message-color: deeppink;
-    --esther-message-border: 2px solid purple;
-    --david-message-color: rgb(0, 119, 255);
-    --david-message-border: 2px solid blue;
+    --main-font-color: rgb(200, 200, 200);
+    --sub-background-color: rgba(68, 68, 68, 1);
+    
+    --message-primary-background-color: rgb(5, 70, 64);
+    --message-secondary-background-color: rgb(33,46,54);
+    --message-padding: 5px 10px 5px 10px;
+    --message-background-image: linear-gradient(rgb(38, 38, 38), rgb(38, 38, 38));
+    --message-count-bg-color: rgb(33,46,54);
 
     --primary-message-color: deeppink;
     --secondary-message-color: rgb(0, 119, 255);
 }
 
-.dave{
-  --main-background: rgba(0, 0, 0, 1); 
-  --main-background-image: url(assets/images/spaceRed.jpg);
-  --main-header-font-color: rgb(248, 248, 248);
-  --message-container-border: 2px solid rgb(255, 0, 0);
-  --message-padding: 5px 10px 5px 10px;
-  --esther-message-color: deeppink;
-  --esther-message-border: 2px solid purple;
-  --david-message-color: rgb(0, 119, 255);
-  --david-message-border: 2px solid blue;
-
-  --primary-message-color: deeppink;
-  --secondary-message-color: rgb(0, 119, 255);
-}
-
 .light {
     --main-background: rgba(248, 248, 248, 1);
-    --main-background: url(https://raw.githubusercontent.com/bealesd/chatAngular/master/src/assets/images/spaceRed.jpg);
     --main-header-font-color: rgb(0, 0, 0);
-    --message-container-border: 2px solid rgb(252, 113, 113);
+    --main-font-color: #333;
+    --sub-background-color: rgb(255, 255, 255);
+    
+    --message-primary-background-color: rgb(226,255,199);
+    --message-secondary-background-color: rgb(255, 255, 255);
     --message-padding: 5px 10px 5px 10px;
-    --esther-message-color: rgb(252, 97, 180);
-    --esther-message-border: 2px solid rgb(238, 137, 238);
-    --david-message-color: rgb(97, 97, 248);
-    --david-message-border: 2px solid rgb(126, 126, 240);
+    --message-background-image: linear-gradient(rgb(245, 245, 245), rgb(243, 200, 236));
+    --message-count-bg-color: rgb(240,240,240);
 
     --primary-message-color: rgb(252, 97, 180);;
     --secondary-message-color: rgb(97, 97, 248);
-}
-
-.todo {
-    --main-background: linear-gradient(120deg, #1d4e89, #00b2ca);
-    --main-background-image: none;
 }
 
 .active-link{

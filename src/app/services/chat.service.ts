@@ -15,6 +15,10 @@ import { LoginService } from './login.service';
 
 export class ChatService {
   public chatMessages: Chat[] = [];
+  public chatMessagesByDate = [];
+  /* 
+   [{date: 21/10/21 20:20, chats: []}, {date: 23/10/21 19:20, chats: []}]
+   */
 
   public newChatMessagesCount = new BehaviorSubject<number>(0);
 
@@ -46,9 +50,9 @@ export class ChatService {
     this.updateStoreChats(chats);
   }
 
-  updateStoreChats(chats) {
+  updateStoreChats(chats: Chat[]) {
     chats = this.filterInvalidChats(chats);
-    chats.sort((a, b) => a.id - b.id);
+    chats.sort((a, b) => a.Id - b.Id);
 
     const oldChats = this.getStoreChats();
     if (this.chatMessages.length !== 0 && oldChats.length === chats.length)
@@ -56,6 +60,29 @@ export class ChatService {
 
     window.localStorage.setItem('chatStore', JSON.stringify(chats.flat()));
     this.chatMessages = chats;
+
+    const chatMessagesByDateDict = {};
+    for (const chat of chats) {
+      const date = new Date(chat.Datetime).toDateString();
+      if (!chatMessagesByDateDict.hasOwnProperty(date))
+        chatMessagesByDateDict[date] = [chat];      
+      else
+        chatMessagesByDateDict[date].push(chat);
+    }
+
+    const dates = Object.keys(chatMessagesByDateDict);
+    dates.sort((a, b) => { return parseInt(a) - parseInt(b) });
+
+    for (const date of dates) {
+      const dateChat = new Chat();
+      dateChat.Id = 99999999;
+      dateChat.Who = 'date';
+      dateChat.Content = date;
+      dateChat.Datetime = 0;
+      this.chatMessagesByDate.push(dateChat);
+      this.chatMessagesByDate.push(chatMessagesByDateDict[date]);
+    }
+    this.chatMessagesByDate = this.chatMessagesByDate.flat();
   }
 
   filterInvalidChats(chatMessages) {
@@ -86,7 +113,7 @@ export class ChatService {
         chats.push(newChats);
         const isDektop = this.deviceService.isDesktop();
         for (let i = 0; i < newChats.length; i++) {
-          if (isDektop && i < 10 ){
+          if (isDektop && i < 10) {
             const newChat = newChats[i];
             new Notification('New chat message', {
               body: `${newChat.Who}: ${newChat.Content}`,

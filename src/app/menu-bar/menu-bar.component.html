@@ -3,6 +3,7 @@
     <div class="icon-home" title="home" routerLink="/apps"></div>
     <div *ngIf="loginService.username === 'admin'" class="icon-user-plus" title="new user" routerLink="/newUser"></div>
     <div class="icon-terminal" title="logs" (click)="toggleLogs()"></div>
+    <div class="icon-star-half" title="darkMode" (click)="toggleDarkMode()"></div>
     <div class="icon-exit" title="logout" (click)="logout()"></div>
     
 </div>

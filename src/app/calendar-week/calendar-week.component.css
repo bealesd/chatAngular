@@ -95,10 +95,11 @@
     font-weight: var(--weekday-name-font-weight);
     font-size: var(--weekday-name-and-number-font-size);
     color: var(--weekday-name-and-number-text-color);
+    color: var(--main-font-color);
 }
 
 .mask {
-    background-color: var(--mask-background-color);
+    background-color: var(--sub-background-color);
 }
 
 .record {
