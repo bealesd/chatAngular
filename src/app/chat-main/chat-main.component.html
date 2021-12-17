@@ -2,6 +2,23 @@
 
     <div class="middle-column">
 
+        <div class="message-box">    
+
+            <ng-container *ngFor="let member of groupMembers">
+
+                <img id="img-{{member}}"  alt="{{member}}">
+
+                <div class="group-profile">{{member}}</div>
+
+            </ng-container>
+
+
+            <div class="message-count">
+                <em>{{newChatMessagesCount}} Unread</em>
+            </div>
+            
+          </div>
+
         <div class="messagesContainer">
             <ol class="messages-list">
                 <app-chat-detail *ngFor="let message of chatService.chatMessagesByDate" [recieveChat]="message"></app-chat-detail>
@@ -13,13 +30,15 @@
             <div class="text-input {{messageInput.trim().length > 0 ? 'valid' : 'invalid'}}" 
             id="message-box" placeholder="Type a message" contenteditable="" (keyup)="onMessageTyping($event)"></div>
             <!-- <button id="voice-button" class="common-button"><span class="icon">🎤</span></button> -->
-            <button id="submit-button" class="common-button {{messageInput.length > 0 ? '' : 'btn-disable'}}" 
-                (click)="postMessage($event)"><span class="icon">➤</span></button>
-          </div>
+            
+            <button id="voice-button" class="common-button" (click)="scrollToBottom()" title="Scroll To Bottom">
+                <span class="icon-circle-down"></span>
+            </button>
 
-        <div class="messageCount">
-            New Messages: {{newChatMessagesCount}}
-        </div>
+            <button id="submit-button" class="common-button {{messageInput.length > 0 ? '' : 'btn-disable'}}" (click)="postMessage($event)">
+                <span class="icon">➤</span>
+            </button>
+          </div>
 
     </div>
 </div>

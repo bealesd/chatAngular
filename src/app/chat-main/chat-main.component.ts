@@ -5,7 +5,9 @@ import { interval, Subscription } from 'rxjs';
 import { Chat } from '../models/chat.model';
 
 import { ChatService } from '../services/chat.service';
+import { LoginService } from '../services/login.service';
 import { MessageService } from '../services/message.service';
+import { ProfileService } from '../services/profile.service';
 
 @Component({
   selector: 'app-chat',
@@ -23,12 +25,15 @@ export class ChatComponent implements OnInit, OnDestroy {
   getNewChatMessagesInterval: Subscription;
   checkForUpdatedMessagesInterval: Subscription;
   newChatMessagesCount: number;
+  groupMembers: string[] = [];
 
   chatInputClass = 'text-input';
 
   constructor(
     public chatService: ChatService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    public loginService: LoginService,
+    public profileService: ProfileService
   ) {
     this.messageInput = '';
     this.rows = 1;
@@ -46,6 +51,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.chatService.getChatMessages().then(()=>{
       this.scrollToBottom();
+      this.setGroupProfile();
     });
 
     this.subscriptions
@@ -92,6 +98,28 @@ export class ChatComponent implements OnInit, OnDestroy {
     let messagesContainer = document.querySelector('.messagesContainer');
     if (messagesContainer.scrollHeight - messagesContainer.clientHeight > 0)
       messagesContainer.scrollTop = messagesContainer.scrollHeight - messagesContainer.clientHeight;
+  }
+
+  setGroupProfile() {
+    // dirty, hardcoded solution until I implement groups tables
+    // TODO: we need to map your profile to chats groups you are in
+    // each chat group will map back to to profile ids to get users metadata, and each chat for contain the group chat id to get corr3ct chat messages for group
+
+    if (this.loginService.username === 'esther'){
+      this.groupMembers = ['David'];
+    }
+    else if (this.loginService.username === 'admin'){
+      this.groupMembers = ['Esther'];
+    }
+
+    for (const member of this.groupMembers) {
+       this.setImageSource(member);
+    }
+  }
+
+  async setImageSource(member: string){
+    const url = await this.profileService.getProfilePicture(member);
+    document.querySelector(`#img-${member}`)['src'] = url;
   }
 
   //helpers
