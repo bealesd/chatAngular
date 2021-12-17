@@ -16,9 +16,6 @@ import { LoginService } from './login.service';
 export class ChatService {
   public chatMessages: Chat[] = [];
   public chatMessagesByDate = [];
-  /* 
-   [{date: 21/10/21 20:20, chats: []}, {date: 23/10/21 19:20, chats: []}]
-   */
 
   public newChatMessagesCount = new BehaviorSubject<number>(0);
 

@@ -44,7 +44,9 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.newChatMessagesCount = 0;
 
-    this.chatService.getChatMessages();
+    this.chatService.getChatMessages().then(()=>{
+      this.scrollToBottom();
+    });
 
     this.subscriptions
       .push(interval(this.secsToMilliSecs(20))
@@ -60,9 +62,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngDoCheck() {
-    const messagesContainer = document.querySelector(this.messagesContainer);
-    if (messagesContainer && messagesContainer.children.length > 0)
-      this.scrollToBottom();
+    // const messagesContainer = document.querySelector(this.messagesContainer);
+    // if (messagesContainer && messagesContainer.children.length > 0)
+    //   this.scrollToBottom();
   }
 
   registerTabSwitch() {
