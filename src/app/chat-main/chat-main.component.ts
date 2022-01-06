@@ -42,21 +42,21 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-     this.chatService.newChatMessagesCount
+    this.chatService.newChatMessagesCount
       .subscribe(newChatMessagesCount => {
         this.newChatMessagesCount = newChatMessagesCount;
       });
 
     this.newChatMessagesCount = 0;
 
-    this.chatService.getChatMessages().then(()=>{
+    this.chatService.getChatMessages().then(() => {
       this.scrollToBottom();
       this.setGroupProfile();
     });
 
     this.subscriptions
       .push(interval(this.secsToMilliSecs(20))
-      .subscribe(x => this.chatService.getChatMessages()));
+        .subscribe(x => this.chatService.getChatMessages()));
 
     this.registerTabSwitch();
   }
@@ -80,24 +80,35 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   postMessage(event) {
-    (<any>document.querySelector(`.${this.chatInputClass}`)).innerText = "";
+    const textInputElement = (<any>document.querySelector(`.${this.chatInputClass}`))
+    textInputElement.innerText = "";
 
     if (this.messageInput === "" || this.messageInput === null || this.messageInput === undefined)
       return this.messageService.add(`Please enter a message before posting.`);
 
     this.chatService.sendChatMessage(this.messageInput);
     this.messageInput = "";
-    event.srcElement.parentElement.querySelector(`.${this.chatInputClass}`).focus();
+    textInputElement.focus()
   }
 
   onMessageTyping(event) {
     this.messageInput = (<any>document.querySelector(`.${this.chatInputClass}`)).innerText
   }
 
-  scrollToBottom(): void {
-    let messagesContainer = document.querySelector('.messagesContainer');
-    if (messagesContainer.scrollHeight - messagesContainer.clientHeight > 0)
-      messagesContainer.scrollTop = messagesContainer.scrollHeight - messagesContainer.clientHeight;
+  scrollToBottom(stop = false): void {
+    if (stop === true) return;
+
+    const messagesContainer = document.querySelector('.messagesContainer');
+    if (messagesContainer === null){
+      setTimeout(() => { this.scrollToBottom(true) }, 200);
+      return;
+    }   
+    
+    const messageHeightOutOfView = messagesContainer.scrollHeight - messagesContainer.clientHeight;
+    const messageContainerScrolledToBottom = messagesContainer.scrollTop === messageHeightOutOfView;
+
+    if (messageHeightOutOfView > 0 && !messageContainerScrolledToBottom)
+      messagesContainer.scrollTop = messageHeightOutOfView;
   }
 
   setGroupProfile() {
@@ -105,19 +116,19 @@ export class ChatComponent implements OnInit, OnDestroy {
     // TODO: we need to map your profile to chats groups you are in
     // each chat group will map back to to profile ids to get users metadata, and each chat for contain the group chat id to get corr3ct chat messages for group
 
-    if (this.loginService.username === 'esther'){
+    if (this.loginService.username === 'esther') {
       this.groupMembers = ['David'];
     }
-    else if (this.loginService.username === 'admin'){
+    else if (this.loginService.username === 'admin') {
       this.groupMembers = ['Esther'];
     }
 
     for (const member of this.groupMembers) {
-       this.setImageSource(member);
+      this.setImageSource(member);
     }
   }
 
-  async setImageSource(member: string){
+  async setImageSource(member: string) {
     const url = await this.profileService.getProfilePicture(member);
     document.querySelector(`#img-${member}`)['src'] = url;
   }
