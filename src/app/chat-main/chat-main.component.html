@@ -21,7 +21,7 @@
 
         <div class="messagesContainer">
             <ol class="messages-list">
-                <app-chat-detail *ngFor="let message of chatService.chatMessagesByDate" [recieveChat]="message"></app-chat-detail>
+                <app-chat-detail *ngFor="let message of chatMessages" [recieveChat]="message"></app-chat-detail>
             </ol>
         </div>
 

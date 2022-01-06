@@ -78,6 +78,7 @@ ol, ul {
   
   .message-box .text-input {
     flex: 1;
+    max-width: calc(100% - (30px * 2));
   }
   .message-box .text-input:empty::before {
     content: "Type a message";

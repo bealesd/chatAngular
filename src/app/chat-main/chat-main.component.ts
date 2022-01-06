@@ -1,9 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 
 import { Chat } from '../models/chat.model';
-
 import { ChatService } from '../services/chat.service';
 import { LoginService } from '../services/login.service';
 import { MessageService } from '../services/message.service';
@@ -26,6 +24,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   checkForUpdatedMessagesInterval: Subscription;
   newChatMessagesCount: number;
   groupMembers: string[] = [];
+  messageContainerScrolledToBottom = true;
+  messageChangeCount = 0;
 
   chatInputClass = 'text-input';
 
@@ -41,6 +41,28 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.chatMessages = [];
   }
 
+  @HostListener('window:keyup', ['$event'])
+  handleKeyUp(e: KeyboardEvent) {
+    switch (e.key) {
+      case 'ArrowUp':
+      case 'ArrowDown':
+      case 'PageDown':
+      case 'PageUp':
+        this.messageContainerScrolledToBottom = this.isMessageContainerScrolledToBottom();
+        break
+    }
+  }
+
+  @HostListener('window:wheel', ['$event'])
+  handleWheelScroll(e: WheelEvent) {
+    this.messageContainerScrolledToBottom = this.isMessageContainerScrolledToBottom();
+  }
+
+  @HostListener('window:blur', ['$event'])
+  registerTabSwitch(e: Event) {
+    this.chatService.newChatMessagesCount.next(0);
+  }
+
   ngOnInit(): void {
     this.chatService.newChatMessagesCount
       .subscribe(newChatMessagesCount => {
@@ -48,6 +70,11 @@ export class ChatComponent implements OnInit, OnDestroy {
       });
 
     this.newChatMessagesCount = 0;
+
+    this.chatService.chatMessagesByDateSubject
+      .subscribe(chatMessages => {
+        this.chatMessages = chatMessages;
+      });
 
     this.chatService.getChatMessages().then(() => {
       this.scrollToBottom();
@@ -57,26 +84,20 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.subscriptions
       .push(interval(this.secsToMilliSecs(20))
         .subscribe(x => this.chatService.getChatMessages()));
+  }
 
-    this.registerTabSwitch();
+  ngAfterViewChecked() {
+    const oldCount = this.messageChangeCount;
+    this.messageChangeCount = document.querySelector('.messages-list').childElementCount;
+    if (oldCount !== this.messageChangeCount && this.messageContainerScrolledToBottom)
+      this.scrollToBottom();
   }
 
   ngOnDestroy() {
     this.chatService.newChatMessagesCount.observers.forEach(element => { element.complete(); });
+    this.chatService.chatMessagesByDateSubject.observers.forEach(element => { element.complete(); });
 
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
-  }
-
-  ngDoCheck() {
-    // const messagesContainer = document.querySelector(this.messagesContainer);
-    // if (messagesContainer && messagesContainer.children.length > 0)
-    //   this.scrollToBottom();
-  }
-
-  registerTabSwitch() {
-    window.addEventListener('blur', () => {
-      this.chatService.newChatMessagesCount.next(0);
-    })
   }
 
   postMessage(event) {
@@ -92,23 +113,32 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   onMessageTyping(event) {
-    this.messageInput = (<any>document.querySelector(`.${this.chatInputClass}`)).innerText
+    this.messageInput = (<any>document.querySelector(`.${this.chatInputClass}`)).innerText;
   }
 
   scrollToBottom(stop = false): void {
     if (stop === true) return;
 
     const messagesContainer = document.querySelector('.messagesContainer');
-    if (messagesContainer === null){
+    if (messagesContainer === null) {
       setTimeout(() => { this.scrollToBottom(true) }, 200);
       return;
-    }   
-    
+    }
+
     const messageHeightOutOfView = messagesContainer.scrollHeight - messagesContainer.clientHeight;
     const messageContainerScrolledToBottom = messagesContainer.scrollTop === messageHeightOutOfView;
 
     if (messageHeightOutOfView > 0 && !messageContainerScrolledToBottom)
       messagesContainer.scrollTop = messageHeightOutOfView;
+  }
+
+  isMessageContainerScrolledToBottom(): boolean {
+    const messagesContainer = document.querySelector('.messagesContainer');
+    if (messagesContainer === null)
+      return false;
+
+    const messageHeightOutOfView = messagesContainer.scrollHeight - messagesContainer.clientHeight;
+    return messagesContainer.scrollTop === messageHeightOutOfView;
   }
 
   setGroupProfile() {

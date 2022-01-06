@@ -16,6 +16,7 @@ import { LoginService } from './login.service';
 export class ChatService {
   public chatMessages: Chat[] = [];
   public chatMessagesByDate = [];
+  public chatMessagesByDateSubject = new BehaviorSubject<any[]>([]);
 
   public newChatMessagesCount = new BehaviorSubject<number>(0);
 
@@ -70,16 +71,21 @@ export class ChatService {
     const dates = Object.keys(chatMessagesByDateDict);
     dates.sort((a, b) => { return parseInt(a) - parseInt(b) });
 
+    let chatMessagesByDate = [];
+
     for (const date of dates) {
       const dateChat = new Chat();
       dateChat.Id = 99999999;
       dateChat.Who = 'date';
       dateChat.Content = date;
       dateChat.Datetime = 0;
-      this.chatMessagesByDate.push(dateChat);
-      this.chatMessagesByDate.push(chatMessagesByDateDict[date]);
+
+      chatMessagesByDate.push(dateChat);
+      chatMessagesByDate.push(chatMessagesByDateDict[date]);
     }
-    this.chatMessagesByDate = this.chatMessagesByDate.flat();
+    chatMessagesByDate = chatMessagesByDate.flat();
+    
+    this.chatMessagesByDateSubject.next(chatMessagesByDate);
   }
 
   filterInvalidChats(chatMessages) {
