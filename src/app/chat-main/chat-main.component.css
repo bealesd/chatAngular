@@ -139,13 +139,17 @@ ol, ul {
   border-radius: 50%;
   height: 40px;
   width: 40px;
+  vertical-align:middle;
+}
+
+.user-profile{
+  flex: 1;
+  max-width: calc(100% - (30px * 2));
 }
 
 .group-profile{
-  margin-right: auto;
-  margin-left: 10px;
-  margin-top: auto;
-  margin-bottom: auto;
+  display: inline-block;
+  margin: auto 10px;
 }
 
 .message-count{

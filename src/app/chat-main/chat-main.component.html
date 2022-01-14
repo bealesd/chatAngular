@@ -2,22 +2,27 @@
 
     <div class="middle-column">
 
-        <div class="message-box">    
+        <div class="message-box">
+            <!-- <div class="icon-arrow-left2" title="back" routerLink="/chatGroup"></div> -->
+            <button class="common-button" routerLink="/chatGroup"title="Back to Chat Groups">
+                <span class="icon-arrow-left2"></span>
+            </button>
 
-            <ng-container *ngFor="let member of groupMembers">
+            <div class="user-profile">
+                <ng-container *ngFor="let member of groupMembers">
 
-                <img id="img-{{member}}"  alt="{{member}}">
+                    <img id="img-{{member}}" alt="{{member}}">
 
-                <div class="group-profile">{{member}}</div>
+                    <div class="group-profile">{{member}}</div>
 
-            </ng-container>
-
+                </ng-container>
+            </div>
 
             <div class="message-count">
                 <em>{{newChatMessagesCount}} Unread</em>
             </div>
-            
-          </div>
+
+        </div>
 
         <div class="messagesContainer">
             <ol class="messages-list">
@@ -26,19 +31,18 @@
         </div>
 
         <div class="message-box">
-            <!-- <button class="common-button"><span class="icon">😃</span></button> -->
-            <div class="text-input {{messageInput.trim().length > 0 ? 'valid' : 'invalid'}}" 
-            id="message-box" placeholder="Type a message" contenteditable="" (keyup)="onMessageTyping($event)"></div>
-            <!-- <button id="voice-button" class="common-button"><span class="icon">🎤</span></button> -->
-            
+            <div class="text-input {{messageInput.trim().length > 0 ? 'valid' : 'invalid'}}" id="message-box"
+                placeholder="Type a message" contenteditable="" (keyup)="onMessageTyping($event)"></div>
+
             <button id="voice-button" class="common-button" (click)="scrollToBottom()" title="Scroll To Bottom">
                 <span class="icon-circle-down"></span>
             </button>
 
-            <button id="submit-button" class="common-button {{messageInput.length > 0 ? '' : 'btn-disable'}}" (click)="postMessage($event)">
+            <button id="submit-button" class="common-button {{messageInput.length > 0 ? '' : 'btn-disable'}}"
+                (click)="postMessage($event)">
                 <span class="icon">➤</span>
             </button>
-          </div>
+        </div>
 
     </div>
 </div>

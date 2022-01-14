@@ -1,0 +1,19 @@
+
+.chat-groups{
+    color: var(--main-font-color);
+}
+
+.chat-group-header{
+    font-size: 20px;
+}
+
+[class="chat-group"]:hover {
+    color: blue;
+    cursor: pointer;
+}
+
+[class="chat-group"]:active,
+[class="chat-group"]:focus {
+    outline: 0;
+    border: none;
+}

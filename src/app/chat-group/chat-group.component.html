@@ -1,0 +1,16 @@
+<div class="chat-groups">
+
+    <div class="chat-group-header">
+        Chat Groups
+    </div>
+
+    <ng-container *ngFor="let chatGroup of chatService.chatGroups">
+        <div class="chat-group" title="chat" routerLink="/chat"
+            [queryParams]="{ guid: chatGroup.Guid, usernames: chatGroup.Usernames }">
+            <ng-container *ngFor="let username of chatGroup.Usernames">
+                {{username}}
+            </ng-container>
+        </div>
+    </ng-container>
+
+</div>

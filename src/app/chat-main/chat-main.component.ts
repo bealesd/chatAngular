@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
 
 import { Chat } from '../models/chat.model';
@@ -26,6 +27,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   groupMembers: string[] = [];
   messageContainerScrolledToBottom = true;
   messageChangeCount = 0;
+  usernames: string[] = [];
 
   chatInputClass = 'text-input';
 
@@ -33,12 +35,18 @@ export class ChatComponent implements OnInit, OnDestroy {
     public chatService: ChatService,
     private messageService: MessageService,
     public loginService: LoginService,
-    public profileService: ProfileService
+    public profileService: ProfileService,
+    private activatedRoute: ActivatedRoute
   ) {
     this.messageInput = '';
     this.rows = 1;
     this.messagesContainer = '.messagesContainer';
     this.chatMessages = [];
+
+    this.chatService.chatMessages = [];
+    this.chatService.chatMessagesByDate = [];
+    this.chatService.chatMessagesByDateSubject.next([]);
+    this.chatService.newChatMessagesCount.next(0);
   }
 
   @HostListener('window:keyup', ['$event'])
@@ -64,6 +72,20 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.activatedRoute.queryParams.subscribe(params => {
+      const guid = params['guid'];
+      this.chatService.guid = guid;
+
+      this.usernames = params['usernames'];
+    });
+
+    // this.activatedRoute.queryParams
+    //   .filter(params => params.order)
+    //   .subscribe(params => {
+    //     console.log(params); // { order: "popular" }
+    //   }
+    // );
+
     this.chatService.newChatMessagesCount
       .subscribe(newChatMessagesCount => {
         this.newChatMessagesCount = newChatMessagesCount;
@@ -77,7 +99,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       });
 
     this.chatService.getChatMessages().then(() => {
-      this.scrollToBottom();
+      // this.scrollToBottom();
       this.setGroupProfile();
     });
 
@@ -142,20 +164,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   setGroupProfile() {
-    // dirty, hardcoded solution until I implement groups tables
-    // TODO: we need to map your profile to chats groups you are in
-    // each chat group will map back to to profile ids to get users metadata, and each chat for contain the group chat id to get corr3ct chat messages for group
+    this.groupMembers = this.usernames;
 
-    if (this.loginService.username === 'esther') {
-      this.groupMembers = ['David'];
-    }
-    else if (this.loginService.username === 'admin') {
-      this.groupMembers = ['Esther'];
-    }
-
-    for (const member of this.groupMembers) {
-      this.setImageSource(member);
-    }
+    for (const member of this.groupMembers) 
+      this.setImageSource(member);  
   }
 
   async setImageSource(member: string) {

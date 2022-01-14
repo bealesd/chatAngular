@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit {
   setTheme() {
     if (this.loginService.username.toLowerCase() === 'esther')
       document.body.classList.add('dark');
-    else if(this.loginService.username.toLowerCase() === 'admin')
+    else if(this.loginService.username.toLowerCase() === 'david')
       document.body.classList.add('dave');
     else
       document.body.className = 'light';

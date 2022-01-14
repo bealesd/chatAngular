@@ -8,6 +8,7 @@ import { MessageService } from '../services/message.service';
 import { Chat } from '../models/chat.model';
 import { environment } from 'src/environments/environment';
 import { LoginService } from './login.service';
+import { ChatGroupUsernameDTO } from '../models/chat-group-username.model';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +21,12 @@ export class ChatService {
 
   public newChatMessagesCount = new BehaviorSubject<number>(0);
 
-  private baseUrl = `${environment.chatCoreUrl}/chat`
+  private baseUrl = `${environment.chatCoreUrl}/chat`;
+
+  private baseChatGroupUrl = `${environment.chatCoreUrl}/chatGroups`;
+  public chatGroups: ChatGroupUsernameDTO[] = [];
+
+  public guid = '';
 
   constructor(
     private datePipe: DatePipe,
@@ -29,10 +35,38 @@ export class ChatService {
     private loginService: LoginService,
     private deviceService: DeviceDetectorService) { }
 
+    async getChatGroups() {
+      const chatGroups = await this.GetChatGroups();
+      this.chatGroups = chatGroups;
+    }
+
+    GetChatGroups(): Promise<ChatGroupUsernameDTO[]> {
+      return new Promise((res, rej) => {
+        const url = `${this.baseChatGroupUrl}/GetChatGroupsById/${this.loginService.usernameId}`;
+        this.httpClient.get<String[]>(url).subscribe(
+          {
+            next: (chatGroupsByUser: any[]) => {   
+              const chatGroupUsernames: ChatGroupUsernameDTO[] = []
+              for (const chatGroupByUser of chatGroupsByUser) {
+                var chatGroupForUser = new ChatGroupUsernameDTO()
+                chatGroupForUser.Guid = chatGroupByUser.guid;
+                chatGroupForUser.Usernames = chatGroupByUser.usernames
+                chatGroupUsernames.push(chatGroupForUser);
+              }
+              res(chatGroupUsernames);
+            },
+            error: (err: any) => {
+              res(null);
+            }
+          }
+        );
+      });
+    }
+
   getStoreChats() {
     let chats = [];
     try {
-      const localChats = JSON.parse(window.localStorage.getItem('chatStore'));
+      const localChats = JSON.parse(window.localStorage.getItem(`chatStore:${this.guid}`));
       if (Array.isArray(localChats))
         chats = this.filterInvalidChats(localChats.flat());
       chats.sort((a, b) => a.id - b.id);
@@ -56,7 +90,7 @@ export class ChatService {
     if (this.chatMessages.length !== 0 && oldChats.length === chats.length)
       return;
 
-    window.localStorage.setItem('chatStore', JSON.stringify(chats.flat()));
+    window.localStorage.setItem(`chatStore:${this.guid}`, JSON.stringify(chats.flat()));
     this.chatMessages = chats;
 
     const chatMessagesByDateDict = {};
@@ -84,7 +118,7 @@ export class ChatService {
       chatMessagesByDate.push(chatMessagesByDateDict[date]);
     }
     chatMessagesByDate = chatMessagesByDate.flat();
-    
+
     this.chatMessagesByDateSubject.next(chatMessagesByDate);
   }
 
@@ -116,7 +150,7 @@ export class ChatService {
         chats.push(newChats);
         const isDektop = this.deviceService.isDesktop();
         for (let i = 0; i < newChats.length; i++) {
-          if (isDektop && i < 10) {
+          if (isDektop && i < 5) {
             const newChat = newChats[i];
             new Notification('New chat message', {
               body: `${newChat.Who}: ${newChat.Content}`,
@@ -142,7 +176,8 @@ export class ChatService {
 
     const chat = (await this.PostChat({
       name: !this.loginService.username ? 'unknown' : this.loginService.username,
-      message: message
+      message: message,
+      guid: this.guid
     }));
 
     this.addStoreChat(chat);
@@ -151,7 +186,7 @@ export class ChatService {
 
   GetChatsAfterId(id: number): Promise<any[]> {
     return new Promise((res, rej) => {
-      const url = `${this.baseUrl}/GetChatsAfterId/${id}`;
+      const url = `${this.baseUrl}/GetChatsAfterId?id=${id}&guid=${this.guid}`;
       this.httpClient.get<any[]>(url).subscribe(
         {
           next: (chats: any[]) => {
@@ -190,6 +225,7 @@ export class ChatService {
             chat.Who = chatObject.name;
             chat.Datetime = chatObject.dateTime;
             chat.Id = chatObject.id;
+            chat.Guid = chatObject.guid;
 
             res(chat);
           },
@@ -203,7 +239,7 @@ export class ChatService {
 
   GetChats(): Promise<any[]> {
     return new Promise((res, rej) => {
-      const url = `${this.baseUrl}/GetChats`;
+      const url = `${this.baseUrl}/GetChats?guid=${this.guid}`;
       this.httpClient.get<any[]>(url).subscribe(
         {
           next: (chats: any[]) => {
