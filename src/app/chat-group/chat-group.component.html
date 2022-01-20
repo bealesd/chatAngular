@@ -1,16 +1,42 @@
-<div class="chat-groups">
+<div class="grid-container">
+    <div class="chat-groups">
 
-    <div class="chat-group-header">
-        Chat Groups
+        <div class="chat-group-header">
+            Chat Groups
+        </div>
+
+        <ng-container *ngFor="let chatGroup of chatService.chatGroups">
+            <div class="chat-group" title="chat" routerLink="/chat"
+                [queryParams]="{ guid: chatGroup.Guid, usernames: chatGroup.Usernames }">
+                <ng-container *ngFor="let username of chatGroup.Usernames">
+                    {{username}}
+                </ng-container>
+            </div>
+        </ng-container>
+
+        <br>
+
+        <div class="chat-group-header">
+            Create New Group
+        </div>
+
+        <form (ngSubmit)="onSubmit()" (click)="validateForm($event)">
+
+            <ng-container *ngFor="let authUser of chatService.authUsers;let i = index">
+                <div class="checkbox-container">
+                    <input class="checkmark" type="checkbox" value="{{authUser.id}}" />
+                    <div class="checkmark-label">{{authUser.username}}</div>
+                </div>
+            </ng-container>
+
+            <div class="form-status form-{{formStatus}}">
+                Group: {{formStatus}}
+            </div>
+
+            <button type="submit" class="{{formStatus === 'valid' ? 'green-button': 'red-button'}}">Create</button>
+        </form>
+
     </div>
 
-    <ng-container *ngFor="let chatGroup of chatService.chatGroups">
-        <div class="chat-group" title="chat" routerLink="/chat"
-            [queryParams]="{ guid: chatGroup.Guid, usernames: chatGroup.Usernames }">
-            <ng-container *ngFor="let username of chatGroup.Usernames">
-                {{username}}
-            </ng-container>
-        </div>
-    </ng-container>
 
 </div>

@@ -9,6 +9,7 @@ import { Chat } from '../models/chat.model';
 import { environment } from 'src/environments/environment';
 import { LoginService } from './login.service';
 import { ChatGroupUsernameDTO } from '../models/chat-group-username.model';
+import { Auth } from '../models/profile.model copy';
 
 @Injectable({
   providedIn: 'root',
@@ -22,9 +23,11 @@ export class ChatService {
   public newChatMessagesCount = new BehaviorSubject<number>(0);
 
   private baseUrl = `${environment.chatCoreUrl}/chat`;
-
   private baseChatGroupUrl = `${environment.chatCoreUrl}/chatGroups`;
+  private baseAuthUrl = `${environment.chatCoreUrl}/auth`;
+
   public chatGroups: ChatGroupUsernameDTO[] = [];
+  public authUsers: Auth[] = [];
 
   public guid = '';
 
@@ -34,6 +37,54 @@ export class ChatService {
     private httpClient: HttpClient,
     private loginService: LoginService,
     private deviceService: DeviceDetectorService) { }
+
+    async postChatGroup(chatGroupUserIds: number[]) {
+      await this.PostChatGroup(chatGroupUserIds);
+    }
+
+    PostChatGroup(chatGroupUserIds: number[]): Promise<Auth[]> {
+      return new Promise((res, rej) => {
+        const url = `${this.baseChatGroupUrl}/AddChatGroup`;
+        this.httpClient.post<any>(url, chatGroupUserIds).subscribe(
+          {
+            next: (users: any) => {   
+              res([]);
+            },
+            error: (err: any) => {
+              res([]);
+            }
+          }
+        );
+      });
+    }
+
+    async getAuthUsers() {
+      const authUsers = await this.GetAuthUsers();
+      this.authUsers = authUsers;
+    }
+
+    GetAuthUsers(): Promise<Auth[]> {
+      return new Promise((res, rej) => {
+        const url = `${this.baseAuthUrl}/GetUsers`;
+        this.httpClient.get<String[]>(url).subscribe(
+          {
+            next: (users: any[]) => {   
+              const authUsers: Auth[] = [];
+              for (const user of users) {
+                var authUser = new Auth()
+                authUser.id = user.id;
+                authUser.username = user.username
+                authUsers.push(authUser);
+              }
+              res(authUsers);
+            },
+            error: (err: any) => {
+              res([]);
+            }
+          }
+        );
+      });
+    }
 
     async getChatGroups() {
       const chatGroups = await this.GetChatGroups();
