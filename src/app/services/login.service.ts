@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { MessageService } from '../services/message.service';
 import { environment } from 'src/environments/environment';
+import { UserDto } from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -64,6 +65,32 @@ export class LoginService {
           error: (err: any) => {
             this.loggedIn.next(false);
             res(null);
+          }
+        }
+      );
+    });
+  }
+
+  async addUser(user: UserDto) {
+    const result = await this.AddUser(user);
+    if (!result)
+      this.messageService.add(`LoginService: Could not add new user: ${user.username}.`, 'error');
+    else
+      this.messageService.add(`LoginService: Added new user: ${user.username}.`);
+    
+    return result;
+  }
+
+  private AddUser(user: UserDto): Promise<boolean> {
+    return new Promise((res, rej) => {
+      const url = `${this.baseUrl}/AddUser`;
+      this.http.post<any>(url, user).subscribe(
+        {
+          next: (object: any) => {
+            res(true);
+          },
+          error: (err: any) => {
+            res(false);
           }
         }
       );

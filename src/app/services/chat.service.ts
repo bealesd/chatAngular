@@ -9,7 +9,7 @@ import { Chat } from '../models/chat.model';
 import { environment } from 'src/environments/environment';
 import { LoginService } from './login.service';
 import { ChatGroupUsernameDTO } from '../models/chat-group-username.model';
-import { Auth } from '../models/profile.model copy';
+import { Auth } from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root',

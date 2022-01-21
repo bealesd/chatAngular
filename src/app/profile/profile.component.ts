@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Form } from '@angular/forms';
 import { ProfileService } from '../services/profile.service';
 
 @Component({
@@ -14,8 +13,12 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  uploadImage(file: File){ 
-    this.profileService.updateProfile(file);
+  async uploadImage(file: File){ 
+    const result = await this.profileService.updateProfile(file);
+    if (result)
+      alert(`Added new profile image.`);
+    else 
+      alert(`Failed to add new profile image.`);
   }
 
   async getProfile(){
