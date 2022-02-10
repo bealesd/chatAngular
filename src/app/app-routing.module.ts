@@ -10,6 +10,7 @@ import { AppsComponent } from './apps/apps.component';
 import { NewUserComponent } from './new-user/new-user.component';
 import { NotepadComponent } from './notepad/notepad.component';
 import { ProfileComponent } from './profile/profile.component';
+import { ChatGroupCreateComponent } from './chat-group-create/chat-group-create.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -18,6 +19,7 @@ const routes: Routes = [
   { path: 'apps', component: AppsComponent },
   { path: 'chat', component: ChatComponent },
   { path: 'chatGroup', component: ChatGroupComponent },
+  { path: 'createChatGroup', component: ChatGroupCreateComponent },
   { path: 'calendar', component: CalendarMainComponent },
   { path: 'todo', component: TodoComponent },
   { path: 'notepad', component: NotepadComponent },
