@@ -48,7 +48,7 @@ export class ProfileService {
   }
 
   async getProfile(): Promise<any> {
-    const imageBlob = await this.GetProfile(this.loginService.username);
+    const imageBlob = await this.GetProfile(LoginService.username);
     var urlCreator = window.URL || window.webkitURL;
     window['profileImageUrl'] = urlCreator.createObjectURL(imageBlob);
   }
@@ -56,7 +56,7 @@ export class ProfileService {
   async updateProfile(file: File): Promise<void> {
     const formData = new FormData();
     formData.append('Picture', file)
-    formData.append('Username', this.loginService.username);
+    formData.append('Username', LoginService.username);
 
     await this.PostChat(formData);
   }

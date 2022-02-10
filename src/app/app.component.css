@@ -1,7 +1,33 @@
-﻿﻿.menu-bar{
-    height: 50px;
+﻿﻿:host {
+    --menu-bar-height: 60px;
+    --page-content-padding-top: 10px;
+}
+
+.menu-bar{
+    height: var(--menu-bar-height);
 }
 
 .page-content{
-    height: calc(100vh - 50px);
+    min-height: calc(100vh - (var(--menu-bar-height) + var(--page-content-padding-top)));
+
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: auto 200px;
+
+    height: 100%;
+    padding: var(--page-content-padding-top) 0px 0px 0px;
+}
+
+.main {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.menu{
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.bg{
+    background-image: linear-gradient(to right, rgb(107 170 204), rgb(161 187 156));
 }

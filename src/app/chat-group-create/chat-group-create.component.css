@@ -1,0 +1,79 @@
+
+.formContainer{
+    color:red;
+}
+
+.form-invalid {
+    color: #af1a1a;
+    font-style: italic;
+    font-weight: 600;
+}
+
+.form-valid {
+    color: #1fb123;
+    font-style: italic;
+    font-weight: 600;
+}
+
+.normal-button{
+    color: white;
+    padding: 2px 7px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+
+.green-button {
+    background-color: #1fb123;
+    border: 1px solid darkgreen;
+} 
+
+.green-button:hover {
+    background-color: darkgreen;
+    border: 1px solid #1fb123;
+} 
+
+ .red-button {
+    background-color: #af4c4c50!important;
+    border: 1px solid darkred;
+}
+
+.red-button:hover {
+    cursor: no-drop !important;
+     background-color: #af4c4c50!important;
+    border: 1px solid #cc2929; 
+}
+
+.checkbox-container{
+    display: flex;
+    align-items: center;
+}
+
+.checkmark-label{
+    margin-left: 3px;
+    display: inline-block;
+}
+
+.checkmark-label:hover {
+    color: rgb(255, 0, 212);
+    cursor: pointer;
+}
+
+  .checkmark {
+    height: 25px;
+    width: 25px;
+    background-color: eee;
+  }
+
+  .selected{
+      color:rgb(255, 0, 212);
+      text-transform: uppercase;
+      font-style: italic;
+  }
+
+  .selected:hover{
+    color: darkred;
+}

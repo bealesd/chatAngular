@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
     this.loginService.loggedIn.subscribe(loggedIn => {
       this.loggedIn = loggedIn;
       if (loggedIn === true) {
-        this.router.navigate(['/apps']);
+        this.router.navigate(['/chatGroup']);
         this.profileService.loadTheme();
       }
       else {
@@ -35,7 +35,10 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {  }
+  ngOnInit(): void { 
+    window['toolInfo'] = ''
+    window['pageTitle'] = 'Login';
+   }
 
   login(username: string, password: string) {
     this.loginService.login(username, password);
@@ -51,9 +54,9 @@ export class LoginComponent implements OnInit {
   }
 
   setTheme() {
-    if (this.loginService.username.toLowerCase() === 'esther')
+    if (LoginService.username.toLowerCase() === 'esther')
       document.body.classList.add('dark');
-    else if(this.loginService.username.toLowerCase() === 'david')
+    else if(LoginService.username.toLowerCase() === 'david')
       document.body.classList.add('dave');
     else
       document.body.className = 'light';

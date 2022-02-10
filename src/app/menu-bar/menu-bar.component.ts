@@ -25,6 +25,14 @@ export class MenuBarComponent implements OnInit {
     });
   }
 
+  get pageTitle(){
+    return window['pageTitle'] ? window['pageTitle'] : 'unknown';
+  }
+
+  get toolInfo(){
+    return window['toolInfo'] ? window['toolInfo'] : `Hi ${LoginService.username}`;
+  }
+
   async ngOnInit(): Promise<void> {
   }
 

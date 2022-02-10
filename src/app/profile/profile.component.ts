@@ -12,6 +12,8 @@ export class ProfileComponent implements OnInit {
   constructor(public profileService: ProfileService) { }
 
   ngOnInit(): void {
+    window['pageTitle'] = 'Profile Information';
+    window['toolInfo'] = ''
   }
 
   uploadImage(file: File){ 

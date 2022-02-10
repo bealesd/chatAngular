@@ -21,6 +21,8 @@ export class TodoComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
+    window['pageTitle'] = 'Todo List';
+    window['toolInfo'] = ''
     await this.todoRepo.getTodoList();
   }
 

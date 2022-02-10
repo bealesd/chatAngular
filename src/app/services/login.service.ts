@@ -12,7 +12,7 @@ export class LoginService {
   public loggedIn = new BehaviorSubject<boolean>(false);
   public jwtToken = '';
   private baseUrl = `${environment.chatCoreUrl}/auth`;
-  public username = '';
+  public static username = '';
   public usernameId = '';
 
   constructor(
@@ -27,7 +27,7 @@ export class LoginService {
       password: password
     }));
 
-    this.username = username; 
+    LoginService.username = username; 
     this.jwtToken = token;
     this.messageService.add(`LoginService: Got jwt token.`);
 

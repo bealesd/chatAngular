@@ -11,7 +11,10 @@ export class NewUserComponent implements OnInit {
   constructor(
   ) { }
 
-  ngOnInit(): void {  }
+  ngOnInit(): void {
+    window['toolInfo'] = ''
+    window['pageTitle'] = 'Create User';
+    }
 
   createNewUser(username: string, password: string) {
   }

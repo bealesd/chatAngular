@@ -40,6 +40,8 @@ export class NotepadComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    window['pageTitle'] = 'Notepad';
+    window['toolInfo'] = ''
     this.disablePage = false;
 
     this.notepadRepo.getAllNotepads();

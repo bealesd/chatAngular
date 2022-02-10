@@ -41,7 +41,10 @@ export class CalendarMonthComponent implements OnInit, OnDestroy {
     public calendarHelper: CalendarHelper
   ) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    window['pageTitle'] = 'Calendar';
+    window['toolInfo'] = ''
+   }
 
   ngOnDestroy() {
     this.calendarService.openUpdateEventForm.next({ 'record': {}, 'open': false });

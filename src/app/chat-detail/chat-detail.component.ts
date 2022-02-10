@@ -18,6 +18,10 @@ export class ChatDetailComponent implements OnInit {
   dialogBoxService: DialogBoxService;
   interval: any;
 
+  get username(){
+    return LoginService.username;
+  }
+
   constructor(private profileService: ProfileService, public loginService: LoginService) {
   }
 

@@ -226,7 +226,7 @@ export class ChatService {
     this.messageService.add('ChatService: Posting chat message.');
 
     const chat = (await this.PostChat({
-      name: !this.loginService.username ? 'unknown' : this.loginService.username,
+      name: !LoginService.username ? 'unknown' : LoginService.username,
       message: message,
       guid: this.guid
     }));

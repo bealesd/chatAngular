@@ -1,0 +1,15 @@
+<form (ngSubmit)="onSubmit()" (click)="validateForm($event)">
+
+    <ng-container *ngFor="let authUser of chatService.authUsers;let i = index">
+        <div class="checkbox-container">
+            <input class="checkmark" type="checkbox" value="{{authUser.id}}" />
+            <div class="checkmark-label">{{authUser.username}}</div>
+        </div>
+    </ng-container>
+
+    <div class="form-status form-{{formStatus}}">
+        Group: {{formStatus}}
+    </div>
+
+    <button type="submit" class="normal-button {{formStatus === 'valid' ? 'green-button': 'red-button'}}">Create</button>
+</form>

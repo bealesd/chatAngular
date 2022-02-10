@@ -7,24 +7,30 @@
 .grid-container {
     display: grid;
     grid-template-rows: repeat(1, 1fr);
-    grid-template-columns: auto minmax(var(--message-container-width), 70%) auto;
-    padding-top: 10px;
+    height: 100%;
+    grid-template-columns: auto;
 }
 
 .chat-groups{
-    padding: 10px;
-    color: var(--main-font-color);
+    padding: 10px 0px;
+    color: white;
     grid-row: 1;
-    grid-column: 2;
-    background-image: var(--message-background-image);
+    grid-column: 1;
 }
 
 .chat-group-header{
     font-size: 24px;
 }
 
+.chat-group{
+    background-image: linear-gradient(to right, rgb(70 121 164), rgb(37 54 131));
+    clip-path: polygon(100% 0, 91% 5%, 98% 7%, 89% 12%, 97% 16%, 84% 20%, 97% 24%, 83% 28%, 96% 31%, 81% 36%, 95% 41%, 79% 45%, 95% 50%, 75% 55%, 92% 59%, 77% 63%, 98% 67%, 76% 70%, 89% 74%, 75% 78%, 89% 84%, 81% 87%, 95% 92%, 75% 93%, 100% 100%, 47% 100%, 0 100%, 0 0);
+    font-size: 20px;
+    padding: 15px;
+}
+
 .chat-group, .checkbox-containe, .form-status, button{
-    margin: 3px 0px;
+    margin: 10px 0px;
 }
 
 [class="chat-group"]:hover {
@@ -38,80 +44,22 @@
     border: none;
 }
 
-.formContainer{
-    color:red;
-}
 
-.form-invalid {
-    color: #af1a1a;
-    font-style: italic;
-    font-weight: 600;
-}
-
-.form-valid {
-    color: #1fb123;
-    font-style: italic;
-    font-weight: 600;
-}
-
-button {
+.side-menu button {
     color: white;
-    padding: 2px 7px;
-    text-align: center;
+    text-align: left;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
     cursor: pointer;
+    background-image: linear-gradient(to right, rgb(86, 68, 128), rgb(79, 40, 120));
+    padding: 6px 10px;
+    width: 200px;
+    font-size: 20px;
+    box-shadow: 5px 5px 1px #222;
+    text-shadow: 2px 2px 1px black;
+    margin: 4px 0px;
 }
 
-.green-button {
-    background-color: #1fb123;
-    border: 1px solid darkgreen;
-}
-
-.green-button:hover {
-    background-color: darkgreen;
-    border: 1px solid #1fb123;
-}
-
-.red-button {
-    background-color: #af4c4c50!important;
-    border: 1px solid darkred;
-}
-
-.red-button:hover {
-    cursor: no-drop !important;
-    background-color: #af4c4c50!important;
-    border: 1px solid #cc2929;
-}
-
-.checkbox-container{
-    display: flex;
-    align-items: center;
-}
-
-.checkmark-label{
-    margin-left: 3px;
-    display: inline-block;
-}
-
-.checkmark-label:hover {
-    color: rgb(255, 0, 212);
-    cursor: pointer;
-}
-
-  .checkmark {
-    height: 25px;
-    width: 25px;
-    background-color: eee;
-  }
-
-  .selected{
-      color:rgb(255, 0, 212);
-      text-transform: uppercase;
-      font-style: italic;
-  }
-
-  .selected:hover{
-    color: darkred;
+.side-menu{
+    grid-column: 2;
 }
