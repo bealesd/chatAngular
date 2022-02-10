@@ -3,10 +3,10 @@
     <h1>Create new User</h1>
         <form>
             <label for="username">Username</label>
-            <input type="text" #username name="username" autocomplete="username">
+            <input id="usernameInput" type="text" #username name="username" autocomplete="username">
 
             <label for="password">Password</label>
-            <input [type]="show ? 'text' : 'password'" #password name="password" placeholder="key" autocomplete="new-password">
+            <input id="passwordInput" [type]="show ? 'text' : 'password'" #password name="password" placeholder="key" autocomplete="new-password">
 
             <button (click)="showPassword()">Show</button>
             <input (click)='createNewUser(username.value, password.value)' type="submit" value="Create"> 

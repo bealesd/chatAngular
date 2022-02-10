@@ -53,12 +53,18 @@ export class ProfileService {
     window['profileImageUrl'] = urlCreator.createObjectURL(imageBlob);
   }
 
-  async updateProfile(file: File): Promise<void> {
+  async updateProfile(file: File): Promise<boolean> {
     const formData = new FormData();
     formData.append('Picture', file)
     formData.append('Username', LoginService.username);
 
-    await this.PostChat(formData);
+    const result = await this.AddProfile(formData);
+    if (!result)
+      this.messageService.add(`ProfileService: Could not add profile image.`, 'error');
+    else
+      this.messageService.add(`ProfileService: Added profile image.`);
+   
+    return result
   }
 
   async GetProfile(username: string): Promise<any> {
@@ -67,16 +73,16 @@ export class ProfileService {
     return blob;
   }
 
-  PostChat(formData: FormData): Promise<any> {
+  AddProfile(formData: FormData): Promise<boolean> {
     return new Promise((res, rej) => {
       const url = `${this.baseUrl}/AddProfile`;
       this.httpClient.post<any>(url, formData).subscribe(
         {
-          next: (chatObject: any) => {
+          next: (object: any) => {
             res(true);
           },
           error: (err: any) => {
-            res(null);
+            res(false);
           }
         }
       );

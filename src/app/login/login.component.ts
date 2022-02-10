@@ -45,7 +45,6 @@ export class LoginComponent implements OnInit {
   }
 
   showPassword() {
-    throw new Error("doh");
     this.show = !this.show;
   }
 

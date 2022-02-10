@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { LoginService } from '../services/login.service';
 
 @Component({
   selector: 'app-new-user',
@@ -8,15 +9,25 @@ import { Component, OnInit } from '@angular/core';
 export class NewUserComponent implements OnInit {
   show: boolean;
 
-  constructor(
-  ) { }
+  constructor(public loginService: LoginService) { }
 
   ngOnInit(): void {
     window['toolInfo'] = ''
     window['pageTitle'] = 'Create User';
     }
 
-  createNewUser(username: string, password: string) {
+  async createNewUser(username: string, password: string) {
+    const result = await this.loginService.addUser({username: username, password: password});
+    if (result){
+      alert(`Added new user: ${username}.`);
+      this.clearForm();
+    }
+      
+  }
+
+  clearForm(){
+    (document.querySelector('#usernameInput') as HTMLInputElement).value = '';
+    (document.querySelector('#passwordInput') as HTMLInputElement).value = '';
   }
 
   showPassword() {
