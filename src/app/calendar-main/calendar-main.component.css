@@ -1,7 +1,7 @@
 :host {
     --main-margin: 5px;
     --record-text-and-heading-color: white;
-    --sub-menu-background-color: purple;
+    --sub-menu-background-color: linear-gradient(to right, rgb(70 121 164), rgb(37 54 131));;
     --heading-font-size: 16px;
     --heading-font-family: inherit;
     --heading-font-weight: normal;
@@ -22,10 +22,11 @@
 
 /*medium size wrapper*/
 
-@media screen and (max-width: 700px) and (min-width: 450px) {
+@media screen and (max-width: 1000px) and (min-width: 700px) {
     :host {
         --column-width: 40px;
         --column-count: 9;
+        --change-page-container-template-columns: auto;
         --today-button-grid-column: 3/5;
         --month-grid-column: 5/7;
         --year-grid-column: 7/9;
@@ -38,10 +39,11 @@
 
 /*small size wrapper*/
 
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 700px) {
     :host {
        --column-count: 9;
-       --column-width: 30px;
+       --column-width: 10px;
+       --change-page-container-template-columns: auto;
        --today-button-grid-column: 3/5;
        --month-grid-column: 5/7;
        --year-grid-column: 7/9;
@@ -57,7 +59,7 @@
     grid-template-columns: var(--change-page-container-template-columns);
     color: var(--record-text-and-heading-color);
     grid-template-rows: repeat(1, 40px);
-    background-color: var(--sub-menu-background-color);
+    background-image: var(--sub-menu-background-color);
     font-size: var(--heading-font-size);
     font-style: var(--heading-font-family);
     height: 40px;
@@ -90,7 +92,7 @@
 .dropdown {
     border: 0px;
     outline: 0;
-    background-color: var(--sub-menu-background-color);
+    background-color: transparent;
     color: var(--record-text-and-heading-color);
     font: inherit;
     margin-right: 10px;
@@ -142,5 +144,5 @@
 .dropdown:hover,
 .green-button-container:hover,
 .today-button-container:hover {
-    background-color: black;
+    background-color: rgb(37 54 131);
 }

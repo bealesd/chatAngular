@@ -7,6 +7,7 @@
     --record-font-size: 14px;
     --record-minimum-height: 150px;
     --record-font-family: inherit;
+    --record-letter-spacing: -1px;
     --record-max-width: 250px;
     --record-text-and-heading-color: var(--main-font-color);
     --record-border-type: solid;
@@ -35,7 +36,7 @@
         --weekday-name-font-weight: 400;
         --weekday-name-font-family: 'Arial Narrow';
         --record-max-width: 200px;
-        --record-font-family: 'Arial Narrow';
+        --record-font-family: 'Arial';
         --record-font-size: 13px;
     }
 }
@@ -46,7 +47,7 @@
         --weekday-name-font-weight: 400;
         --weekday-name-font-family: 'Arial Narrow';
         --record-max-width: 150px;
-        --record-font-family: 'Arial Narrow';
+        --record-font-family: 'Arial';
         --record-font-size: 12px;
     }
 }
@@ -60,7 +61,7 @@
         --weekday-name-font-weight: 300;
         --weekday-name-font-family: 'Arial Narrow';
         --record-max-width: 100px;
-        --record-font-family: 'Arial Narrow';
+        --record-font-family: 'Arial';
         --record-font-size: 11px;
         --record-time-display: none;
     }
@@ -74,8 +75,8 @@
         --weekday-name-and-number-font-size: 13px;
         --weekday-name-font-weight: 300;
         --weekday-name-font-family: 'Arial Narrow';
-        --record-max-width: 50px;
-        --record-font-family: 'Arial Narrow';
+        --record-max-width: 40px;
+        --record-font-family: 'Arial';
         --record-font-size: 10px;
         --record-time-display: none;
     }
@@ -94,19 +95,20 @@
     font-weight: var(--weekday-name-font-weight);
     text-align: center;
     font-size: var(--weekday-name-and-number-font-size);
-    color: var(--main-font-color);
+    color: rgb(245,213,6);
+    text-shadow:  1px 1px 0.5px black;
 }
 
 .today {
-    background-color: rgb(88, 85, 253, 0.4) !important;
+    border: 2px solid rgb(127, 29, 118)!important;
 }
 
 .date-box-contianer {
-    margin-left: var(--main-margin);
-    margin-right: var(--main-margin);
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, calc(((100vw - var(--side-menu-button-width))/7)) );
+
     grid-template-rows: repeat(auto, minmax(var(--record-minimum-height), auto));
+    grid-row-gap: 2px;
 }
 
 .date-box-contianer .record-time {
@@ -114,31 +116,33 @@
 }
 
 .date-box-contianer>.date-box {
-    background-color: var(--sub-background-color);
+    background-color: rgba(255, 255, 255, 0.2);
     min-height: var(--record-minimum-height);
 }
 
 .date-box-contianer>.date-box>.day {
     font-size: var(--weekday-name-and-number-font-size);
-    color: var(--main-font-color);
+    color: white;
     font-family: var(--weekday-name-font-family);
     font-weight: var(--weekday-name-font-weight);
+    background-image: linear-gradient(to right, rgb(70 121 164), rgb(37 54 131));
 }
 
-.date-box-contianer>.date-box>.table>.record {
-    color: var(--record-text-and-heading-color);
+.date-box-contianer>.date-box>.record {
+    background-image: linear-gradient(to right, rgb(141, 56, 162), rgb(127, 29, 118));
+    color: white;
     font-size: var(--record-font-size);
     font-family: var(--record-font-family);
     letter-spacing: var(--record-letter-spacing);
-    display: inline-block;
-    text-overflow: ellipsis;
+    /* text-overflow: ellipsis; */
     overflow: hidden;
     white-space: nowrap;
-    max-width: var(--record-max-width);
-    margin-left: 5px;
+    /* max-width: var(--record-max-width);
+    width: calc(100% - 10px); */
+    margin-bottom: 3px;
 }
 
-.date-box-contianer>[data-col="1"].date-box,
+/* .date-box-contianer>[data-col="1"].date-box,
 [data-max-row="1"][data-col="1"].date-box {
     border-left: var(--record-border-red);
     border-top: var(--record-border-red);
@@ -236,7 +240,7 @@
 
 .date-box-contianer>[last-item="1"][data-col="7"].date-box {
     border-right: var(--record-border-violet);
-}
+} */
 
 button {
     color: white;

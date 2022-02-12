@@ -2,42 +2,13 @@
     --icon-router-link-font-size: 120px;
 }
 
-@media screen and (max-width: 800px) and (min-width: 500px) {
-    :host {
-        --icon-router-link-font-size: 80px;
-   }
-}
-
-@media screen and (max-width: 500px) {
-     :host {
-        --icon-router-link-font-size: 50px;
-    }
-}
-
-/* .app-container {
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    flex-flow: row wrap;
-    padding-top: 40px;
-} */
-
 .app-container {
     display: grid;
     grid-template-rows: repeat(1, 1fr);
     height: 100%;
-    grid-template-columns: auto 200px;
+    grid-template-columns: auto var(--side-menu-button-width);
     padding: 10px 0px;
 }
-
-/* .app-container > div{
-    padding: 0px 40px 30px 0px;
-    display: inline-block;
-} */
-
-/* .app-container > span:last-child{
-    padding: 0;
-} */
 
 /* [class^="icon-"], [class*=" icon-"] {
     color: hotpink;
@@ -62,12 +33,12 @@
     display: inline-block;
     cursor: pointer;
     background-image: linear-gradient(to right, rgb(86, 68, 128), rgb(79, 40, 120));
-    padding: 6px 10px;
-    width: 200px;
-    font-size: 20px;
-    box-shadow: 5px 5px 1px #222;
-    text-shadow: 2px 2px 1px black;
-    margin: 4px 0px;
+    padding:  var(--side-menu-padding);
+    width: var(--side-menu-button-width);
+    font-size: var(--side-menu-font-size);
+    box-shadow:  var(--side-menu-box-shadow);
+    text-shadow: var(--side-menu-text-shadow);
+    margin:  var(--side-menu-margin);
 }
 
 /* .side-menu{

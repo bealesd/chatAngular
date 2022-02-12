@@ -1,29 +1,4 @@
-:host {
-    --icon-router-link-font-size: 40px;
-}
-
-/* @media screen and (max-width: 800px) and (min-width: 500px) {
-    :host {
-        --icon-router-link-font-size: 40px;
-   }
-}
-
-@media screen and (max-width: 500px) {
-     :host {
-        --icon-router-link-font-size: 40px;
-    }
-} */
-
-.app-container2 {
-    display: grid;
-    grid-template-rows: 2;
-    /* align-content: center;
-    flex-flow: row wrap; */
-    height:100%;
-    background-color: rgba(50, 0, 0, 1);
-}
-
-.app-container3{
+.menu-title{
     grid-row: 1;
     text-transform: uppercase;
     font-size: 14px;
@@ -36,13 +11,12 @@
     clip-path: polygon(100% 0, 91% 5%, 98% 7%, 89% 12%, 97% 16%, 84% 20%, 97% 24%, 83% 28%, 96% 31%, 81% 36%, 95% 41%, 79% 45%, 95% 50%, 75% 55%, 92% 59%, 77% 63%, 98% 67%, 76% 70%, 89% 74%, 75% 78%, 89% 84%, 81% 87%, 95% 92%, 75% 93%, 100% 100%, 47% 100%, 0 100%, 0 0);
 }
 
-.app-container-h {
+.menu-tooltip {
     grid-row: 2;
     display: flex;
     align-content: center;
     flex-flow: row wrap;
     height: 40px;
-    /* background-color: rgba(38, 38, 38); */
 }
 
 .app-container{
@@ -66,27 +40,3 @@
 .app-container > div:last-child{
     margin-left: auto
 }
-
-[class^="icon-"], [class*=" icon-"] {
-    color: hotpink;
-    /* font-size: var(--icon-router-link-font-size); */
-    /* font-size: calc(var(--menu-bar-height) - 20%); */
-    font-size: 40px;
-}
-
-[class*=" icon-"]:hover, [class^="icon-"]:hover {
-    color: blue;
-    cursor: pointer;
-}
-
-[class^="icon-"]:active,
-[class*=" icon-"]:focus {
-    outline: 0;
-    border: none;
-}
-
-/* .test{
-    position: fixed;
-  top: 20px;
-  right: 0;
-} */

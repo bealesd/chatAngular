@@ -1,6 +1,24 @@
 ﻿﻿:host {
     --menu-bar-height: 60px;
     --page-content-padding-top: 10px;
+
+    --side-menu-button-width: 200px;
+    --side-menu-padding: 6px 10px;
+    --side-menu-margin: 4px 0px;
+    --side-menu-font-size: 20px;
+    --side-menu-box-shadow: 5px 5px 1px #222;
+    --side-menu-text-shadow: 2px 2px 1px black;
+}
+
+@media screen and (max-width: 700px) {
+     :host {
+        --side-menu-button-width: 100px;
+        --side-menu-padding: 3px 5px;
+        --side-menu-margin: 2px 0px;
+        --side-menu-font-size: 14px;
+        --side-menu-box-shadow: 3px 3px 0.5px #222;
+        --side-menu-text-shadow: 1px 1px 0.5px black;
+    }
 }
 
 .menu-bar{
@@ -12,7 +30,7 @@
 
     display: grid;
     grid-template-rows: 1fr;
-    grid-template-columns: auto 200px;
+    grid-template-columns: auto var(--side-menu-button-width);
 
     height: 100%;
     padding: var(--page-content-padding-top) 0px 0px 0px;

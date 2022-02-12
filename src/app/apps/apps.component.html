@@ -1,12 +1,3 @@
-<!-- <div class="app-container"> -->
-<!-- 
-        <div (mouseover)='over($event)' (mouseout)='out($event)' class="icon-calendar " title="calendar" routerLink="/calendar" ></div>
-        <div (mouseover)='over($event)' (mouseout)='out($event)' class="icon-bubbles4" title="chat" routerLink="/chatGroup"></div>
-        <div (mouseover)='over($event)' (mouseout)='out($event)' class="icon-clipboard " title="todo" routerLink="/todo"></div>
-        <div (mouseover)='over($event)' (mouseout)='out($event)' class="icon-book " title="pad" routerLink="/notepad"></div>
-
-        <div (mouseover)='over($event)' (mouseout)='out($event)' class="icon-image " title="profile" routerLink="/profile"></div>
-  -->
 <div class="side-menu">
 
         <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/calendar" class="side-menu-button"
@@ -14,19 +5,14 @@
                 Calendar
         </button>
 
-        <!-- <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/chatGroup"
-                        class="side-menu-button" title="go to chat">
-                        Chat
-                </button> -->
-
         <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/chatGroup" class="side-menu-button"
                 title="go to Chats">
-                Chats
+                Chat
         </button>
 
         <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/createChatGroup"
                 class="side-menu-button" title="Create New Chat Group">
-                Create Chat Group
+                New Chat
         </button>
 
         <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/todo" class="side-menu-button"
@@ -63,18 +49,5 @@
                 title="logout">
                 Logout
         </button>
-
-
-        <!-- <div *ngIf="LoginService.username === 'david'" class="icon-user-plus" title="new user" routerLink="/newUser"></div> -->
-        <!-- <div class="icon-terminal" title="logs" (click)="toggleLogs()"></div> -->
-        <!-- <div class="icon-star-half" title="darkMode" (click)="toggleDarkMode()"></div> -->
-        <!-- <div class="icon-exit" title="logout" (click)="logout()"></div> -->
-
-
-
-
-
-
+        
 </div>
-
-<!-- </div> -->

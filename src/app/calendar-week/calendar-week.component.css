@@ -104,7 +104,7 @@
 
 .record {
     display: inline-block;
-    text-overflow: ellipsis;
+    /* text-overflow: ellipsis; */
     overflow: hidden;
     white-space: nowrap;
     max-width: var(--record-max-width);
