@@ -1,8 +1,19 @@
+:host {
+  --message-node-min-width: fit-content;
+  --message-node-max-width: 500px;
+}
+
+@media screen and (max-width: 800px) {
+  :host {
+    --message-node-min-width: fit-content;
+    --message-node-max-width: 150px;
+ }
+}
+
 .messageNode {
     position: relative;
-    width: -moz-fit-content;
-    width: fit-content;
-    max-width: 500px;
+    width: var(--message-node-min-width);
+    max-width: var(--message-node-max-width);
     padding: 8px;
     border-radius: 8px;
     box-shadow: 0 1px 0.5px rgb(0 0 0 / 13%);
@@ -12,7 +23,9 @@
     font-size: var(--message-size);
     font-weight: var(--message-weight);
     font-family: var(--message-font-family);
+
     word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .messageNode::before {

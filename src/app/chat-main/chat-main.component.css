@@ -1,5 +1,5 @@
 :host {
-    --message-container-width: 300px;
+    --message-container-width: 200px;
     --message-container-height: 500px;
 
     --input-width: 250px;
@@ -14,6 +14,14 @@
 
     --message-count-width: 200px;
     --message-count-margin: calc((var(--message-container-width-total) - var(--message-count-width)) / 2);
+
+    --group-profile-display: inline-block;
+}
+
+@media screen and (max-width: 800px) {
+  :host {
+    --group-profile-display: none;
+ }
 }
 
 .grid-container {
@@ -147,7 +155,7 @@ ol, ul {
 }
 
 .group-profile{
-  display: inline-block;
+  display: var(--group-profile-display);
   margin: auto 10px;
 }
 

@@ -1,9 +1,6 @@
 <li title="{{recieveChat.Who}}" data-id="{{recieveChat.Id}}" 
 class="{{recieveChat.Who === username ? 'primary' : 'secondary'}} messageNode" 
 *ngIf="recieveChat && recieveChat.Who !== 'date'">
-        <!-- <img id="img-{{recieveChat.Id}}"  alt="{{recieveChat.Who}}" width=30 height=30>
-        <br> -->
-        <!-- <p class="who">{{recieveChat.Who}}</p> -->
         <p>{{recieveChat.Content}}</p>
         <p class="dateTime">{{date }}</p>
 </li>

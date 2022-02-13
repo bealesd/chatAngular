@@ -1,5 +1,11 @@
 # ChatAngular
 
+## Dependencies
+### Linux
+1. Install node `https://github.com/nodesource/distributions`
+2. Install yarn
+3. Install yarn add @angular/cli -g
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
