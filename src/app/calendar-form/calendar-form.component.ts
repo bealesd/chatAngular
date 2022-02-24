@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { CalendarRecord } from './../models/calendar-record.model';
 import { CalendarService } from '../services/calendar.service';
 import { CalendarHelper } from '../helpers/calendar-helper';
+import { NodeWithI18n } from '@angular/compiler';
 
 @Component({
   selector: 'app-calendar-form',
@@ -12,13 +13,13 @@ import { CalendarHelper } from '../helpers/calendar-helper';
   styleUrls: ['./calendar-form.component.css']
 })
 export class CalendarFormComponent implements OnInit, OnDestroy {
-  currentRecord: { what: string; hour: number; minute: number; day: number; month: number; year: number; id: string; description: string};
+  currentRecord: { what: string; time: string; date: string; day: number; month: number; year: number; id: string; description: string };
 
   profileForm = this.fb.group({
     what: ['', Validators.required],
     description: ['', Validators.required],
-    hour: [0, [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-3])$")]],
-    minute: [0, [Validators.required, Validators.pattern("^(0[0-9]|[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])$")]],
+    time: ['18:00', [Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$")]],
+    date: ['', [Validators.required, Validators.pattern("^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$")]],
     month: [],
     year: [],
     day: [],
@@ -79,8 +80,9 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
 
   checkEnableUndo() {
     return this.updatingEvent
-      && (parseInt(`${this.profileForm.value.hour}`) !== parseInt(`${this.currentRecord.hour}`)
-        || parseInt(`${this.profileForm.value.minute}`) !== parseInt(`${this.currentRecord.minute}`)
+      &&
+      (this.profileForm.value.time !== this.currentRecord.time
+        || this.profileForm.value.date !== this.currentRecord.date
         || this.profileForm.value.what !== this.currentRecord.what
         || this.profileForm.value.description !== this.currentRecord.description);
   }
@@ -96,13 +98,15 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
     this.undoEnabled = false;
     this.addingEvent = true;
 
+    const now = new Date(Date.UTC(this.calendarService.year, this.calendarService.month, dayData.dayInMonthArrayIndex, dayData.hour ?? 18, dayData.minute ?? 0));
+
     this.profileForm.patchValue({
       what: '',
-      hour: parseInt(dayData.hour ?? 0),
-      minute: parseInt(dayData.minute ?? 0),
-      day: parseInt(`${dayData.dayInMonthArrayIndex}`),
-      month: parseInt(`${this.calendarService.month}`),
-      year: parseInt(`${this.calendarService.year}`),
+      time: now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+      date: now.toLocaleDateString('zh-Hans-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })['replaceAll']('/', '-'),
+      day: now.getDate(),
+      month: now.getMonth(),
+      year: now.getFullYear(),
       id: null,
       description: ''
     });
@@ -112,13 +116,15 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
     this.undoEnabled = false;
     this.updatingEvent = true
 
+    const now = new Date(Date.UTC(this.calendarService.year, this.calendarService.month, record.day, record.hour, record.minute));
+
     this.currentRecord = {
       what: record.what,
-      hour: parseInt(`${record.hour}`),
-      minute: parseInt(`${record.minute}`),
-      day: parseInt(`${record.day}`),
-      month: parseInt(`${this.calendarService.month}`),
-      year: parseInt(`${this.calendarService.year}`),
+      time: now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+      date: now.toLocaleDateString('zh-Hans-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })['replaceAll']('/', '-'),
+      day: now.getDate(),
+      month: now.getMonth(),
+      year: now.getFullYear(),
       id: record.id,
       description: record.description
     };
@@ -126,7 +132,7 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
     this.profileForm.patchValue(this.currentRecord);
   }
 
-  addEventClick() { this.postEvent(); }
+  async addEventClick() { await this.postEvent(); }
 
   async updateEventClick() {
     if (!this.undoEnabled) alert('No changes!');
@@ -138,27 +144,23 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
     record.id = this.profileForm.value.id;
     record.what = this.profileForm.value.what;
     record.description = this.profileForm.value.description;
-    record.year = this.calendarService.year;
-    record.month = this.calendarService.month;
-    record.day = this.profileForm.value.day;
-    record.hour = this.profileForm.value.hour;
-    record.minute = this.profileForm.value.minute;
+    record.year = parseInt(this.profileForm.value.date.split('-')[0]);
+    record.month = parseInt(this.profileForm.value.date.split('-')[1]) - 1;
+    record.day = parseInt(this.profileForm.value.date.split('-')[2]);
+    record.hour = parseInt(this.profileForm.value.time.split(':')[0]);
+    record.minute = parseInt(this.profileForm.value.time.split(':')[1]);
 
-    //todo await
-    if (this.profileForm.value.id === null) {
+    if (this.profileForm.value.id === null)
       await this.calendarService.postCalendarRecord(record);
-    }
-    else {
+    else
       await this.calendarService.updateCalendarRecord(record);
-    }
 
     this.closeAddOrUpdateEventForm();
   }
 
-  deleteEvent() {
+  async deleteEvent() {
     if (window.confirm(`Are you sure you want to delete this record?`)) {
-      //todo await
-      this.calendarService.deleteCalendarRecord(this.profileForm.value.id);
+      await this.calendarService.deleteCalendarRecord(this.profileForm.value.id);
       this.closeAddOrUpdateEventForm();
     }
   }

@@ -111,6 +111,9 @@ export class CalendarService implements OnDestroy {
       localRecord.id = record.id;
       localRecord.month = record.month;
       localRecord.year = record.year;
+
+      if (this.month !== record.month || this.year !== record.year)
+        this.calendarRecords = this.calendarRecords.filter(r => r.id !== record.id);
     }
   }
 

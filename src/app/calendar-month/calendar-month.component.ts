@@ -10,29 +10,14 @@ import { CalendarHelper } from '../helpers/calendar-helper';
   styleUrls: ['./calendar-month.component.css']
 })
 export class CalendarMonthComponent implements OnInit, OnDestroy {
-  lastGridRow: number;
-  penultimateGridRow: number;
-  lastCol: number;
-
   get dayDataForMonth() {
     const dayData = [];
-
-    let gridRow = 1;
-    this.calendarHelper.daysInMonthArray(this.calendarService.year, this.calendarService.month).forEach((dayNumber, index) => {
+    let gridRow = 0;
+    for (const dayNumber of this.calendarHelper.daysInMonthArray(this.calendarService.year, this.calendarService.month)) {
       const day = new Date(this.calendarService.year, this.calendarService.month, dayNumber).getDay();
-      if (index !== 0 && day === 0) gridRow++;
-
-      const col = (day % 7);
-      const dayName = this.calendarHelper.weekdayNames[col];
-      const gridCol = col + 1;
-      this.lastCol = gridCol;
-
-      dayData.push({ 'gridRow': gridRow, 'gridCol': gridCol, 'name': dayName, 'dayInMonthArrayIndex': dayNumber });
-    });
-
-    this.lastGridRow = gridRow;
-    this.penultimateGridRow = gridRow - 1;
-
+      if (day === 0 || dayNumber === 1) gridRow++;
+      dayData.push({ 'gridRow': gridRow, 'gridCol': (day % 7) + 1, 'dayInMonthArrayIndex': dayNumber });
+    }
     return dayData;
   }
 
@@ -43,7 +28,7 @@ export class CalendarMonthComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     window['pageTitle'] = 'Calendar';
-    window['toolInfo'] = ''
+    window['toolInfo'] = '';
    }
 
   ngOnDestroy() {

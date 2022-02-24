@@ -2,25 +2,27 @@
 
     <form [formGroup]="profileForm" (ngSubmit)="addingEvent ? addEventClick() : updateEventClick()">
 
-        <h3 class="form-heading">{{ calendarService.getDayNameLongForMonth(profileForm.value.day)}} {{profileForm.value.day}}<sup>{{calendarHelper.addOrdinalIndictor(profileForm.value.day)}}</sup></h3>
+        <h3 class="form-heading">{{ calendarService.getDayNameLongForMonth(profileForm.value.day)}}
+            {{profileForm.value.day}}<sup>{{calendarHelper.addOrdinalIndictor(profileForm.value.day)}}</sup></h3>
 
         <button class="undo red-button" *ngIf="undoEnabled" (click)="undoChanges()" type="button">Undo</button>
 
         <input class="what" type="text" formControlName="what" maxlength="25" autofocus placeholder="what">
 
-        <textarea class="description" type="text" formControlName="description" maxlength="100" autofocus placeholder="description"></textarea>
+        <textarea class="description" type="text" formControlName="description" maxlength="100" autofocus
+            placeholder="description"></textarea>
 
-        <div class='time'>Time hh:mm</div>
+        <input class="time" type="time" formControlName="time" required>
+        <input class="date" type="date" formControlName="date"  required>
 
-        <input class="hour" type="number" formControlName="hour" max="23" min="0">
+        <button class="submit green-button" type="submit" [disabled]="!profileForm.valid">{{addingEvent ? 'Submit':
+            'Update'}}</button>
 
-        <input class="minute" type="number" formControlName="minute" step=15 max="59" min="0">
+        <button (click)="addingEvent ? closeClickAddEventForm() : closeClickUpdateEventForm()"
+            class="close-button green-button" type="button">{{addingEvent ? 'Cancel': 'Cancel'}}</button>
 
-        <button class="submit green-button" type="submit" [disabled]="!profileForm.valid">{{addingEvent ? 'Submit': 'Update'}}</button>
-
-        <button (click)="addingEvent ? closeClickAddEventForm() : closeClickUpdateEventForm()" class="close-button green-button" type="button">{{addingEvent ? 'Cancel': 'Cancel'}}</button>
-
-        <button (click)="deleteEvent()" class="delete-button red-button {{!updatingEvent ? 'invalidRedButton' : '' }}" [disabled]="!updatingEvent" type="button">Delete</button>
+        <button (click)="deleteEvent()" class="delete-button red-button {{!updatingEvent ? 'invalidRedButton' : '' }}"
+            [disabled]="!updatingEvent" type="button">Delete</button>
 
         <div class="formStatus {{profileForm.status === 'INVALID' ? 'form-invalid' : 'form-valid'}}">
             Form Status: {{ profileForm.status }}
