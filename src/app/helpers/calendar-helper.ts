@@ -5,6 +5,12 @@ import { CalendarRecord } from '../models/calendar-record.model';
   providedIn: 'root',
 })
 export class CalendarHelper {
+  getFormInputMonthFromMonthAndYear(year: number, month: number){
+    const date = new Date(Date.UTC(year, month));
+    const paddedMonth = date.toLocaleDateString('GB', { month: '2-digit' });
+    return `${year}-${paddedMonth}`;
+  }
+
    getDayRangeForWeek(year: number, month: number, week: number) {
     if (week > this.weeksInMonth(year, month) || week < 1)
       return console.error(`Week is out of range for year and month: ${year} ${month}.`) === null ? [] : [];

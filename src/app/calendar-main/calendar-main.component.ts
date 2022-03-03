@@ -1,6 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { fromEvent } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
 
 import { CalendarHelper } from '../helpers/calendar-helper';
 import { CalendarService } from '../services/calendar.service';
@@ -16,15 +14,16 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   calendarViews = ['Month', 'Week', 'Day'];
   title: string;
 
-  get width() { return window.innerWidth; }
+
+  get month() {
+    return this.calendarHelper.getFormInputMonthFromMonthAndYear(this.calendarService.year, this.calendarService.month);
+  }
 
   constructor(
     public calendarService: CalendarService,
     public calendarHelper: CalendarHelper,
     public messageService: MessageService
-  ) {
-    fromEvent(window, 'resize').pipe(debounceTime(1000)).subscribe(() => { this.width; });
-  }
+  ) {  }
 
   async ngOnInit() {
     await this.calendarService.getCalendarRecords();
@@ -41,17 +40,13 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     this.calendarService.closeAddOrUpdateEventForm.next(true);
   }
 
-  updateMonth(value: number) {
-    this.calendarService.month = value;
+  updateDate(value) {
+    this.calendarService.year = parseInt(value.split('-')[0]);
+    this.calendarService.month = parseInt(value.split('-')[1]) - 1;
     this.calendarService.updateRecords();
   }
 
-  updateYear(value: number) {
-    this.calendarService.year = value;
-    this.calendarService.updateRecords();
-  }
-
-  changeWeekOrMonth(direction){
+  changeWeekOrMonth(direction) {
     if (this.monthOrWeek === 'month')
       this.calendarService.changeMonth(direction);
     else if (this.monthOrWeek === 'week')
