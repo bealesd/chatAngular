@@ -15,8 +15,9 @@ export class CalendarMonthComponent implements OnInit, OnDestroy {
     let gridRow = 0;
     for (const dayNumber of this.calendarHelper.daysInMonthArray(this.calendarService.year, this.calendarService.month)) {
       const day = new Date(this.calendarService.year, this.calendarService.month, dayNumber).getDay();
-      if (day === 0 || dayNumber === 1) gridRow++;
-      dayData.push({ 'gridRow': gridRow, 'gridCol': (day % 7) + 1, 'dayInMonthArrayIndex': dayNumber });
+      if (day === 1 || dayNumber === 1) gridRow++;
+      const gridCol = day === 0 ? 7 : day % 7;
+      dayData.push({ 'gridRow': gridRow, 'gridCol': gridCol, 'dayInMonthArrayIndex': dayNumber });
     }
     return dayData;
   }

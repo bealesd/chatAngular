@@ -5,13 +5,13 @@ import { CalendarRecord } from '../models/calendar-record.model';
   providedIn: 'root',
 })
 export class CalendarHelper {
-  getFormInputMonthFromMonthAndYear(year: number, month: number){
+  getFormInputMonthFromMonthAndYear(year: number, month: number) {
     const date = new Date(Date.UTC(year, month));
     const paddedMonth = date.toLocaleDateString('GB', { month: '2-digit' });
     return `${year}-${paddedMonth}`;
   }
 
-   getDayRangeForWeek(year: number, month: number, week: number) {
+  getDayRangeForWeek(year: number, month: number, week: number) {
     if (week > this.weeksInMonth(year, month) || week < 1)
       return console.error(`Week is out of range for year and month: ${year} ${month}.`) === null ? [] : [];
 
@@ -25,11 +25,11 @@ export class CalendarHelper {
     return this.daysInMonthArray(year, month).slice(startDay, endDay);
   }
 
-   getDaysForWeek(year: number, month: number, week: number): Date[] {
+  getDaysForWeek(year: number, month: number, week: number): Date[] {
     return this.getDayRangeForWeek(year, month, week).map(day => new Date(year, month, day));
   }
 
-   getDaysForWeekOutsideOfMonth(year: number, month: number, week: number): Date[] {
+  getDaysForWeekOutsideOfMonth(year: number, month: number, week: number): Date[] {
     const days = this.getDayRangeForWeek(year, month, week);
     if (days.length === 0)
       return [];
@@ -40,14 +40,14 @@ export class CalendarHelper {
     else return [];
   }
 
-   getDaysInPreviousMonth(year: number, month: number, totalDays): Date[] {
+  getDaysInPreviousMonth(year: number, month: number, totalDays): Date[] {
     const emptyDays = [];
     for (let daysIntoPreviousMonth = totalDays - 1; daysIntoPreviousMonth >= 0; daysIntoPreviousMonth--)
       emptyDays.push(new Date(year, month, -daysIntoPreviousMonth));
     return emptyDays;
   }
 
-   getDaysInNextMonth(year: number, month: number, totalDays): Date[] {
+  getDaysInNextMonth(year: number, month: number, totalDays): Date[] {
     const emptyDays = [];
     const lastDayOfMonth = this.daysInMonthArray(year, month).slice(-1)[0];
     for (let daysIntoNextMonth = 1; daysIntoNextMonth <= totalDays; daysIntoNextMonth++)
@@ -55,13 +55,13 @@ export class CalendarHelper {
     return emptyDays;
   }
 
-   getRecordsByWeek(year: number, month: number, week: number, records: CalendarRecord[]): CalendarRecord[] {
+  getRecordsByWeek(year: number, month: number, week: number, records: CalendarRecord[]): CalendarRecord[] {
     const dayRange = this.getDayRangeForWeek(year, month, week);
     if (dayRange === null) return [];
     return dayRange.map(day => this.getRecordsByDay(day, records)).flat();
   }
 
-   getRecordsGroupedByHourAndDayForWeek(year: number, month: number, week: number, records: CalendarRecord[]): { hour: number; date: Date; records: CalendarRecord[]; }[] {
+  getRecordsGroupedByHourAndDayForWeek(year: number, month: number, week: number, records: CalendarRecord[]): { hour: number; date: Date; records: CalendarRecord[]; }[] {
     let recordsGroupedByHour = [];
     for (let dayDate of this.getDaysForWeek(year, month, week)) {
       for (let groupedRecord of this.getRecordsGroupedByHourForDay(year, month, dayDate.getDate(), records))
@@ -70,7 +70,7 @@ export class CalendarHelper {
     return recordsGroupedByHour
   }
 
-   getEmptyRecordsGroupedByHourAndDayForWeek(year: number, month: number, week: number, records: CalendarRecord[]): { hour: number; date: Date; }[] {
+  getEmptyRecordsGroupedByHourAndDayForWeek(year: number, month: number, week: number, records: CalendarRecord[]): { hour: number; date: Date; }[] {
     const emptyHoursData = [];
     for (let dayDate of this.getDaysForWeek(year, month, week)) {
       for (let emptyHour of this.getEmptyHoursByDay(dayDate.getDate(), records))
@@ -79,19 +79,19 @@ export class CalendarHelper {
     return emptyHoursData;
   }
 
-   weeksInMonth(year: number, month: number,): number {
+  weeksInMonth(year: number, month: number,): number {
     const firstOfMonth = new Date(year, month, 1);
     const daysIntoWeek = firstOfMonth.getDay();
     return Math.ceil((daysIntoWeek + this.daysInMonth(year, month)) / 7);
   }
 
-   getRecordsByDay(day: number, records: CalendarRecord[]): CalendarRecord[] {
+  getRecordsByDay(day: number, records: CalendarRecord[]): CalendarRecord[] {
     records = records.filter(r => r['day'] === day);
     records.sort(this.compareByTime);
     return records;
   }
 
-   getRecordsGroupedByHourForDay(year: number, month: number, calendarDay, records: CalendarRecord[]): { hour: number, date: Date, records: CalendarRecord[] }[] {
+  getRecordsGroupedByHourForDay(year: number, month: number, calendarDay, records: CalendarRecord[]): { hour: number, date: Date, records: CalendarRecord[] }[] {
     records = this.getRecordsByDay(calendarDay, records);
     const grouped: { hour: CalendarRecord[] } = this.groupBy(records, 'hour');
 
@@ -100,38 +100,38 @@ export class CalendarHelper {
     }));
   }
 
-   getEmpytDays(records: CalendarRecord[]): number[] {
+  getEmpytDays(records: CalendarRecord[]): number[] {
     const days = records.map(r => r['day']);
     return [...Array(this.daysInMonth).keys()].map(i => i + 1).filter(day => !days.includes(day));
   }
 
-   getEmptyDaysByWeek(year: number, month: number, week: number, records: CalendarRecord[]): number[] {
+  getEmptyDaysByWeek(year: number, month: number, week: number, records: CalendarRecord[]): number[] {
     const dayRange = this.getDayRangeForWeek(year, month, week);
     if (dayRange === null) return [];
     return dayRange.filter(day => this.getRecordsByDay(day, records).length === 0);
   }
 
-   getEmptyHoursByDay(calendarDay, records: CalendarRecord[]): any[] {
+  getEmptyHoursByDay(calendarDay, records: CalendarRecord[]): any[] {
     records = this.getRecordsByDay(calendarDay, records);
     return this.hoursOfDay().filter(hour => !records.map(rec => rec.hour).includes(hour.value));
   }
 
-   hoursOfDay(): any[] {
+  hoursOfDay(): any[] {
     return [...Array(24).keys()].map((hour) => Object({ toString: () => this.padToTwo(hour), value: hour }))
   }
 
-  private  padToTwo(value: number): string {
+  private padToTwo(value: number): string {
     return value <= 99 ? `0${value}`.slice(-2) : `${value}`;
   }
 
-  private  groupBy(xs, key) {
+  private groupBy(xs, key) {
     return xs.reduce((rv, x) => {
       (rv[x[key]] = rv[x[key]] || []).push(x);
       return rv;
     }, {});
   };
 
-  private  compareByTime(a, b) {
+  private compareByTime(a, b) {
     const is_hour_a_before_b = a.hour < b.hour ? true : (a.hour === b.hour ? null : false);
     const is_minute_a_before_b = a.minute < b.minute ? true : (a.minute === b.minute ? null : false);
 
@@ -141,25 +141,25 @@ export class CalendarHelper {
     return is_a_before_b ? -1 : (is_a_same_as_b ? 1 : 0);
   }
 
-   getDayName(dayNumber: number): string {
+  getDayName(dayNumber: number): string {
     return Object.keys(this.daysEnum)[dayNumber];
   }
 
-   getDayNameShortForMonth(year: number, month: number, day: number): string {
+  getDayNameShortForMonth(year: number, month: number, day: number): string {
     const date = new Date(year, month, day);
     return this.getDayName(date.getDay());
   }
 
-   getDayNameLongForMonth(year: number, month: number, day: number): string {
+  getDayNameLongForMonth(year: number, month: number, day: number): string {
     const date = new Date(year, month, day);
     return this.getDayNameLong(date.getDay(), this.daysLongEnum);
   }
 
-   getDayNameLong(dayNumber: number, daysLongEnum): string {
+  getDayNameLong(dayNumber: number, daysLongEnum): string {
     return Object.keys(daysLongEnum)[dayNumber];
   }
 
-   years() {
+  years() {
     const years: number[] = [];
     for (let i = 2020; i < 2040; i++) {
       years.push(i);
@@ -171,22 +171,22 @@ export class CalendarHelper {
     return Object.keys(this.monthsEnum);
   }
 
-   monthNamesShort(): string[] {
+  monthNamesShort(): string[] {
     return Object.keys(this.monthsShortEnum);
   }
 
-   daysInMonth(year: number, month: number): number {
+  daysInMonth(year: number, month: number): number {
     // day is 0 - the last day of previous month. Thus we add 1 to previous month. getDate() gives the day number of date.
     return new Date(year, month + 1, 0).getDate();
   }
 
-  public  daysInMonthArray(year: number, month: number): number[] {
+  public daysInMonthArray(year: number, month: number): number[] {
     const days: number[] = [];
     for (let i = 1; i <= (this.daysInMonth(year, month)); i++) days.push(i);
     return days;
   }
 
-   daysEnum = {
+  daysEnum = {
     'Sun': 0,
     'Mon': 1,
     'Tue': 2,
@@ -196,7 +196,7 @@ export class CalendarHelper {
     'Sat': 6
   };
 
-   daysLongEnum = {
+  daysLongEnum = {
     'Sunday': 0,
     'Monday': 1,
     'Tuesday': 2,
@@ -206,11 +206,17 @@ export class CalendarHelper {
     'Saturday': 6
   };
 
-   weekdayNames(): string[] {
+  weekdayNames(): string[] {
     return Object.keys(this.daysEnum);
   }
 
-   monthsEnum = {
+  weekdayNamesEndSunday(): string[] {
+    const names = this.weekdayNames();
+    names.push(names.shift());
+    return names;
+  }
+
+  monthsEnum = {
     "January": 0,
     "February": 1,
     "March": 2,
@@ -225,7 +231,7 @@ export class CalendarHelper {
     "December": 11
   }
 
-   monthsShortEnum = {
+  monthsShortEnum = {
     "Jan": 0,
     "Feb": 1,
     "Mar": 2,
@@ -240,7 +246,7 @@ export class CalendarHelper {
     "Dec": 11
   }
 
-  public  addOrdinalIndictor(day: number): string {
+  public addOrdinalIndictor(day: number): string {
     const j = day % 10;
     const k = day % 100;
     let ordinalIndictor;
