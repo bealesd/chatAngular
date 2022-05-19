@@ -17,22 +17,59 @@ export class LoginService {
   public usernameId = '';
 
   constructor(
-    private messageService: MessageService, 
-    private http: HttpClient) {  }
+    private messageService: MessageService,
+    private http: HttpClient) { }
 
   async login(username: string, password: string): Promise<void> {
-   this.messageService.addNoAuth('LoginService: Getting jwt token.');
+    this.messageService.addNoAuth('LoginService: Getting jwt token.');
 
-    const token = (await this.GetToken({
+    const token = await this.GetToken({
       username: username,
       password: password
-    }));
-
-    LoginService.username = username; 
+    });
+    if (token === null) {
+      this.messageService.addNoAuth(`LoginService:Failed to get jwt token.`, 'error');
+      this.loggedIn.next(false);
+      return;
+    }
     this.jwtToken = token;
-    this.messageService.add(`LoginService: Got jwt token.`);
 
-    this.usernameId =(await this.GetUsernameId(username))       
+    this.usernameId = await this.GetUsernameId(username);
+    if (this.usernameId === null) {
+      this.messageService.addNoAuth(`LoginService: Failed to get username id.`, 'error');
+      this.loggedIn.next(false);
+      return;
+    }
+    LoginService.username = username;
+
+    this.messageService.add(`LoginService: Got jwt token.`);
+    this.messageService.add(`LoginService: Got username id.`);
+
+    window.localStorage.setItem(`loginService:loginDetails`, JSON.stringify({ usernameId: this.usernameId, token: this.jwtToken }));
+    this.loggedIn.next(true);
+  }
+
+  logout(): void {
+    LoginService.username = '';
+    this.usernameId = ''
+    this.jwtToken = '';
+
+    window.localStorage.removeItem(`loginService:loginDetails`);
+
+    this.loggedIn.next(false);
+
+    this.messageService.addNoAuth('Logged out.');
+  }
+
+  async tryLoginWithLocalToken(): Promise<void> {
+    const loginDetails = JSON.parse(window.localStorage.getItem(`loginService:loginDetails`)) as Object;
+
+    if (loginDetails !== null && loginDetails.hasOwnProperty('token') && loginDetails.hasOwnProperty('usernameId')) {
+      this.jwtToken = loginDetails['token'];
+      this.usernameId = loginDetails['usernameId'];
+
+      this.loggedIn.next(true);
+    }
   }
 
   GetToken(user: any): Promise<any> {
@@ -41,7 +78,6 @@ export class LoginService {
       this.http.post<any>(url, user).subscribe(
         {
           next: (object: any) => {
-            this.loggedIn.next(true);
             res(object);
           },
           error: (err: any) => {
@@ -59,7 +95,6 @@ export class LoginService {
       this.http.get<any>(url).subscribe(
         {
           next: (object: any) => {
-            this.loggedIn.next(true);
             res(object);
           },
           error: (err: any) => {
@@ -77,7 +112,7 @@ export class LoginService {
       this.messageService.add(`LoginService: Could not add new user: ${user.username}.`, 'error');
     else
       this.messageService.add(`LoginService: Added new user: ${user.username}.`);
-    
+
     return result;
   }
 

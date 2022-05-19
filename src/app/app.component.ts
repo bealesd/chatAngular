@@ -35,10 +35,10 @@ export class AppComponent {
   }
 
   showAppUpdateAlert() {
-    if (confirm('App Update available')) {
+    if (confirm('App Update Available!'))
       this.doAppUpdate;
-    };
   }
+  
   doAppUpdate() {
     this.updates.activateUpdate().then(() => document.location.reload());
   }

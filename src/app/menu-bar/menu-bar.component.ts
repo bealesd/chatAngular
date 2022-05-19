@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { LoginService } from '../services/login.service';
 import { MessageService } from '../services/message.service';
@@ -17,7 +16,6 @@ export class MenuBarComponent implements OnInit {
     public loginService: LoginService,
     private messageService: MessageService,
     private profileService: ProfileService,
-    private router: Router
   ) {
 
     this.loginService.loggedIn.subscribe(loggedIn => {
@@ -30,7 +28,8 @@ export class MenuBarComponent implements OnInit {
   }
 
   get toolInfo(){
-    return window['toolInfo'] ? window['toolInfo'] : `Hi ${LoginService.username}`;
+    return window['toolInfo'] ? window['toolInfo'] : 
+      [null, undefined, ""].includes(LoginService.username.trim()) ?'Please Login' : `Hi ${LoginService.username}`;
   }
 
   async ngOnInit(): Promise<void> {
@@ -41,16 +40,6 @@ export class MenuBarComponent implements OnInit {
 
   toggleDarkMode(){
     this.profileService.toggleTheme();
-  }
-
-  logout() {
-    this.loginService.loggedIn.next(false);
-
-    this.messageService.add('Logged out.');
-
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    this.router.onSameUrlNavigation = 'reload';
-    this.router.navigate(['login']);
   }
 
   toggleLogs(){

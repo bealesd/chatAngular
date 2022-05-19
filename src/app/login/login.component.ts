@@ -25,11 +25,12 @@ export class LoginComponent implements OnInit {
     this.loginService.loggedIn.subscribe(loggedIn => {
       this.loggedIn = loggedIn;
       if (loggedIn === true) {
-        this.router.navigate(['/chatGroup']);
         this.profileService.loadTheme();
+        this.router.navigate(['/chatGroup']);   
       }
       else {
         this.resetTheme();
+        this.router.navigate(['/login']);
       }
 
     });
@@ -38,10 +39,12 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void { 
     window['toolInfo'] = ''
     window['pageTitle'] = 'Login';
+
+    this.loginService.tryLoginWithLocalToken();
    }
 
-  login(username: string, password: string) {
-    this.loginService.login(username, password);
+  async login(username: string, password: string) {
+    await this.loginService.login(username, password);
   }
 
   showPassword() {

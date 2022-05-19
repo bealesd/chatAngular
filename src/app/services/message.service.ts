@@ -16,6 +16,7 @@ export class MessageService {
 
   add(message: string, type?: string) {
     if (!this.types.includes(type)) type = 'info';
+
     type = type.toLocaleLowerCase();
 
     this.addNoAuth(message, type)
