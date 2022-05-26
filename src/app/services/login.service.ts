@@ -14,7 +14,7 @@ export class LoginService {
   public jwtToken = '';
   private baseUrl = `${environment.chatCoreUrl}/auth`;
   public static username = '';
-  public usernameId = '';
+  public usernameId:number = null;
 
   constructor(
     private messageService: MessageService,
@@ -51,7 +51,7 @@ export class LoginService {
 
   logout(): void {
     LoginService.username = '';
-    this.usernameId = ''
+    this.usernameId = null;
     this.jwtToken = '';
 
     window.localStorage.removeItem(`loginService:loginDetails`);
@@ -90,7 +90,7 @@ export class LoginService {
     });
   }
 
-  GetUsernameId(username: string): Promise<any> {
+  GetUsernameId(username: string): Promise<number> {
     return new Promise((res, rej) => {
       const url = `${this.baseUrl}/GetUsernameId?username=${username}`;
       this.http.get<any>(url).subscribe(

@@ -79,13 +79,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.usernames = params['usernames'];
     });
 
-    // this.activatedRoute.queryParams
-    //   .filter(params => params.order)
-    //   .subscribe(params => {
-    //     console.log(params); // { order: "popular" }
-    //   }
-    // );
-
     this.chatService.newChatMessagesCount
       .subscribe(newChatMessagesCount => {
         this.newChatMessagesCount = newChatMessagesCount;
@@ -99,7 +92,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       });
 
     this.chatService.getChatMessages().then(() => {
-      // this.scrollToBottom();
       this.setGroupProfile();
     });
 
