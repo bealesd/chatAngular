@@ -45,7 +45,7 @@ export class LoginService {
     this.messageService.add(`LoginService: Got jwt token.`);
     this.messageService.add(`LoginService: Got username id.`);
 
-    window.localStorage.setItem(`loginService:loginDetails`, JSON.stringify({ usernameId: this.usernameId, token: this.jwtToken }));
+    window.localStorage.setItem(`loginService:loginDetails`, JSON.stringify({ usernameId: this.usernameId, token: this.jwtToken, username: LoginService.username }));
     this.loggedIn.next(true);
   }
 
@@ -67,6 +67,7 @@ export class LoginService {
     if (loginDetails !== null && loginDetails.hasOwnProperty('token') && loginDetails.hasOwnProperty('usernameId')) {
       this.jwtToken = loginDetails['token'];
       this.usernameId = loginDetails['usernameId'];
+      LoginService.username = loginDetails['username'];
 
       this.loggedIn.next(true);
     }
