@@ -88,7 +88,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.chatService.chatMessagesByDateSubject
       .subscribe(chatMessages => {
-        this.chatMessages = chatMessages;
+        this.chatMessages = chatMessages ?? [];
       });
 
     this.chatService.getChatMessages().then(() => {
@@ -158,13 +158,13 @@ export class ChatComponent implements OnInit, OnDestroy {
   setGroupProfile() {
     this.groupMembers = this.usernames;
 
-    for (const member of this.groupMembers) 
-      this.setImageSource(member);  
+    for (const member of this.groupMembers)
+      this.setImageSource(member);
   }
 
   async setImageSource(member: string) {
     const url = await this.profileService.getProfilePicture(member);
-    document.querySelector(`#img-${member}`)['src'] = url;
+    if (url !== null) document.querySelector(`#img-${member}`)['src'] = url;
   }
 
   //helpers

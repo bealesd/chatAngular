@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
+import { LoginService } from './services/login.service';
 
 import { MessageService } from './services/message.service';
 import { ProfileService } from './services/profile.service';
@@ -17,7 +18,8 @@ export class AppComponent {
     private router: Router,
     private readonly updates: SwUpdate,
     private messageService: MessageService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private loginService: LoginService
   ) {
     this.router.events.subscribe((ev) => {
       if (ev instanceof NavigationEnd)
@@ -32,6 +34,8 @@ export class AppComponent {
       .subscribe(isLoggingOn => {
         this.isLoggingOn = isLoggingOn;
       });
+
+      this.loginService.tryLoginWithLocalToken();
   }
 
   showAppUpdateAlert() {

@@ -32,12 +32,11 @@ export class LoginComponent implements OnInit {
         this.resetTheme();
         this.router.navigate(['/login']);
       }
-
     });
   }
 
   ngOnInit(): void { 
-    window['toolInfo'] = ''
+    window['toolInfo'] = '';
     window['pageTitle'] = 'Login';
 
     this.loginService.tryLoginWithLocalToken();

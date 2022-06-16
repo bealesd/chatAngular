@@ -89,7 +89,7 @@ export class ChatService {
 
   async getChatGroups() {
     const chatGroups = await this.GetChatGroups();
-    this.chatGroups = chatGroups;
+    this.chatGroups = chatGroups ?? [];
   }
 
   GetChatGroups(): Promise<ChatGroupUsernameDTO[]> {
@@ -108,7 +108,7 @@ export class ChatService {
             res(chatGroupUsernames);
           },
           error: (err: any) => {
-            res(null);
+            res([]);
           }
         }
       );
@@ -196,11 +196,11 @@ export class ChatService {
     let chats = this.getStoreChats();
     let newChats: Chat[];
 
-    if (chats?.length > 0) 
-      newChats = await this.GetChatsAfterId(chats[chats.length - 1].Id) ?? [];     
-    else 
+    if (chats?.length > 0)
+      newChats = await this.GetChatsAfterId(chats[chats.length - 1].Id) ?? [];
+    else
       newChats = await this.GetChats() ?? [];
-    
+
     chats.push(newChats)
 
     if (newChats?.length > 0) {
@@ -264,7 +264,7 @@ export class ChatService {
   AddChatRead(usernameId: number, chatId: number): Promise<boolean> {
     return new Promise((res, rej) => {
       const url = `${this.baseChatReadUrl}/AddChatRead`;
-      this.httpClient.post<any>(url, {usernameId: usernameId, chatId: chatId}).subscribe(
+      this.httpClient.post<any>(url, { usernameId: usernameId, chatId: chatId }).subscribe(
         {
           next: (result: any) => {
             res(true);

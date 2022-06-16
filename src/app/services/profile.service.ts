@@ -1,14 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
-import { DatePipe } from '@angular/common';
-import { DeviceDetectorService } from 'ngx-device-detector';
 
 import { MessageService } from '../services/message.service';
-import { Chat } from '../models/chat.model';
 import { environment } from 'src/environments/environment';
 import { LoginService } from './login.service';
-import { Profile } from '../models/profile.model';
 
 enum Themes {
   light,
@@ -43,7 +38,9 @@ export class ProfileService {
 
   async getProfilePicture(username): Promise<any> {
     const imageBlob = await this.GetProfile(username);
-    var urlCreator = window.URL || window.webkitURL;
+    if (imageBlob === null) return null;
+    
+    const urlCreator = window.URL || window.webkitURL;
     return urlCreator.createObjectURL(imageBlob);
   }
 
@@ -63,14 +60,14 @@ export class ProfileService {
       this.messageService.add(`ProfileService: Could not add profile image.`, 'error');
     else
       this.messageService.add(`ProfileService: Added profile image.`);
-   
+
     return result
   }
 
   async GetProfile(username: string): Promise<any> {
     const response = await fetch(`${this.baseUrl}/GetProfile?username=${username}`);
-    const blob = await response.blob();
-    return blob;
+    if (response.status === 200) return await response.blob();
+    else return null;
   }
 
   AddProfile(formData: FormData): Promise<boolean> {

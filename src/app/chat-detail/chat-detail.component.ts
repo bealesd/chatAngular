@@ -18,7 +18,7 @@ export class ChatDetailComponent implements OnInit {
   dialogBoxService: DialogBoxService;
   interval: any;
 
-  get username(){
+  get username() {
     return LoginService.username;
   }
 
@@ -43,7 +43,7 @@ export class ChatDetailComponent implements OnInit {
         window[`profileImageUrl${this.recieveChat.Who}`] = { url: null };
 
         const url = await this.profileService.getProfilePicture(this.recieveChat.Who);
-        window[`profileImageUrl${this.recieveChat.Who}`].url = url;
+        if (url !== null) window[`profileImageUrl${this.recieveChat.Who}`].url = url;
       }
 
       this.interval = setInterval(() => {
