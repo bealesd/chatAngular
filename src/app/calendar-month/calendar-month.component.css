@@ -1,7 +1,7 @@
 :host {
     --main-margin: 5px;
-    --weekday-name-font-weight: 600;
-    --weekday-name-and-number-font-size: 18px;
+    --weekday-name-font-weight: 400;
+    --weekday-name-and-number-font-size: 14px;
     --weekday-name-and-number-text-color: hotpink;
     --weekday-name-font-family: inherit;
     --record-font-size: 14px;
@@ -32,7 +32,7 @@
 
 @media screen and (max-width: 1700px) and (min-width: 1300px) {
      :host {
-        --weekday-name-and-number-font-size: 16px;
+        --weekday-name-and-number-font-size: 14px;
         --weekday-name-font-weight: 400;
         --weekday-name-font-family: 'Arial Narrow';
         --record-max-width: 200px;
@@ -43,7 +43,7 @@
 
 @media screen and (max-width: 1300px) and (min-width: 1100px) {
      :host {
-        --weekday-name-and-number-font-size: 16px;
+        --weekday-name-and-number-font-size: 14px;
         --weekday-name-font-weight: 400;
         --weekday-name-font-family: 'Arial Narrow';
         --record-max-width: 150px;
@@ -105,7 +105,8 @@
 
 .date-box-contianer {
     display: grid;
-    grid-template-columns: repeat(7, calc(((100vw - var(--side-menu-button-width))/7)) );
+    /* 20px for the scrool bar when displayed */
+    grid-template-columns: repeat(7, calc((((100vw - 20px) - var(--side-menu-button-width))/7)) );
 
     grid-template-rows: repeat(auto, minmax(var(--record-minimum-height), auto));
     grid-row-gap: 2px;

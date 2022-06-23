@@ -11,7 +11,9 @@
         [style.gridColumn]="dayData.gridCol" 
         [style.gridRow]="dayData.gridRow">
 
-        <div class="day" (click)="openAddEventForm(dayData)">{{dayData.dayInMonthArrayIndex}}<sup>{{calendarHelper.addOrdinalIndictor(dayData.dayInMonthArrayIndex)}}</sup></div>
+        <div class="day" (click)="openAddEventForm(dayData)">{{dayData.dayInMonthArrayIndex}}
+            <!-- <sup>{{calendarHelper.addOrdinalIndictor(dayData.dayInMonthArrayIndex)}}</sup> -->
+        </div>
 
         <ng-container class="table" *ngFor="let record of calendarService.filterRecordsByDay(dayData.dayInMonthArrayIndex);">
 
