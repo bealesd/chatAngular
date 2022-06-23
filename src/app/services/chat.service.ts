@@ -263,8 +263,8 @@ export class ChatService {
 
   AddChatRead(usernameId: number, chatId: number): Promise<boolean> {
     return new Promise((res, rej) => {
-      const url = `${this.baseChatReadUrl}/AddChatRead`;
-      this.httpClient.post<any>(url, { usernameId: usernameId, chatId: chatId }).subscribe(
+      const url = `${this.baseChatReadUrl}/AddChatRead?usernameId=${usernameId}&chatId=${chatId}`;
+      this.httpClient.post<any>(url, null).subscribe(
         {
           next: (result: any) => {
             res(true);

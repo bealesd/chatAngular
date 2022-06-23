@@ -34,11 +34,13 @@ export class ServerErrorInterceptor implements HttpInterceptor {
                     'Status: ' + response.status,
                     'Status Text: ' + response.statusText,
                 ].join('\n');
-
-                if (response.status < 200 || response.status >= 300) {
+                if ([401, 402, 403].includes(response.status)) {
                     this.messageService.addNoAuth(message, 'error');
                     this.loginService.logout();
                     this.router.navigate(['login']);
+                }
+                else if (response.status < 200 || response.status >= 300) {
+                    this.messageService.addNoAuth(message, 'error');
                 }
                 else
                     this.messageService.add(message, 'error');
