@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { LoginService } from '../services/login.service';
 import { MessageService } from '../services/message.service';
 import { ProfileService } from '../services/profile.service';
@@ -15,6 +16,7 @@ export class AppsComponent implements OnInit {
     public loginService: LoginService,
     private messageService: MessageService,
     private profileService: ProfileService,
+    public router: Router
   ) {
     this.loginService.loggedIn.subscribe(loggedIn => {
       this.loggedIn = loggedIn;
@@ -44,6 +46,7 @@ export class AppsComponent implements OnInit {
 
   logout() {
     this.loginService.logout();
+    this.router.navigate(['login']);
   }
 
   toggleLogs() {
