@@ -29,6 +29,7 @@ import { NotepadComponent } from './notepad/notepad.component';
 import { ProfileComponent } from './profile/profile.component';
 import { ChatGroupComponent } from './chat-group/chat-group.component';
 import { ChatGroupCreateComponent } from './chat-group-create/chat-group-create.component';
+import { WeighInComponent } from './weigh-in/weigh-in.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { ChatGroupCreateComponent } from './chat-group-create/chat-group-create.
     NotepadComponent,
     ProfileComponent,
     ChatGroupComponent,
-    ChatGroupCreateComponent
+    ChatGroupCreateComponent,
+    WeighInComponent
   ],
   imports: [
     BrowserModule,

@@ -11,6 +11,7 @@ import { NewUserComponent } from './new-user/new-user.component';
 import { NotepadComponent } from './notepad/notepad.component';
 import { ProfileComponent } from './profile/profile.component';
 import { ChatGroupCreateComponent } from './chat-group-create/chat-group-create.component';
+import { WeighInComponent } from './weigh-in/weigh-in.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -24,6 +25,7 @@ const routes: Routes = [
   { path: 'todo', component: TodoComponent },
   { path: 'notepad', component: NotepadComponent },
   { path: 'profile', component: ProfileComponent },
+  { path: 'weighIns', component: WeighInComponent },
   { path: '**', component: LoginComponent }
 ];
 

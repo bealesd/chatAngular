@@ -45,6 +45,11 @@
                 New User
         </button>
 
+        <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/weighIns" class="side-menu-button"
+                title="Check your weights">
+                Weigh Ins
+        </button>
+
         <button (mouseover)='over($event)' (mouseout)='out($event)' (click)="logout()" class="side-menu-button"
                 title="logout">
                 Logout

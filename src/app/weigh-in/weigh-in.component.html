@@ -1,0 +1,21 @@
+<div class="grid-container">
+    <div class="th">Date</div>
+    <div class="th">David</div>
+    <div class="th">Esther</div>
+
+    <ng-container *ngFor="let result of weightIns; let i = index;">
+            <div class="td {{i%2 === 0 ? 'even' : 'odd'}} {{highlightedRow === i ? 'highlighted-row' : ''}}" 
+            (click)="highlightRow(i)" [attr.data-id]="i">{{result.Date}}</div>
+            <div class="td {{i%2 === 0 ? 'even' : 'odd'}} {{highlightedRow === i ? 'highlighted-row' : ''}}" 
+            (click)="highlightRow(i)" [attr.data-id]="i">{{result.David}}</div>
+            <div class="td {{i%2 === 0 ? 'even' : 'odd'}} {{highlightedRow === i ? 'highlighted-row' : ''}}" 
+            (click)="highlightRow(i)" [attr.data-id]="i" >{{result.Esther}}</div>
+    </ng-container>
+
+            <input id="weight-date" class="td" type="date"/>
+            <input id="weight-dave" class="td" type="number" min="5" max="15"/>
+            <input id="weight-esther" class="td" type="number" min="5" max="15"/>
+</div>
+
+<button (click)="addRow()">Add Row</button>
+<button (click)="deleteRow()">Delete Row</button>
