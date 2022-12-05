@@ -1,45 +1,30 @@
 /*#region SMALL SIZE WRAPPER - DEFAULT*/
 :host {
-    --text-ouput-width: 200px;
-    --text-font-size: 13px;
-    --text-font-family: 'Arial';
-    --todo-button-size: 20px;
-    --todo-item-height: 20px;
-    --plus-button-width: 30px;
-    --plus-button-height: 20px;
-    --plus-button-padding: 2px;
-    --todo-item-vertical-spacing: 3px;
+    --vertical-spacing-between-elements: 10px;
+    --grid-container-left-margin: 10px;
 }
-
 /*#endregion*/
 
 /*#region LARGE SIZE WRAPPER*/
 @media screen and (min-width: 600px) {
     :host {
-        --text-ouput-width: 320px;
-        --todo-text-font-size: 18px;
-        --todo-text-font-family: inherit;
-        --todo-button-size: 30px;
-        --todo-item-height: 40px;
-        --plus-button-width: 40px;
-        --plus-button-height: 40px;
-        --plus-button-padding: 5px;
-        --todo-item-vertical-spacing: 5px;
+        --vertical-spacing-between-elements: 10px;
+        --grid-container-left-margin: 10px;
     }
 }
-
 /*#endregion*/
 
-.grid-container {
-    display: grid;
-    padding: 0px 10px 10px 10px;
-    grid-template-columns: minmax(100px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr);
+.weigh-in-page {
+    padding: 0px var(--grid-container-left-margin) 10px 10px;
     font-family: var(--text-font-family);
 }
 
-/* grid-template-columns: auto calc(var(--col-one) + var(--col-two) + var(--col-three)) auto; */
+.weigh-in-table{
+    display: grid;
+    grid-template-columns: minmax(100px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr);
+}
 
-.grid-container .th {
+.weigh-in-page .weigh-in-table .th {
     position: sticky;
     top: 0;
     background: #6c7ae0;
@@ -49,36 +34,63 @@
     color: white;
 }
 
-.grid-container .td.even {
+.weigh-in-page .weigh-in-table .td.even {
     background: white;
 }
 
-.grid-container .td.odd {
+.weigh-in-page .weigh-in-table .td.odd {
     background: #f8f6ff;
 
 }
 
-.grid-container .td {
-    padding-top: 10px;
-    padding-bottom: 10px;
-    /* color: #808080; */
-    font-size: 1rem;
-}
-
-.grid-container .th,
-.grid-container .td {
+.weigh-in-page .weigh-in-table .th,
+.weigh-in-page .weigh-in-table .td {
     padding: 4px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.grid-container input.td {
-    border: none;
-    font-size: 1.4rem;
-}
-
 .highlighted-row {
     background-color: #E8F0FE !important;
     color: #1967d2;
+}
+
+.weigh-in-page input.td {
+    border: none;
+    margin-top: var(--vertical-spacing-between-elements);
+    font-size: inherit;
+    font-family: inherit;
+}
+
+button {
+    color: white;
+    padding: 2px 7px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: var(--vertical-spacing-between-elements);
+}
+
+button.green-button {
+    background-color: #1fb123;
+    border: 1px solid darkgreen;
+}
+
+button.green-button:hover {
+    background-color: darkgreen;
+    border: 1px solid #1fb123;
+}
+
+button.red-button {
+    margin-left: 10px;
+    background-color: #cc2929;
+    border: 1px solid darkred;
+}
+
+button.red-button:hover {
+    background-color: darkred;
+    border: 1px solid #cc2929;
 }

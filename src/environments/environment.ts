@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  chatCoreUrl: 'https://localhost:5001'
+  chatCoreUrl: 'https://localhost:44341'
 };
 
 /*

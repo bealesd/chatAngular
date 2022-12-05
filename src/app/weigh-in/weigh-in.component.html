@@ -1,21 +1,25 @@
-<div class="grid-container">
-    <div class="th">Date</div>
-    <div class="th">David</div>
-    <div class="th">Esther</div>
+<div class="weigh-in-page">
 
-    <ng-container *ngFor="let result of weightIns; let i = index;">
-            <div class="td {{i%2 === 0 ? 'even' : 'odd'}} {{highlightedRow === i ? 'highlighted-row' : ''}}" 
-            (click)="highlightRow(i)" [attr.data-id]="i">{{result.Date}}</div>
-            <div class="td {{i%2 === 0 ? 'even' : 'odd'}} {{highlightedRow === i ? 'highlighted-row' : ''}}" 
-            (click)="highlightRow(i)" [attr.data-id]="i">{{result.David}}</div>
-            <div class="td {{i%2 === 0 ? 'even' : 'odd'}} {{highlightedRow === i ? 'highlighted-row' : ''}}" 
-            (click)="highlightRow(i)" [attr.data-id]="i" >{{result.Esther}}</div>
-    </ng-container>
+    <div class="weigh-in-table">
+        <div class="th">Date</div>
+        <div class="th">David</div>
+        <div class="th">Esther</div>
 
-            <input id="weight-date" class="td" type="date"/>
-            <input id="weight-dave" class="td" type="number" min="5" max="15"/>
-            <input id="weight-esther" class="td" type="number" min="5" max="15"/>
+        <ng-container *ngFor="let result of sortedWeightIns; let i = index;">
+            <div class="td {{i%2 === 0 ? 'even' : 'odd'}} {{highlightedRow === result.Id ? 'highlighted-row' : ''}}"
+                (click)="highlightRow(result.Id)" [attr.data-id]="i">{{result.Date | date:'dd/MM/yyyy'}}</div>
+            <div class="td {{i%2 === 0 ? 'even' : 'odd'}} {{highlightedRow === result.Id ? 'highlighted-row' : ''}}"
+                (click)="highlightRow(result.Id)" [attr.data-id]="i">{{result.David}}</div>
+            <div class="td {{i%2 === 0 ? 'even' : 'odd'}} {{highlightedRow === result.Id ? 'highlighted-row' : ''}}"
+                (click)="highlightRow(result.Id)" [attr.data-id]="i">{{result.Esther}}</div>
+        </ng-container>
+
+        <input id="weight-date" class="td" type="date" value="{{todaysDateAsISO8060String}}" />
+        <input id="weight-dave" class="td" type="number" min="7" max="14" step="0.1" value="10" />
+        <input id="weight-esther" class="td" type="number" min="7" max="14" step="0.1" value="8" />
+
+    </div>
+
+    <button class="green-button" (click)="addRow()">Add Row</button>
+    <button class="red-button" (click)="deleteRow()">Delete Row</button>
 </div>
-
-<button (click)="addRow()">Add Row</button>
-<button (click)="deleteRow()">Delete Row</button>
