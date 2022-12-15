@@ -41,6 +41,7 @@
     margin:  var(--side-menu-margin);
 }
 
-/* .side-menu{
-    grid-column: 2;
-} */
+.side-menu > button.side-menu-button.child-menu  {
+    margin-left: 20px;
+    width: calc(var(--side-menu-button-width) - 20px);
+}

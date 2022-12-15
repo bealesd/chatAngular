@@ -1,58 +1,75 @@
 <div class="side-menu">
 
-        <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/calendar" class="side-menu-button"
-                title="go to calendar">
-                Calendar
-        </button>
+        <ng-container *ngIf="sideMenus.hasOwnProperty(urlPath)">
+                <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/chatGroup"
+                        class="side-menu-button" title="go to main menu">
+                        Main Menu
+                </button>
+                
+                <ng-container *ngFor="let menu of sideMenus[urlPath].menu">
+                        <button (mouseover)='over($event)' (mouseout)='out($event)'
+                                class="side-menu-button {{menu.class}}" title="{{menu.title}}"
+                                routerLink="{{menu.routerLink}}">
+                                {{menu.value}}
+                        </button>
+                </ng-container>
 
-        <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/chatGroup" class="side-menu-button"
-                title="go to Chats">
-                Chat
-        </button>
+        </ng-container>
 
-        <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/createChatGroup"
-                class="side-menu-button" title="Create New Chat Group">
-                New Chat
-        </button>
+        <ng-container *ngIf="!sideMenus.hasOwnProperty(urlPath)">
+                <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/calendar"
+                        class="side-menu-button" title="go to calendar">
+                        Calendar
+                </button>
 
-        <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/todo" class="side-menu-button"
-                title="go to todo">
-                Todo
-        </button>
+                <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/chatGroup"
+                        class="side-menu-button" title="go to Chats">
+                        Chat
+                </button>
 
-        <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/notepad" class="side-menu-button"
-                title="go to notepads">
-                Notepad
-        </button>
+                <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/createChatGroup"
+                        class="side-menu-button" title="Create New Chat Group">
+                        New Chat
+                </button>
 
-        <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/profile" class="side-menu-button"
-                title="go to profile">
-                Profile
-        </button>
+                <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/todo" class="side-menu-button"
+                        title="go to todo">
+                        Todo
+                </button>
 
-        <button (mouseover)='over($event)' (mouseout)='out($event)' (click)="toggleDarkMode()" class="side-menu-button"
-                title="toggle dark mode">
-                Dark Mode
-        </button>
+                <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/notepad"
+                        class="side-menu-button" title="go to notepads">
+                        Notepad
+                </button>
 
-        <button (mouseover)='over($event)' (mouseout)='out($event)' (click)="toggleLogs()" class="side-menu-button"
-                title="toggle debugger">
-                Logs
-        </button>
+                <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/profile"
+                        class="side-menu-button" title="go to profile">
+                        Profile
+                </button>
 
-        <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/newUser" class="side-menu-button"
-                title="go to new user" *ngIf="username === 'david'">
-                New User
-        </button>
+                <button (mouseover)='over($event)' (mouseout)='out($event)' (click)="toggleDarkMode()"
+                        class="side-menu-button" title="toggle dark mode">
+                        Dark Mode
+                </button>
 
-        <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/weighIns" class="side-menu-button"
-                title="Check your weights">
-                Weigh Ins
-        </button>
+                <button (mouseover)='over($event)' (mouseout)='out($event)' (click)="toggleLogs()"
+                        class="side-menu-button" title="toggle debugger">
+                        Logs
+                </button>
 
-        <button (mouseover)='over($event)' (mouseout)='out($event)' (click)="logout()" class="side-menu-button"
-                title="logout">
-                Logout
-        </button>
-        
+                <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/newUser"
+                        class="side-menu-button" title="go to new user" *ngIf="username === 'david'">
+                        New User
+                </button>
+
+                <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/weighIns"
+                        class="side-menu-button" title="Check your weights">
+                        Weigh Ins
+                </button>
+
+                <button (mouseover)='over($event)' (mouseout)='out($event)' (click)="logout()" class="side-menu-button"
+                        title="logout">
+                        Logout
+                </button>
+        </ng-container>
 </div>

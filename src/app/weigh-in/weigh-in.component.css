@@ -27,7 +27,7 @@
 .weigh-in-page .weigh-in-table .th {
     position: sticky;
     top: 0;
-    background: #6c7ae0;
+    background: #2196f3;
     text-align: left;
     font-weight: normal;
     font-size: 1.2rem;
@@ -61,6 +61,11 @@
     margin-top: var(--vertical-spacing-between-elements);
     font-size: inherit;
     font-family: inherit;
+}
+
+.weigh-in-page > .weigh-in-table > input[id^="weight-"]{
+    background-color: #2196f3;
+    color: white;
 }
 
 button {

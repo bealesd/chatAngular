@@ -24,7 +24,7 @@ export class MenuBarComponent implements OnInit {
 
   get toolInfo(){
     return window['toolInfo'] ? window['toolInfo'] : 
-      [null, undefined, ""].includes(LoginService.username.trim()) ?'Please Login' : `Hi ${LoginService.username}`;
+      [null, undefined, ""].includes(LoginService.username.trim()) ?'Please Login' : `${LoginService.username} online`;
   }
 
   async ngOnInit(): Promise<void> {
