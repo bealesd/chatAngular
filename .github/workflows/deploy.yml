@@ -1,10 +1,13 @@
 name: Build and Deploy Github Pages Files
-
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
+      - WeighIns
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
+      - WeighIns
 
 jobs:
   build:
