@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { CalendarRecord } from './../models/calendar-record.model';
@@ -33,7 +33,7 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private calendarService: CalendarService,
     public calendarHelper: CalendarHelper
   ) { }
