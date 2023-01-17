@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1672936601396,
+  "timestamp": 1673951354425,
   "index": "/chatAngular/index.html",
   "assetGroups": [
     {
@@ -13,7 +13,7 @@
       "urls": [
         "/chatAngular/favicon.ico",
         "/chatAngular/index.html",
-        "/chatAngular/main.8d38a280cd8f7fd1a930.js",
+        "/chatAngular/main.712a4a8c87460d7ec80c.js",
         "/chatAngular/manifest.webmanifest",
         "/chatAngular/polyfills.dc934f6e37ebf13cf99b.js",
         "/chatAngular/runtime.606b39dfb72edd63b83c.js",
@@ -43,6 +43,7 @@
         "/chatAngular/assets/images/ringOnBlack.jpg",
         "/chatAngular/assets/images/robin.jpg",
         "/chatAngular/assets/images/spaceRed.jpg",
+        "/chatAngular/assets/scripts/line-chart.js",
         "/chatAngular/icomoon.95a00167d5ba7a268542.woff"
       ],
       "patterns": []
@@ -64,10 +65,11 @@
     "/chatAngular/assets/images/ringOnBlack.jpg": "a8cf25e06e2520df5efe567f28613cdabcd93029",
     "/chatAngular/assets/images/robin.jpg": "8213080343033a7eddcf4b5b84f459e94cd56b3f",
     "/chatAngular/assets/images/spaceRed.jpg": "f557e8d9ee49938d20c04e8066137944a443104f",
+    "/chatAngular/assets/scripts/line-chart.js": "0d1cc210c181bb5f86f66edb7c83982c97452642",
     "/chatAngular/favicon.ico": "fcbcf16ac9d543f785ec36346161838334fdce13",
     "/chatAngular/icomoon.95a00167d5ba7a268542.woff": "cb9cddc0125d6f2a03892efd903d641302be4650",
-    "/chatAngular/index.html": "2baa740452f144b58eb68b3414f97799ae8c7f08",
-    "/chatAngular/main.8d38a280cd8f7fd1a930.js": "f4a804213f89e0077d325fcb7a129bf0ea348c82",
+    "/chatAngular/index.html": "34131a2e5778d881bea18032a42c3d8bd63e46ef",
+    "/chatAngular/main.712a4a8c87460d7ec80c.js": "23b822764b1068fa3812f810ad157a83d6a77181",
     "/chatAngular/manifest.webmanifest": "42045d6273e4477375e0a7d4c344bd46cbc3a064",
     "/chatAngular/polyfills.dc934f6e37ebf13cf99b.js": "83c89b7a59b7ec2f7dd295ad222a9f01b4f99d74",
     "/chatAngular/runtime.606b39dfb72edd63b83c.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
