@@ -1,69 +1,83 @@
 <div class="side-menu">
 
         <ng-container *ngIf="sideMenus.hasOwnProperty(urlPath)">
+
                 <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/chatGroup"
-                        class="side-menu-button" title="go to main menu">
+                        class="side-menu-button side-menu" title="go to main menu">
                         Main Menu
                 </button>
-                
+
                 <ng-container *ngFor="let menu of sideMenus[urlPath].menu">
-                        <button (mouseover)='over($event)' (mouseout)='out($event)'
-                                class="side-menu-button {{menu.class}}" title="{{menu.title}}"
-                                routerLink="{{menu.routerLink}}">
-                                {{menu.value}}
+
+                        <button *ngIf="menu.routerLink"
+                        (mouseover)='over($event)' (mouseout)='out($event)'
+                                class="side-menu-button {{menu.class}}" title="{{menu.tooltip}}"
+                                routerLink="{{menu.routerLink}}" 
+                                [routerLinkActive]="['is-active']">
+                                {{menu.name}}
                         </button>
+
+                        <button *ngIf="!menu.routerLink"
+                        (mouseover)='over($event)' (mouseout)='out($event)'
+                                class="side-menu-button {{menu.class}}" title="{{menu.tooltip}}">
+                                {{menu.name}}
+                        </button>
+
                 </ng-container>
 
         </ng-container>
 
         <ng-container *ngIf="!sideMenus.hasOwnProperty(urlPath)">
+
                 <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/calendar"
-                        class="side-menu-button" title="go to calendar">
+                        [routerLinkActive]="['is-active']" class="side-menu-button side-menu" title="go to calendar">
                         Calendar
                 </button>
 
                 <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/chatGroup"
-                        class="side-menu-button" title="go to Chats">
+                        [routerLinkActive]="['is-active']" class="side-menu-button side-menu" title="go to Chats">
                         Chat
                 </button>
 
                 <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/createChatGroup"
-                        class="side-menu-button" title="Create New Chat Group">
+                        [routerLinkActive]="['is-active']" class="side-menu-button side-menu"
+                        title="Create New Chat Group">
                         New Chat
                 </button>
 
-                <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/todo" class="side-menu-button"
-                        title="go to todo">
+                <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/todo"
+                        [routerLinkActive]="['is-active']" class="side-menu-button side-menu" title="go to todo">
                         Todo
                 </button>
 
                 <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/notepad"
-                        class="side-menu-button" title="go to notepads">
+                        [routerLinkActive]="['is-active']" class="side-menu-button side-menu" title="go to notepads">
                         Notepad
                 </button>
 
                 <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/profile"
-                        class="side-menu-button" title="go to profile">
+                        [routerLinkActive]="['is-active']" class="side-menu-button side-menu" title="go to profile">
                         Profile
                 </button>
 
                 <button (mouseover)='over($event)' (mouseout)='out($event)' (click)="toggleDarkMode()"
-                        class="side-menu-button" title="toggle dark mode">
+                        class="side-menu-button side-menu" title="toggle dark mode">
                         Dark Mode
                 </button>
 
                 <button (mouseover)='over($event)' (mouseout)='out($event)' (click)="toggleLogs()"
-                        class="side-menu-button" title="toggle debugger">
+                        class="side-menu-button side-menu" title="toggle debugger">
                         Logs
                 </button>
 
                 <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/newUser"
-                        class="side-menu-button" title="go to new user" *ngIf="username === 'david'">
+                        [routerLinkActive]="['is-active']" class="side-menu-button side-menu" title="go to new user"
+                        *ngIf="username === 'david'">
                         New User
                 </button>
 
                 <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/weighIns"
-                        class="side-menu-button" title="Check your weights">
+                        [routerLinkActive]="['is-active']" class="side-menu-button side-menu" title="Check your weights">
                         Weigh Ins
                 </button>
 
@@ -71,5 +85,6 @@
                         title="logout">
                         Logout
                 </button>
+
         </ng-container>
 </div>

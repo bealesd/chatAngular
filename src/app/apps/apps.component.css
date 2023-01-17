@@ -26,7 +26,7 @@
     border: none;
 } */
 
-.side-menu button {
+.side-menu > button {
     color: white;
     text-align: left;
     text-decoration: none;
@@ -39,6 +39,16 @@
     box-shadow:  var(--side-menu-box-shadow);
     text-shadow: var(--side-menu-text-shadow);
     margin:  var(--side-menu-margin);
+}
+
+.side-menu > button:hover.child-menu,
+.side-menu > button:hover.side-menu
+{
+    background-image: linear-gradient(to right, rgb(195 164 245), rgb(119 84 157));
+}
+
+.side-menu > button.is-active {
+    background-image: linear-gradient(to right, rgb(195 164 245), rgb(119 84 157));
 }
 
 .side-menu > button.side-menu-button.child-menu  {

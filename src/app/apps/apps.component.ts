@@ -18,22 +18,22 @@ export class AppsComponent implements OnInit {
       '/weighIns': {
         menu: [
           {
-            routerLink: '/weighIns',
+            routerLink: null,
             class: 'parent-menu',
-            title: 'Weigh Ins Area',
-            value: 'Weigh Ins'
+            tooltip: 'Weigh Ins Area',
+            name: 'Weigh Ins'
           },
           {
             routerLink: '/weighIns',
             class: 'child-menu',
-            title: 'Values',
-            value: 'Weights'
+            tooltip: 'Weights',
+            name: 'Weights'
           },
           {
-            routerLink: '/weighIns',
+            routerLink: '/weighInsGraph',
             class: 'child-menu',
-            title: 'Graph',
-            value: 'Graph'
+            tooltip: 'Graph',
+            name: 'Graph'
           }
         ]
       }
