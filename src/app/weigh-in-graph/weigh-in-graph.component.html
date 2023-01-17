@@ -1,0 +1,21 @@
+<p>weigh-in-graph works!</p>
+<!-- <canvas id="scatter-chart"></canvas> -->
+
+<!-- <canvas baseChart width="400" height="400"
+  [data]="lineChartData"
+  [labels]="lineChartLabels"
+  [options]="lineChartOptions"
+  [colors]="lineChartColors"
+  [legend]="lineChartLegend"
+  [type]="lineChartType"
+  [plugins]="lineChartPlugins">
+</canvas> -->
+
+<div style="display: block;">
+    <canvas baseChart width="400" height="400"
+      [type]="'line'"
+      [data]="lineChartData"
+      [options]="lineChartOptions"
+      [legend]="lineChartLegend">
+    </canvas>
+  </div>

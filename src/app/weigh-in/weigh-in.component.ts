@@ -1,6 +1,4 @@
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Component, OnInit } from '@angular/core';
-import { Utilities } from '../helpers/utilities-helper';
 import { WeighIn } from '../models/weigh-in.model';
 import { WeighInRepo } from '../services/weighIns.repo';
 
@@ -39,23 +37,33 @@ export class WeighInComponent implements OnInit {
   }
 
   addRow(): void {
-    const weightDaveValue = (<HTMLInputElement>document.querySelector('#weight-dave')).value;
-    const weightEstherValue = (<HTMLInputElement>document.querySelector('#weight-esther')).value;
+    const weightDaveStoneValue = (<HTMLInputElement>document.querySelector('#weight-dave-stone')).value;
+    const weightDavePoundsValue = (<HTMLInputElement>document.querySelector('#weight-dave-pounds')).value;
+    const weightEstherStoneValue = (<HTMLInputElement>document.querySelector('#weight-esther-stone')).value;
+    const weightEstherPoundsValue = (<HTMLInputElement>document.querySelector('#weight-esther-pounds')).value;
     const weightDateValue = (<HTMLInputElement>document.querySelector('#weight-date')).value;
 
-    //reset values
+    // reset values
     for (const inputElement of [...document.querySelectorAll('.weight-date')]) {
       (<HTMLInputElement>inputElement).value = '';
     }
 
-    if (!this.isValidWeight(weightDaveValue)) return alert(`Dave weight is invalid: ${weightDaveValue}`);
-    if (!this.isValidWeight(weightEstherValue)) return alert(`Dave weight is invalid: ${weightEstherValue}`);
+    if (!this.isValidWeight(weightDaveStoneValue)) return alert(`Dave weight stone is invalid: ${weightDaveStoneValue}`);
+    if (!this.isValidWeight(weightDavePoundsValue)) return alert(`Dave weight pounds is invalid: ${weightDavePoundsValue}`);
+    if (!this.isValidWeight(weightEstherStoneValue)) return alert(`Esther weight stone is invalid: ${weightEstherStoneValue}`);
+    if (!this.isValidWeight(weightEstherPoundsValue)) return alert(`Esther weight pounds is invalid: ${weightEstherPoundsValue}`);
     if (!this.isValidDate(weightDateValue)) return alert(`Date is invalid: ${weightDateValue}`);
 
     const dateObject = new Date(weightDateValue);
 
-    // we do not parse weigh ins as a float because 9.10 would become 9.1
-    const weighIn: WeighIn = { Id: null, David: weightDaveValue, Esther: weightEstherValue, Date: dateObject };
+    const weighIn: WeighIn = {
+      Id: null,
+      DavidStone: parseFloat(weightDaveStoneValue),
+      DavidPounds: parseFloat(weightDavePoundsValue),
+      EstherStone: parseFloat(weightEstherStoneValue),
+      EstherPounds: parseFloat(weightEstherPoundsValue),
+      Date: dateObject
+    };
     this.weighInRepo.postWeighIn(weighIn);
   }
 
@@ -93,7 +101,6 @@ export class WeighInComponent implements OnInit {
     } catch (_) {
       return false;
     }
-
   }
 
   getISO8060DateStringFromDateObject(dateObject: Date): string {

@@ -2,21 +2,29 @@
 
     <div class="weigh-in-table">
         <div class="th">Date</div>
-        <div class="th">David</div>
-        <div class="th">Esther</div>
+        <div class="th">DStone</div>
+        <div class="th">DPounds</div>
+        <div class="th">EStone</div>
+        <div class="th">EPounds</div>
 
         <ng-container *ngFor="let result of sortedWeightIns; let i = index;">
             <div class="td {{i%2 === 0 ? 'even' : 'odd'}} {{highlightedRow === result.Id ? 'highlighted-row' : ''}}"
                 (click)="highlightRow(result.Id)" [attr.data-id]="i">{{result.Date | date:'dd/MM/yyyy'}}</div>
             <div class="td {{i%2 === 0 ? 'even' : 'odd'}} {{highlightedRow === result.Id ? 'highlighted-row' : ''}}"
-                (click)="highlightRow(result.Id)" [attr.data-id]="i">{{result.David}}</div>
+                (click)="highlightRow(result.Id)" [attr.data-id]="i">{{result.DavidStone}}</div>
             <div class="td {{i%2 === 0 ? 'even' : 'odd'}} {{highlightedRow === result.Id ? 'highlighted-row' : ''}}"
-                (click)="highlightRow(result.Id)" [attr.data-id]="i">{{result.Esther}}</div>
+                (click)="highlightRow(result.Id)" [attr.data-id]="i">{{result.DavidPounds}}</div>
+                <div class="td {{i%2 === 0 ? 'even' : 'odd'}} {{highlightedRow === result.Id ? 'highlighted-row' : ''}}"
+                (click)="highlightRow(result.Id)" [attr.data-id]="i">{{result.EstherStone}}</div>
+            <div class="td {{i%2 === 0 ? 'even' : 'odd'}} {{highlightedRow === result.Id ? 'highlighted-row' : ''}}"
+                (click)="highlightRow(result.Id)" [attr.data-id]="i">{{result.EstherPounds}}</div>
         </ng-container>
 
         <input id="weight-date" class="td" type="date" value="{{todaysDateAsISO8060String}}" />
-        <input id="weight-dave" class="td" type="number" min="7" max="14" step="0.1" value="10" />
-        <input id="weight-esther" class="td" type="number" min="7" max="14" step="0.1" value="8" />
+        <input id="weight-dave-stone" class="td" type="number" min="7" max="14" step="0.1" value="10" />
+        <input id="weight-dave-pounds" class="td" type="number" min="0" max="13" step="0.1" value="6" />
+        <input id="weight-esther-stone" class="td" type="number" min="7" max="14" step="0.1" value="8" />
+        <input id="weight-esther-pounds" class="td" type="number" min="0" max="13" step="0.1" value="6" />
 
     </div>
 

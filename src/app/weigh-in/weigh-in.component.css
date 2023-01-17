@@ -2,6 +2,8 @@
 :host {
     --vertical-spacing-between-elements: 10px;
     --grid-container-left-margin: 10px;
+
+    --column-widths: 50px;
 }
 /*#endregion*/
 
@@ -10,6 +12,8 @@
     :host {
         --vertical-spacing-between-elements: 10px;
         --grid-container-left-margin: 10px;
+
+        --column-widths: 50px;
     }
 }
 /*#endregion*/
@@ -21,7 +25,9 @@
 
 .weigh-in-table{
     display: grid;
-    grid-template-columns: minmax(100px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr);
+    /* grid-template-columns: repeat(minmax(50px, 1fr), 6); */
+    /* repeat(3, minmax(0, 1fr)) */
+     grid-template-columns: minmax(var(--column-widths), 1fr) minmax(var(--column-widths), 1fr) minmax(var(--column-widths), 1fr) minmax(var(--column-widths), 1fr) minmax(var(--column-widths), 1fr);
 }
 
 .weigh-in-page .weigh-in-table .th {

@@ -30,6 +30,8 @@ import { ProfileComponent } from './profile/profile.component';
 import { ChatGroupComponent } from './chat-group/chat-group.component';
 import { ChatGroupCreateComponent } from './chat-group-create/chat-group-create.component';
 import { WeighInComponent } from './weigh-in/weigh-in.component';
+import { WeighInGraphComponent } from './weigh-in-graph/weigh-in-graph.component';
+import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -53,7 +55,8 @@ import { WeighInComponent } from './weigh-in/weigh-in.component';
     ProfileComponent,
     ChatGroupComponent,
     ChatGroupCreateComponent,
-    WeighInComponent
+    WeighInComponent,
+    WeighInGraphComponent
   ],
   imports: [
     BrowserModule,
@@ -66,6 +69,7 @@ import { WeighInComponent } from './weigh-in/weigh-in.component';
 
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
 
+    NgChartsModule,
   ],
   providers: [
     { provide: DatePipe },

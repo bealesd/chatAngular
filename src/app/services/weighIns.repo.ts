@@ -29,8 +29,10 @@ export class WeighInRepo {
                 const weighInDto = weighInsDto[i];
                 const weighIn = new WeighIn();
                 weighIn.Id = weighInDto.id;
-                weighIn.David = weighInDto.david;
-                weighIn.Esther = weighInDto.esther;
+                weighIn.DavidStone = weighInDto.davidStone;
+                weighIn.DavidPounds = weighInDto.davidPounds;
+                weighIn.EstherStone = weighInDto.estherStone;
+                weighIn.EstherPounds = weighInDto.estherPounds;
                 // weighInDto.date is in ISO 8601 format
                 weighIn.Date = new Date(weighInDto.date);
                 weightIns.push(weighIn);
@@ -84,8 +86,11 @@ export class WeighInRepo {
           next: (weighInDto: any) => {
             const weighIn = new WeighIn();
             weighIn.Id = weighInDto.id;
-            weighIn.Esther = weighInDto.esther;
-            weighIn.David = weighInDto.david;
+            weighIn.DavidStone = weighInDto.davidStone;
+            weighIn.DavidPounds = weighInDto.davidPounds;
+            weighIn.EstherStone = weighInDto.estherStone;
+            weighIn.EstherPounds = weighInDto.estherPounds;
+
             weighIn.Date = weighInDto.date;
             res(weighIn);
           },
