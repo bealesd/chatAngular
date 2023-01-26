@@ -17,11 +17,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Set up Node 16
+    - name: Set up Node 18
       uses: actions/setup-node@v3
       with:
         node-version: '18.x'
-        # 18.x
 
     - name: Install angular
       run: npm install -g @angular/cli    
@@ -32,24 +31,8 @@ jobs:
     - name: Install packages
       run: yarn;
 
-    - name: Build
+    - name: Build Static Website Files
       run: node build.js
-
-    # - name: Build
-    #   run: ng build --prod --output-path docs --base-href "/chatAngular/"
-
-    # - name: Update deployment for GitHub Pages
-    #   env:
-    #     ACTOR: ${{ github.actor }}
-    #     AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
-    #   run: |
-    #     git status; \
-    #     git config --global user.email $AUTHOR_EMAIL; \
-    #     git config --global user.name $ACTOR; \
-    #     if [[ `git status --porcelain` ]]; \
-    #     then git add . && git commit -m"Auto update deployment folder" && echo "changes committed" && git push origin gh-pages -f; \
-    #     else echo "no changes to commit"; \
-    #     fi
 
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@4.1.4

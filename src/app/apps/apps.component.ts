@@ -13,6 +13,7 @@ import { Location, LocationStrategy, PathLocationStrategy } from '@angular/commo
 })
 export class AppsComponent implements OnInit {
   // add sub menus in here for a page based on url path
+  // side menu router links mist be prefixed with parent key
   sideMenus: Object =
     {
       '/weighIns': {
@@ -61,6 +62,17 @@ export class AppsComponent implements OnInit {
 
   get urlPath() {
     return this.location.path();
+  }
+
+  get isSideMenu(){
+    return Object.keys(this.sideMenus).findIndex(sideMenu => this.urlPath.includes(sideMenu)) === 0;
+  }
+  
+  get getSideMenuForUrl(){
+    if (this.isSideMenu)
+      return this.sideMenus[Object.keys(this.sideMenus).find(sideMenu => this.urlPath.includes(sideMenu))]
+    
+      this.messageService.add(`Apps component: could not find side menu for url: ${this.urlPath}`, 'error');   
   }
 
   ngOnInit(): void {

@@ -1,0 +1,12 @@
+/*#region SMALL SIZE WRAPPER - DEFAULT*/
+:host {
+    --graph-length: calc(95vw - var(--side-menu-button-width));
+    --graph-pad: 10px;
+}
+/*#endregion*/
+
+
+#chart-container{
+    display: block;
+    width: var(--graph-length);
+}

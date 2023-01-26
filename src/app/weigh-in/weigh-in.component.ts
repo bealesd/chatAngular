@@ -24,9 +24,6 @@ export class WeighInComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    window['pageTitle'] = 'Weigh Ins';
-    window['toolInfo'] = ''
-
     await this.weighInRepo.getTodoList();
   }
 

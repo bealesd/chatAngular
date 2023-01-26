@@ -4,7 +4,7 @@ const { execSync } = require('child_process');
 let core;
 
 try {
-    //if running in github action us core for error messaging
+    //use github action core for error messaging
     core = require("@actions/core");
 }
 catch {

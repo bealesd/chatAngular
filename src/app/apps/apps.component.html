@@ -1,13 +1,13 @@
 <div class="side-menu">
 
-        <ng-container *ngIf="sideMenus.hasOwnProperty(urlPath)">
+        <ng-container *ngIf="isSideMenu">
 
                 <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/chatGroup"
                         class="side-menu-button side-menu" title="go to main menu">
                         Main Menu
                 </button>
 
-                <ng-container *ngFor="let menu of sideMenus[urlPath].menu">
+                <ng-container *ngFor="let menu of getSideMenuForUrl.menu">
 
                         <button *ngIf="menu.routerLink"
                         (mouseover)='over($event)' (mouseout)='out($event)'
@@ -27,7 +27,7 @@
 
         </ng-container>
 
-        <ng-container *ngIf="!sideMenus.hasOwnProperty(urlPath)">
+        <ng-container *ngIf="!isSideMenu">
 
                 <button (mouseover)='over($event)' (mouseout)='out($event)' routerLink="/calendar"
                         [routerLinkActive]="['is-active']" class="side-menu-button side-menu" title="go to calendar">
