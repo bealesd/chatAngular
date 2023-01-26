@@ -8,7 +8,7 @@ try {
     core = require("@actions/core");
 }
 catch {
-    //if running locally print error to console
+    //if core fails to import
     core = { setFailed: (msg) => { console.log(msg); } };
 }
 
