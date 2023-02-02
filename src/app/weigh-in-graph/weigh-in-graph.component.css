@@ -5,8 +5,7 @@
 }
 /*#endregion*/
 
-
 #chart-container{
-    display: block;
+    position: relative;
     width: var(--graph-length);
 }
