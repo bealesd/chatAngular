@@ -45,10 +45,10 @@ export class WeighInComponent implements OnInit {
       (<HTMLInputElement>inputElement).value = '';
     }
 
-    if (!this.isValidWeight(weightDaveStoneValue)) return alert(`Dave weight stone is invalid: ${weightDaveStoneValue}`);
-    if (!this.isValidWeight(weightDavePoundsValue)) return alert(`Dave weight pounds is invalid: ${weightDavePoundsValue}`);
-    if (!this.isValidWeight(weightEstherStoneValue)) return alert(`Esther weight stone is invalid: ${weightEstherStoneValue}`);
-    if (!this.isValidWeight(weightEstherPoundsValue)) return alert(`Esther weight pounds is invalid: ${weightEstherPoundsValue}`);
+    if (!this.isValidStone(weightDaveStoneValue)) return alert(`Dave weight stone is invalid: ${weightDaveStoneValue}`);
+    if (!this.isValidPound(weightDavePoundsValue)) return alert(`Dave weight pounds is invalid: ${weightDavePoundsValue}`);
+    if (!this.isValidStone(weightEstherStoneValue)) return alert(`Esther weight stone is invalid: ${weightEstherStoneValue}`);
+    if (!this.isValidPound(weightEstherPoundsValue)) return alert(`Esther weight pounds is invalid: ${weightEstherPoundsValue}`);
     if (!this.isValidDate(weightDateValue)) return alert(`Date is invalid: ${weightDateValue}`);
 
     const dateObject = new Date(weightDateValue);
@@ -91,10 +91,19 @@ export class WeighInComponent implements OnInit {
     }
   }
 
-  isValidWeight(rawWeight: string): boolean {
+  isValidStone(rawWeight: string): boolean {
     try {
       const weight = parseFloat(rawWeight);
       return weight < 20 && weight > 5;
+    } catch (_) {
+      return false;
+    }
+  }
+
+isValidPound(rawWeight: string): boolean {
+    try {
+      const weight = parseFloat(rawWeight);
+      return weight < 14 && weight >= 0;
     } catch (_) {
       return false;
     }
