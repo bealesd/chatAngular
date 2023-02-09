@@ -1,6 +1,6 @@
 /*#region SMALL SIZE WRAPPER - DEFAULT*/
 :host {
-    --graph-length: calc(95vw - var(--side-menu-button-width));
+    --graph-length: 100%;
     --graph-pad: 10px;
 }
 /*#endregion*/

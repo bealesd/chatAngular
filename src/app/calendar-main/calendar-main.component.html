@@ -1,21 +1,25 @@
 <div class="changePageContainer">
 
  
-  <div class="green-button-container one" (click)="changeWeekOrMonth('previous')">
+  <div class="green-button-container" (click)="changeWeekOrMonth('previous')">
     <div class="green-button icon-arrow-left" >
     </div>
   </div>
 
-  <div class="green-button-container two" (click)="changeWeekOrMonth('next')">
+  <div class="green-button-container" (click)="changeWeekOrMonth('next')">
     <div class="green-button icon-arrow-right" >
     </div>
   </div>
 
-  <div class="today-button-container three">
+  <div class="today-button-container">
     <div class="today-button" (click)="calendarService.changeToToday()">Today</div>
   </div>
 
 <input type="month" class="dropdown" #titleMonth (change)="updateDate(titleMonth.value)"  min="2020-01" max="2039-12" [value]="month">
+
+<div class="green-button-container" (click)="openAddEventForm()">
+  <div class="green-button icon-plus"></div>
+</div>
 
   <select class="dropdown" (change)="updateCalendarView(calendarView.value)" #calendarView id="calendarView">
     <option *ngFor='let view of calendarViews' [value]="view" [selected]="monthOrWeek === view.toLowerCase()">

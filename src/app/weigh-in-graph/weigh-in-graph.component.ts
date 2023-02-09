@@ -115,6 +115,6 @@ export class WeighInGraphComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    window['toolInfo'] = '';
   }
 }

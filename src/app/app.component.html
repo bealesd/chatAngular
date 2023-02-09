@@ -1,20 +1,12 @@
 <div class="bg">
-    <div class="menu-bar">
         <app-menu-bar></app-menu-bar>
-    </div>
 
     <div class="page-content">
-        <div class='main'>
-            <router-outlet class='main'></router-outlet>
-        </div>
-        <div class='menu'>
-            <app-component class="menu"></app-component>
-        </div>
+        <router-outlet></router-outlet>
     </div>
 
 </div>
 
 <app-dialog-box></app-dialog-box>
-
 
 <app-messages *ngIf="isLoggingOn"></app-messages>

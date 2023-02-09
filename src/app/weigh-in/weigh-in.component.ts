@@ -24,6 +24,7 @@ export class WeighInComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    window['toolInfo'] = '';
     await this.weighInRepo.getTodoList();
   }
 
@@ -103,5 +104,4 @@ export class WeighInComponent implements OnInit {
   getISO8060DateStringFromDateObject(dateObject: Date): string {
     return dateObject.toISOString().split('T')[0];
   }
-
 }

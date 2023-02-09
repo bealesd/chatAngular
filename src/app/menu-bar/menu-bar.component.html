@@ -1,9 +1,104 @@
-<div class="menu-title">
-    <div class="page-title">{{pageTitle}}</div>
-</div>
+<div class="menu-bar-container">
+    
+    <div class="menu-title">
+        <div class="page-title">{{pageTitle}}</div>
+    </div>
 
-<div class="menu-tooltip">
-    <div class="app-container">
-        <div class="page-title">{{toolInfo}}</div>
+    <div class="menu-tooltip">
+        <div class="tooltip-container">
+            <div class="page-title">{{toolInfo}}</div>
+        </div>
+    </div>
+
+
+    <div *ngIf="loggedIn" class="hamburger {{sidebarOpen === true ? 'change' : ''}}" (click)="toggleSidebar()">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
     </div>
 </div>
+
+
+<ng-container *ngIf="isSideMenu && sidebarOpen && loggedIn">
+    <div class="side-menu">
+        <div (mouseover)='over($event)'  (mouseout)='out($event)' (click)='closeSideBar()'  routerLink="/chatGroup"
+            class="side-menu-button" title="go to main menu">
+            Main Menu
+        </div>
+
+        <ng-container *ngFor="let menu of getSideMenuForUrl.menu">
+
+            <div *ngIf="menu.routerLink" (mouseover)='over($event)'  (mouseout)='out($event)' (click)='closeSideBar()' 
+                class="side-menu-button {{menu.class}}" title="{{menu.tooltip}}" routerLink="{{menu.routerLink}}"
+                [routerLinkActive]="['is-active']">
+                {{menu.name}}
+            </div>
+
+            <div *ngIf="!menu.routerLink" (mouseover)='over($event)'  (mouseout)='out($event)' (click)='closeSideBar()' 
+                class="side-menu-button {{menu.class}}" title="{{menu.tooltip}}">
+                {{menu.name}}
+            </div>
+
+        </ng-container>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="!isSideMenu && sidebarOpen && loggedIn">
+    <div class="side-menu">
+        <div class="sidebar-header side-menu-button" (mouseover)='over($event)'  (mouseout)='out($event)' (click)='closeSideBar()' 
+            routerLink="/calendar" [routerLinkActive]="['is-active']" title="go to calendar">
+            Calendar
+        </div>
+
+        <div class="sidebar-header side-menu-button" (mouseover)='over($event)'  (mouseout)='out($event)' (click)='closeSideBar()' 
+            routerLink="/chatGroup" [routerLinkActive]="['is-active']" title="go to chats">
+            Chat
+        </div>
+
+        <div (mouseover)='over($event)'  (mouseout)='out($event)' (click)='closeSideBar()'  routerLink="/createChatGroup"
+            [routerLinkActive]="['is-active']" class="sidebar-header side-menu-button" title="Create New Chat Group">
+            New Chat
+        </div>
+
+        <div (mouseover)='over($event)'  (mouseout)='out($event)' (click)='closeSideBar()'  routerLink="/todo" [routerLinkActive]="['is-active']"
+            class="sidebar-header side-menu-button" title="go to todo">
+            Todo
+        </div>
+
+        <div (mouseover)='over($event)'  (mouseout)='out($event)' (click)='closeSideBar()'  routerLink="/notepad"
+            [routerLinkActive]="['is-active']" class="sidebar-header side-menu-button" title="go to notepads">
+            Notepad
+        </div>
+
+        <div (mouseover)='over($event)'  (mouseout)='out($event)' (click)='closeSideBar()'  routerLink="/profile"
+            [routerLinkActive]="['is-active']" class="sidebar-header side-menu-button" title="go to profile">
+            Profile
+        </div>
+
+        <div (mouseover)='over($event)'  (mouseout)='out($event)' (click)='closeSideBar()'  (click)="toggleDarkMode()"
+            class="sidebar-header side-menu-button" title="toggle dark mode">
+            Dark Mode
+        </div>
+
+        <div (mouseover)='over($event)'  (mouseout)='out($event)' (click)='closeSideBar()'  (click)="toggleLogs()"
+            class="sidebar-header side-menu-button" title="toggle debugger">
+            Logs
+        </div>
+
+        <div (mouseover)='over($event)'  (mouseout)='out($event)' (click)='closeSideBar()'  routerLink="/newUser"
+            [routerLinkActive]="['is-active']" class="sidebar-header side-menu-button" title="go to new user"
+            *ngIf="username === 'david'">
+            New User
+        </div>
+
+        <div (mouseover)='over($event)'  (mouseout)='out($event)' (click)='closeSideBar()'  routerLink="/weighIns"
+            [routerLinkActive]="['is-active']" class="sidebar-header side-menu-button" title="Check your weights">
+            Weigh Ins
+        </div>
+
+        <div (mouseover)='over($event)'  (mouseout)='out($event)' (click)="logout()" class="side-menu-button"
+            title="logout">
+            Logout
+        </div>
+    </div>
+</ng-container>

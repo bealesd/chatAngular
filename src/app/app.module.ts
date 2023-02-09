@@ -18,7 +18,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { DialogBoxComponent } from './dialog-box/dialog-box.component';
 import { MenuBarComponent } from './menu-bar/menu-bar.component';
 import { CalendarMainComponent } from './calendar-main/calendar-main.component';
-import { AppsComponent } from './apps/apps.component';
 import { TodoComponent } from './todo/todo.component';
 import { CalendarMonthComponent } from './calendar-month/calendar-month.component';
 import { CalendarWeekComponent } from './calendar-week/calendar-week.component';
@@ -44,7 +43,6 @@ import { NgChartsModule } from 'ng2-charts';
     DialogBoxComponent,
     MenuBarComponent,
     CalendarMainComponent,
-    AppsComponent,
     TodoComponent,
     CalendarMonthComponent,
     CalendarWeekComponent,

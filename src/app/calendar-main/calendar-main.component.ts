@@ -54,4 +54,9 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
     else
       this.calendarService.changeDay(direction)
   }
+
+  openAddEventForm() {
+    const now = new Date();
+    this.calendarService.openAddEventForm.next({ 'open': true, 'dayData':{'dayInMonthArrayIndex': now.getUTCDate(), 'hour': now.getUTCHours()} });
+  }
 }
