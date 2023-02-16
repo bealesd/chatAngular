@@ -83,6 +83,7 @@
 }
 
 .weekdayName-names-contianer {
+    top: var(--menu-bar-container-height);
     display: grid;
     grid-template-columns: repeat(7, 1fr);
 }

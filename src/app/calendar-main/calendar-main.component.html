@@ -29,8 +29,8 @@
 
 </div>
 
-<app-calendar-month *ngIf="monthOrWeek === 'month'"></app-calendar-month>
-<app-calendar-week *ngIf="monthOrWeek === 'week'"></app-calendar-week>
-<app-calendar-day *ngIf="monthOrWeek === 'day'"></app-calendar-day>
-
 <app-calendar-form></app-calendar-form>
+
+<app-calendar-month class="calendar" *ngIf="monthOrWeek === 'month'"></app-calendar-month>
+<app-calendar-week class="calendar" *ngIf="monthOrWeek === 'week'"></app-calendar-week>
+<app-calendar-day class="calendar" *ngIf="monthOrWeek === 'day'"></app-calendar-day>

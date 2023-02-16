@@ -14,7 +14,6 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   calendarViews = ['Month', 'Week', 'Day'];
   title: string;
 
-
   get month() {
     return this.calendarHelper.getFormInputMonthFromMonthAndYear(this.calendarService.year, this.calendarService.month);
   }

@@ -105,7 +105,7 @@
 
 .side-menu {
     top: 60px;
-    background-image: linear-gradient(to right, rgb(195 164 245), rgb(119 84 157));
+    background-image: linear-gradient(to right, rgba(195 164 245/ 60%), rgba(119 84 157/ 60%));
     color: black;
     font-size: 16px;
     width: calc(var(--side-menu-margin) + var(--side-menu-button-width) + 2 * var(--side-menu-padding));
@@ -120,7 +120,7 @@
     text-align: left;
     text-decoration: none;
     cursor: pointer;
-    background-image: linear-gradient(to right, rgb(86, 68, 128), rgb(79, 40, 120));
+    background-image: linear-gradient(to right, rgb(86 68 128/ 60%), rgb(79 40 120/ 60%));
     padding: var(--side-menu-padding);
     width: var(--side-menu-button-width);
     font-size: var(--side-menu-font-size);
@@ -131,11 +131,11 @@
 
 .side-menu>div:hover.child-menu,
 .side-menu>div:hover.side-menu-button {
-    background-image: linear-gradient(to right, rgb(195 164 245), rgb(119 84 157));
+    background-image: linear-gradient(to right, rgb(195 164 245/ 60%), rgb(119 84 157/ 60%));
 }
 
 .side-menu>div.is-active {
-    background-image: linear-gradient(to right, rgb(195 164 245), rgb(119 84 157));
+    background-image: linear-gradient(to right, rgb(195 164 245/ 60%), rgb(119 84 157/ 60%));
 }
 
 .side-menu>div.side-menu-button.child-menu {

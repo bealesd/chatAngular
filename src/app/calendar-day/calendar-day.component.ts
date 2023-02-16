@@ -17,6 +17,14 @@ export class CalendarDayComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {  }
 
+  ngAfterViewInit(){
+    // scroll to current time
+    const currentHour = new Date().getHours();
+    const hourElement = document.querySelectorAll(".date-box")[currentHour];
+    const yPositionOfHourElement = Math.abs(hourElement.getBoundingClientRect().y);
+    window.scrollTo(0, yPositionOfHourElement + (window.innerHeight - 100) / 2);
+  }
+
   ngOnDestroy() {
     this.calendarService.openUpdateEventForm.next({ 'record': {}, 'open': false });
     this.calendarService.openAddEventForm.next({ 'dayData': {}, 'open': false });

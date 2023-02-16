@@ -1,13 +1,15 @@
 :host {
     --main-margin: 5px;
     --record-text-and-heading-color: white;
-    --sub-menu-background-color: linear-gradient(to right, rgb(70 121 164), rgb(37 54 131));;
+    --sub-menu-background-color: linear-gradient(to right, rgb(70 121 164), rgb(37 54 131));
+    ;
     --heading-font-size: 16px;
     --heading-font-family: inherit;
     --heading-font-weight: normal;
     --change-page-font-size: 20px;
     --mask-background-color: rgba(38, 38, 38);
     --menu-margin-left: 15px;
+    --sub-menu-bar-height: 40px;
 }
 
 
@@ -18,36 +20,47 @@
         --heading-font-size: 14px;
         --heading-font-family: 'Arial Narrow';
         --menu-margin-left: 10px;
-   }
-  }
+    }
+}
 
 /*small size wrapper*/
 
 @media screen and (max-width: 700px) {
     :host {
 
-       --heading-font-size: 12px;
-       --heading-font-family: 'Arial Narrow';
-       --menu-margin-left: 4px;
-   }
+        --heading-font-size: 12px;
+        --heading-font-family: 'Arial Narrow';
+        --menu-margin-left: 4px;
+    }
+}
+
+.calendar{
+    margin-top: calc(var(--sub-menu-bar-height));
+    display: block;
 }
 
 .changePageContainer {
+    position: fixed;
+    top: var(--menu-bar-height);
+    width: 100%;
+    height: var(--sub-menu-bar-height);
+    max-height: var(--sub-menu-bar-height);
+    z-index: 2;
+
     display: flex;
     color: var(--record-text-and-heading-color);
     background-image: var(--sub-menu-background-color);
     font-size: var(--heading-font-size);
     font-style: var(--heading-font-family);
-    height: 40px;
 }
 
-.changePageContainer > * {
+.changePageContainer>* {
     margin-left: var(--menu-margin-left);
 }
 
 #calendarView {
     margin-left: auto;
-} 
+}
 
 .dropdown {
     border: 0px;
@@ -77,16 +90,16 @@
     cursor: pointer;
 }
 
-.green-button-container{
-    height:40px;
+.green-button-container {
+    height: var(--sub-menu-bar-height);
     width: 40px;
     display: flex;
     justify-content: center;
     align-content: center;
 }
 
-.today-button-container{
-    height:40px;
+.today-button-container {
+    height: var(--sub-menu-bar-height);
     display: flex;
     justify-content: center;
     align-content: center;
