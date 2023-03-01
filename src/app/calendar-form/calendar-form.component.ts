@@ -5,7 +5,8 @@ import { Subscription } from 'rxjs';
 import { CalendarRecord } from './../models/calendar-record.model';
 import { CalendarService } from '../services/calendar.service';
 import { CalendarHelper } from '../helpers/calendar-helper';
-import { NodeWithI18n } from '@angular/compiler';
+
+import { getDate, getMonth, getYear } from 'date-fns';
 
 @Component({
   selector: 'app-calendar-form',
@@ -24,7 +25,7 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
     year: [],
     day: [],
     id: []
-  })
+  });
 
   addingEvent: boolean = false;
   updatingEvent: boolean = false;
@@ -98,15 +99,15 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
     this.undoEnabled = false;
     this.addingEvent = true;
 
-    const now = new Date(Date.UTC(this.calendarService.year, this.calendarService.month, dayData.dayInMonthArrayIndex, dayData.hour ?? 18, dayData.minute ?? 0));
+    const now = new Date(Date.UTC(getYear(this.calendarService.currentDate), getMonth(this.calendarService.currentDate), dayData.dayInMonthArrayIndex, dayData.hour ?? 18, dayData.minute ?? 0));
 
     this.profileForm.patchValue({
       what: '',
       time: now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
       date: now.toLocaleDateString('zh-Hans-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })['replaceAll']('/', '-'),
-      day: now.getDate(),
-      month: now.getMonth(),
-      year: now.getFullYear(),
+      day: getDate(now),
+      month: getMonth(now),
+      year: getYear(now),
       id: null,
       description: ''
     });
@@ -114,17 +115,17 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
 
   openUpdateEventForm(record) {
     this.undoEnabled = false;
-    this.updatingEvent = true
-
-    const now = new Date(Date.UTC(this.calendarService.year, this.calendarService.month, record.day, record.hour, record.minute));
+    this.updatingEvent = true;
+    
+    const now = record.dateTime;
 
     this.currentRecord = {
       what: record.what,
       time: now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
       date: now.toLocaleDateString('zh-Hans-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })['replaceAll']('/', '-'),
-      day: now.getDate(),
-      month: now.getMonth(),
-      year: now.getFullYear(),
+      day: getDate(now),
+      month: getMonth(now),
+      year: getYear(now),
       id: record.id,
       description: record.description
     };
@@ -144,11 +145,14 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
     record.id = this.profileForm.value.id;
     record.what = this.profileForm.value.what;
     record.description = this.profileForm.value.description;
-    record.year = parseInt(this.profileForm.value.date.split('-')[0]);
-    record.month = parseInt(this.profileForm.value.date.split('-')[1]) - 1;
-    record.day = parseInt(this.profileForm.value.date.split('-')[2]);
-    record.hour = parseInt(this.profileForm.value.time.split(':')[0]);
-    record.minute = parseInt(this.profileForm.value.time.split(':')[1]);
+
+    const year = parseInt(this.profileForm.value.date.split('-')[0]);
+    // zero indexed month, so month 12 is actually 11 when used in Date type
+    const month = parseInt(this.profileForm.value.date.split('-')[1]) - 1;
+    const day = parseInt(this.profileForm.value.date.split('-')[2]);
+    const hour = parseInt(this.profileForm.value.time.split(':')[0]);
+    const minute = parseInt(this.profileForm.value.time.split(':')[1]);
+    record.dateTime = new Date(year, month, day, hour, minute);
 
     if (this.profileForm.value.id === null)
       await this.calendarService.postCalendarRecord(record);

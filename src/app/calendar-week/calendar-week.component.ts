@@ -4,6 +4,11 @@ import { CalendarService } from '../services/calendar.service';
 import { CalendarRecord } from '../models/calendar-record.model';
 import { CalendarHelper } from '../helpers/calendar-helper';
 
+import {
+  getMonth, getDay, getDate, startOfWeek, endOfWeek,
+  getHours, eachDayOfInterval, eachHourOfInterval, format
+} from 'date-fns'
+
 @Component({
   selector: 'app-calendar-week',
   templateUrl: './calendar-week.component.html',
@@ -12,31 +17,89 @@ import { CalendarHelper } from '../helpers/calendar-helper';
 })
 export class CalendarWeekComponent implements OnInit, OnDestroy {
 
-  get daysForWeek(): { col: number, name: string, dayInMonthArrayIndex: number }[] {
-    return this.transformDaysForWeek(this.calendarService.getDaysForWeek());
+  get daysForWeek(): { col: number, dayName: string, dayInMonth: number }[] {
+    // Get start and end of current week
+    const startOfCurrentWeek = startOfWeek(this.calendarService.currentDate);
+    const endOfCurrentWeek = endOfWeek(this.calendarService.currentDate);
+
+    // Get array of dates for current week
+    const currentWeekDates = eachDayOfInterval({ start: startOfCurrentWeek, end: endOfCurrentWeek });
+
+    // Filter dates that are in current month
+    const dayDatesInCurrentWeekAndMonth = currentWeekDates.filter(date => date.getMonth() === getMonth(this.calendarService.currentDate));
+
+    const transformedDays = dayDatesInCurrentWeekAndMonth.map((day) => {
+      const col = getDay(day);
+      const dayName = format(day, 'EEEEEE');
+      const dayInMonth = getDate(day);
+      return { col: col + 1, dayName: dayName, dayInMonth: dayInMonth };
+    })
+    return transformedDays;
   }
 
-  get emptyDaysForWeek(): { col: number, name: string, dayInMonthArrayIndex: number }[] {
-    return this.transformDaysForWeek(this.calendarService.getDaysForWeekOutsideOfMonth());
+  get emptyDaysForWeek(): { col: number, dayName: string, dayInMonth: number }[] {
+    // Get start and end of current week
+    const startOfCurrentWeek = startOfWeek(this.calendarService.currentDate);
+    const endOfCurrentWeek = endOfWeek(this.calendarService.currentDate);
+
+    // Get array of dates for current week
+    const currentWeekDates = eachDayOfInterval({ start: startOfCurrentWeek, end: endOfCurrentWeek });
+
+    // Filter dates that are outisde of current month
+    const dayDatesNotInCurrentWeekAndMonth = currentWeekDates.filter(date => getMonth(date) !== getMonth(this.calendarService.currentDate));
+
+    const transformedDays = dayDatesNotInCurrentWeekAndMonth.map((day) => {
+      const col = getDay(day);
+      const dayName = format(day, 'EEEEEE');
+      const dayInMonth = getDate(day);
+      return { col: col + 1, dayName: dayName, dayInMonth: dayInMonth };
+    })
+    return transformedDays;
   }
 
   get dateTimeRecords(): { hour: number; day: number; col: number; records: CalendarRecord[]; }[] {
-    return this.calendarService.getRecordsGroupedByHourAndDayForWeek()
-      .map(rec => Object({ hour: rec.hour, day: rec.date.getDate(), col: (rec.date.getDay() % 7) + 1, records: rec.records }));
-  }
-
-  get dateTimeEmptyRecords(): { hour: number, day: number, col: number }[] {
-    return this.calendarService.getEmptyRecordsGroupedByHourAndDayForWeek()
-      .map(rec => Object({ hour: rec.hour, day: rec.date.getDate(), col: (rec.date.getDay() % 7) + 1 }));
-  }
-
-  get dateTimeInvalidEmptyRecords() {
-    const emptyHoursData = [];
-    for (let dayDate of this.calendarService.getDaysForWeekOutsideOfMonth()) {
-      for (let emptyHour of this.calendarHelper.hoursOfDay())
-        emptyHoursData.push({ hour: emptyHour.value, day: dayDate.getDay(), col: (dayDate.getDay() % 7) + 1 });
+    const recordsByHour = [];
+    for (const record of this.calendarService.calendarRecords) {
+      const hourAndDayObj = recordsByHour.find((obj) => obj.day === getDate(record.dateTime) && obj.hour === getHours(record.dateTime));
+      if (hourAndDayObj) 
+        hourAndDayObj.records.push(record);
+      else 
+        recordsByHour.push({ hour: getHours(record.dateTime), col: (getDay(record.dateTime) + 1), day: getDate(record.dateTime), records: [record] });
     }
-    return emptyHoursData;
+    return recordsByHour;
+  }
+  get dateTimeEmptyRecords(): { day: number, hour: number, col: number }[] {
+    const startOfCurrentWeek = startOfWeek(this.calendarService.currentDate);
+    const endOfCurrentWeek = endOfWeek(this.calendarService.currentDate);
+
+    // Get every hour of the week
+    const currentHourDates = eachHourOfInterval({ start: startOfCurrentWeek, end: endOfCurrentWeek });
+    const activeHourDates = currentHourDates.filter(date => getMonth(date) === getMonth(this.calendarService.currentDate));
+
+    const emptyRecordsByHour = [];
+    for (const hourDate of activeHourDates) {
+      // find an hour that does not have a record in it and add it to the empty hours array
+      if (this.calendarService.calendarRecords.findIndex(a => getDate(a.dateTime) === getDate(hourDate) && getHours(a.dateTime) === getHours(hourDate)) !== -1)
+        continue;
+      emptyRecordsByHour.push({ hour: getHours(hourDate), col: (getDay(hourDate) + 1), day: getDate(hourDate) });
+    }
+    return emptyRecordsByHour;
+  }
+
+  get dateTimeInvalidEmptyRecords(): { day: number, hour: number, col: number }[] {
+    const startOfCurrentWeek = startOfWeek(this.calendarService.currentDate);
+    const endOfCurrentWeek = endOfWeek(this.calendarService.currentDate);
+
+    // Get every hour of the week
+    const currentHourDates = eachHourOfInterval({ start: startOfCurrentWeek, end: endOfCurrentWeek });
+    const activeHourDates = currentHourDates.filter(date => getMonth(date) !== getMonth(this.calendarService.currentDate));
+
+    const emptyRecordsByHour = [];
+    for (const hourDate of activeHourDates) {
+      // find an hour that does not have a record in it and add it to the empty hours array
+      emptyRecordsByHour.push({ hour: getHours(hourDate), col: (getDay(hourDate) + 1), day: getDate(hourDate) });
+    }
+    return emptyRecordsByHour;
   }
 
   constructor(
@@ -65,13 +128,5 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
 
   openAddEventForm(dayData) {
     this.calendarService.openAddEventForm.next({ 'dayData': dayData, 'open': true });
-  }
-
-  private transformDaysForWeek(days: Date[]): { col: number, name: string, dayInMonthArrayIndex: number }[] {
-    return days.map((dayDate: Date) => {
-      const col = dayDate.getDay() % 7;
-      const dayName = this.calendarHelper.weekdayNames[col];
-      return { col: col + 1, name: dayName, dayInMonthArrayIndex: dayDate.getDate() };
-    });
   }
 }

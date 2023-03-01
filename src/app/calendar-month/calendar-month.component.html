@@ -5,20 +5,20 @@
 </div>
 
 <div class="date-box-contianer">
-    
-    <div *ngFor="let dayData of dayDataForMonth; let i = index"
-        class="date-box {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.month && calendarService.today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}"
-        [style.gridColumn]="dayData.gridCol" 
-        [style.gridRow]="dayData.gridRow">
 
-        <div class="day" (click)="openAddEventForm(dayData)">{{dayData.dayInMonthArrayIndex}}
-            <!-- <sup>{{calendarHelper.addOrdinalIndictor(dayData.dayInMonthArrayIndex)}}</sup> -->
+    <div *ngFor="let dayData of dayDataForMonth; let i = index" class="date-box 
+        {{isToday(dayData.dayInMonth)}}" [style.gridColumn]="dayData.gridCol" [style.gridRow]="dayData.gridRow">
+
+        <div class="day" (click)="openAddEventForm(dayData)">{{dayOfMonthString(dayData.dateTime)}}
         </div>
 
-        <ng-container class="table" *ngFor="let record of calendarService.filterRecordsByDay(dayData.dayInMonthArrayIndex);">
+        <ng-container class="table"
+            *ngFor="let record of calendarService.filterRecordsByDay(dayData.dayInMonth);">
 
             <div class="record" (click)="openUpdateEventForm(record)">
-                <div class="record-time">{{calendarHelper.padToTwo(record.hour)}}:{{calendarHelper.padToTwo(record.minute)}} -</div> {{record.what}}
+                <div class="record-time">
+                    {{timeString(record.dateTime)}} -</div>
+                {{record.what}}
             </div>
 
         </ng-container>

@@ -3,13 +3,14 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
-import { AppComponent } from './app.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 
+import { NgChartsModule } from 'ng2-charts';
+
 import { GlobalErrorHandler } from './helpers/global-error-handler';
 import { ServerErrorInterceptor } from './helpers/server-error-interceptor';
-
+import { AppComponent } from './app.component';
 import { MessagesComponent } from './messages/messages.component';
 import { ChatComponent } from './chat-main/chat-main.component';
 import { ChatDetailComponent } from './chat-detail/chat-detail.component';
@@ -30,12 +31,10 @@ import { ChatGroupComponent } from './chat-group/chat-group.component';
 import { ChatGroupCreateComponent } from './chat-group-create/chat-group-create.component';
 import { WeighInComponent } from './weigh-in/weigh-in.component';
 import { WeighInGraphComponent } from './weigh-in-graph/weigh-in-graph.component';
-import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [
     AppComponent,
-
     MessagesComponent,
     ChatComponent,
     ChatDetailComponent,

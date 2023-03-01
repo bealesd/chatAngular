@@ -2,6 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CalendarHelper } from '../helpers/calendar-helper';
 import { CalendarRecord } from '../models/calendar-record.model';
 import { CalendarService } from '../services/calendar.service';
+import { getHours, getDate, getYear, getMonth, format } from 'date-fns';
+import { enGB } from 'date-fns/locale';
 
 @Component({
   selector: 'app-calendar-day',
@@ -9,15 +11,14 @@ import { CalendarService } from '../services/calendar.service';
   styleUrls: ['./calendar-day.component.css']
 })
 export class CalendarDayComponent implements OnInit, OnDestroy {
-
   constructor(
     public calendarService: CalendarService,
     public calendarHelper: CalendarHelper
   ) { }
 
-  ngOnInit(): void {  }
+  ngOnInit(): void { }
 
-  ngAfterViewInit(){
+  ngAfterViewInit() {
     // scroll to current time
     const currentHour = new Date().getHours();
     const hourElement = document.querySelectorAll(".date-box")[currentHour];
@@ -30,32 +31,52 @@ export class CalendarDayComponent implements OnInit, OnDestroy {
     this.calendarService.openAddEventForm.next({ 'dayData': {}, 'open': false });
   }
 
+  get dateTitle() {
+    return format(this.calendarService.currentDate, 'EEEE do LLLL yyyy', { locale: enGB });
+  }
+  get year(): number {
+    return getYear(this.calendarService.currentDate);
+  }
+  get month(): number {
+    return getMonth(this.calendarService.currentDate);
+  }
+  get day(): number {
+    return getDate(this.calendarService.currentDate);
+  }
+  get todayYear(): number {
+    return getYear(this.calendarService.today);
+  }
+  get todayMonth(): number {
+    return getMonth(this.calendarService.today);
+  }
+  get todayDay(): number {
+    return getDate(this.calendarService.today);
+  }
+
   get dateTimeRecords(): { hour: number; day: number; records: CalendarRecord[]; col: number; }[] {
-    const allRecordsGroupedByHour: { hour: number, day: number, records: CalendarRecord[], col: number }[] = [];
-    for (let groupedRecord of this.calendarService.getRecordsGroupedByHourForDay()) {
-      const recordsGroupedByHour = {
-        hour: groupedRecord.hour,
-        day: this.calendarService.day,
-        records: groupedRecord.records,
-        col: 2
-      }
-      allRecordsGroupedByHour.push(recordsGroupedByHour);
-    }
-    return allRecordsGroupedByHour;
+    // Group the records by hour
+    const recordsByHour = [];
+    this.calendarService.calendarRecords.forEach((record) => {
+      const hour = getHours(record.dateTime);
+      const hourObj = recordsByHour.find((obj) => obj.hour === hour);
+      if (hourObj)
+        hourObj.records.push(record);
+      else
+        recordsByHour.push({ hour: hour, col: 2, day: getDate(record.dateTime), records: [record] });
+    });
+
+    return recordsByHour;
   }
 
   get dateTimeEmptyRecords(): { hour: number, day: number, col: number }[] {
-    const emptyHoursData: { hour: number, day: number, col: number }[] = [];
+    const hoursInUse = this.calendarService.calendarRecords.map((record) => getHours(record.dateTime));
 
-    for (let emptyHour of this.calendarService.getEmptyHoursByDay()) {
-      const empytHourData = {
-        hour: parseInt(emptyHour.value),
-        day: this.calendarService.day,
-        col: 1
-      }
-      emptyHoursData.push(empytHourData);
-    }
-    return emptyHoursData;
+    // Filter out the hours that are already in use
+    const unusedHours = this.calendarHelper.hoursOfDay().filter((hour) => !hoursInUse.includes(hour.value))
+      .map((hour) => {
+        return { hour: hour.value, col: 1, day: getDate(this.calendarService.currentDate) };
+      });
+    return unusedHours;
   }
 
   getBorderClass(row: number): string {
