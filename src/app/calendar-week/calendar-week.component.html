@@ -1,7 +1,7 @@
 <div class="date-box-contianer">
 
     <div class="date-box day {{calendarService.today.year === calendarService.year && calendarService.today.month === calendarService.month && calendarService.today.day === (dayData.dayInMonthArrayIndex) ? 'today' : '' }}"
-        (click)="openAddEventForm(dayData)" *ngFor="let dayData of daysForWeek; " [style.gridRow]="1 "
+        (click)="openAddEventForm(dayData, 12)" *ngFor="let dayData of daysForWeek; " [style.gridRow]="1 "
         [attr.data-row]="1 " [style.gridColumn]="dayData.col + 1 " [attr.data-col]="dayData.col + 1 ">
         {{dayData.dayName}} {{dayData.dayInMonth}}
     </div>
@@ -11,7 +11,7 @@
     </div>
 
     <div class="date-box mask" *ngFor="let result of dateTimeRecords; "
-        (click)="openAddEventForm({'dayInMonthArrayIndex': result.day, 'hour': result.hour})"
+        (click)="openAddEventForm(result.day, result.hour)"
         [style.gridRow]="result.hour + 2 " [attr.data-row]="result.hour + 2 " [style.gridColumn]="result.col + 1 "
         [attr.data-col]="result.col + 1 ">
         <div class="record " (click)="openUpdateEventForm(record) " *ngFor="let record of result.records; ">
@@ -20,7 +20,7 @@
     </div>
 
     <div class="date-box empty mask" *ngFor="let result of dateTimeEmptyRecords; "
-        (click)="openAddEventForm({'dayInMonthArrayIndex': result.day, 'hour': result.hour})"
+        (click)="openAddEventForm(result.day, result.hour)"
         [style.gridRow]="result.hour + 2 " [attr.data-row]="result.hour + 2 " [style.gridColumn]="result.col + 1 "
         [attr.data-col]="result.col + 1 ">
     </div>
@@ -30,7 +30,7 @@
         [attr.data-col]="result.col + 1 ">
     </div>
 
-    <div class="date-box " *ngFor="let hour of calendarHelper.hoursOfDay(); " [style.gridRow]="hour.value + 2 "
+    <div class="date-box " *ngFor="let hour of calendarService.hoursOfDay; " [style.gridRow]="hour.value + 2 "
         [attr.data-row]="hour.value + 2 " [style.gridColumn]="1 " [attr.data-col]="1 ">
 
         <div class="time-div ">

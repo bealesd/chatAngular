@@ -1,14 +1,13 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, interval, Observable, Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
-import { CalendarHelper } from '../helpers/calendar-helper';
 import { CalendarRecord } from '../models/calendar-record.model';
 import { MessageService } from './message.service';
 import { environment } from 'src/environments/environment';
 
 import {
-  format, getYear, getMonth, startOfToday, addMonths, subMonths, addDays, subDays, addWeeks, subWeeks
+  format, getYear, getMonth, startOfToday, addMonths, subMonths, addDays, subDays, addWeeks, subWeeks, compareAsc, getDate
 } from 'date-fns'
 import { enGB } from 'date-fns/locale';
 
@@ -22,18 +21,22 @@ export class CalendarService implements OnDestroy {
   public openUpdateEventForm = new BehaviorSubject<any>({});
   public openAddEventForm = new BehaviorSubject<any>({});
 
+  public calendarRecordsSubject = new BehaviorSubject<any>([]);
+  public currentDateSubject = new BehaviorSubject<any>(null);
+  public todayDateSubject = new BehaviorSubject<any>(null);
+
   today: Date;
   calendarRecords: CalendarRecord[] = [];
 
   public currentDate: Date;
-  private baseUrl = `${environment.chatCoreUrl}/calendar`
+  private baseUrl = `${environment.chatCoreUrl}/calendar`;
 
   constructor(
     private messageService: MessageService,
-    private httpClient: HttpClient,
-    private calendarHelper: CalendarHelper) {
+    private httpClient: HttpClient) {
 
     this.currentDate = new Date();
+    this.currentDateSubject.next(this.currentDate);
 
     this.setTodaysDate();
     this.subscriptions.push(interval(1000 * 60 * 5).subscribe(() => this.setTodaysDate()));
@@ -176,16 +179,19 @@ export class CalendarService implements OnDestroy {
 
     if (records) {
       this.calendarRecords = records;
+      this.calendarRecordsSubject.next(records);
       this.messageService.add(`CalendarRepo: Got calendar records for: ${getYear(this.currentDate)}-${getMonth(this.currentDate) + 1}.`);
     }
     else {
       this.messageService.add(`CalendarRepo: Get calendar records failed for: ${getYear(this.currentDate)}-${getMonth(this.currentDate) + 1}.`, 'error');
       this.calendarRecords = [];
+      this.calendarRecordsSubject.next([]);
     }
   }
 
   setTodaysDate() {
     this.today = startOfToday();
+    this.todayDateSubject.next(this.today);
   }
 
   async changeDay(nextOrPrevious: string) {
@@ -193,6 +199,8 @@ export class CalendarService implements OnDestroy {
       this.currentDate = addDays(this.currentDate, 1);
     else
       this.currentDate = subDays(this.currentDate, 1);
+
+    this.currentDateSubject.next(this.currentDate);
 
     await this.getCalendarRecords();
     this.closeAddOrUpdateEventForm.next(true);
@@ -204,6 +212,8 @@ export class CalendarService implements OnDestroy {
     else
       this.currentDate = subWeeks(this.currentDate, 1);
 
+    this.currentDateSubject.next(this.currentDate);
+
     await this.getCalendarRecords();
     this.closeAddOrUpdateEventForm.next(true);
   }
@@ -213,6 +223,8 @@ export class CalendarService implements OnDestroy {
       this.currentDate = addMonths(this.currentDate, 1);
     else
       this.currentDate = subMonths(this.currentDate, 1);
+
+    this.currentDateSubject.next(this.currentDate);
 
     await this.getCalendarRecords();
 
@@ -228,23 +240,21 @@ export class CalendarService implements OnDestroy {
 
   async changeToToday() {
     this.today = startOfToday();
+    this.todayDateSubject.next(this.today);
     await this.getCalendarRecords();
   }
 
-  isSelectedYear(year: number) {
-    return getYear(this.currentDate) === year;
-  }
-
   getDayNameLongForMonth() {
-    return format(this.currentDate, 'LLLL', { locale: enGB });
+    const dayName = format(this.currentDate, 'LLLL', { locale: enGB });
+    return dayName;
   }
 
   getDayNameShortForMonth(day: number): string {
-    return format(this.currentDate, 'LLL', { locale: enGB });
-
+    const dayName = format(this.currentDate, 'LLL', { locale: enGB });
+    return dayName;
   }
 
-  filterRecordsByDay(day: number): CalendarRecord[] {
-    return this.calendarHelper.getRecordsByDay(day, this.calendarRecords);
+  get hoursOfDay(): any[] {
+    return [...Array(24).keys()].map((hour) => Object({ toString: () => `${hour}`.padStart(2, '0'), value: hour }))
   }
 }

@@ -2,11 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { CalendarService } from '../services/calendar.service';
 import { CalendarRecord } from '../models/calendar-record.model';
-import { CalendarHelper } from '../helpers/calendar-helper';
 
 import {
   getMonth, getDay, getDate, startOfWeek, endOfWeek,
-  getHours, eachDayOfInterval, eachHourOfInterval, format
+  getHours, eachDayOfInterval, eachHourOfInterval, format, setHours, setDate, setMinutes
 } from 'date-fns'
 
 @Component({
@@ -103,8 +102,7 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    public calendarService: CalendarService,
-    public calendarHelper: CalendarHelper
+    public calendarService: CalendarService
   ) { }
 
   ngOnInit() { }
@@ -119,14 +117,18 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.calendarService.openUpdateEventForm.next({ 'record': {}, 'open': false });
-    this.calendarService.openAddEventForm.next({ 'dayData': {}, 'open': false });
+    this.calendarService.openAddEventForm.next({ 'date': {}, 'open': false });
   }
 
   openUpdateEventForm(record) {
     this.calendarService.openUpdateEventForm.next({ 'record': record, 'open': true });
   }
 
-  openAddEventForm(dayData) {
-    this.calendarService.openAddEventForm.next({ 'dayData': dayData, 'open': true });
+  openAddEventForm(dayOfMonth: number, hour: number) {
+    let date = new Date(this.calendarService.currentDate);
+    date = setDate(date, dayOfMonth);
+    date = setHours(date, hour);
+    date = setMinutes(date, 0);
+    this.calendarService.openAddEventForm.next({ 'date': date, 'open': true });
   }
 }

@@ -1,10 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { CalendarHelper } from '../helpers/calendar-helper';
 import { CalendarService } from '../services/calendar.service';
 import { MessageService } from '../services/message.service';
 
-import { setMonth, setYear, getYear, getMonth } from 'date-fns';
+import { setMonth, setYear, format } from 'date-fns';
 
 @Component({
   selector: 'app-calendar-main',
@@ -17,12 +16,11 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   title: string;
 
   get month() {
-    return this.calendarHelper.getFormInputMonthFromMonthAndYear(getYear(this.calendarService.currentDate), getMonth(this.calendarService.currentDate));
+    return format(this.calendarService.currentDate, 'yyyy-MM');
   }
 
   constructor(
     public calendarService: CalendarService,
-    public calendarHelper: CalendarHelper,
     public messageService: MessageService
   ) { }
 
@@ -58,6 +56,6 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
 
   openAddEventForm() {
     const now = new Date();
-    this.calendarService.openAddEventForm.next({ 'open': true, 'dayData': { 'dayInMonthArrayIndex': now.getUTCDate(), 'hour': now.getUTCHours() } });
+    this.calendarService.openAddEventForm.next({ 'open': true, 'date': now });
   }
 }

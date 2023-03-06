@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CalendarHelper } from '../helpers/calendar-helper';
 import { CalendarRecord } from '../models/calendar-record.model';
 import { CalendarService } from '../services/calendar.service';
-import { getHours, getDate, getYear, getMonth, format } from 'date-fns';
+import { getHours, getDate, getYear, getMonth, format, setDate, setHours, setMinutes } from 'date-fns';
 import { enGB } from 'date-fns/locale';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-calendar-day',
@@ -11,12 +11,28 @@ import { enGB } from 'date-fns/locale';
   styleUrls: ['./calendar-day.component.css']
 })
 export class CalendarDayComponent implements OnInit, OnDestroy {
+  records: CalendarRecord[] = [];
+  currentDate: Date = null;
+  todaysDate: Date = null;
+
   constructor(
-    public calendarService: CalendarService,
-    public calendarHelper: CalendarHelper
+    public calendarService: CalendarService
   ) { }
 
-  ngOnInit(): void { }
+  subscriptions: Subscription[] = [];
+
+  ngOnInit(): void {
+    this.subscriptions.push(this.calendarService.calendarRecordsSubject.subscribe((records: CalendarRecord[]) => {
+      this.records = records;
+    }));
+
+    this.subscriptions.push(this.calendarService.currentDateSubject.subscribe((currentDate: Date) => {
+      this.currentDate = currentDate;
+    }));
+    this.subscriptions.push(this.calendarService.todayDateSubject.subscribe((todaysDate: Date) => {
+      this.todaysDate = todaysDate;
+    }));
+  }
 
   ngAfterViewInit() {
     // scroll to current time
@@ -28,35 +44,40 @@ export class CalendarDayComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.calendarService.openUpdateEventForm.next({ 'record': {}, 'open': false });
-    this.calendarService.openAddEventForm.next({ 'dayData': {}, 'open': false });
+    this.calendarService.openAddEventForm.next({ 'date': {}, 'open': false });
+
+    for (const subscription of this.subscriptions) {
+      subscription.unsubscribe();
+    }
   }
 
   get dateTitle() {
-    return format(this.calendarService.currentDate, 'EEEE do LLLL yyyy', { locale: enGB });
+    const dateTitle = format(this.currentDate, 'EEEE do LLLL yyyy', { locale: enGB });
+    return dateTitle;
   }
   get year(): number {
-    return getYear(this.calendarService.currentDate);
+    return getYear(this.currentDate);
   }
   get month(): number {
-    return getMonth(this.calendarService.currentDate);
+    return getMonth(this.currentDate);
   }
   get day(): number {
-    return getDate(this.calendarService.currentDate);
+    return getDate(this.currentDate);
   }
   get todayYear(): number {
-    return getYear(this.calendarService.today);
+    return getYear(this.todaysDate);
   }
   get todayMonth(): number {
-    return getMonth(this.calendarService.today);
+    return getMonth(this.todaysDate);
   }
   get todayDay(): number {
-    return getDate(this.calendarService.today);
+    return getDate(this.todaysDate);
   }
 
   get dateTimeRecords(): { hour: number; day: number; records: CalendarRecord[]; col: number; }[] {
     // Group the records by hour
     const recordsByHour = [];
-    this.calendarService.calendarRecords.forEach((record) => {
+    this.records.filter(record => getDate(record.dateTime) === this.day).forEach((record) => {
       const hour = getHours(record.dateTime);
       const hourObj = recordsByHour.find((obj) => obj.hour === hour);
       if (hourObj)
@@ -64,17 +85,16 @@ export class CalendarDayComponent implements OnInit, OnDestroy {
       else
         recordsByHour.push({ hour: hour, col: 2, day: getDate(record.dateTime), records: [record] });
     });
-
     return recordsByHour;
   }
 
   get dateTimeEmptyRecords(): { hour: number, day: number, col: number }[] {
-    const hoursInUse = this.calendarService.calendarRecords.map((record) => getHours(record.dateTime));
+    const hoursInUse = this.records.filter(record => getDate(record.dateTime) === this.day).map((record) => getHours(record.dateTime));
 
     // Filter out the hours that are already in use
-    const unusedHours = this.calendarHelper.hoursOfDay().filter((hour) => !hoursInUse.includes(hour.value))
+    const unusedHours = this.calendarService.hoursOfDay.filter((hour) => !hoursInUse.includes(hour.value))
       .map((hour) => {
-        return { hour: hour.value, col: 1, day: getDate(this.calendarService.currentDate) };
+        return { hour: hour.value, col: 1, day: getDate(this.currentDate) };
       });
     return unusedHours;
   }
@@ -107,7 +127,11 @@ export class CalendarDayComponent implements OnInit, OnDestroy {
     this.calendarService.openUpdateEventForm.next({ 'record': record, 'open': true });
   }
 
-  openAddEventForm(dayData: { dayInMonthArrayIndex: number, hour: number }): void {
-    this.calendarService.openAddEventForm.next({ 'dayData': dayData, 'open': true });
+  openAddEventForm(dayOfMonth: number, hour: number): void {
+    let date = new Date(this.calendarService.currentDate);
+    date = setDate(date, dayOfMonth);
+    date = setHours(date, hour);
+    date = setMinutes(date, 0);
+    this.calendarService.openAddEventForm.next({ 'date': date, 'open': true });
   }
 }

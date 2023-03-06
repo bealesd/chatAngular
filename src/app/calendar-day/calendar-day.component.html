@@ -1,22 +1,22 @@
 <div class="date-box-contianer">
 
-    <div class="date-box day {{todayYear === year && todayMonth === month && todayDay === day ? 'today' : '' }}" (click)="openAddEventForm({'dayInMonthArrayIndex': day})"
+    <div class="date-box day {{todayYear === year && todayMonth === month && todayDay === day ? 'today' : '' }}" (click)="openAddEventForm(day, 12)"
         [attr.data-row]="1" [attr.data-col]="2">
         {{dateTitle}}
     </div>
 
-    <div class="date-box mask {{getBorderClass(result.hour + 2)}}" *ngFor="let result of dateTimeRecords; " (click)="openAddEventForm({'dayInMonthArrayIndex': result.day, 'hour': result.hour})" [style.gridRow]="result.hour + 2 "
+    <div class="date-box mask {{getBorderClass(result.hour + 2)}}" *ngFor="let result of dateTimeRecords; " (click)="openAddEventForm(result.day, result.hour)" [style.gridRow]="result.hour + 2 "
         [attr.data-row]="result.hour + 2 " [attr.data-col]="2">
         <div class="record " (click)="openUpdateEventForm(record) " *ngFor="let record of result.records; ">
             {{record.what}}
         </div>
     </div>
 
-    <div class="date-box empty mask {{getBorderClass(result.hour + 2)}}" *ngFor="let result of dateTimeEmptyRecords; " (click)="openAddEventForm({'dayInMonthArrayIndex': result.day, 'hour': result.hour})" [style.gridRow]="result.hour + 2 "
+    <div class="date-box empty mask {{getBorderClass(result.hour + 2)}}" *ngFor="let result of dateTimeEmptyRecords; " (click)="openAddEventForm(result.day, result.hour)" [style.gridRow]="result.hour + 2 "
         [attr.data-row]="result.hour + 2 " [attr.data-col]="2">
     </div>
 
-    <div class="date-box " *ngFor="let hour of calendarHelper.hoursOfDay(); " [style.gridRow]="hour.value + 2 " [attr.data-row]="hour.value + 2 " [style.gridColumn]="1 " [attr.data-col]="1 ">
+    <div class="date-box " *ngFor="let hour of calendarService.hoursOfDay; " [style.gridRow]="hour.value + 2 " [attr.data-row]="hour.value + 2 " [style.gridColumn]="1 " [attr.data-col]="1 ">
         <div class="time-div">
             <div>{{hour.toString()}}</div>
         </div>

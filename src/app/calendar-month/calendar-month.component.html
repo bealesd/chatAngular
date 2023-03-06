@@ -1,19 +1,19 @@
 <div class="weekdayName-names-contianer">
-    <div *ngFor="let weekdayName of calendarHelper.weekdayNamesEndSunday();">
+    <div *ngFor="let weekdayName of weekdayNamesEndSunday;">
         {{weekdayName}}
     </div>
 </div>
 
 <div class="date-box-contianer">
 
-    <div *ngFor="let dayData of dayDataForMonth; let i = index" class="date-box 
-        {{isToday(dayData.dayInMonth)}}" [style.gridColumn]="dayData.gridCol" [style.gridRow]="dayData.gridRow">
+    <div *ngFor="let dayDate of dayDatesForMonth; let i = index" class="date-box 
+        {{isToday(dayDate.dateTime)}}" [style.gridColumn]="dayDate.gridCol" [style.gridRow]="dayDate.gridRow">
 
-        <div class="day" (click)="openAddEventForm(dayData)">{{dayOfMonthString(dayData.dateTime)}}
+        <div class="day" (click)="openAddEventForm(dayDate.dateTime)">
+            {{dayOfMonthString(dayDate.dateTime)}}
         </div>
 
-        <ng-container class="table"
-            *ngFor="let record of calendarService.filterRecordsByDay(dayData.dayInMonth);">
+        <ng-container class="table" *ngFor="let record of filterRecordsByDay(dayDate.dateTime);">
 
             <div class="record" (click)="openUpdateEventForm(record)">
                 <div class="record-time">
