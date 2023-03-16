@@ -4,6 +4,7 @@ import { CalendarService } from '../services/calendar.service';
 import { MessageService } from '../services/message.service';
 
 import { setMonth, setYear, format } from 'date-fns';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-calendar-main',
@@ -14,9 +15,11 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   monthOrWeek: string = 'month';
   calendarViews = ['Month', 'Week', 'Day'];
   title: string;
+  subscriptions: Subscription[] = [];
+  currentDate: Date;
 
   get month() {
-    return format(this.calendarService.currentDate, 'yyyy-MM');
+    return format(this.currentDate, 'yyyy-MM');
   }
 
   constructor(
@@ -25,6 +28,10 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   ) { }
 
   async ngOnInit() {
+    this.subscriptions.push(this.calendarService.currentDateSubject.subscribe((currentDate: Date) => {
+      this.currentDate = currentDate;
+    }));
+    
     await this.calendarService.getCalendarRecords();
   }
 
@@ -40,8 +47,9 @@ export class CalendarMainComponent implements OnInit, OnDestroy {
   }
 
   async updateDate(value) {
-    this.calendarService.currentDate = setYear(this.calendarService.currentDate, parseInt(value.split('-')[0]));
-    this.calendarService.currentDate = setMonth(this.calendarService.currentDate, parseInt(value.split('-')[1]) - 1);
+    this.currentDate = setYear(this.currentDate, parseInt(value.split('-')[0]));
+    this.currentDate = setMonth(this.currentDate, parseInt(value.split('-')[1]) - 1);
+    this.calendarService.currentDateSubject.next(this.currentDate);
     await this.calendarService.updateRecords();
   }
 

@@ -7,6 +7,7 @@ import {
   getMonth, getDay, getDate, startOfWeek, endOfWeek,
   getHours, eachDayOfInterval, eachHourOfInterval, format, setHours, setDate, setMinutes
 } from 'date-fns'
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-calendar-week',
@@ -15,17 +16,22 @@ import {
   template: `<input [(ngModel)]="prop">`
 })
 export class CalendarWeekComponent implements OnInit, OnDestroy {
+  currentDate: Date;
+  todaysDate: Date;
+
+// move to subscriptions
 
   get daysForWeek(): { col: number, dayName: string, dayInMonth: number }[] {
     // Get start and end of current week
-    const startOfCurrentWeek = startOfWeek(this.calendarService.currentDate);
-    const endOfCurrentWeek = endOfWeek(this.calendarService.currentDate);
+    this.calendarService.currentDateSubject.getValue();
+    const startOfCurrentWeek = startOfWeek(this.currentDate);
+    const endOfCurrentWeek = endOfWeek(this.currentDate);
 
     // Get array of dates for current week
     const currentWeekDates = eachDayOfInterval({ start: startOfCurrentWeek, end: endOfCurrentWeek });
 
     // Filter dates that are in current month
-    const dayDatesInCurrentWeekAndMonth = currentWeekDates.filter(date => date.getMonth() === getMonth(this.calendarService.currentDate));
+    const dayDatesInCurrentWeekAndMonth = currentWeekDates.filter(date => date.getMonth() === getMonth(this.currentDate));
 
     const transformedDays = dayDatesInCurrentWeekAndMonth.map((day) => {
       const col = getDay(day);
@@ -38,14 +44,14 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
 
   get emptyDaysForWeek(): { col: number, dayName: string, dayInMonth: number }[] {
     // Get start and end of current week
-    const startOfCurrentWeek = startOfWeek(this.calendarService.currentDate);
-    const endOfCurrentWeek = endOfWeek(this.calendarService.currentDate);
+    const startOfCurrentWeek = startOfWeek(this.currentDate);
+    const endOfCurrentWeek = endOfWeek(this.currentDate);
 
     // Get array of dates for current week
     const currentWeekDates = eachDayOfInterval({ start: startOfCurrentWeek, end: endOfCurrentWeek });
 
     // Filter dates that are outisde of current month
-    const dayDatesNotInCurrentWeekAndMonth = currentWeekDates.filter(date => getMonth(date) !== getMonth(this.calendarService.currentDate));
+    const dayDatesNotInCurrentWeekAndMonth = currentWeekDates.filter(date => getMonth(date) !== getMonth(this.currentDate));
 
     const transformedDays = dayDatesNotInCurrentWeekAndMonth.map((day) => {
       const col = getDay(day);
@@ -68,12 +74,12 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
     return recordsByHour;
   }
   get dateTimeEmptyRecords(): { day: number, hour: number, col: number }[] {
-    const startOfCurrentWeek = startOfWeek(this.calendarService.currentDate);
-    const endOfCurrentWeek = endOfWeek(this.calendarService.currentDate);
+    const startOfCurrentWeek = startOfWeek(this.currentDate);
+    const endOfCurrentWeek = endOfWeek(this.currentDate);
 
     // Get every hour of the week
     const currentHourDates = eachHourOfInterval({ start: startOfCurrentWeek, end: endOfCurrentWeek });
-    const activeHourDates = currentHourDates.filter(date => getMonth(date) === getMonth(this.calendarService.currentDate));
+    const activeHourDates = currentHourDates.filter(date => getMonth(date) === getMonth(this.currentDate));
 
     const emptyRecordsByHour = [];
     for (const hourDate of activeHourDates) {
@@ -86,12 +92,12 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
   }
 
   get dateTimeInvalidEmptyRecords(): { day: number, hour: number, col: number }[] {
-    const startOfCurrentWeek = startOfWeek(this.calendarService.currentDate);
-    const endOfCurrentWeek = endOfWeek(this.calendarService.currentDate);
+    const startOfCurrentWeek = startOfWeek(this.currentDate);
+    const endOfCurrentWeek = endOfWeek(this.currentDate);
 
     // Get every hour of the week
     const currentHourDates = eachHourOfInterval({ start: startOfCurrentWeek, end: endOfCurrentWeek });
-    const activeHourDates = currentHourDates.filter(date => getMonth(date) !== getMonth(this.calendarService.currentDate));
+    const activeHourDates = currentHourDates.filter(date => getMonth(date) !== getMonth(this.currentDate));
 
     const emptyRecordsByHour = [];
     for (const hourDate of activeHourDates) {
@@ -105,7 +111,17 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
     public calendarService: CalendarService
   ) { }
 
-  ngOnInit() { }
+  subscriptions: Subscription[] = [];
+  
+  ngOnInit() {
+    this.subscriptions.push(this.calendarService.currentDateSubject.subscribe((currentDate: Date) => {
+      this.currentDate = currentDate;
+    }));
+    this.subscriptions.push(this.calendarService.todayDateSubject.subscribe((todaysDate: Date) => {
+      this.todaysDate = todaysDate;
+    }));
+    
+   }
 
   ngAfterViewInit() {
     // scroll to current time

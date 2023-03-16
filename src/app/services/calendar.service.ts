@@ -22,7 +22,7 @@ export class CalendarService implements OnDestroy {
   public openAddEventForm = new BehaviorSubject<any>({});
 
   public calendarRecordsSubject = new BehaviorSubject<any>([]);
-  public currentDateSubject = new BehaviorSubject<any>(null);
+  public currentDateSubject = new BehaviorSubject<Date>(null);
   public todayDateSubject = new BehaviorSubject<any>(null);
 
   today: Date;
@@ -36,7 +36,7 @@ export class CalendarService implements OnDestroy {
     private httpClient: HttpClient) {
 
     this.currentDate = new Date();
-    this.currentDateSubject.next(this.currentDate);
+    this.currentDateSubject.next(new Date());
 
     this.setTodaysDate();
     this.subscriptions.push(interval(1000 * 60 * 5).subscribe(() => this.setTodaysDate()));
@@ -103,7 +103,8 @@ export class CalendarService implements OnDestroy {
       localRecord.id = record.id;
       localRecord.dateTime instanceof Date ? record.dateTime : new Date(record.dateTime);
 
-      if (getMonth(this.currentDate) !== getMonth(record.dateTime) || getYear(this.currentDate) !== getYear(record.dateTime))
+      const currentDate = this.currentDateSubject.getValue();
+      if (getMonth(currentDate) !== getMonth(record.dateTime) || getYear(currentDate) !== getYear(record.dateTime))
         this.calendarRecords = this.calendarRecords.filter(r => r.id !== record.id);
     }
   }
@@ -173,17 +174,18 @@ export class CalendarService implements OnDestroy {
   }
 
   async getCalendarRecords(): Promise<void> {
-    this.messageService.add(`CalendarRepo: Getting calendar record for: ${getYear(this.currentDate)}-${getMonth(this.currentDate) + 1}.`);
+    const currentDate = this.currentDateSubject.getValue();
+    this.messageService.add(`CalendarRepo: Getting calendar record for: ${getYear(currentDate)}-${getMonth(currentDate) + 1}.`);
     this.calendarRecords = [];
-    const records = await this.GetRecordsByYearAndMonth(getYear(this.currentDate), getMonth(this.currentDate));
+    const records = await this.GetRecordsByYearAndMonth(getYear(currentDate), getMonth(currentDate));
 
     if (records) {
       this.calendarRecords = records;
       this.calendarRecordsSubject.next(records);
-      this.messageService.add(`CalendarRepo: Got calendar records for: ${getYear(this.currentDate)}-${getMonth(this.currentDate) + 1}.`);
+      this.messageService.add(`CalendarRepo: Got calendar records for: ${getYear(currentDate)}-${getMonth(currentDate) + 1}.`);
     }
     else {
-      this.messageService.add(`CalendarRepo: Get calendar records failed for: ${getYear(this.currentDate)}-${getMonth(this.currentDate) + 1}.`, 'error');
+      this.messageService.add(`CalendarRepo: Get calendar records failed for: ${getYear(currentDate)}-${getMonth(currentDate) + 1}.`, 'error');
       this.calendarRecords = [];
       this.calendarRecordsSubject.next([]);
     }
@@ -195,36 +197,42 @@ export class CalendarService implements OnDestroy {
   }
 
   async changeDay(nextOrPrevious: string) {
-    if (nextOrPrevious === 'next')
-      this.currentDate = addDays(this.currentDate, 1);
-    else
-      this.currentDate = subDays(this.currentDate, 1);
+    let currentDate = this.currentDateSubject.getValue();
 
-    this.currentDateSubject.next(this.currentDate);
+    if (nextOrPrevious === 'next')
+      currentDate = addDays(currentDate, 1);
+    else
+      currentDate = subDays(currentDate, 1);
+
+    this.currentDateSubject.next(currentDate);
 
     await this.getCalendarRecords();
     this.closeAddOrUpdateEventForm.next(true);
   }
 
   async changeWeek(nextOrPrevious: string) {
-    if (nextOrPrevious === 'next')
-      this.currentDate = addWeeks(this.currentDate, 1);
-    else
-      this.currentDate = subWeeks(this.currentDate, 1);
+    let currentDate = this.currentDateSubject.getValue();
 
-    this.currentDateSubject.next(this.currentDate);
+    if (nextOrPrevious === 'next')
+      currentDate = addWeeks(currentDate, 1);
+    else
+      currentDate = subWeeks(currentDate, 1);
+
+    this.currentDateSubject.next(currentDate);
 
     await this.getCalendarRecords();
     this.closeAddOrUpdateEventForm.next(true);
   }
 
   async changeMonth(nextOrPrevious: string) {
-    if (nextOrPrevious === 'next')
-      this.currentDate = addMonths(this.currentDate, 1);
-    else
-      this.currentDate = subMonths(this.currentDate, 1);
+    let currentDate = this.currentDateSubject.getValue();
 
-    this.currentDateSubject.next(this.currentDate);
+    if (nextOrPrevious === 'next')
+      currentDate = addMonths(currentDate, 1);
+    else
+      currentDate = subMonths(currentDate, 1);
+
+    this.currentDateSubject.next(currentDate);
 
     await this.getCalendarRecords();
 
@@ -241,16 +249,17 @@ export class CalendarService implements OnDestroy {
   async changeToToday() {
     this.today = startOfToday();
     this.todayDateSubject.next(this.today);
+    this.currentDateSubject.next(this.today);
     await this.getCalendarRecords();
   }
 
   getDayNameLongForMonth() {
-    const dayName = format(this.currentDate, 'LLLL', { locale: enGB });
+    const dayName = format(this.currentDateSubject.getValue(), 'LLLL', { locale: enGB });
     return dayName;
   }
 
   getDayNameShortForMonth(day: number): string {
-    const dayName = format(this.currentDate, 'LLL', { locale: enGB });
+    const dayName = format(this.currentDateSubject.getValue(), 'LLL', { locale: enGB });
     return dayName;
   }
 
