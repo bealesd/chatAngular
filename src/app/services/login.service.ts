@@ -14,7 +14,7 @@ export class LoginService {
   public jwtToken = '';
   private baseUrl = `${environment.chatCoreUrl}/auth`;
   public static username = '';
-  public usernameId:number = null;
+  public usernameId: number = null;
 
   constructor(
     private messageService: MessageService,

@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, interval, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 import { CalendarRecord } from '../models/calendar-record.model';
@@ -10,6 +10,7 @@ import {
   format, getYear, getMonth, startOfToday, addMonths, subMonths, addDays, subDays, addWeeks, subWeeks, compareAsc, getDate
 } from 'date-fns'
 import { enGB } from 'date-fns/locale';
+import { LoginService } from './login.service';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +34,8 @@ export class CalendarService implements OnDestroy {
 
   constructor(
     private messageService: MessageService,
-    private httpClient: HttpClient) {
+    private httpClient: HttpClient,
+    private loginService: LoginService) {
 
     this.currentDate = new Date();
     this.currentDateSubject.next(new Date());
@@ -146,31 +148,35 @@ export class CalendarService implements OnDestroy {
     });
   }
 
-  GetRecordsByYearAndMonth(year: number, month: number): Promise<any[]> {
-    return new Promise((res, rej) => {
-      const url = `${this.baseUrl}/GetRecords?year=${year}&month=${month}`;
-      this.httpClient.get<any[]>(url).subscribe(
-        {
-          next: (records: any[]) => {
-            const calendarRecords: CalendarRecord[] = [];
-            for (let i = 0; i < records.length; i++) {
-              const recordObject = records[i];
+  async GetRecordsByYearAndMonth(year: number, month: number):
+    // make request service, that does what ServerErrorInterceptor does
+    // move to fetch api
+    Promise<any[]> {
+    const url = `${this.baseUrl}/GetRecords?year=${year}&month=${month}`;
 
-              const record = new CalendarRecord();
-              record.id = recordObject.id;
-              record.what = recordObject.what;
-              record.description = recordObject.description;
-              record.dateTime = recordObject.dateTime instanceof Date ? recordObject.dateTime : new Date(recordObject.dateTime);
-              calendarRecords.push(record);
-            }
-            res(calendarRecords);
-          },
-          error: (err: any) => {
-            res(null);
-          }
-        }
-      );
-    });
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', `Bearer ${this.loginService.jwtToken}`);
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: myHeaders,
+      });
+      const records = await response.json();
+      const calendarRecords: CalendarRecord[] = [];
+      for (const recordObject of records) {
+        const record = new CalendarRecord();
+        record.id = recordObject.id;
+        record.what = recordObject.what;
+        record.description = recordObject.description;
+        record.dateTime = recordObject.dateTime instanceof Date ? recordObject.dateTime : new Date(recordObject.dateTime);
+        calendarRecords.push(record);
+      }
+      return calendarRecords;
+    } catch (error) {
+      return null;
+    }
   }
 
   async getCalendarRecords(): Promise<void> {
