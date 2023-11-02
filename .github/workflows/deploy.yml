@@ -13,6 +13,7 @@ jobs:
   build:
 
     runs-on: ubuntu-20.04
+    environment: production
 
     steps:
     - uses: actions/checkout@v3
@@ -25,19 +26,21 @@ jobs:
     - name: Install angular
       run: npm install -g @angular/cli    
 
-    - name: Install Package Manager
-      if: ${{ env.package_manager_name == 'YARN' }}
-      run: echo 'yarn'
-
-    - name: Install Package Manager
-      if: ${{ env.package_manager_name != 'YARN' }}
-      run: echo 'npm'
-
     - name: Install yarn
+      if: ${{ Production.PACKAGE_MANAGER_NAME == 'YARN' }}
       run: yarn install
 
-    - name: Install packages
-      run: yarn;
+    - name: Install packages with yarn
+      if: ${{ Production.PACKAGE_MANAGER_NAME == 'YARN' }}
+      run: yarn
+
+    - name: Install npm
+      if: ${{ Production.PACKAGE_MANAGER_NAME != 'YARN' }}
+      run: npm
+
+    - name: Install packages with npm
+      if: ${{ env.PACKAGE_MANAGER_NAME != 'YARN' }}
+      run: npm install
 
     - name: Build Static Website Files
       run: node build.js
