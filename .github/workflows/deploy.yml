@@ -1,3 +1,9 @@
+parameters:
+- name: UseYarn
+  displayName: 'Use Yarn for Package Management?'
+  type: boolean
+  default: true
+
 name: Build and Deploy Github Pages Files
 on:
   push:
@@ -24,6 +30,11 @@ jobs:
 
     - name: Install angular
       run: npm install -g @angular/cli    
+
+    - ${{ if eq(parameters.UseYarn, true) }}:
+      - bash: echo 'true'
+    - ${{ if not(eq(parameters.UseYarn, true)) }}:
+      - bash: echo 'false'
 
     - name: Install yarn
       run: yarn install
