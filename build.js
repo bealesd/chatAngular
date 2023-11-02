@@ -15,7 +15,7 @@ catch {
 }
 
 class Build {
-    outputDir = 'docs/test';
+    outputDir = 'docs';
     buildCommand = `ng build --configuration production --output-path ${this.outputDir} --base-href "/chatAngular/"`;
 
     constructor() {
