@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   // chatCoreUrl: 'https://corechatapivwindows.azurewebsites.net'
-  chatCoreUrl: 'https://localhost:44341'
+  chatCoreUrl: 'https://localhost:7103'
 };
 
 /*

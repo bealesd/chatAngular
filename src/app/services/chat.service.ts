@@ -207,28 +207,29 @@ export class ChatService {
 
     chats.push(newChats)
 
-    if (newChats?.length > 0) {
-      const newChatIds = newChats.map(c => c.Id);
+    // if (newChats?.length > 0) {
+    //   const newChatIds = newChats.map(c => c.Id);
 
-      const chatsRead = (await this.GetChatsThatAreRead(this.loginService.usernameId, newChatIds)).map(c => c.ChatId);
-      const unreadChats = newChats.filter(c => chatsRead.includes(c.Id) === false);
+    //   const readChats = await this.GetChatsThatAreRead(this.loginService.usernameId, newChatIds);
+    //   const chatsRead = readChats.map(c => c.ChatId);
+    //   const unreadChats = newChats.filter(c => chatsRead.includes(c.Id) === false);
 
-      const isDektop = this.deviceService.isDesktop();
-      for (let i = 0; i < unreadChats.length; i++) {
-        if (isDektop && i < 5) {
-          const unreadChat = unreadChats[i];
-          this.AddChatRead(this.loginService.usernameId, unreadChat.Id)
-          new Notification('Unread chat message', {
-            body: `${unreadChat.Who}: ${unreadChat.Content}`,
-          });
-        }
-      }
+    //   const isDektop = this.deviceService.isDesktop();
+    //   for (let i = 0; i < unreadChats.length; i++) {
+    //     if (isDektop && i < 5) {
+    //       const unreadChat = unreadChats[i];
+    //       this.AddChatRead(this.loginService.usernameId, unreadChat.Id)
+    //       new Notification('Unread chat message', {
+    //         body: `${unreadChat.Who}: ${unreadChat.Content}`,
+    //       });
+    //     }
+    //   }
 
-      const currentMessagesCount = this.newChatMessagesCount.getValue();
-      const unreadMessageCount = unreadChats.length;
-      this.newChatMessagesCount.next(currentMessagesCount + unreadMessageCount);
-      this.messageService.add(`ChatService: ${unreadMessageCount} unread message${unreadMessageCount > 1 ? 's' : ''}.`);
-    }
+    //   const currentMessagesCount = this.newChatMessagesCount.getValue();
+    //   const unreadMessageCount = unreadChats.length;
+    //   this.newChatMessagesCount.next(currentMessagesCount + unreadMessageCount);
+    //   this.messageService.add(`ChatService: ${unreadMessageCount} unread message${unreadMessageCount > 1 ? 's' : ''}.`);
+    // }
 
     return chats.flat();
   }
@@ -238,7 +239,7 @@ export class ChatService {
       if (chatIds.length === 0) res(null);
 
       return new Promise((res, rej) => {
-        const url = `${this.baseUrl}/GetChatsThatAreRead?usernameId=${usernameId}`;
+        const url = `${this.baseChatReadUrl}/GetChatsThatAreRead?usernameId=${usernameId}`;
         this.httpClient.post<any>(url, chatIds).subscribe(
           {
             next: (chatsReadResponse: any[]) => {
