@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
 import { DatePipe } from '@angular/common';
+import { BehaviorSubject } from 'rxjs';
 import { DeviceDetectorService } from 'ngx-device-detector';
 
 
@@ -197,8 +197,11 @@ export class ChatService {
     let chats = this.getStoreChats();
     let newChats: Chat[];
 
-    if (chats?.length > 0)
-      newChats = await this.GetChatsAfterId(chats[chats.length - 1].Id) ?? [];
+    if (chats?.length > 0){
+      const idKey = Object.keys(chats[chats.length - 1]).find(key => key.toLowerCase() === 'id');
+      const lastChatId = chats[chats.length - 1][idKey];
+      newChats = await this.GetChatsAfterId(lastChatId) ?? [];
+    }
     else
       newChats = await this.GetChats() ?? [];
 
@@ -234,31 +237,31 @@ export class ChatService {
     return new Promise((res, rej) => {
       if (chatIds.length === 0) res(null);
 
-      const chatIdUrl = chatIds.join('&chatIds=');
-      const url = `${this.baseChatReadUrl}/GetChatsThatAreRead?usernameId=${usernameId}&chatIds=${chatIdUrl}`;
-
-      this.httpClient.get<any[]>(url).subscribe(
-        {
-          next: (chatsReadResponse: any[]) => {
-            const chatsRead: ChatRead[] = [];
-            for (let i = 0; i < chatsReadResponse?.length; i++) {
-              const chatsReadObject = chatsReadResponse[i];
-              const chatRead = new ChatRead();
-              chatRead.UsernameId = chatsReadObject.usernameId;
-              chatRead.ChatId = chatsReadObject.chatId;
-              chatRead.Datetime = chatsReadObject.dateTime;
-              chatRead.Id = chatsReadObject.id;
-
-              chatsRead.push(chatRead);
+      return new Promise((res, rej) => {
+        const url = `${this.baseUrl}/GetChatsThatAreRead?usernameId=${usernameId}`;
+        this.httpClient.post<any>(url, chatIds).subscribe(
+          {
+            next: (chatsReadResponse: any[]) => {
+              const chatsRead: ChatRead[] = [];
+              for (let i = 0; i < chatsReadResponse?.length; i++) {
+                const chatsReadObject = chatsReadResponse[i];
+                const chatRead = new ChatRead();
+                chatRead.UsernameId = chatsReadObject.usernameId;
+                chatRead.ChatId = chatsReadObject.chatId;
+                chatRead.Datetime = chatsReadObject.dateTime;
+                chatRead.Id = chatsReadObject.id;
+  
+                chatsRead.push(chatRead);
+              }
+  
+              res(chatsRead);
+            },
+            error: (err: any) => {
+              res(null);
             }
-
-            res(chatsRead);
-          },
-          error: (err: any) => {
-            res(null);
           }
-        }
-      );
+        );
+      });
     });
   }
 

@@ -13,6 +13,8 @@ import { ChatGroupCreateComponent } from './chat-group-create/chat-group-create.
 import { WeighInComponent } from './weigh-in/weigh-in.component';
 import { WeighInGraphComponent } from './weigh-in-graph/weigh-in-graph.component';
 
+import { CalendarV2LibraryComponent } from './calendar-v2-library/calendar-v2-library.component';
+
 const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'login', component: LoginComponent },
@@ -26,11 +28,16 @@ const routes: Routes = [
   { path: 'profile', component: ProfileComponent },
   { path: 'weighIns', component: WeighInComponent },
   { path: 'weighInsGraph', component: WeighInGraphComponent },
-  { path: '**', component: LoginComponent }
+
+  { path: 'calendarv2', component: CalendarV2LibraryComponent },
+  
+  // put all routes above this
+  { path: '**', component: LoginComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {})],
   exports: [RouterModule]
 })
+
 export class AppRoutingModule { }

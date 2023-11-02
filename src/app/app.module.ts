@@ -31,6 +31,7 @@ import { ChatGroupComponent } from './chat-group/chat-group.component';
 import { ChatGroupCreateComponent } from './chat-group-create/chat-group-create.component';
 import { WeighInComponent } from './weigh-in/weigh-in.component';
 import { WeighInGraphComponent } from './weigh-in-graph/weigh-in-graph.component';
+import { CalendarV2LibraryComponent } from './calendar-v2-library/calendar-v2-library.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { WeighInGraphComponent } from './weigh-in-graph/weigh-in-graph.component
     ChatGroupComponent,
     ChatGroupCreateComponent,
     WeighInComponent,
-    WeighInGraphComponent
+    WeighInGraphComponent,
+    CalendarV2LibraryComponent
   ],
   imports: [
     BrowserModule,

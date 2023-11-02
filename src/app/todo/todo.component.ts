@@ -10,7 +10,7 @@ import { TodoRepo } from '../services/todo.repo'
 
 export class TodoComponent implements OnInit {
   get sortedTodoList() {
-    //TODO sought by date
+    //TODO sort by date
     return this.todoRepo.todos.sort((a:Todo, b:Todo) => {
       return a.id - b.id;
     });
