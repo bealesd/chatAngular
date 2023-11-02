@@ -31,10 +31,9 @@ jobs:
     - name: Install angular
       run: npm install -g @angular/cli    
 
-    - ${{ if eq(parameters.UseYarn, true) }}:
-      - bash: echo 'true'
-    - ${{ if not(eq(parameters.UseYarn, true)) }}:
-      - bash: echo 'false'
+    - name: Install Package Manager
+    - if ${{ eq(parameters.UseYarn, true) }}:
+    - run: echo 'true'
 
     - name: Install yarn
       run: yarn install
