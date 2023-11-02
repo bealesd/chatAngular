@@ -34,10 +34,6 @@ jobs:
       if: ${{ env.PACKAGE_MANAGER_NAME == 'YARN' }}
       run: yarn
 
-    - name: Install npm
-      if: ${{ env.PACKAGE_MANAGER_NAME != 'YARN' }}
-      run: npm
-
     - name: Install packages with npm
       if: ${{ env.PACKAGE_MANAGER_NAME != 'YARN' }}
       run: npm install
