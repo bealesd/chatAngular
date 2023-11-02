@@ -41,9 +41,9 @@ jobs:
     - name: Build Static Website Files
       run: node build.js
 
-    # - name: Deploy
-    #   uses: JamesIves/github-pages-deploy-action@4.1.4
-    #   with:
-    #     branch: gh-pages
-    #     folder: docs
-    #     target-folder: docs
+    - name: Deploy
+      uses: JamesIves/github-pages-deploy-action@4.1.4
+      with:
+        branch: gh-pages
+        folder: docs/test
+        target-folder: docs/test

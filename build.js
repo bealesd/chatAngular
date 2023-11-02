@@ -15,8 +15,8 @@ catch {
 }
 
 class Build {
-    outputDir = 'docs';
-    buildCommand = `ng build --configuration production --output-path docs --base-href "/chatAngular/"`;
+    outputDir = 'docs/test';
+    buildCommand = `ng build --configuration production --output-path ${this.outputDir} --base-href "/chatAngular/"`;
 
     constructor() {
         this.fiveMinuteTimeout = 1000 * 60 * 5;
