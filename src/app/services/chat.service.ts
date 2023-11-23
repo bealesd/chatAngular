@@ -197,7 +197,7 @@ export class ChatService {
     let chats = this.getStoreChats();
     let newChats: Chat[];
 
-    if (chats?.length > 0){
+    if (chats?.length > 0) {
       const idKey = Object.keys(chats[chats.length - 1]).find(key => key.toLowerCase() === 'id');
       const lastChatId = chats[chats.length - 1][idKey];
       newChats = await this.GetChatsAfterId(lastChatId) ?? [];
@@ -207,29 +207,29 @@ export class ChatService {
 
     chats.push(newChats)
 
-    // if (newChats?.length > 0) {
-    //   const newChatIds = newChats.map(c => c.Id);
+    if (newChats?.length > 0) {
+      const newChatIds = newChats.map(c => c.Id);
 
-    //   const readChats = await this.GetChatsThatAreRead(this.loginService.usernameId, newChatIds);
-    //   const chatsRead = readChats.map(c => c.ChatId);
-    //   const unreadChats = newChats.filter(c => chatsRead.includes(c.Id) === false);
+      const readChats = await this.GetChatsThatAreRead(this.loginService.usernameId, newChatIds);
+      const readChatsIds = readChats.map(c => c.ChatId);
+      const unreadChats = newChats.filter(c => readChatsIds.includes(c.Id) === false);
 
-    //   const isDektop = this.deviceService.isDesktop();
-    //   for (let i = 0; i < unreadChats.length; i++) {
-    //     if (isDektop && i < 5) {
-    //       const unreadChat = unreadChats[i];
-    //       this.AddChatRead(this.loginService.usernameId, unreadChat.Id)
-    //       new Notification('Unread chat message', {
-    //         body: `${unreadChat.Who}: ${unreadChat.Content}`,
-    //       });
-    //     }
-    //   }
+      const isDektop = this.deviceService.isDesktop();
+      for (let i = 0; i < unreadChats.length; i++) {
+        if (isDektop && i < 5) {
+          const unreadChat = unreadChats[i];
+          this.AddChatRead(this.loginService.usernameId, unreadChat.Id)
+          new Notification('Unread chat message', {
+            body: `${unreadChat.Who}: ${unreadChat.Content}`,
+          });
+        }
+      }
 
-    //   const currentMessagesCount = this.newChatMessagesCount.getValue();
-    //   const unreadMessageCount = unreadChats.length;
-    //   this.newChatMessagesCount.next(currentMessagesCount + unreadMessageCount);
-    //   this.messageService.add(`ChatService: ${unreadMessageCount} unread message${unreadMessageCount > 1 ? 's' : ''}.`);
-    // }
+      const currentMessagesCount = this.newChatMessagesCount.getValue();
+      const unreadMessageCount = unreadChats.length;
+      this.newChatMessagesCount.next(currentMessagesCount + unreadMessageCount);
+      this.messageService.add(`ChatService: ${unreadMessageCount} unread message${unreadMessageCount > 1 ? 's' : ''}.`);
+    }
 
     return chats.flat();
   }
@@ -238,31 +238,30 @@ export class ChatService {
     return new Promise((res, rej) => {
       if (chatIds.length === 0) res(null);
 
-      return new Promise((res, rej) => {
-        const url = `${this.baseChatReadUrl}/GetChatsThatAreRead?usernameId=${usernameId}`;
-        this.httpClient.post<any>(url, chatIds).subscribe(
-          {
-            next: (chatsReadResponse: any[]) => {
-              const chatsRead: ChatRead[] = [];
-              for (let i = 0; i < chatsReadResponse?.length; i++) {
-                const chatsReadObject = chatsReadResponse[i];
-                const chatRead = new ChatRead();
-                chatRead.UsernameId = chatsReadObject.usernameId;
-                chatRead.ChatId = chatsReadObject.chatId;
-                chatRead.Datetime = chatsReadObject.dateTime;
-                chatRead.Id = chatsReadObject.id;
-  
-                chatsRead.push(chatRead);
-              }
-  
-              res(chatsRead);
-            },
-            error: (err: any) => {
-              res(null);
+      const url = `${this.baseChatReadUrl}/GetChatsThatAreRead?usernameId=${usernameId}`;
+      this.httpClient.post<any>(url, chatIds).subscribe(
+        {
+          next: (chatsReadResponse: any[]) => {
+            const chatsRead: ChatRead[] = [];
+            for (let i = 0; i < chatsReadResponse?.length; i++) {
+              const chatsReadObject = chatsReadResponse[i];
+              const chatRead = new ChatRead();
+              chatRead.UsernameId = chatsReadObject.usernameId;
+              chatRead.ChatId = chatsReadObject.chatId;
+              chatRead.Datetime = chatsReadObject.dateTime;
+              chatRead.Id = chatsReadObject.id;
+
+              chatsRead.push(chatRead);
             }
+
+            res(chatsRead);
+          },
+          error: (err: any) => {
+            res(null);
           }
-        );
-      });
+        }
+      );
+
     });
   }
 
