@@ -68,17 +68,18 @@ export class ChatService {
   GetAuthUsers(): Promise<Auth[]> {
     return new Promise((res, rej) => {
       const url = `${this.baseAuthUrl}/GetUsers`;
-      this.httpClient.get<String[]>(url).subscribe(
+      this.httpClient.get<Auth[]>(url).subscribe(
         {
-          next: (users: any[]) => {
-            const authUsers: Auth[] = [];
-            for (const user of users) {
-              var authUser = new Auth()
-              authUser.id = user.id;
-              authUser.username = user.username
-              authUsers.push(authUser);
-            }
-            res(authUsers);
+          next: (users: Auth[]) => {
+            // const authUsers: Auth[] = [];
+            // for (const user of users) {
+            //   var authUser = new Auth()
+            //   authUser.id = user.id;
+            //   authUser.username = user.username
+            //   authUsers.push(authUser);
+            // }
+            // res(authUsers);
+            res(users);
           },
           error: (err: any) => {
             res([]);
@@ -96,17 +97,18 @@ export class ChatService {
   GetChatGroups(): Promise<ChatGroupUsernameDTO[]> {
     return new Promise((res, rej) => {
       const url = `${this.baseChatGroupUrl}/GetChatGroupsById/${this.loginService.usernameId}`;
-      this.httpClient.get<String[]>(url).subscribe(
+      this.httpClient.get<ChatGroupUsernameDTO[]>(url).subscribe(
         {
-          next: (chatGroupsByUser: any[]) => {
-            const chatGroupUsernames: ChatGroupUsernameDTO[] = []
-            for (const chatGroupByUser of chatGroupsByUser) {
-              var chatGroupForUser = new ChatGroupUsernameDTO()
-              chatGroupForUser.Guid = chatGroupByUser.guid;
-              chatGroupForUser.Usernames = chatGroupByUser.usernames
-              chatGroupUsernames.push(chatGroupForUser);
-            }
-            res(chatGroupUsernames);
+          next: (chatGroupsByUser: ChatGroupUsernameDTO[]) => {
+            // const chatGroupUsernames: ChatGroupUsernameDTO[] = []
+            // for (const chatGroupByUser of chatGroupsByUser) {
+            //   var chatGroupForUser = new ChatGroupUsernameDTO()
+            //   chatGroupForUser.Guid = chatGroupByUser.guid;
+            //   chatGroupForUser.Usernames = chatGroupByUser.usernames
+            //   chatGroupUsernames.push(chatGroupForUser);
+            // }
+            // res(chatGroupUsernames);
+            res(chatGroupsByUser)
           },
           error: (err: any) => {
             res([]);
@@ -122,7 +124,7 @@ export class ChatService {
       const localChats = JSON.parse(window.localStorage.getItem(`chatStore:${this.guid}`));
       if (Array.isArray(localChats))
         chats = this.filterInvalidChats(localChats.flat());
-      chats.sort((a, b) => a.id - b.id);
+      chats.sort((a, b) => a.Id - b.Id);
     } catch { }
 
     return chats;
@@ -163,8 +165,9 @@ export class ChatService {
     for (const date of dates) {
       const dateChat = new Chat();
       dateChat.Id = 99999999;
-      dateChat.Who = 'date';
-      dateChat.Content = date;
+      // a hack to allow a date to appear in the UI above chats for that date
+      dateChat.Name = 'date';
+      dateChat.Message = date;
       dateChat.Datetime = 0;
 
       chatMessagesByDate.push(dateChat);
@@ -177,6 +180,12 @@ export class ChatService {
 
   filterInvalidChats(chatMessages) {
     return chatMessages.filter((chat) => {
+      // added because of property name change, meaning local data could have old property names
+      if (chat.Name === undefined)
+        chat.Name = chat.Who;
+      if (chat.Message === undefined)
+        chat.Message = chat.Content;
+
       try {
         this.datePipe.transform(new Date(chat.Datetime), 'MM/dd/yyyy');
         return chat;
@@ -220,7 +229,7 @@ export class ChatService {
           const unreadChat = unreadChats[i];
           this.AddChatRead(this.loginService.usernameId, unreadChat.Id)
           new Notification('Unread chat message', {
-            body: `${unreadChat.Who}: ${unreadChat.Content}`,
+            body: `${unreadChat.Name}: ${unreadChat.Message}`,
           });
         }
       }
@@ -241,20 +250,21 @@ export class ChatService {
       const url = `${this.baseChatReadUrl}/GetChatsThatAreRead?usernameId=${usernameId}`;
       this.httpClient.post<any>(url, chatIds).subscribe(
         {
-          next: (chatsReadResponse: any[]) => {
-            const chatsRead: ChatRead[] = [];
-            for (let i = 0; i < chatsReadResponse?.length; i++) {
-              const chatsReadObject = chatsReadResponse[i];
-              const chatRead = new ChatRead();
-              chatRead.UsernameId = chatsReadObject.usernameId;
-              chatRead.ChatId = chatsReadObject.chatId;
-              chatRead.Datetime = chatsReadObject.dateTime;
-              chatRead.Id = chatsReadObject.id;
+          next: (chatsReadResponse: ChatRead[]) => {
+            // const chatsRead: ChatRead[] = [];
+            // for (let i = 0; i < chatsReadResponse?.length; i++) {
+            //   const chatsReadObject = chatsReadResponse[i];
+            //   const chatRead = new ChatRead();
+            //   chatRead.UsernameId = chatsReadObject.usernameId;
+            //   chatRead.ChatId = chatsReadObject.chatId;
+            //   chatRead.Datetime = chatsReadObject.dateTime;
+            //   chatRead.Id = chatsReadObject.id;
 
-              chatsRead.push(chatRead);
-            }
+            //   chatsRead.push(chatRead);
+            // }
 
-            res(chatsRead);
+            // res(chatsRead);
+            res(chatsReadResponse);
           },
           error: (err: any) => {
             res(null);
@@ -299,24 +309,26 @@ export class ChatService {
   GetChatsAfterId(id: number): Promise<Chat[]> {
     return new Promise((res, rej) => {
       const url = `${this.baseUrl}/GetChatsAfterId?id=${id}&guid=${this.guid}`;
-      this.httpClient.get<any[]>(url).subscribe(
+      this.httpClient.get<Chat[]>(url).subscribe(
         {
-          next: (chats: any[]) => {
-            const chatMessages: Chat[] = [];
-            if (chats && chats.length > 0) {
-              chats.sort((a, b) => a.id - b.id);
-              for (let i = 0; i < chats.length; i++) {
-                const chatObject = chats[i];
-                const chat = new Chat();
-                chat.Content = chatObject.message;
-                chat.Who = chatObject.name;
-                chat.Datetime = chatObject.dateTime;
-                chat.Id = chatObject.id;
+          next: (chats: Chat[]) => {
+            // const chatMessages: Chat[] = [];
+            // if (chats && chats.length > 0) {
+            //   chats.sort((a, b) => a.id - b.id);
+            //   for (let i = 0; i < chats.length; i++) {
+            //     const chatObject = chats[i];
+            //     const chat = new Chat();
+            //     // TODO use same property name between api and dto
+            //     chat.Message = chatObject.Message;
+            //     chat.Name = chatObject.Name;
+            //     chat.Datetime = chatObject.DateTime;
+            //     chat.Id = chatObject.Id;
 
-                chatMessages.push(chat);
-              }
-            }
-            res(chatMessages);
+            //     chatMessages.push(chat);
+            //   }
+            // }
+            // res(chatMessages);
+            res(chats);
           },
           error: (err: any) => {
             res(null);
@@ -329,17 +341,17 @@ export class ChatService {
   PostChat(chat: any): Promise<any> {
     return new Promise((res, rej) => {
       const url = `${this.baseUrl}/AddChat`;
-      this.httpClient.post<any>(url, chat).subscribe(
+      this.httpClient.post<Chat>(url, chat).subscribe(
         {
-          next: (chatObject: any) => {
-            const chat = new Chat();
-            chat.Content = chatObject.message;
-            chat.Who = chatObject.name;
-            chat.Datetime = chatObject.dateTime;
-            chat.Id = chatObject.id;
-            chat.Guid = chatObject.guid;
-
-            res(chat);
+          next: (chatObject: Chat) => {
+            // const chat = new Chat();
+            // chat.Message = chatObject.message;
+            // chat.Who = chatObject.name;
+            // chat.Datetime = chatObject.dateTime;
+            // chat.Id = chatObject.id;
+            // chat.Guid = chatObject.guid;
+            // res(chat);
+            res(chatObject);
           },
           error: (err: any) => {
             res(null);
@@ -352,21 +364,23 @@ export class ChatService {
   GetChats(): Promise<Chat[]> {
     return new Promise((res, rej) => {
       const url = `${this.baseUrl}/GetChats?guid=${this.guid}`;
-      this.httpClient.get<any[]>(url).subscribe(
+      this.httpClient.get<Chat[]>(url).subscribe(
         {
-          next: (chats: any[]) => {
-            chats.sort((a, b) => a.id - b.id);
-            const chatMessages: Chat[] = [];
-            for (let i = 0; i < chats.length; i++) {
-              const chatObject = chats[i];
-              const chat = new Chat();
-              chat.Content = chatObject.message;
-              chat.Who = chatObject.name;
-              chat.Datetime = chatObject.dateTime;
-              chat.Id = chatObject.id;
-              chatMessages.push(chat);
-            }
-            res(chatMessages);
+          next: (chats: Chat[]) => {
+            chats.sort((a, b) => a.Id - b.Id);
+            // chats.sort((a, b) => a.id - b.id);
+            // const chatMessages: Chat[] = [];
+            // for (let i = 0; i < chats.length; i++) {
+            //   const chatObject = chats[i];
+            //   const chat = new Chat();
+            //   chat.Message = chatObject.message;
+            //   chat.Who = chatObject.name;
+            //   chat.Datetime = chatObject.dateTime;
+            //   chat.Id = chatObject.id;
+            //   chatMessages.push(chat);
+            // }
+            // res(chatMessages);
+            res(chats);
           },
           error: (err: any) => {
             res(null);

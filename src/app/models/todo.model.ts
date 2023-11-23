@@ -1,8 +1,8 @@
 export class Todo {
-  public id: number;
-  public text: string;
-  public complete: number;
-  public dateTime: number;
+  public Id: number;
+  public Text: string;
+  public Complete: number;
+  public DateTime: number;
 }
 
 export class TodoContainer {

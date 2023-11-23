@@ -25,31 +25,31 @@ export class ChatDetailComponent implements OnInit {
   constructor(private profileService: ProfileService, public loginService: LoginService) {
   }
 
-  public parseDateTime() {
+  public parseDatetime() {
     this.date = (new Date(this.recieveChat.Datetime)).toLocaleTimeString();
   }
 
   ngOnInit(): void {
-    this.parseDateTime();
+    this.parseDatetime();
     this.dialogBoxService = new DialogBoxService();
     this.addProfilePicture();
   }
 
   async addProfilePicture() {
-    if (this.recieveChat.Who !== 'unknown') {
-      let profileObject = window[`profileImageUrl${this.recieveChat.Who}`];
+    if (this.recieveChat.Name !== 'unknown') {
+      let profileObject = window[`profileImageUrl${this.recieveChat.Name}`];
 
       if (profileObject === undefined) {
-        window[`profileImageUrl${this.recieveChat.Who}`] = { url: null };
+        window[`profileImageUrl${this.recieveChat.Name}`] = { url: null };
 
-        const url = await this.profileService.getProfilePicture(this.recieveChat.Who);
-        if (url !== null) window[`profileImageUrl${this.recieveChat.Who}`].url = url;
+        const url = await this.profileService.getProfilePicture(this.recieveChat.Name);
+        if (url !== null) window[`profileImageUrl${this.recieveChat.Name}`].url = url;
       }
 
       this.interval = setInterval(() => {
-        if ((window[`profileImageUrl${this.recieveChat.Who}`].url !== null)) {
+        if ((window[`profileImageUrl${this.recieveChat.Name}`].url !== null)) {
           try {
-            (document.querySelector(`#img-${this.recieveChat.Id}`) as any).src = window[`profileImageUrl${this.recieveChat.Who}`].url;
+            (document.querySelector(`#img-${this.recieveChat.Id}`) as any).src = window[`profileImageUrl${this.recieveChat.Name}`].url;
             clearInterval(this.interval);
           } catch (error) {
           }

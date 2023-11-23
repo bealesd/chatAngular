@@ -54,7 +54,7 @@ export class CalendarService implements OnDestroy {
 
     const result = await this.DeleteChat(id);
     if (result) {
-      const recordsToKeep = this.calendarRecords.filter(r => r.id !== id);
+      const recordsToKeep = this.calendarRecords.filter(r => r.Id !== id);
       this.calendarRecords = recordsToKeep
       this.messageService.add(`CalendarRepo: Deleted calendar record id: ${id}.`, 'info');
     }
@@ -99,15 +99,15 @@ export class CalendarService implements OnDestroy {
       this.messageService.add(`Updated calendar record: ${JSON.stringify(record)}.`, 'info');
 
       let localRecord: CalendarRecord;
-      localRecord = this.calendarRecords.find(r => r.id === record.id)
-      localRecord.what = record.what;
-      localRecord.description = record.description;
-      localRecord.id = record.id;
-      localRecord.dateTime instanceof Date ? record.dateTime : new Date(record.dateTime);
+      localRecord = this.calendarRecords.find(r => r.Id === record.Id)
+      localRecord.What = record.What;
+      localRecord.Description = record.Description;
+      localRecord.Id = record.Id;
+      localRecord.DateTime instanceof Date ? record.DateTime : new Date(record.DateTime);
 
       const currentDate = this.currentDateSubject.getValue();
-      if (getMonth(currentDate) !== getMonth(record.dateTime) || getYear(currentDate) !== getYear(record.dateTime))
-        this.calendarRecords = this.calendarRecords.filter(r => r.id !== record.id);
+      if (getMonth(currentDate) !== getMonth(record.DateTime) || getYear(currentDate) !== getYear(record.DateTime))
+        this.calendarRecords = this.calendarRecords.filter(r => r.Id !== record.Id);
     }
   }
 
@@ -133,12 +133,14 @@ export class CalendarService implements OnDestroy {
       this.httpClient.post(url, record).subscribe(
         {
           next: (recordObject: CalendarRecord) => {
-            const record = new CalendarRecord();
-            record.id = recordObject.id;
-            record.what = recordObject.what;
-            record.description = recordObject.description;
-            record.dateTime instanceof Date ? recordObject.dateTime : new Date(recordObject.dateTime);
-            res(record);
+            // const record = new CalendarRecord();
+            // record.id = recordObject.id;
+            // record.what = recordObject.what;
+            // record.description = recordObject.description;
+            // record.dateTime instanceof Date ? recordObject.dateTime : new Date(recordObject.dateTime);
+            // res(record);
+            recordObject.DateTime instanceof Date ? recordObject.DateTime : new Date(recordObject.DateTime);
+            res(recordObject)
           },
           error: (err: any) => {
             res(null);
@@ -149,7 +151,7 @@ export class CalendarService implements OnDestroy {
   }
 
   async GetRecordsByYearAndMonth(year: number, month: number):
-    // make request service, that does what ServerErrorInterceptor does
+    // TODO make request service, that does what ServerErrorInterceptor does
     // move to fetch api
     Promise<any[]> {
     const url = `${this.baseUrl}/GetRecords?year=${year}&month=${month}`;
@@ -167,10 +169,10 @@ export class CalendarService implements OnDestroy {
       const calendarRecords: CalendarRecord[] = [];
       for (const recordObject of records) {
         const record = new CalendarRecord();
-        record.id = recordObject.id;
-        record.what = recordObject.what;
-        record.description = recordObject.description;
-        record.dateTime = recordObject.dateTime instanceof Date ? recordObject.dateTime : new Date(recordObject.dateTime);
+        record.Id = recordObject.Id;
+        record.What = recordObject.What;
+        record.Description = recordObject.Description;
+        record.DateTime = recordObject.DateTime instanceof Date ? recordObject.DateTime : new Date(recordObject.DateTime);
         calendarRecords.push(record);
       }
       return calendarRecords;

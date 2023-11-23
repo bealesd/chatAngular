@@ -65,11 +65,11 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
   get dateTimeRecords(): { hour: number; day: number; col: number; records: CalendarRecord[]; }[] {
     const recordsByHour = [];
     for (const record of this.calendarService.calendarRecords) {
-      const hourAndDayObj = recordsByHour.find((obj) => obj.day === getDate(record.dateTime) && obj.hour === getHours(record.dateTime));
+      const hourAndDayObj = recordsByHour.find((obj) => obj.day === getDate(record.DateTime) && obj.hour === getHours(record.DateTime));
       if (hourAndDayObj) 
         hourAndDayObj.records.push(record);
       else 
-        recordsByHour.push({ hour: getHours(record.dateTime), col: (getDay(record.dateTime) + 1), day: getDate(record.dateTime), records: [record] });
+        recordsByHour.push({ hour: getHours(record.DateTime), col: (getDay(record.DateTime) + 1), day: getDate(record.DateTime), records: [record] });
     }
     return recordsByHour;
   }
@@ -84,7 +84,7 @@ export class CalendarWeekComponent implements OnInit, OnDestroy {
     const emptyRecordsByHour = [];
     for (const hourDate of activeHourDates) {
       // find an hour that does not have a record in it and add it to the empty hours array
-      if (this.calendarService.calendarRecords.findIndex(a => getDate(a.dateTime) === getDate(hourDate) && getHours(a.dateTime) === getHours(hourDate)) !== -1)
+      if (this.calendarService.calendarRecords.findIndex(a => getDate(a.DateTime) === getDate(hourDate) && getHours(a.DateTime) === getHours(hourDate)) !== -1)
         continue;
       emptyRecordsByHour.push({ hour: getHours(hourDate), col: (getDay(hourDate) + 1), day: getDate(hourDate) });
     }

@@ -77,19 +77,19 @@ export class CalendarDayComponent implements OnInit, OnDestroy {
   get dateTimeRecords(): { hour: number; day: number; records: CalendarRecord[]; col: number; }[] {
     // Group the records by hour
     const recordsByHour = [];
-    this.records.filter(record => getDate(record.dateTime) === this.day).forEach((record) => {
-      const hour = getHours(record.dateTime);
+    this.records.filter(record => getDate(record.DateTime) === this.day).forEach((record) => {
+      const hour = getHours(record.DateTime);
       const hourObj = recordsByHour.find((obj) => obj.hour === hour);
       if (hourObj)
         hourObj.records.push(record);
       else
-        recordsByHour.push({ hour: hour, col: 2, day: getDate(record.dateTime), records: [record] });
+        recordsByHour.push({ hour: hour, col: 2, day: getDate(record.DateTime), records: [record] });
     });
     return recordsByHour;
   }
 
   get dateTimeEmptyRecords(): { hour: number, day: number, col: number }[] {
-    const hoursInUse = this.records.filter(record => getDate(record.dateTime) === this.day).map((record) => getHours(record.dateTime));
+    const hoursInUse = this.records.filter(record => getDate(record.DateTime) === this.day).map((record) => getHours(record.DateTime));
 
     // Filter out the hours that are already in use
     const unusedHours = this.calendarService.hoursOfDay.filter((hour) => !hoursInUse.includes(hour.value))

@@ -1,6 +1,6 @@
 export class Auth {
-  public id: number;
-  public username: string;
+  public Id: number;
+  public Username: string;
 }
 
 export class UserDto {

@@ -114,11 +114,11 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
     this.updatingEvent = true;
 
     this.currentRecord = {
-      id: record.id,
-      what: record.what,
-      description: record.description,
-      time: format(record.dateTime, 'HH:mm'),
-      date: format(record.dateTime, 'yyyy-MM-dd')
+      id: record.Id,
+      what: record.What,
+      description: record.Description,
+      time: format(record.DateTime, 'HH:mm'),
+      date: format(record.DateTime, 'yyyy-MM-dd')
     };
     this.profileForm.patchValue(this.currentRecord);
   }
@@ -132,15 +132,15 @@ export class CalendarFormComponent implements OnInit, OnDestroy {
 
   async postEvent() {
     const record = new CalendarRecord();
-    record.id = this.profileForm.value.id;
-    record.what = this.profileForm.value.what;
-    record.description = this.profileForm.value.description;
+    record.Id = this.profileForm.value.id;
+    record.What = this.profileForm.value.what;
+    record.Description = this.profileForm.value.description;
     
     try {
       const isoDate = this.profileForm.value.date;
       const isoTime = this.profileForm.value.time;
       const date = parseISO(`${isoDate} ${isoTime}`)
-      record.dateTime = date;
+      record.DateTime = date;
     } catch (error) {
       return alert('Invalid date');
     }

@@ -38,15 +38,25 @@ export class CalendarMonthComponent implements OnInit, OnDestroy {
     return daysOfWeek;
   }
   get dayDatesForMonth() {
-    const startOfCurrentMonth = startOfMonth(this.calendarService.currentDate);
-    const endOfCurrentMonth = endOfMonth(this.calendarService.currentDate);
+    const startOfCurrentMonth = startOfMonth(this.currentDate);
+    const endOfCurrentMonth = endOfMonth(this.currentDate);
     const days = eachDayOfInterval({ start: startOfCurrentMonth, end: endOfCurrentMonth });
     const dayDates = [];
     for (const dayDate of days) {
+      const dayNumber = getDay(dayDate);
+
+      // Sunday is in the 7th column in the UI, but is classed as the first day of week so subsequent days are moved to next row.
+      // the +1 and +2 are cause by grid row being 1 indexed.
+      const isSunday = dayNumber === 0;
+      const gridRowForSunday = getWeekOfMonth(dayDate, { weekStartsOn: 0 }) + 1;
+
+      const gridRow = getWeekOfMonth(dayDate, { weekStartsOn: 0 }) + 2;
+      const row = (isSunday ? gridRowForSunday : gridRow);
+      const col = (getDay(dayDate) === 0 ? 7 : getDay(dayDate));
       dayDates.push({
-        'gridRow': (getDay(dayDate) === 0 ? getWeekOfMonth(dayDate, { weekStartsOn: 0 }) - 1 : getWeekOfMonth(dayDate, { weekStartsOn: 0 })),
-        'gridCol': (getDay(dayDate) === 0 ? 7 : getDay(dayDate)),
-        'dateTime': dayDate
+        'gridRow': row,
+        'gridCol': col,
+        'DateTime': dayDate
       });
     }
     return dayDates;
@@ -112,8 +122,8 @@ export class CalendarMonthComponent implements OnInit, OnDestroy {
   }
 
   filterRecordsByDay(dayInMonth: Date) {
-    let records = this.records.filter(record => getDate(record.dateTime) === getDate(dayInMonth));
-    records.sort((a, b) => compareAsc(a.dateTime, b.dateTime));
+    let records = this.records.filter(record => getDate(record.DateTime) === getDate(dayInMonth));
+    records.sort((a, b) => compareAsc(a.DateTime, b.DateTime));
     return records;
   }
 

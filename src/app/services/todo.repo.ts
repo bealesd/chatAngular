@@ -24,20 +24,21 @@ export class TodoRepo {
       const url = `${this.baseUrl}/GetTodos`;
       this.httpClient.get<any[]>(url).subscribe(
         {
-          next: (todosDto: any[]) => {
-            const todos: Todo[] = [];
-            if (todosDto && todosDto.length > 0) {
-              for (let i = 0; i < todosDto.length; i++) {
-                const todoDto = todosDto[i];
-                const todo = new Todo();
-                todo.id = todoDto.id;
-                todo.text = todoDto.text;
-                todo.complete = todoDto.complete;
-                todo.dateTime = todoDto.dateTime;
-                todos.push(todo);
-              }
-            }
-            res(todos);
+          next: (todosDto: Todo[]) => {
+            // const todos: Todo[] = [];
+            // if (todosDto && todosDto.length > 0) {
+            //   for (let i = 0; i < todosDto.length; i++) {
+            //     const todoDto = todosDto[i];
+            //     const todo = new Todo();
+            //     todo.id = todoDto.id;
+            //     todo.text = todoDto.text;
+            //     todo.complete = todoDto.complete;
+            //     todo.dateTime = todoDto.dateTime;
+            //     todos.push(todo);
+            //   }
+            // }
+            // res(todos);
+            res(todosDto);
           },
           error: (err: any) => {
             res(null);
@@ -64,8 +65,8 @@ export class TodoRepo {
 
   async postTodo(text: string, complete = 0): Promise<boolean> {
     var td = new Todo();
-    td.text = text;
-    td.complete = complete;
+    td.Text = text;
+    td.Complete = complete;
 
     const todo = await this.PostTodo(td);
 
@@ -75,7 +76,7 @@ export class TodoRepo {
     }
     else {
       this.todos.push(todo);
-      this.messageService.add(`TodoRepo: Posted todo name: ${todo.id}.`);
+      this.messageService.add(`TodoRepo: Posted todo name: ${todo.Id}.`);
       return true;
     }
   }
@@ -86,13 +87,14 @@ export class TodoRepo {
       this.httpClient.post<any>(url, todo).subscribe(
         {
           next: (todoDto: any) => {
-            const todo = new Todo();
-            todo.text = todoDto.text;
-            todo.complete = todoDto.complete;
-            todo.id = todoDto.id;
-            todo.dateTime = todoDto.dateTime;
+            // const todo = new Todo();
+            // todo.Text = todoDto.text;
+            // todo.Complete = todoDto.complete;
+            // todo.Id = todoDto.id;
+            // todo.DateTime = todoDto.dateTime;
 
-            res(todo);
+            // res(todo);
+            res(todoDto);
           },
           error: (err: any) => {
             res(null);
@@ -106,11 +108,11 @@ export class TodoRepo {
     const todo = await this.UpdateTodo(td);
 
     if (!todo) {
-      this.messageService.add(`TodoRepo: Updating todo id: ${td.id}.`, 'error');;
+      this.messageService.add(`TodoRepo: Updating todo id: ${td.Id}.`, 'error');;
       return false;
     }
     else {
-      this.messageService.add(`TodoRepo: Updated todo id: ${td.id}.`);
+      this.messageService.add(`TodoRepo: Updated todo id: ${td.Id}.`);
       return true;
     }
   }
@@ -136,7 +138,7 @@ export class TodoRepo {
 
     const result = await this.DeleteTodo(id);
     if (result) {
-      const recordsToKeep = this.todos.filter(r => r.id !== id);
+      const recordsToKeep = this.todos.filter(r => r.Id !== id);
       this.todos = recordsToKeep;
       this.messageService.add(`TodoRepo: Deleted todo id: ${id}.`, 'info');
     }

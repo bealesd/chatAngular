@@ -12,7 +12,7 @@ export class TodoComponent implements OnInit {
   get sortedTodoList() {
     //TODO sort by date
     return this.todoRepo.todos.sort((a:Todo, b:Todo) => {
-      return a.id - b.id;
+      return a.Id - b.Id;
     });
   }
 
@@ -27,7 +27,7 @@ export class TodoComponent implements OnInit {
   }
 
   deleteTodo(todo) {
-    this.todoRepo.deleteTodo(todo.id);
+    this.todoRepo.deleteTodo(todo.Id);
   }
 
   addTodo() {
@@ -37,7 +37,7 @@ export class TodoComponent implements OnInit {
   }
 
   markTodoAsDone(todo) {
-    todo.complete = todo.complete === 0 ? 1 : 0;
+    todo.Complete = todo.Complete === 0 ? 1 : 0;
     this.todoRepo.updatetodo(todo);
   }
 

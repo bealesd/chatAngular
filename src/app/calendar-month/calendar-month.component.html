@@ -7,18 +7,18 @@
 <div class="date-box-contianer">
 
     <div *ngFor="let dayDate of dayDatesForMonth; let i = index" class="date-box 
-        {{isToday(dayDate.dateTime)}}" [style.gridColumn]="dayDate.gridCol" [style.gridRow]="dayDate.gridRow">
+        {{isToday(dayDate.DateTime)}}" [style.gridColumn]="dayDate.gridCol" [style.gridRow]="dayDate.gridRow">
 
-        <div class="day" (click)="openAddEventForm(dayDate.dateTime)">
-            {{dayOfMonthString(dayDate.dateTime)}}
+        <div class="day" (click)="openAddEventForm(dayDate.DateTime)">
+            {{dayOfMonthString(dayDate.DateTime)}}
         </div>
 
-        <ng-container class="table" *ngFor="let record of filterRecordsByDay(dayDate.dateTime);">
+        <ng-container class="table" *ngFor="let record of filterRecordsByDay(dayDate.DateTime);">
 
             <div class="record" (click)="openUpdateEventForm(record)">
                 <div class="record-time">
-                    {{timeString(record.dateTime)}} -</div>
-                {{record.what}}
+                    {{timeString(record.DateTime)}} -</div>
+                {{record.What}}
             </div>
 
         </ng-container>

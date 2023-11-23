@@ -1,8 +1,8 @@
 export class CalendarRecord {
-  public id?: number;
-  public what: string;
-  public description: string;
-  public dateTime: Date;
+  public Id?: number;
+  public What: string;
+  public Description: string;
+  public DateTime: Date;
 
   toJsonString(): string {
     const json = JSON.stringify(this);

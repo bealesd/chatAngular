@@ -1,10 +1,10 @@
-<li title="{{recieveChat.Who}}" data-id="{{recieveChat.Id}}" 
-class="{{recieveChat.Who === username ? 'primary' : 'secondary'}} messageNode" 
-*ngIf="recieveChat && recieveChat.Who !== 'date'">
-        <p>{{recieveChat.Content}}</p>
+<li title="{{recieveChat.Name}}" data-id="{{recieveChat.Id}}" 
+class="{{recieveChat.Name === username ? 'primary' : 'secondary'}} messageNode" 
+*ngIf="recieveChat && recieveChat.Name !== 'date'">
+        <p>{{recieveChat.Message}}</p>
         <p class="dateTime">{{date }}</p>
 </li>
 
-<li title="{{recieveChat.Who}}" data-id="{{recieveChat.Id}}" class="is-time messageNode" *ngIf="recieveChat && recieveChat.Who === 'date'">
-        <p>{{recieveChat.Content}}</p>
+<li title="{{recieveChat.Name}}" data-id="{{recieveChat.Id}}" class="is-time messageNode" *ngIf="recieveChat && recieveChat.Name === 'date'">
+        <p>{{recieveChat.Message}}</p>
 </li>

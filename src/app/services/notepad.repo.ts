@@ -25,22 +25,23 @@ export class NotepadRepo {
       this.httpClient.get<any[]>(url).subscribe(
         {
           next: (notepadsDto: any[]) => {
-            const notepads: Notepad[] = [];
-            if (notepadsDto && notepadsDto.length > 0) {
-              for (let i = 0; i < notepadsDto.length; i++) {
-                const notepadObject = notepadsDto[i];
-                const notepad = new Notepad();
-                notepad.Created = notepadObject.created;
-                notepad.Path = notepadObject.path;
-                notepad.Type = notepadObject.type;
-                notepad.Id = notepadObject.id;
-                notepad.Name = notepadObject.name;
-                notepad.Text = null;
+            // const notepads: Notepad[] = [];
+            // if (notepadsDto && notepadsDto.length > 0) {
+            //   for (let i = 0; i < notepadsDto.length; i++) {
+            //     const notepadObject = notepadsDto[i];
+            //     const notepad = new Notepad();
+            //     notepad.Created = notepadObject.created;
+            //     notepad.Path = notepadObject.path;
+            //     notepad.Type = notepadObject.type;
+            //     notepad.Id = notepadObject.id;
+            //     notepad.Name = notepadObject.name;
+            //     notepad.Text = null;
 
-                notepads.push(notepad);
-              }
-            }
-            res(notepads);
+            //     notepads.push(notepad);
+            //   }
+            // }
+            // res(notepads);
+            res(notepadsDto);
           },
           error: (err: any) => {
             res(null);
@@ -56,14 +57,16 @@ export class NotepadRepo {
       this.httpClient.get<any[]>(url).subscribe(
         {
           next: (notepadDto: any) => {
-            const notepad = new Notepad();
-            notepad.Created = notepadDto.created;
-            notepad.Path = notepadDto.path;
-            notepad.Type = notepadDto.type;
-            notepad.Id = notepadDto.id;
-            notepad.Name = notepadDto.name;
-            notepad.Text = atob(notepadDto.text);
-            res(notepad);
+            // const notepad = new Notepad();
+            // notepad.Created = notepadDto.created;
+            // notepad.Path = notepadDto.path;
+            // notepad.Type = notepadDto.type;
+            // notepad.Id = notepadDto.id;
+            // notepad.Name = notepadDto.name;
+            // notepad.Text = atob(notepadDto.text);
+            // res(notepad);
+            notepadDto.Text = atob(notepadDto.Text);
+            res(notepadDto);
           },
           error: (err: any) => {
             res(null);
@@ -107,15 +110,16 @@ export class NotepadRepo {
       this.httpClient.post<any>(url, notepad).subscribe(
         {
           next: (notepadDto: any) => {
-            const notepad = new Notepad();
-            notepad.Name = notepadDto.name;
-            notepad.Path = notepadDto.path;
-            notepad.Text = atob(notepadDto.text);
-            notepad.Type = notepadDto.type;
-            notepad.Id = notepadDto.id;
-            notepad.Created = notepadDto.created;
+            // const notepad = new Notepad();
+            // notepad.Name = notepadDto.name;
+            // notepad.Path = notepadDto.path;
+            // notepad.Text = atob(notepadDto.text);
+            // notepad.Type = notepadDto.type;
+            // notepad.Id = notepadDto.id;
+            // notepad.Created = notepadDto.created;
 
-            res(notepad);
+            // res(notepad);
+            res(notepadDto);
           },
           error: (err: any) => {
             res(null);

@@ -8,8 +8,8 @@
         </div>
 
         <div class="todo-item-container" *ngFor="let item of sortedTodoList; let i = index">
-            <div class="todo-date">{{ item.dateTime | date:'medium' }}</div>
-            <div class="todo-text {{item.complete === 1 ? 'strikethrough' : ''}}">{{ item.text }}</div>
+            <div class="todo-date">{{ item.DateTime | date:'medium' }}</div>
+            <div class="todo-text {{item.Complete === 1 ? 'strikethrough' : ''}}">{{ item.Text }}</div>
             <div class="icon-bin delete-btn" title="bin" type="submit" (click)="deleteTodo(item)">
             </div>
             <div class="icon-clipboard checkbox-btn" title="clipboard" type="submit" (click)="markTodoAsDone(item)">

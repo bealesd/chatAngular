@@ -22,24 +22,26 @@ export class WeighInRepo {
       const url = `${this.baseUrl}/GetWeighIns`;
       this.httpClient.get<any[]>(url).subscribe(
         {
-          next: (weighInsDto: any[]) => {
-            const weightIns: WeighIn[] = [];
-            if (weighInsDto && weighInsDto.length > 0) {
-              for (let i = 0; i < weighInsDto.length; i++) {
-                const weighInDto = weighInsDto[i];
-                const weighIn = new WeighIn();
-                weighIn.Id = weighInDto.id;
-                weighIn.DavidStone = weighInDto.davidStone;
-                weighIn.DavidPounds = weighInDto.davidPounds;
-                weighIn.EstherStone = weighInDto.estherStone;
-                weighIn.EstherPounds = weighInDto.estherPounds;
-                // weighInDto.date is in ISO 8601 format
-                weighIn.Date = new Date(weighInDto.date);
-                weightIns.push(weighIn);
-              }
+          next: (weighIns: WeighIn[]) => {
+            // const weightIns: WeighIn[] = [];
+            for (const weighIn of weighIns) {
+              weighIn.Date = new Date(weighIn.Date);
             }
+            // for (let i = 0; i < weighInsDto.length; i++) {
+            //   const weighInDto = weighInsDto[i];
+              // const weighIn = new WeighIn();
+              // weighIn.Id = weighInDto.id;
+              // weighIn.DavidStone = weighInDto.davidStone;
+              // weighIn.DavidPounds = weighInDto.davidPounds;
+              // weighIn.EstherStone = weighInDto.estherStone;
+              // weighIn.EstherPounds = weighInDto.estherPounds;
+              // weighInDto.date is in ISO 8601 format
+              // weighInDto.Date = new Date(weighInDto.Date);
+              // weightIns.push(weighIn);
+            // }
 
-            res(weightIns);
+
+            res(weighIns);
           },
           error: (err: any) => {
             res(null);
@@ -84,15 +86,16 @@ export class WeighInRepo {
       this.httpClient.post<any>(url, weighIn).subscribe(
         {
           next: (weighInDto: any) => {
-            const weighIn = new WeighIn();
-            weighIn.Id = weighInDto.id;
-            weighIn.DavidStone = weighInDto.davidStone;
-            weighIn.DavidPounds = weighInDto.davidPounds;
-            weighIn.EstherStone = weighInDto.estherStone;
-            weighIn.EstherPounds = weighInDto.estherPounds;
+            // const weighIn = new WeighIn();
+            // weighIn.Id = weighInDto.id;
+            // weighIn.DavidStone = weighInDto.davidStone;
+            // weighIn.DavidPounds = weighInDto.davidPounds;
+            // weighIn.EstherStone = weighInDto.estherStone;
+            // weighIn.EstherPounds = weighInDto.estherPounds;
 
-            weighIn.Date = weighInDto.date;
-            res(weighIn);
+            // weighIn.Date = weighInDto.date;
+            // res(weighIn);
+            res(weighInDto);
           },
           error: (err: any) => {
             res(null);
